@@ -10,24 +10,28 @@ Changes consist of several points:
 * Actor network communication protocol transport level serialization parametrisation.
 * Reduction of self-maintained code with extensive Boost libraries usage.
 
-## Get the Sources
+## Building
 
-* git clone https://github.com/nilfoundation/mtl.git
-* cd mtl
+MTL uses CMake [CMake](http://www.cmake.org/) build system and follows standard procedure for building:
 
-## Build MTL from Source
-
-The easiest way to build MTL is to use the `configure` script. Other available
-options are using [CMake](http://www.cmake.org/) directly.
-
-### Using CMake
+```
+git clone --recurse-submodules https://github.com/nilfoundation/mtl.git mtl
+cd mtl && mkdir build && cd build && cmake ..
+```
 
 MTL also can be included as CMake submodule or added as dependency to other
 CMake-based projects using the file `cmake/FindMTL.cmake`.
 
+### CMake build options available
+
+* ```BUILD_TESTS``` - enables building unit tests
+* ```BUILD_SHARED_LIBS``` - enables building shared libraries (CMake default variable)
+* ```BUILD_WITH_CCACHE``` - enables building with CCache usage.
+
 ## Dependencies
 
 * CMake
+* Boost ( >= 1.58)
 * Pthread (until C++11 compilers support the new `thread_local` keyword)
 
 ## Supported Compilers
@@ -48,3 +52,4 @@ CMake-based projects using the file `cmake/FindMTL.cmake`.
 * Doxygen (for the `doxygen` target)
 * LaTeX (for the `manual` target)
 * Pandoc and Python with pandocfilters (for the `rst` target)
+* CCache (for caching the build)
