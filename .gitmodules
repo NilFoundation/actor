@@ -1,0 +1,21 @@
+[submodule "python/third_party/pybind"]
+	path = python/third_party/pybind
+	url = https://github.com/pybind/pybind11.git
+[submodule "cmake/modules"]
+	path = cmake/modules
+	url = git@github.com:BoostCMake/cmake_modules.git
+[submodule "libs/hash"]
+	path = libs/hash
+	url = git@github.com:nilfoundation/hash.git
+[submodule "libs/block"]
+	path = libs/block
+	url = git@github.com:nilfoundation/block.git
+[submodule "libs/concept_container"]
+	path = libs/concept_container
+	url = https://github.com/nemo1369/concept_container.git
+[submodule "libs/utilities"]
+	path = libs/utilities
+	url = git@github.com:nemo1369/crypto3_utilities.git
+[submodule "libs/codec"]
+	path = libs/codec
+	url = git@github.com:nilfoundation/codec.git

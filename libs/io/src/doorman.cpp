@@ -1,0 +1,41 @@
+//---------------------------------------------------------------------------//
+// Copyright (c) 2011-2018 Dominik Charousset
+// Copyright (c) 2018-2019 Nil Foundation AG
+// Copyright (c) 2018-2019 Mikhail Komarov <nemo@nil.foundation>
+//
+// Distributed under the terms and conditions of the BSD 3-Clause License or
+// (at your option) under the terms and conditions of the Boost Software
+// License 1.0. See accompanying files LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt.
+//---------------------------------------------------------------------------//
+
+#include <nil/mtl/io/doorman.hpp>
+
+#include <nil/mtl/logger.hpp>
+
+#include <nil/mtl/io/abstract_broker.hpp>
+
+namespace nil {
+    namespace mtl {
+        namespace io {
+
+            doorman::doorman(accept_handle acc_hdl) : doorman_base(acc_hdl) {
+                // nop
+            }
+
+            doorman::~doorman() {
+                // nop
+            }
+
+            message doorman::detach_message() {
+                return make_message(acceptor_closed_msg {hdl()});
+            }
+
+            bool doorman::new_connection(execution_unit *ctx, connection_handle x) {
+                msg().handle = x;
+                return invoke_mailbox_element(ctx);
+            }
+
+        }    // namespace io
+    }        // namespace mtl
+}    // namespace nil

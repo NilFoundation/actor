@@ -1,0 +1,2 @@
+\newcommand{\cafrelease}{@MTL_RELEASE@}
+\newcommand{\cafsha}{@MTL_SHA@}
