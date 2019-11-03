@@ -49,8 +49,8 @@
 #include <nil/mtl/message_handler.hpp>
 #include <nil/mtl/event_based_actor.hpp>
 #include <nil/mtl/primitive_variant.hpp>
-#include <nil/mtl/binary_serializer.hpp>
-#include <nil/mtl/binary_deserializer.hpp>
+#include <nil/mtl/serialization/binary_serializer.hpp>
+#include <nil/mtl/serialization/binary_deserializer.hpp>
 #include <nil/mtl/stream_serializer.hpp>
 #include <nil/mtl/stream_deserializer.hpp>
 #include <nil/mtl/actor_system_config.hpp>

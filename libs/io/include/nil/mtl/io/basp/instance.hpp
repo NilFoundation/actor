@@ -14,7 +14,7 @@
 #include <limits>
 
 #include <nil/mtl/actor_system_config.hpp>
-#include <nil/mtl/binary_deserializer.hpp>
+#include <nil/mtl/serialization/binary_deserializer.hpp>
 #include <nil/mtl/callback.hpp>
 #include <nil/mtl/detail/worker_hub.hpp>
 #include <nil/mtl/error.hpp>

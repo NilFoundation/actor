@@ -82,14 +82,14 @@
 #include <nil/mtl/may_have_timeout.hpp>
 #include <nil/mtl/message_priority.hpp>
 #include <nil/mtl/typed_actor_view.hpp>
-#include <nil/mtl/binary_serializer.hpp>
+#include <nil/mtl/serialization/binary_serializer.hpp>
 #include <nil/mtl/composed_behavior.hpp>
 #include <nil/mtl/event_based_actor.hpp>
 #include <nil/mtl/primitive_variant.hpp>
 #include <nil/mtl/stream_serializer.hpp>
 #include <nil/mtl/timeout_definition.hpp>
 #include <nil/mtl/actor_system_config.hpp>
-#include <nil/mtl/binary_deserializer.hpp>
+#include <nil/mtl/serialization/binary_deserializer.hpp>
 #include <nil/mtl/composable_behavior.hpp>
 #include <nil/mtl/stream_deserializer.hpp>
 #include <nil/mtl/typed_actor_pointer.hpp>

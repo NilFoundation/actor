@@ -22,8 +22,8 @@
 
 #include <nil/mtl/stateful_actor.hpp>
 #include <nil/mtl/proxy_registry.hpp>
-#include <nil/mtl/binary_serializer.hpp>
-#include <nil/mtl/binary_deserializer.hpp>
+#include <nil/mtl/serialization/binary_serializer.hpp>
+#include <nil/mtl/serialization/binary_deserializer.hpp>
 #include <nil/mtl/forwarding_actor_proxy.hpp>
 
 #include <nil/mtl/io/basp/all.hpp>

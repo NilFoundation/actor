@@ -12,8 +12,8 @@
 #include <nil/mtl/io/basp/instance.hpp>
 
 #include <nil/mtl/actor_system_config.hpp>
-#include <nil/mtl/binary_deserializer.hpp>
-#include <nil/mtl/binary_serializer.hpp>
+#include <nil/mtl/serialization/binary_deserializer.hpp>
+#include <nil/mtl/serialization/binary_serializer.hpp>
 #include <nil/mtl/defaults.hpp>
 #include <nil/mtl/io/basp/remote_message_handler.hpp>
 #include <nil/mtl/io/basp/version.hpp>
