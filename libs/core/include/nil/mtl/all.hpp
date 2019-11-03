@@ -56,7 +56,7 @@
 #include <nil/mtl/typed_actor.hpp>
 #include <nil/mtl/actor_system.hpp>
 #include <nil/mtl/config_value.hpp>
-#include <nil/mtl/deserializer.hpp>
+#include <nil/mtl/serialization/deserializer.hpp>
 #include <nil/mtl/scoped_actor.hpp>
 #include <nil/mtl/upstream_msg.hpp>
 #include <nil/mtl/actor_ostream.hpp>
@@ -86,12 +86,12 @@
 #include <nil/mtl/composed_behavior.hpp>
 #include <nil/mtl/event_based_actor.hpp>
 #include <nil/mtl/primitive_variant.hpp>
-#include <nil/mtl/stream_serializer.hpp>
+#include <nil/mtl/serialization/stream_serializer.hpp>
 #include <nil/mtl/timeout_definition.hpp>
 #include <nil/mtl/actor_system_config.hpp>
 #include <nil/mtl/serialization/binary_deserializer.hpp>
 #include <nil/mtl/composable_behavior.hpp>
-#include <nil/mtl/stream_deserializer.hpp>
+#include <nil/mtl/serialization/stream_deserializer.hpp>
 #include <nil/mtl/typed_actor_pointer.hpp>
 #include <nil/mtl/scoped_execution_unit.hpp>
 #include <nil/mtl/typed_response_promise.hpp>

@@ -16,7 +16,7 @@
 #include <stdexcept>
 
 #include <nil/mtl/deep_to_string.hpp>
-#include <nil/mtl/deserializer.hpp>
+#include <nil/mtl/serialization/deserializer.hpp>
 #include <nil/mtl/make_type_erased_value.hpp>
 #include <nil/mtl/rtti_pair.hpp>
 #include <nil/mtl/serializer.hpp>

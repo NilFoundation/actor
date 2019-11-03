@@ -22,7 +22,7 @@
 #include <nil/mtl/group.hpp>
 #include <nil/mtl/message.hpp>
 #include <nil/mtl/serializer.hpp>
-#include <nil/mtl/deserializer.hpp>
+#include <nil/mtl/serialization/deserializer.hpp>
 #include <nil/mtl/event_based_actor.hpp>
 
 #include <nil/mtl/group_manager.hpp>

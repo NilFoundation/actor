@@ -24,7 +24,7 @@
 #include <nil/crypto3/hash/ripemd.hpp>
 
 #include <nil/mtl/config.hpp>
-#include <nil/mtl/deserializer.hpp>
+#include <nil/mtl/serialization/deserializer.hpp>
 #include <nil/mtl/detail/get_mac_addresses.hpp>
 #include <nil/mtl/detail/get_process_id.hpp>
 #include <nil/mtl/detail/get_root_uuid.hpp>

@@ -20,7 +20,7 @@
 #include <nil/mtl/serializer.hpp>
 #include <nil/mtl/actor_proxy.hpp>
 #include <nil/mtl/local_actor.hpp>
-#include <nil/mtl/deserializer.hpp>
+#include <nil/mtl/serialization/deserializer.hpp>
 #include <nil/mtl/scoped_actor.hpp>
 #include <nil/mtl/event_based_actor.hpp>
 

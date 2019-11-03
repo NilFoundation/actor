@@ -15,7 +15,7 @@
 
 #include <nil/mtl/actor_addr.hpp>
 #include <nil/mtl/actor_system.hpp>
-#include <nil/mtl/deserializer.hpp>
+#include <nil/mtl/serialization/deserializer.hpp>
 #include <nil/mtl/node_id.hpp>
 #include <nil/mtl/proxy_registry.hpp>
 #include <nil/mtl/serializer.hpp>
