@@ -24,7 +24,7 @@
 #include <nil/crypto3/hash/ripemd.hpp>
 
 #include <nil/mtl/config.hpp>
-#include <nil/mtl/deserializer.hpp>
+#include <nil/mtl/serialization/deserializer.hpp>
 #include <nil/mtl/detail/get_mac_addresses.hpp>
 #include <nil/mtl/detail/get_process_id.hpp>
 #include <nil/mtl/detail/get_root_uuid.hpp>
@@ -32,7 +32,7 @@
 #include <nil/mtl/logger.hpp>
 #include <nil/mtl/make_counted.hpp>
 #include <nil/mtl/sec.hpp>
-#include <nil/mtl/serializer.hpp>
+#include <nil/mtl/serialization/serializer.hpp>
 #include <nil/mtl/string_algorithms.hpp>
 
 using namespace nil::crypto3;

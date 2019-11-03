@@ -24,9 +24,9 @@
 #include <nil/mtl/exit_reason.hpp>
 #include <nil/mtl/actor_system.hpp>
 #include <nil/mtl/actor_ostream.hpp>
-#include <nil/mtl/binary_serializer.hpp>
+#include <nil/mtl/serialization/binary_serializer.hpp>
 #include <nil/mtl/default_attachable.hpp>
-#include <nil/mtl/binary_deserializer.hpp>
+#include <nil/mtl/serialization/binary_deserializer.hpp>
 
 namespace nil {
     namespace mtl {

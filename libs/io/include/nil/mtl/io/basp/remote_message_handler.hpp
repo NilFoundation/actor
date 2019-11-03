@@ -15,7 +15,7 @@
 
 #include <nil/mtl/actor_control_block.hpp>
 #include <nil/mtl/actor_proxy.hpp>
-#include <nil/mtl/binary_deserializer.hpp>
+#include <nil/mtl/serialization/binary_deserializer.hpp>
 #include <nil/mtl/config.hpp>
 #include <nil/mtl/detail/scope_guard.hpp>
 #include <nil/mtl/detail/sync_request_bouncer.hpp>

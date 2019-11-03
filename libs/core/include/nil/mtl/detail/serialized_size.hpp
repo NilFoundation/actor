@@ -10,7 +10,7 @@
 
 #pragma once
 
-#include <nil/mtl/serializer.hpp>
+#include <nil/mtl/serialization/serializer.hpp>
 
 namespace nil {
     namespace mtl {

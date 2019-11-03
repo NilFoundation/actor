@@ -21,7 +21,7 @@
 
 #include <nil/mtl/detail/ieee_754.hpp>
 #include <nil/mtl/detail/network_order.hpp>
-#include <nil/mtl/serializer.hpp>
+#include <nil/mtl/serialization/serializer.hpp>
 
 namespace nil {
     namespace mtl {

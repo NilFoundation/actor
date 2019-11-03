@@ -12,7 +12,7 @@
 
 #include <nil/mtl/uri.hpp>
 
-#include <nil/mtl/deserializer.hpp>
+#include <nil/mtl/serialization/deserializer.hpp>
 #include <nil/mtl/detail/append_percent_encoded.hpp>
 #include <nil/mtl/detail/fnv_hash.hpp>
 #include <nil/mtl/detail/overload.hpp>
@@ -21,7 +21,7 @@
 #include <nil/mtl/detail/uri_impl.hpp>
 #include <nil/mtl/error.hpp>
 #include <nil/mtl/make_counted.hpp>
-#include <nil/mtl/serializer.hpp>
+#include <nil/mtl/serialization/serializer.hpp>
 
 namespace nil {
     namespace mtl {

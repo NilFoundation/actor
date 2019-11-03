@@ -16,9 +16,9 @@
 #include <utility>
 #include <utility>
 
-#include <nil/mtl/serializer.hpp>
+#include <nil/mtl/serialization/serializer.hpp>
 #include <nil/mtl/actor_system.hpp>
-#include <nil/mtl/deserializer.hpp>
+#include <nil/mtl/serialization/deserializer.hpp>
 #include <nil/mtl/message_builder.hpp>
 #include <nil/mtl/message_handler.hpp>
 #include <nil/mtl/string_algorithms.hpp>

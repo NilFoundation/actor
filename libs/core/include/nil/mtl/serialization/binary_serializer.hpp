@@ -14,7 +14,7 @@
 
 #include <vector>
 
-#include <nil/mtl/serializer_impl.hpp>
+#include <nil/mtl/serialization/serializer_impl.hpp>
 
 namespace nil {
     namespace mtl {

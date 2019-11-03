@@ -17,7 +17,7 @@
 #include <vector>
 
 #include <nil/mtl/byte.hpp>
-#include <nil/mtl/deserializer.hpp>
+#include <nil/mtl/serialization/deserializer.hpp>
 #include <nil/mtl/span.hpp>
 
 namespace nil {

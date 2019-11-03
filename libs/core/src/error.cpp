@@ -14,8 +14,8 @@
 
 #include <nil/mtl/config.hpp>
 #include <nil/mtl/message.hpp>
-#include <nil/mtl/serializer.hpp>
-#include <nil/mtl/deserializer.hpp>
+#include <nil/mtl/serialization/serializer.hpp>
+#include <nil/mtl/serialization/deserializer.hpp>
 #include <nil/mtl/deep_to_string.hpp>
 
 namespace nil {

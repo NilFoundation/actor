@@ -7,8 +7,8 @@
 #include <nil/mtl/config.hpp>
 #include <nil/mtl/actor_system.hpp>
 #include <nil/mtl/actor_system_config.hpp>
-#include <nil/mtl/binary_serializer.hpp>
-#include <nil/mtl/binary_deserializer.hpp>
+#include <nil/mtl/serialization/binary_serializer.hpp>
+#include <nil/mtl/serialization/binary_deserializer.hpp>
 
 #include <nil/mtl/io/middleman.hpp>
 #include <nil/mtl/io/network/interfaces.hpp>

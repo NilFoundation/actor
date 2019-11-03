@@ -10,7 +10,7 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/binary_deserializer.hpp>
+#include <nil/mtl/serialization/binary_deserializer.hpp>
 
 #include <iomanip>
 #include <sstream>

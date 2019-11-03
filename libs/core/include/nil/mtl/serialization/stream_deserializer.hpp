@@ -22,7 +22,7 @@
 #include <string>
 #include <type_traits>
 
-#include <nil/mtl/deserializer.hpp>
+#include <nil/mtl/serialization/deserializer.hpp>
 #include <nil/mtl/detail/ieee_754.hpp>
 #include <nil/mtl/detail/network_order.hpp>
 #include <nil/mtl/logger.hpp>

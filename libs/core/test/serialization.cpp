@@ -41,21 +41,22 @@
 
 #include <nil/mtl/message.hpp>
 #include <nil/mtl/streambuf.hpp>
-#include <nil/mtl/serializer.hpp>
+#include <nil/mtl/serialization/serializer.hpp>
 #include <nil/mtl/ref_counted.hpp>
-#include <nil/mtl/deserializer.hpp>
+#include <nil/mtl/serialization/deserializer.hpp>
 #include <nil/mtl/actor_system.hpp>
 #include <nil/mtl/proxy_registry.hpp>
 #include <nil/mtl/message_handler.hpp>
 #include <nil/mtl/event_based_actor.hpp>
 #include <nil/mtl/primitive_variant.hpp>
-#include <nil/mtl/binary_serializer.hpp>
-#include <nil/mtl/binary_deserializer.hpp>
-#include <nil/mtl/stream_serializer.hpp>
-#include <nil/mtl/stream_deserializer.hpp>
 #include <nil/mtl/actor_system_config.hpp>
 #include <nil/mtl/make_type_erased_view.hpp>
 #include <nil/mtl/make_type_erased_tuple_view.hpp>
+
+#include <nil/mtl/serialization/binary_serializer.hpp>
+#include <nil/mtl/serialization/binary_deserializer.hpp>
+#include <nil/mtl/serialization/stream_serializer.hpp>
+#include <nil/mtl/serialization/stream_deserializer.hpp>
 
 #include <nil/mtl/detail/ieee_754.hpp>
 #include <nil/mtl/detail/int_list.hpp>
