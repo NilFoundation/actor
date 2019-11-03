@@ -19,7 +19,6 @@
 #include <nil/mtl/atom.hpp>
 #include <nil/mtl/config.hpp>
 #include <nil/mtl/detail/parser/chars.hpp>
-#include <nil/mtl/detail/parser/is_char.hpp>
 #include <nil/mtl/detail/parser/state.hpp>
 #include <nil/mtl/detail/scope_guard.hpp>
 #include <nil/mtl/pec.hpp>

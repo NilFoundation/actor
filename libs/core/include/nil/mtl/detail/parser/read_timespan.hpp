@@ -50,7 +50,7 @@ namespace nil {
                     timespan result;
                     auto g = make_scope_guard([&] {
                         if (ps.code <= pec::trailing_character)
-                            consumer.value(std::move(result));
+                            consumer.value(result);
                     });
                     // clang-format off
   start();
