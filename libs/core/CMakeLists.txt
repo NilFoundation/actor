@@ -38,7 +38,6 @@ set(${CURRENT_PROJECT_NAME}_SOURCES
     src/actor_registry.cpp
     src/actor_system.cpp
     src/actor_system_config.cpp
-    src/append_hex.cpp
     src/append_percent_encoded.cpp
     src/atom.cpp
     src/attachable.cpp
@@ -169,13 +168,13 @@ target_include_directories(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} PUBLI
                            $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
                            $<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>
 
-                           ${Boost_INCLUDE_DIRS}
-                           )
+                           ${Boost_INCLUDE_DIRS})
 
 target_link_libraries(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} PUBLIC
                       ${MTL_EXTRA_LDFLAGS}
 
                       crypto3::block
+                      crypto3::codec
                       crypto3::hash
 
                       ${Boost_LIBRARIES})

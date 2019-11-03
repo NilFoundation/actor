@@ -50,8 +50,7 @@ set(${CURRENT_PROJECT_NAME}_SOURCES
     src/middleman_actor.cpp
     src/publish.cpp
     src/remote_actor.cpp
-    src/session.cpp
-    )
+    src/session.cpp)
 
 add_custom_target(openssl)
 

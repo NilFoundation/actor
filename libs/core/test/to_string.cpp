@@ -24,7 +24,7 @@ BOOST_AUTO_TEST_CASE(buffer_test) {
     // Use `signed char` explicitly to make sure all compilers agree.
     std::vector<signed char> buf;
     BOOST_CHECK_EQUAL(deep_to_string(buf), "[]");
-    BOOST_CHECK_EQUAL(deep_to_string(meta::hex_formatted(), buf), "00");
+    BOOST_CHECK_EQUAL(deep_to_string(meta::hex_formatted(), buf), "");
     buf.push_back(-1);
     BOOST_CHECK_EQUAL(deep_to_string(buf), "[-1]");
     BOOST_CHECK_EQUAL(deep_to_string(meta::hex_formatted(), buf), "FF");

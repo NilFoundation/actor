@@ -45,9 +45,6 @@ knownConditionTrueFalse:core/test/optional.cpp
 // ignore warnings from any 3rd party module
 *:*/third_party/*
 
-// 6 false positives
-*:core/mtl/detail/limited_vector.hpp
-
 // `test_struct::test_value` is unused since this file tests `announce`
 unusedStructMember:io/test/uniform_type.cpp
 

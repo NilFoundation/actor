@@ -20,11 +20,10 @@ macro(define_io_test name)
                                "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>"
 
                                ${Boost_INCLUDE_DIRS})
-    if(NOT CMAKE_CXX_STANDARD)
-        set_target_properties(io_${name}_test PROPERTIES CXX_STANDARD 11)
-    elseif(${CMAKE_CXX_STANDARD} LESS 11)
-        set_target_properties(io_${name}_test PROPERTIES CXX_STANDARD 11)
-    endif()
+
+    set_target_properties(io_${name}_test PROPERTIES
+                          CXX_STANDARD 11
+                          CXX_STANDARD_REQUIRED TRUE)
 
     get_target_property(target_type Boost::unit_test_framework TYPE)
     if(target_type STREQUAL "SHARED_LIB")
@@ -41,7 +40,7 @@ list(APPEND TESTS_NAMES
      basp
      typed_remote_actor
      automatic_connection
-#     remote_actor_udp
+     #     remote_actor_udp
      receive_buffer
      unpublish
      typed_broker

@@ -12,9 +12,13 @@
 
 #include <nil/mtl/detail/append_percent_encoded.hpp>
 
+#include <nil/crypto3/codec/algorithm/encode.hpp>
+#include <nil/crypto3/codec/hex.hpp>
+
 #include <nil/mtl/config.hpp>
-#include <nil/mtl/detail/append_hex.hpp>
 #include <nil/mtl/string_view.hpp>
+
+using namespace nil::crypto3;
 
 namespace nil {
     namespace mtl {
@@ -47,10 +51,11 @@ namespace nil {
                         case '+':
                         case ',':
                         case ';':
-                        case '=':
-                            str += '%';
-                            append_hex(str, reinterpret_cast<uint8_t *>(&ch), 1);
-                            break;
+                        case '=': {
+                            std::string chenc = encode<codec::hex<>>(reinterpret_cast<uint8_t *>(&ch),
+                                                                     reinterpret_cast<uint8_t *>(&ch) + 1);
+                            str += '%' + chenc;
+                        } break;
                         default:
                             str += ch;
                     }

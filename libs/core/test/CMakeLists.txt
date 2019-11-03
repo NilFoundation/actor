@@ -19,7 +19,9 @@ macro(define_core_test name)
 
                                ${Boost_INCLUDE_DIRS})
 
-    set_target_properties(core_${name}_test PROPERTIES CXX_STANDARD 11 CXX_STANDARD_REQUIRED TRUE)
+    set_target_properties(core_${name}_test PROPERTIES
+                          CXX_STANDARD 11
+                          CXX_STANDARD_REQUIRED TRUE)
 
     get_target_property(target_type Boost::unit_test_framework TYPE)
     if(target_type STREQUAL "SHARED_LIB")

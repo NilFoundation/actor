@@ -18,16 +18,20 @@
 #include <type_traits>
 #include <vector>
 
-#include <nil/mtl/detail/append_hex.hpp>
+#include <nil/crypto3/codec/algorithm/encode.hpp>
+#include <nil/crypto3/codec/hex.hpp>
+
 #include <nil/mtl/detail/apply_args.hpp>
 #include <nil/mtl/detail/type_traits.hpp>
 #include <nil/mtl/fwd.hpp>
+
 #include <nil/mtl/meta/annotation.hpp>
 #include <nil/mtl/meta/hex_formatted.hpp>
 #include <nil/mtl/meta/omittable.hpp>
 #include <nil/mtl/meta/omittable_if_empty.hpp>
 #include <nil/mtl/meta/omittable_if_none.hpp>
 #include <nil/mtl/meta/type_name.hpp>
+
 #include <nil/mtl/none.hpp>
 #include <nil/mtl/string_view.hpp>
 #include <nil/mtl/timespan.hpp>
@@ -213,7 +217,8 @@ namespace nil {
                 template<class T, class... Ts>
                 void traverse(const meta::hex_formatted_t &, const T &x, const Ts &... xs) {
                     sep();
-                    append_hex(result_, x);
+                    std::string hex_enc = crypto3::encode<crypto3::codec::hex<>>(x);
+                    result_ += hex_enc;
                     traverse(xs...);
                 }
 
