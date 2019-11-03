@@ -21,7 +21,7 @@
 #include <nil/mtl/all.hpp>
 #include <nil/mtl/group.hpp>
 #include <nil/mtl/message.hpp>
-#include <nil/mtl/serializer.hpp>
+#include <nil/mtl/serialization/serializer.hpp>
 #include <nil/mtl/serialization/deserializer.hpp>
 #include <nil/mtl/event_based_actor.hpp>
 

@@ -19,7 +19,7 @@
 #include <nil/mtl/serialization/deserializer.hpp>
 #include <nil/mtl/make_type_erased_value.hpp>
 #include <nil/mtl/rtti_pair.hpp>
-#include <nil/mtl/serializer.hpp>
+#include <nil/mtl/serialization/serializer.hpp>
 #include <nil/mtl/type_nr.hpp>
 
 #include <nil/mtl/detail/type_list.hpp>

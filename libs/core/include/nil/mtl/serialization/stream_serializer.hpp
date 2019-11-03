@@ -24,7 +24,7 @@
 #include <nil/mtl/sec.hpp>
 #include <nil/mtl/config.hpp>
 #include <nil/mtl/streambuf.hpp>
-#include <nil/mtl/serializer.hpp>
+#include <nil/mtl/serialization/serializer.hpp>
 
 #include <nil/mtl/detail/ieee_754.hpp>
 #include <nil/mtl/detail/network_order.hpp>

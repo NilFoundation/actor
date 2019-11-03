@@ -44,7 +44,7 @@
 #include <nil/mtl/attachable.hpp>
 #include <nil/mtl/message_id.hpp>
 #include <nil/mtl/replies_to.hpp>
-#include <nil/mtl/serializer.hpp>
+#include <nil/mtl/serialization/serializer.hpp>
 #include <nil/mtl/actor_clock.hpp>
 #include <nil/mtl/actor_proxy.hpp>
 #include <nil/mtl/exit_reason.hpp>

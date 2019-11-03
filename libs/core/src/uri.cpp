@@ -21,7 +21,7 @@
 #include <nil/mtl/detail/uri_impl.hpp>
 #include <nil/mtl/error.hpp>
 #include <nil/mtl/make_counted.hpp>
-#include <nil/mtl/serializer.hpp>
+#include <nil/mtl/serialization/serializer.hpp>
 
 namespace nil {
     namespace mtl {

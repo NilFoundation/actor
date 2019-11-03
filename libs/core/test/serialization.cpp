@@ -41,7 +41,7 @@
 
 #include <nil/mtl/message.hpp>
 #include <nil/mtl/streambuf.hpp>
-#include <nil/mtl/serializer.hpp>
+#include <nil/mtl/serialization/serializer.hpp>
 #include <nil/mtl/ref_counted.hpp>
 #include <nil/mtl/serialization/deserializer.hpp>
 #include <nil/mtl/actor_system.hpp>

@@ -17,7 +17,7 @@
 
 #include <nil/mtl/actor_addr.hpp>
 #include <nil/mtl/make_actor.hpp>
-#include <nil/mtl/serializer.hpp>
+#include <nil/mtl/serialization/serializer.hpp>
 #include <nil/mtl/actor_proxy.hpp>
 #include <nil/mtl/local_actor.hpp>
 #include <nil/mtl/serialization/deserializer.hpp>

@@ -32,7 +32,7 @@
 #include <nil/mtl/logger.hpp>
 #include <nil/mtl/make_counted.hpp>
 #include <nil/mtl/sec.hpp>
-#include <nil/mtl/serializer.hpp>
+#include <nil/mtl/serialization/serializer.hpp>
 #include <nil/mtl/string_algorithms.hpp>
 
 using namespace nil::crypto3;
