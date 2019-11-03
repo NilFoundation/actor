@@ -14,7 +14,9 @@
 
 #include <boost/smart_ptr/intrusive_ptr.hpp>
 
-#include <nil/mtl/detail/append_hex.hpp>
+#include <nil/crypto3/codec/algorithm/encode.hpp>
+#include <nil/crypto3/codec/hex.hpp>
+
 #include <nil/mtl/detail/comparable.hpp>
 #include <nil/mtl/detail/type_traits.hpp>
 #include <nil/mtl/fwd.hpp>
@@ -37,10 +39,11 @@ namespace nil {
 
         template<class T>
         std::string to_string(const intrusive_ptr<T> &x) {
-            std::string result;
+            using namespace nil::crypto3;
+
             auto v = reinterpret_cast<uintptr_t>(x.get());
-            detail::append_hex(result, reinterpret_cast<uint8_t *>(&v), sizeof(v));
-            return result;
+            auto ptr = reinterpret_cast<uint8_t *>(&v);
+            return encode<codec::hex<>>(ptr, ptr + sizeof(v));
         }
 
     }    // namespace mtl

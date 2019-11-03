@@ -82,14 +82,6 @@ public:
     /// Callback for triggering all nodes when simulating a network of MTL nodes.
     run_all_nodes_fun run_all_nodes;
 
-    // -- deprecated functions ---------------------------------------------------
-
-    void exec_all()
-
-        MTL_DEPRECATED_MSG("use run() instead") {
-        this->run();
-    }
-
     // -- overriding member functions --------------------------------------------
 
     bool consume_message() override {

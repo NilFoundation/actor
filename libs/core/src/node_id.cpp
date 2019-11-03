@@ -17,6 +17,9 @@
 #include <iterator>
 #include <sstream>
 
+#include <nil/crypto3/codec/algorithm/encode.hpp>
+#include <nil/crypto3/codec/hex.hpp>
+
 #include <nil/crypto3/hash/algorithm/hash.hpp>
 #include <nil/crypto3/hash/ripemd.hpp>
 
@@ -107,9 +110,8 @@ namespace nil {
                 dst += "invalid-node";
                 return;
             }
-            detail::append_hex(dst, host_);
-            dst += '#';
-            dst += std::to_string(pid_);
+            std::string host_hex = crypto3::encode<crypto3::codec::hex<>>(host_);
+            dst += host_hex + '#' + std::to_string(pid_);
         }
 
         error node_id::default_data::serialize(serializer &sink) const {

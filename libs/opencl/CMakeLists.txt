@@ -23,11 +23,13 @@ set(${CURRENT_PROJECT_NAME}_SOURCES
     src/manager.cpp
     src/opencl_err.cpp
     src/platform.cpp
-    src/program.cpp
-    )
+    src/program.cpp)
 
-add_library(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} ${${CURRENT_PROJECT_NAME}_HEADERS}
-            ${${CURRENT_PROJECT_NAME}_SOURCES} ${OpenCL_INCLUDE_DIRS})
+add_library(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME}
+            ${${CURRENT_PROJECT_NAME}_HEADERS}
+            ${${CURRENT_PROJECT_NAME}_SOURCES}
+            ${OpenCL_INCLUDE_DIRS})
+
 set_target_properties(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} PROPERTIES
                       LINKER_LANGUAGE CXX
                       EXPORT_NAME ${CURRENT_PROJECT_NAME}

@@ -12,7 +12,6 @@
 
 #include <nil/mtl/ipv6_address.hpp>
 
-#include <nil/mtl/detail/append_hex.hpp>
 #include <nil/mtl/detail/network_order.hpp>
 #include <nil/mtl/detail/parser/read_ipv6_address.hpp>
 #include <nil/mtl/error.hpp>

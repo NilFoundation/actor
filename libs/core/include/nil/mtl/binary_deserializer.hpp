@@ -66,12 +66,6 @@ namespace nil {
 
             // -- properties -------------------------------------------------------------
 
-            /// Returns the current read position.
-            const char *current() const MTL_DEPRECATED_MSG("use remaining() instead");
-
-            /// Returns the past-the-end iterator.
-            const char *end() const MTL_DEPRECATED_MSG("use remaining() instead");
-
             /// Returns how many bytes are still available to read.
             size_t remaining() const noexcept {
                 return static_cast<size_t>(end_ - current_);

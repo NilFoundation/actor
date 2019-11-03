@@ -12,7 +12,6 @@
 
 #pragma once
 
-#include <nil/mtl/detail/append_hex.hpp>
 #include <nil/mtl/fwd.hpp>
 
 namespace nil {

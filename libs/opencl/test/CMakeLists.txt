@@ -25,11 +25,11 @@ target_include_directories(opencl_test PRIVATE
 
                            ${OpenCL_INCLUDE_DIRS}
                            ${Boost_INCLUDE_DIRS})
-if(NOT CMAKE_CXX_STANDARD)
-    set_target_properties(opencl_test PROPERTIES CXX_STANDARD 11)
-elseif(${CMAKE_CXX_STANDARD} LESS 11)
-    set_target_properties(opencl_test PROPERTIES CXX_STANDARD 11)
-endif()
+
+
+set_target_properties(opencl_test PROPERTIES
+                      CXX_STANDARD 11
+                      CXX_STANDARD_REQUIRED TRUE)
 
 get_target_property(target_type Boost::unit_test_framework TYPE)
 if(target_type STREQUAL "SHARED_LIB")

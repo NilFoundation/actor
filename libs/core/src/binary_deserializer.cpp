@@ -104,14 +104,6 @@ namespace nil {
             return none;
         }
 
-        const char *binary_deserializer::current() const {
-            return reinterpret_cast<const char *>(current_);
-        }
-
-        const char *binary_deserializer::end() const {
-            return reinterpret_cast<const char *>(end_);
-        }
-
         void binary_deserializer::skip(size_t num_bytes) {
             MTL_ASSERT(num_bytes <= remaining());
             current_ += num_bytes;
@@ -168,7 +160,7 @@ namespace nil {
             std::string tmp;
             if (auto err = apply(tmp))
                 return err;
-            std::istringstream iss {std::move(tmp)};
+            std::istringstream iss {tmp};
             iss >> x;
             return none;
         }
