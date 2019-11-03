@@ -1,14 +1,6 @@
-# MTL: C++ Actor Framework
+# Nil Foundation's MultiThreading Library: C++ Actor Library
 
-MTL is an open source C++ actor model implementation featuring lightweight & fast actor implementations, pattern matching for messages, network transparent messaging, and more. 
-
-## Srsly? Why not to use CAF?
-
-Changes consist of several points:
-
-* Replacement of pseudo-reflection mechanism to versioning-resistant serialization.
-* Actor network communication protocol transport level serialization parametrisation.
-* Reduction of self-maintained code with extensive Boost libraries usage.
+MTL is an open source C++ actor model implementation featuring lightweight & fast actor implementations, pattern matching for messages, network transparent messaging, and more.
 
 ## Building
 
@@ -16,7 +8,7 @@ MTL uses CMake [CMake](http://www.cmake.org/) build system and follows standard 
 
 ```
 git clone --recurse-submodules https://github.com/nilfoundation/mtl.git mtl
-cd mtl && mkdir build && cd build && cmake ..
+cd mtl && mkdir build && cd build && cmake .. && make -j4 all
 ```
 
 MTL also can be included as CMake submodule or added as dependency to other
