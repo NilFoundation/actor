@@ -17,6 +17,7 @@
 #include <nil/mtl/io/basp/header.hpp>
 #include <nil/mtl/io/basp/instance.hpp>
 #include <nil/mtl/io/basp/message_type.hpp>
+#include <nil/mtl/io/basp/version.hpp>
 #include <nil/mtl/io/basp/routing_table.hpp>
 
 /// @defgroup BASP Binary Actor Sytem Protocol
