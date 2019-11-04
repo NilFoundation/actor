@@ -22,6 +22,8 @@
 
 #include <nil/mtl/io/basp/message_type.hpp>
 
+#include <nil/marshalling/marshalling.hpp>
+
 namespace nil {
     namespace mtl {
         namespace io {

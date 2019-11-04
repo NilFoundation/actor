@@ -11,21 +11,18 @@
 
 #pragma once
 
-#include <cstdint>
+#include <nil/marshalling/marshalling.hpp>
 
 namespace nil {
     namespace mtl {
         namespace io {
             namespace basp {
-
                 /// @addtogroup BASP
 
-                /// The current BASP version. Note: BASP is not backwards compatible.
-                constexpr uint64_t version = 3;
-
+                /// Protocol endianness
+                typedef marshalling::option::little_endian protocol_endian;
                 /// @}
-
-            }    // namespace basp
-        }        // namespace io
-    }            // namespace mtl
+            }
+        }    // namespace io
+    }        // namespace mtl
 }

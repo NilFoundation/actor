@@ -27,7 +27,7 @@
 #include <nil/mtl/io/system_messages.hpp>
 #include <nil/mtl/io/datagram_handle.hpp>
 
-#include <nil/mtl/io/basp/all.hpp>
+#include <nil/mtl/io/basp/protocol.hpp>
 
 #include <nil/mtl/io/network/datagram_manager.hpp>
 #include <nil/mtl/io/network/default_multiplexer.hpp>

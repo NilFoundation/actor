@@ -21,7 +21,7 @@ namespace nil {
     namespace mtl {
         namespace io {
 
-            /// Tries to open a port for other CAF instances to connect to.
+            /// Tries to open a port for other MTL instances to connect to.
             /// @experimental
             inline expected<uint16_t> open(actor_system &sys, uint16_t port, const char *in = nullptr,
                                            bool reuse = false) {

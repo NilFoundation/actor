@@ -39,7 +39,7 @@ namespace nil {
             /// @defgroup Broker Actor-based Network Abstraction
             ///
             /// Brokers provide an actor-based abstraction for low-level network IO.
-            /// The central component in the network abstraction of CAF is the
+            /// The central component in the network abstraction of MTL is the
             /// `middleman`. It connects any number of brokers to a `multiplexer`,
             /// which implements a low-level IO event loop.
             ///

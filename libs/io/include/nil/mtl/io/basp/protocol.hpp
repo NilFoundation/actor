@@ -11,14 +11,7 @@
 
 #pragma once
 
-#include <nil/mtl/io/basp/buffer_type.hpp>
-#include <nil/mtl/io/basp/connection_state.hpp>
-#include <nil/mtl/io/basp/endpoint_context.hpp>
-#include <nil/mtl/io/basp/header.hpp>
-#include <nil/mtl/io/basp/instance.hpp>
-#include <nil/mtl/io/basp/message_type.hpp>
-#include <nil/mtl/io/basp/routing_table.hpp>
-#include <nil/mtl/io/basp/version.hpp>
+#include <nil/mtl/io/basp/endianness.hpp>
 
 /// @defgroup BASP Binary Actor Sytem Protocol
 ///
@@ -26,23 +19,23 @@
 ///
 /// The "Binary Actor Sytem Protocol" (BASP) is **not** a network protocol.
 /// It is a specification for the "Remote Method Invocation" (RMI) interface
-/// used by distributed instances of CAF. The purpose of BASP is unify the
+/// used by distributed instances of MTL. The purpose of BASP is unify the
 /// structure of RMI calls in order to simplify processing and implementation.
 /// Hence, BASP is independent of any underlying network technology,
 /// and assumes a reliable communication channel.
 ///
 ///
-/// The RMI interface of CAF enables network-transparent monitoring and linking
+/// The RMI interface of MTL enables network-transparent monitoring and linking
 /// as well as global message dispatching to actors running on different nodes.
 ///
 /// ![](basp_overview.png)
 ///
 /// The figure above illustrates the phyiscal as well as the logical view
-/// of a distributed CAF application. Note that the actors used for the
+/// of a distributed MTL application. Note that the actors used for the
 /// BASP communication ("BASP Brokers") are not part of the logical system
 /// view and are in fact not visible to other actors. A BASP Broker creates
 /// proxy actors that represent actors running on different nodes. It is worth
-/// mentioning that two instances of CAF running on the same physical machine
+/// mentioning that two instances of MTL running on the same physical machine
 /// are considered two different nodes in BASP.
 ///
 /// BASP has two objectives:
@@ -77,11 +70,11 @@
 /// # Node IDs
 ///
 /// The ID of a node consists of a 120 bit hash and the process ID. Note that
-/// we use "node" as a synonym for "CAF instance". The hash is generated from
+/// we use "node" as a synonym for "MTL instance". The hash is generated from
 /// "low-level" characteristics of a machine such as the UUID of the root
 /// file system and available MAC addresses. The only purpose of the node ID
 /// is to generate a network-wide unique identifier. By adding the process ID,
-/// CAF disambiguates multiple instances running on the same phyisical machine.
+/// MTL disambiguates multiple instances running on the same phyisical machine.
 ///
 /// # Header Format
 ///
@@ -134,3 +127,38 @@
 /// of {@link message_type} below.
 ///
 /// ![](basp_sequence.png)
+
+namespace nil {
+    namespace mtl {
+        namespace io {
+            namespace basp {
+
+                /// @addtogroup BASP
+
+                /*!
+                 * @brief Field containing current BASP version information.
+                 * @note BASP is not backwards compatible
+                 */
+                typedef marshalling::field::int_value<marshalling::field_type<protocol_endian>, std::uint64_t,
+                                                      marshalling::option::default_num_value<3>,
+                                                      marshalling::option::valid_num_value_range<0, 3>>
+                    version_field;
+
+                /// @brief Extra transport fields that every message object will contain
+                typedef std::tuple<version_field> extra_transport_fields;
+
+                /// The current BASP version. Note: BASP is not backwards compatible.
+                constexpr uint64_t version = 3;
+
+                /// @}
+            }    // namespace basp
+        }        // namespace io
+    }            // namespace mtl
+}    // namespace nil
+
+#include <nil/mtl/io/basp/connection_state.hpp>
+#include <nil/mtl/io/basp/endpoint_context.hpp>
+#include <nil/mtl/io/basp/header.hpp>
+#include <nil/mtl/io/basp/instance.hpp>
+#include <nil/mtl/io/basp/message_type.hpp>
+#include <nil/mtl/io/basp/routing_table.hpp>

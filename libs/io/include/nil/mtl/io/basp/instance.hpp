@@ -80,7 +80,7 @@ namespace nil {
                         /// Called if a heartbeat was received from `nid`
                         virtual void handle_heartbeat() = 0;
 
-                        /// Returns the current CAF scheduler context.
+                        /// Returns the current MTL scheduler context.
                         virtual execution_unit *current_execution_unit() = 0;
 
                         /// Returns the actor namespace associated to this BASP protocol instance.

@@ -27,4 +27,4 @@
 #include <nil/mtl/io/network/multiplexer.hpp>
 #include <nil/mtl/io/network/test_multiplexer.hpp>
 
-#include <nil/mtl/io/basp/all.hpp>
+#include <nil/mtl/io/basp/protocol.hpp>
