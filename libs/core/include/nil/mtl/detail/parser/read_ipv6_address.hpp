@@ -62,7 +62,7 @@ namespace nil {
                     // Computes the result on success.
                     auto g = nil::mtl::detail::make_scope_guard([&] {
                         if (ps.code <= pec::trailing_character)
-                            consumer.value(res);
+                            consumer.value(std::move(res));
                     });
                     start();
                     state(init) {transition(read, hexadecimal_chars, rd_hex(ch), pec::integer_overflow)} term_state(
@@ -172,7 +172,7 @@ namespace nil {
                             for (size_t i = 0; i < ipv6_address::num_bytes; ++i)
                                 bytes[i] = prefix[i] | suffix[i];
                             ipv6_address result {bytes};
-                            consumer.value(result);
+                            consumer.value(std::move(result));
                         }
                     });
                     // We need to parse 2-byte hexadecimal numbers (x) and also keep track of

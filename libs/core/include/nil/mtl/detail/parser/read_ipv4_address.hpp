@@ -49,7 +49,7 @@ namespace nil {
                     // Computes the result on success.
                     auto g = nil::mtl::detail::make_scope_guard([&] {
                         if (ps.code <= pec::trailing_character)
-                            consumer.value(res);
+                            consumer.value(std::move(res));
                     });
                     start();
                     state(init) {transition(read, decimal_chars, rd_decimal(ch), pec::integer_overflow)} term_state(
@@ -64,7 +64,7 @@ namespace nil {
                     auto g = make_scope_guard([&] {
                         if (ps.code <= pec::trailing_character) {
                             ipv4_address result {f.bytes};
-                            consumer.value(result);
+                            consumer.value(std::move(result));
                         }
                     });
                     // clang-format off

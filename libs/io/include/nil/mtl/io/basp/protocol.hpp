@@ -12,6 +12,12 @@
 #pragma once
 
 #include <nil/mtl/io/basp/endianness.hpp>
+#include <nil/mtl/io/basp/connection_state.hpp>
+#include <nil/mtl/io/basp/endpoint_context.hpp>
+#include <nil/mtl/io/basp/header.hpp>
+#include <nil/mtl/io/basp/instance.hpp>
+#include <nil/mtl/io/basp/message_type.hpp>
+#include <nil/mtl/io/basp/routing_table.hpp>
 
 /// @defgroup BASP Binary Actor Sytem Protocol
 ///
@@ -127,38 +133,3 @@
 /// of {@link message_type} below.
 ///
 /// ![](basp_sequence.png)
-
-namespace nil {
-    namespace mtl {
-        namespace io {
-            namespace basp {
-
-                /// @addtogroup BASP
-
-                /*!
-                 * @brief Field containing current BASP version information.
-                 * @note BASP is not backwards compatible
-                 */
-                typedef marshalling::field::int_value<marshalling::field_type<protocol_endian>, std::uint64_t,
-                                                      marshalling::option::default_num_value<3>,
-                                                      marshalling::option::valid_num_value_range<0, 3>>
-                    version_field;
-
-                /// @brief Extra transport fields that every message object will contain
-                typedef std::tuple<version_field> extra_transport_fields;
-
-                /// The current BASP version. Note: BASP is not backwards compatible.
-                constexpr uint64_t version = 3;
-
-                /// @}
-            }    // namespace basp
-        }        // namespace io
-    }            // namespace mtl
-}    // namespace nil
-
-#include <nil/mtl/io/basp/connection_state.hpp>
-#include <nil/mtl/io/basp/endpoint_context.hpp>
-#include <nil/mtl/io/basp/header.hpp>
-#include <nil/mtl/io/basp/instance.hpp>
-#include <nil/mtl/io/basp/message_type.hpp>
-#include <nil/mtl/io/basp/routing_table.hpp>
