@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <nil/mtl/io/basp/endianness.hpp>
+#include <nil/mtl/io/basp/messages/fields/endian.hpp>
 
 namespace nil {
     namespace mtl {
@@ -34,8 +34,7 @@ namespace nil {
 
                 /// @relates connection_state
                 using connection_state_field =
-                    nil::marshalling::field::enum_value<nil::marshalling::field_type<protocol_endian>,
-                                                        connection_state>;
+                    marshalling::field::enum_value<marshalling::field_type<protocol_endian>, connection_state>;
 
                 /// @relates connection_state
                 inline std::string to_string(connection_state x) {

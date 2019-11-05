@@ -12,6 +12,11 @@
 #pragma once
 
 #include <nil/mtl/io/basp/messages/fields/endian.hpp>
+#include <nil/mtl/io/basp/messages/fields/empty.hpp>
+#include <nil/mtl/io/basp/messages/fields/version.hpp>
+
+#include <nil/mtl/io/basp/header.hpp>
+#include <nil/mtl/io/basp/message_type.hpp>
 
 namespace nil {
     namespace mtl {
@@ -19,23 +24,16 @@ namespace nil {
             namespace basp {
 
                 /// @addtogroup BASP
-
-                /// The current BASP version. Note: BASP is not backwards compatible.
-                constexpr static const uint64_t version = 3;
-
-                /*!
-                 * @brief Field containing current BASP version information.
-                 * @note BASP is not backwards compatible
-                 */
-                typedef marshalling::field::int_value<marshalling::field_type<protocol_endian>, std::uint64_t,
-                                                      marshalling::option::default_num_value<version>,
-                                                      marshalling::option::valid_num_value_range<0, version>>
-                    version_field;
-
-                /// @brief Extra transport fields that every message object will contain
-                typedef std::tuple<version_field> extra_transport_fields;
-
+                template<typename TBase>
+                class server_handshake
+                    : public marshalling::message_base<TBase, header_fields<TBase>, message_type_field<TBase>,
+                                                       empty_word_field<TBase>, empty_byte_field<TBase>,
+                                                       payload_len_field<TBase>, version_field<TBase>,
+                                                       empty_qword_field<TBase>, empty_qword_field<TBase>> {
+                public:
+                };
                 /// @}
+
             }    // namespace basp
         }        // namespace io
     }            // namespace mtl

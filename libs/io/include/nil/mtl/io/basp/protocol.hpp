@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <nil/mtl/io/basp/endianness.hpp>
+#include <nil/mtl/io/basp/messages/fields/endian.hpp>
 #include <nil/mtl/io/basp/connection_state.hpp>
 #include <nil/mtl/io/basp/endpoint_context.hpp>
 #include <nil/mtl/io/basp/header.hpp>
@@ -19,6 +19,14 @@
 #include <nil/mtl/io/basp/message_type.hpp>
 #include <nil/mtl/io/basp/version.hpp>
 #include <nil/mtl/io/basp/routing_table.hpp>
+
+#include <nil/mtl/io/basp/messages/server_handshake.hpp>
+#include <nil/mtl/io/basp/messages/client_handshake.hpp>
+#include <nil/mtl/io/basp/messages/direct_message.hpp>
+#include <nil/mtl/io/basp/messages/down_message.hpp>
+#include <nil/mtl/io/basp/messages/heartbeat.hpp>
+#include <nil/mtl/io/basp/messages/monitor_message.hpp>
+#include <nil/mtl/io/basp/messages/routed_message.hpp>
 
 /// @defgroup BASP Binary Actor Sytem Protocol
 ///

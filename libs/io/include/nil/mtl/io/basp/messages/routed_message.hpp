@@ -12,6 +12,14 @@
 #pragma once
 
 #include <nil/mtl/io/basp/messages/fields/endian.hpp>
+#include <nil/mtl/io/basp/messages/fields/empty.hpp>
+#include <nil/mtl/io/basp/messages/fields/version.hpp>
+#include <nil/mtl/io/basp/messages/fields/message_id.hpp>
+#include <nil/mtl/io/basp/messages/fields/payload_len.hpp>
+#include <nil/mtl/io/basp/messages/fields/actor.hpp>
+#include <nil/mtl/io/basp/messages/fields/header.hpp>
+
+#include <nil/mtl/io/basp/message_type.hpp>
 
 namespace nil {
     namespace mtl {
@@ -19,23 +27,16 @@ namespace nil {
             namespace basp {
 
                 /// @addtogroup BASP
-
-                /// The current BASP version. Note: BASP is not backwards compatible.
-                constexpr static const uint64_t version = 3;
-
-                /*!
-                 * @brief Field containing current BASP version information.
-                 * @note BASP is not backwards compatible
-                 */
-                typedef marshalling::field::int_value<marshalling::field_type<protocol_endian>, std::uint64_t,
-                                                      marshalling::option::default_num_value<version>,
-                                                      marshalling::option::valid_num_value_range<0, version>>
-                    version_field;
-
-                /// @brief Extra transport fields that every message object will contain
-                typedef std::tuple<version_field> extra_transport_fields;
-
+                template<typename TBase>
+                class routed_messsage
+                    : public marshalling::message_base<
+                          TBase, header_fields<TBase>, message_type_field<TBase>, empty_word_field<TBase>,
+                          marshalling::field::int_value<TBase, std::uint8_t>, payload_len_field<TBase>,
+                          message_id_field<TBase>, actor_id_field<TBase>, dflt_actor_id_field<TBase>> {
+                public:
+                };
                 /// @}
+
             }    // namespace basp
         }        // namespace io
     }            // namespace mtl

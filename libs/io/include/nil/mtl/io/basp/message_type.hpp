@@ -14,7 +14,7 @@
 #include <string>
 #include <cstdint>
 
-#include <nil/mtl/io/basp/endianness.hpp>
+#include <nil/mtl/io/basp/messages/fields/endian.hpp>
 
 namespace nil {
     namespace mtl {
@@ -72,8 +72,8 @@ namespace nil {
                 };
 
                 /// @relates message_type
-                using message_type_field =
-                    marshalling::field::enum_value<marshalling::field_type<protocol_endian>, message_type>;
+                template<typename FieldBaseType>
+                using message_type_field = marshalling::field::enum_value<FieldBaseType, message_type>;
 
                 /// @relates message_type
                 std::string to_string(message_type);

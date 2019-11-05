@@ -11,7 +11,9 @@
 
 #pragma once
 
-#include <nil/mtl/io/basp/messages/fields/endian.hpp>
+#include <nil/mtl/io/basp/version.hpp>
+
+#include <nil/marshalling/marshalling.hpp>
 
 namespace nil {
     namespace mtl {
@@ -20,20 +22,15 @@ namespace nil {
 
                 /// @addtogroup BASP
 
-                /// The current BASP version. Note: BASP is not backwards compatible.
-                constexpr static const uint64_t version = 3;
-
                 /*!
                  * @brief Field containing current BASP version information.
                  * @note BASP is not backwards compatible
                  */
-                typedef marshalling::field::int_value<marshalling::field_type<protocol_endian>, std::uint64_t,
-                                                      marshalling::option::default_num_value<version>,
-                                                      marshalling::option::valid_num_value_range<0, version>>
-                    version_field;
-
-                /// @brief Extra transport fields that every message object will contain
-                typedef std::tuple<version_field> extra_transport_fields;
+                template<typename TFieldBase>
+                using version_field =
+                    marshalling::field::int_value<TFieldBase, std::uint64_t,
+                                                  marshalling::option::default_num_value<version>,
+                                                  marshalling::option::valid_num_value_range<0, version>>;
 
                 /// @}
             }    // namespace basp
