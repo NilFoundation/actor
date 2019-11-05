@@ -11,15 +11,16 @@
 
 #pragma once
 
+#include <nil/mtl/io/basp/version.hpp>
+
+#include <nil/marshalling/marshalling.hpp>
+
 namespace nil {
     namespace mtl {
         namespace io {
             namespace basp {
 
                 /// @addtogroup BASP
-
-                /// The current BASP version. Note: BASP is not backwards compatible.
-                constexpr static const uint64_t version = 3;
 
                 /// @}
             }    // namespace basp

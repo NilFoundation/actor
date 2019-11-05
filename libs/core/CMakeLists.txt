@@ -26,7 +26,7 @@ set(${CURRENT_PROJECT_NAME}_SOURCES
     src/abstract_group.cpp
     src/abstract_worker.cpp
     src/abstract_worker_hub.cpp
-    src/actor.cpp
+    src/actor_id.cpp
     src/actor_addr.cpp
     src/actor_clock.cpp
     src/actor_companion.cpp
