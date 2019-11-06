@@ -17,9 +17,8 @@
 #include <nil/mtl/io/basp/messages/fields/message_id.hpp>
 #include <nil/mtl/io/basp/messages/fields/payload_len.hpp>
 #include <nil/mtl/io/basp/messages/fields/actor_id.hpp>
-
-#include <nil/mtl/io/basp/header.hpp>
-#include <nil/mtl/io/basp/message_type.hpp>
+#include <nil/mtl/io/basp/messages/fields/message_type.hpp>
+#include <nil/mtl/io/basp/messages/fields/header.hpp>
 
 namespace nil {
     namespace mtl {

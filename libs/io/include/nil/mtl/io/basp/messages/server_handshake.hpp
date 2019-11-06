@@ -14,9 +14,8 @@
 #include <nil/mtl/io/basp/messages/fields/endian.hpp>
 #include <nil/mtl/io/basp/messages/fields/empty.hpp>
 #include <nil/mtl/io/basp/messages/fields/version.hpp>
-
-#include <nil/mtl/io/basp/header.hpp>
-#include <nil/mtl/io/basp/message_type.hpp>
+#include <nil/mtl/io/basp/messages/fields/message_type.hpp>
+#include <nil/mtl/io/basp/messages/fields/header.hpp>
 
 namespace nil {
     namespace mtl {

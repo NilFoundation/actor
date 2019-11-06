@@ -12,7 +12,7 @@
 #pragma once
 
 #include <nil/mtl/io/basp/messages/fields/endian.hpp>
-#include <nil/mtl/io/basp/message_type.hpp>
+#include <nil/mtl/io/basp/messages/fields/message_type.hpp>
 
 namespace nil {
     namespace mtl {

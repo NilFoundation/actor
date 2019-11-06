@@ -11,8 +11,6 @@
 
 #pragma once
 
-#include <nil/mtl/io/basp/version.hpp>
-
 #include <nil/marshalling/marshalling.hpp>
 
 namespace nil {
@@ -21,7 +19,8 @@ namespace nil {
             namespace basp {
 
                 /// @addtogroup BASP
-
+                template<typename FieldBaseType>
+                using payload_len_field = marshalling::field::int_value<FieldBaseType, std::uint32_t>;
                 /// @}
             }    // namespace basp
         }        // namespace io

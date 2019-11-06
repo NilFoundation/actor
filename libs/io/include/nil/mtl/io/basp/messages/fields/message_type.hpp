@@ -11,26 +11,20 @@
 
 #pragma once
 
-#include <nil/mtl/io/basp/messages/fields/endian.hpp>
-#include <nil/mtl/io/basp/messages/fields/message_type.hpp>
+#include <nil/marshalling/marshalling.hpp>
 
 namespace nil {
     namespace mtl {
         namespace io {
             namespace basp {
-
                 /// @addtogroup BASP
-                template<typename TBase>
-                class heartbeat
-                    : public marshalling::message_base<TBase, header_fields<TBase>, message_type_field<TBase>,
-                                                       empty_word_field<TBase>, empty_byte_field<TBase>,
-                                                       empty_dword_field<TBase>, empty_qword_field<TBase>,
-                                                       empty_qword_field<TBase>, empty_qword_field<TBase>> {
-                public:
-                };
-                /// @}
 
+                /// @relates message_type
+                template<typename FieldBaseType>
+                using message_type_field = marshalling::field::enum_value<FieldBaseType, message_type>;
+
+                /// @}
             }    // namespace basp
         }        // namespace io
     }            // namespace mtl
-}    // namespace nil
+}

@@ -14,8 +14,6 @@
 #include <string>
 #include <cstdint>
 
-#include <nil/mtl/io/basp/messages/fields/endian.hpp>
-
 namespace nil {
     namespace mtl {
         namespace io {
@@ -70,10 +68,6 @@ namespace nil {
                     /// ![](heartbeat.png)
                     heartbeat = 0x06,
                 };
-
-                /// @relates message_type
-                template<typename FieldBaseType>
-                using message_type_field = marshalling::field::enum_value<FieldBaseType, message_type>;
 
                 /// @relates message_type
                 std::string to_string(message_type);
