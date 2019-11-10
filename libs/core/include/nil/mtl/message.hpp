@@ -41,12 +41,6 @@ namespace nil {
         /// tuple with elements of any type.
         class message : public type_erased_tuple {
         public:
-            // -- nested types -----------------------------------------------------------
-
-            struct cli_arg;
-
-            struct cli_res;
-
             // -- member types -----------------------------------------------------------
 
             /// Raw pointer to content.
@@ -54,9 +48,6 @@ namespace nil {
 
             /// Copy-on-write pointer to content.
             using data_ptr = detail::message_data::cow_ptr;
-
-            /// Function object for generating CLI argument help text.
-            using help_factory = std::function<std::string(const std::vector<cli_arg> &)>;
 
             // -- constructors, destructors, and assignment operators --------------------
 
@@ -177,46 +168,6 @@ namespace nil {
             /// iterates a message only once, from left to right.
             message extract(message_handler handler) const;
 
-            /// A simplistic interface for using `extract` to parse command line options.
-            /// Usage example:
-            ///
-            /// ~~~
-            /// int main(int argc, char** argv) {
-            ///   uint16_t port;
-            ///   string host = "localhost";
-            ///   auto res = message_builder(argv + 1, argv + argc).extract_opts({
-            ///     {"port,p", "set port", port},
-            ///     {"host,H", "set host (default: localhost)", host},
-            ///     {"verbose,v", "enable verbose mode"}
-            ///   });
-            ///   if (!res.error.empty()) {
-            ///     cerr << res.error << endl;
-            ///     return 1;
-            ///   }
-            ///   if (res.opts.count("help") > 0) {
-            ///     // CLI arguments contained "-h", "--help", or "-?" (builtin);
-            ///     cout << res.helptext << endl;
-            ///     return 0;
-            ///   }
-            ///   if (!res.remainder.empty()) {
-            ///     // ... extract did not consume all CLI arguments ...
-            ///   }
-            ///   if (res.opts.count("verbose") > 0) {
-            ///     // ... enable verbose mode ...
-            ///   }
-            ///   // ...
-            /// }
-            /// ~~~
-            /// @param xs List of argument descriptors.
-            /// @param f Optional factory function to generate help text
-            ///          (overrides the default generator).
-            /// @param no_help Suppress generation of default-generated help option.
-            /// @returns A struct containing remainder
-            ///          (i.e. unmatched elements), a set containing the names of all
-            ///          used arguments, and the generated help text.
-            /// @throws std::invalid_argument if no name or more than one long name is set
-            cli_res extract_opts(std::vector<cli_arg> xs, const help_factory &f = nullptr, bool no_help = false) const;
-
             // -- inline observers -------------------------------------------------------
 
             /// Returns a const pointer to the element at position `p`.
@@ -288,99 +239,6 @@ namespace nil {
             // -- member functions -------------------------------------------------------
 
             data_ptr vals_;
-        };
-
-        // -- nested types -------------------------------------------------------------
-
-        /// Stores the result of `message::extract_opts`.
-        struct message::cli_res {
-            /// Stores the remaining (unmatched) arguments.
-            message remainder;
-            /// Stores the names of all active options.
-            std::set<std::string> opts;
-            /// Stores the automatically generated help text.
-            std::string helptext;
-            /// Stores errors during option parsing.
-            std::string error;
-        };
-
-        /// Stores the name of a command line option ("<long name>[,<short name>]")
-        /// along with a description and a callback.
-        struct message::cli_arg {
-            /// Returns `true` on a match, `false` otherwise.
-            using consumer = std::function<bool(const std::string &)>;
-
-            /// Full name of this CLI argument using format "<long name>[,<short name>]"
-            std::string name;
-
-            /// Desciption of this CLI argument for the auto-generated help text.
-            std::string text;
-
-            /// Auto-generated helptext for this item.
-            std::string helptext;
-
-            /// Evaluates option arguments.
-            consumer fun;
-
-            /// Set to true for zero-argument options.
-            bool *flag;
-
-            /// Creates a CLI argument without data.
-            cli_arg(std::string nstr, std::string tstr);
-
-            /// Creates a CLI flag option. The `flag` is set to `true` if the option
-            /// was set, otherwise it is `false`.
-            cli_arg(std::string nstr, std::string tstr, bool &arg);
-
-            /// Creates a CLI argument storing its matched argument in `dest`.
-            cli_arg(std::string nstr, std::string tstr, atom_value &arg);
-
-            /// Creates a CLI argument storing its matched argument in `dest`.
-            cli_arg(std::string nstr, std::string tstr, timespan &arg);
-
-            /// Creates a CLI argument storing its matched argument in `dest`.
-            cli_arg(std::string nstr, std::string tstr, std::string &arg);
-
-            /// Creates a CLI argument appending matched arguments to `dest`.
-            cli_arg(std::string nstr, std::string tstr, std::vector<std::string> &arg);
-
-            /// Creates a CLI argument using the function object `f`.
-            cli_arg(std::string nstr, std::string tstr, consumer f);
-
-            /// Creates a CLI argument for converting from strings,
-            /// storing its matched argument in `dest`.
-            template<class T>
-            cli_arg(std::string nstr, std::string tstr, T &arg) :
-                name(std::move(nstr)), text(std::move(tstr)), flag(nullptr) {
-                fun = [&arg](const std::string &str) -> bool {
-                    T x;
-                    // TODO: using this stream is a workaround for the missing
-                    //       from_string<T>() interface and has downsides such as
-                    //       not performing overflow/underflow checks etc.
-                    std::istringstream iss {str};
-                    if (iss >> x) {
-                        arg = x;
-                        return true;
-                    }
-                    return false;
-                };
-            }
-
-            /// Creates a CLI argument for converting from strings,
-            /// appending matched arguments to `dest`.
-            template<class T>
-            cli_arg(std::string nstr, std::string tstr, std::vector<T> &arg) :
-                name(std::move(nstr)), text(std::move(tstr)), flag(nullptr) {
-                fun = [&arg](const std::string &str) -> bool {
-                    T x;
-                    std::istringstream iss {str};
-                    if (iss >> x) {
-                        arg.emplace_back(std::move(x));
-                        return true;
-                    }
-                    return false;
-                };
-            }
         };
 
         // -- related non-members ------------------------------------------------------

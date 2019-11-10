@@ -16,7 +16,7 @@ namespace nil {
     namespace mtl {
         namespace detail {
 
-            /// Sets the name thread shown by the OS. Not supported on all plattforms
+            /// Sets the name thread shown by the OS. Not supported on all platforms
             /// (no-op on Windows).
             void set_thread_name(const char *name);
 

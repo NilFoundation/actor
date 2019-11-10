@@ -82,6 +82,5 @@ namespace nil {
             // channel-related flags.
             std::atomic<int> flags_;
         };
-
     }    // namespace mtl
 }    // namespace nil

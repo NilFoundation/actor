@@ -37,23 +37,3 @@ BOOST_AUTO_TEST_CASE(type_sequences_test) {
     BOOST_CHECK_EQUAL(to_string(msg.extract(fs)), to_string(make_message(1.0, 42, _64)));
     BOOST_CHECK_EQUAL(to_string(msg.extract(iu)), to_string(make_message(1.0, 2.f, str)));
 }
-
-BOOST_AUTO_TEST_CASE(cli_args_test) {
-    std::vector<string> args {"-n", "-v", "5", "--out-file=/dev/null"};
-    int verbosity = 0;
-    string output_file;
-    string input_file;
-    auto res = message_builder(args.begin(), args.end())
-                   .extract_opts({{"no-colors,n", "disable colors"},
-                                  {"out-file,o", "redirect output", output_file},
-                                  {"in-file,i", "read from file", input_file},
-                                  {"logger_verbosity,v", "1-5", verbosity}});
-    BOOST_CHECK_EQUAL(res.remainder.size(), 0u);
-    BOOST_CHECK(res.remainder.empty());
-    BOOST_CHECK_EQUAL(res.opts.count("no-colors"), 1u);
-    BOOST_CHECK_EQUAL(res.opts.count("logger_verbosity"), 1u);
-    BOOST_CHECK_EQUAL(res.opts.count("out-file"), 1u);
-    BOOST_CHECK_EQUAL(res.opts.count("in-file"), 0u);
-    BOOST_CHECK_EQUAL(output_file, "/dev/null");
-    BOOST_CHECK_EQUAL(input_file, "");
-}

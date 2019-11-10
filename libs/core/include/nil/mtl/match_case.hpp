@@ -166,9 +166,7 @@ namespace nil {
         }
 
         template<class T, class U>
-        typename std::enable_if<std::is_base_of<match_case, T>::value || std::is_base_of<match_case, U>::value>::type operator,(
-            T,
-            U) {
+        typename std::enable_if<std::is_base_of<match_case, T>::value || std::is_base_of<match_case, U>::value>::type operator,(T, U) {
             static_assert(!std::is_same<T, T>::value,
                           "this syntax is not supported -> you probably did "
                           "something like 'return (...)' instead of 'return {...}'");

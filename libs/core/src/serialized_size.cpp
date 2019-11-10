@@ -79,6 +79,16 @@ namespace nil {
                 return none;
             }
 
+            error serialized_size_inspector::apply_impl(long &x) {
+                result_ += sizeof(x);
+                return none;
+            }
+
+            error serialized_size_inspector::apply_impl(unsigned long &x) {
+                result_ += sizeof(x);
+                return none;
+            }
+
             error serialized_size_inspector::apply_impl(uint32_t &x) {
                 result_ += sizeof(x);
                 return none;

@@ -23,7 +23,7 @@
 namespace nil {
     namespace mtl {
 
-        /// Provides a convenient interface for createing `message` objects
+        /// Provides a convenient interface for creating `message` objects
         /// from a series of values using the member function `append`.
         class message_builder {
         public:
@@ -101,13 +101,6 @@ namespace nil {
 
             /// @copydoc message::extract
             message extract(message_handler f) const;
-
-            /// @copydoc message::extract_opts
-            inline message::cli_res extract_opts(std::vector<message::cli_arg> xs,
-                                                 message::help_factory f = nullptr,
-                                                 bool no_help = false) const {
-                return to_message().extract_opts(std::move(xs), std::move(f), no_help);
-            }
 
             /// @copydoc message::apply
             optional<message> apply(message_handler handler);
