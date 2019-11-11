@@ -24,6 +24,10 @@ namespace nil {
                 return _byteswap_ushort(value);
             }
 
+            inline uint32_t to_network_order(unsigned long value) {
+                return __builtin_ulong(value);
+            }
+
             inline uint32_t to_network_order(uint32_t value) {
                 return _byteswap_ulong(value);
             }
@@ -36,6 +40,10 @@ namespace nil {
 
             inline uint16_t to_network_order(uint16_t value) {
                 return __builtin_bswap16(value);
+            }
+
+            inline uint32_t to_network_order(unsigned long value) {
+                return __builtin_bswap32(value);
             }
 
             inline uint32_t to_network_order(uint32_t value) {

@@ -369,7 +369,7 @@ namespace nil {
 
             void abstract_broker::launch_servant(doorman_ptr &ptr) {
                 // A doorman needs to be launched in addition to being initialized. This
-                // allows CAF to assign doorman to uninitialized brokers.
+                // allows MTL to assign doorman to uninitialized brokers.
                 if (getf(is_initialized_flag))
                     ptr->launch();
             }

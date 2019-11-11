@@ -11,18 +11,32 @@
 
 #pragma once
 
+#include <nil/marshalling/marshalling.hpp>
+
 namespace nil {
     namespace mtl {
         namespace io {
             namespace basp {
-
                 /// @addtogroup BASP
 
-                /// The current BASP version. Note: BASP is not backwards compatible.
-                constexpr static const uint64_t version = 3;
+                template<typename TFieldBase>
+                using empty_byte_field =
+                    marshalling::field::no_value<marshalling::field::int_value<TFieldBase, std::uint8_t>>;
+
+                template<typename TFieldBase>
+                using empty_word_field =
+                    marshalling::field::no_value<marshalling::field::int_value<TFieldBase, std::uint16_t>>;
+
+                template<typename TFieldBase>
+                using empty_dword_field =
+                    marshalling::field::no_value<marshalling::field::int_value<TFieldBase, std::uint32_t>>;
+
+                template<typename TFieldBase>
+                using empty_qword_field =
+                    marshalling::field::no_value<marshalling::field::int_value<TFieldBase, std::uint64_t>>;
 
                 /// @}
             }    // namespace basp
         }        // namespace io
     }            // namespace mtl
-}    // namespace nil
+}

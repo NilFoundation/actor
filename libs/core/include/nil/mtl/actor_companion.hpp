@@ -99,6 +99,5 @@ namespace nil {
             // guards access to handler_
             lock_type lock_;
         };
-
     }    // namespace mtl
 }    // namespace nil

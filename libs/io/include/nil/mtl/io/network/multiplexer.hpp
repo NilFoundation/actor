@@ -99,7 +99,7 @@ namespace nil {
                     /// Creates a supervisor to keep the event loop running.
                     virtual supervisor_ptr make_supervisor() = 0;
 
-                    /// Creates an instance using the networking backend compiled with CAF.
+                    /// Creates an instance using the networking backend compiled with MTL.
                     static std::unique_ptr<multiplexer> make(actor_system &sys);
 
                     /// Exectutes all pending events without blocking.
@@ -141,7 +141,7 @@ namespace nil {
                         exec_later(new impl(std::move(fun)));
                     }
 
-                    /// Retrieves a pointer to the implementation or `nullptr` if CAF was
+                    /// Retrieves a pointer to the implementation or `nullptr` if MTL was
                     /// compiled using the default backend.
                     virtual multiplexer_backend *pimpl();
 

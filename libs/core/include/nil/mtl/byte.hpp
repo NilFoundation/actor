@@ -73,6 +73,5 @@ namespace nil {
         constexpr byte operator~(byte x) noexcept {
             return static_cast<byte>(~to_integer<uint8_t>(x));
         }
-
     }    // namespace mtl
 }    // namespace nil

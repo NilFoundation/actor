@@ -5,21 +5,25 @@
 //
 // Distributed under the terms and conditions of the BSD 3-Clause License or
 // (at your option) under the terms and conditions of the Boost Software
-// License 1.0. See accompanying file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt for Boost License or
-// http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
+// License 1.0. See accompanying files LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
 #pragma once
 
+#include <nil/marshalling/marshalling.hpp>
+
 namespace nil {
     namespace mtl {
-        namespace detail {
+        namespace io {
+            namespace basp {
+                /// @addtogroup BASP
 
-            /// Sets the name thread shown by the OS. Not supported on all platforms
-            /// (no-op on Windows).
-            void set_thread_name(const char *name);
+                template<typename FieldBaseType>
+                using payload_len_field = marshalling::field::int_value<FieldBaseType, std::uint32_t>;
 
-        }    // namespace detail
-    }        // namespace mtl
-}    // namespace nil
+                /// @}
+            }    // namespace basp
+        }        // namespace io
+    }            // namespace mtl
+}

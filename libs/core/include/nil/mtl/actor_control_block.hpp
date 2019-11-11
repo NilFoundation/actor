@@ -55,7 +55,7 @@ namespace nil {
         /// Actors start with a strong reference count of 1. This count is transferred
         /// to the first `actor` or `typed_actor` handle used to store the actor.
         /// Actors will also start with a weak reference count of 1. This count
-        /// is decremenated once the strong reference count drops to 0.
+        /// is decremented once the strong reference count drops to 0.
         ///
         /// The data block is destructed by calling the destructor of `T` when the
         /// last strong reference expires. The storage itself is destroyed when

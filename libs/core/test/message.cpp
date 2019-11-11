@@ -83,59 +83,6 @@ BOOST_AUTO_TEST_CASE(extract2_test) {
     BOOST_CHECK_EQUAL(to_string(m3), to_string(make_message(1.0, 4.0)));
 }
 
-BOOST_AUTO_TEST_CASE(extract_opts_test) {
-    auto f = [](std::vector<std::string> xs, std::vector<std::string> remainder) {
-        std::string filename;
-        size_t log_level = 0;
-        auto res = message_builder(xs.begin(), xs.end())
-                       .extract_opts({{"version,v", "print version"},
-                                      {"log-level,l", "set the log level", log_level},
-                                      {"file,f", "set output file", filename},
-                                      {"whatever", "do whatever"}});
-        BOOST_CHECK_EQUAL(res.opts.count("file"), 1u);
-        BOOST_CHECK(res.remainder.size() == remainder.size());
-        for (size_t i = 0; i < res.remainder.size() && i < remainder.size(); ++i) {
-            BOOST_CHECK(remainder[i] == res.remainder.get_as<string>(i));
-        }
-        BOOST_CHECK_EQUAL(filename, "hello.txt");
-        BOOST_CHECK_EQUAL(log_level, 5u);
-    };
-    f({"--file=hello.txt", "-l", "5"}, {});
-    f({"-f", "hello.txt", "--log-level=5"}, {});
-    f({"-f", "hello.txt", "-l", "5"}, {});
-    f({"-f", "hello.txt", "-l5"}, {});
-    f({"-fhello.txt", "-l", "5"}, {});
-    f({"-l5", "-fhello.txt"}, {});
-    // on remainder
-    f({"--file=hello.txt", "-l", "5", "--", "a"}, {"a"});
-    f({"--file=hello.txt", "-l", "5", "--", "a", "b"}, {"a", "b"});
-    f({"--file=hello.txt", "-l", "5", "--", "aa", "bb"}, {"aa", "bb"});
-    f({"--file=hello.txt", "-l", "5", "--", "-a", "--bb"}, {"-a", "--bb"});
-    f({"--file=hello.txt", "-l", "5", "--", "-a1", "--bb=10"}, {"-a1", "--bb=10"});
-    f({"--file=hello.txt", "-l", "5", "--", "-a 1", "--b=10"}, {"-a 1", "--b=10"});
-    // multiple remainders
-    f({"--file=hello.txt", "-l", "5", "--", "a", "--"}, {"a", "--"});
-    f({"--file=hello.txt", "-l", "5", "--", "a", "--", "--"}, {"a", "--", "--"});
-    f({"--file=hello.txt", "-l", "5", "--", "a", "--", "b"}, {"a", "--", "b"});
-    f({"--file=hello.txt", "-l", "5", "--", "aa", "--", "bb"}, {"aa", "--", "bb"});
-    f({"--file=hello.txt", "-l", "5", "--", "aa", "--", "--", "bb"}, {"aa", "--", "--", "bb"});
-    f({"--file=hello.txt", "-l", "5", "--", "--", "--", "-a1", "--bb=10"}, {"--", "--", "-a1", "--bb=10"});
-    BOOST_TEST_MESSAGE("ensure that failed parsing doesn't consume input");
-    auto msg = make_message("-f", "42", "-b", "1337");
-    auto foo = 0;
-    auto bar = 0;
-    auto r = msg.extract_opts({{"foo,f", "foo desc", foo}});
-    BOOST_CHECK(r.opts.count("foo") > 0);
-    BOOST_CHECK_EQUAL(foo, 42);
-    BOOST_CHECK_EQUAL(bar, 0);
-    BOOST_CHECK(!r.error.empty());    // -b is an unknown option
-    BOOST_CHECK(!r.remainder.empty() && to_string(r.remainder) == to_string(make_message("-b", "1337")));
-    r = r.remainder.extract_opts({{"bar,b", "bar desc", bar}});
-    BOOST_CHECK(r.opts.count("bar") > 0);
-    BOOST_CHECK_EQUAL(bar, 1337);
-    BOOST_CHECK(r.error.empty());
-}
-
 BOOST_AUTO_TEST_CASE(type_token_test) {
     auto m1 = make_message(get_atom::value);
     BOOST_CHECK_EQUAL(m1.type_token(), make_type_token<get_atom>());

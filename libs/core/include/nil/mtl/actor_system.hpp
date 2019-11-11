@@ -29,9 +29,6 @@
 #include <nil/mtl/actor_marker.hpp>
 #include <nil/mtl/actor_registry.hpp>
 #include <nil/mtl/composable_behavior_based_actor.hpp>
-#include <nil/mtl/detail/init_fun_factory.hpp>
-#include <nil/mtl/detail/spawn_fwd.hpp>
-#include <nil/mtl/detail/spawnable.hpp>
 #include <nil/mtl/fwd.hpp>
 #include <nil/mtl/group_manager.hpp>
 #include <nil/mtl/infer_handle.hpp>
@@ -44,6 +41,10 @@
 #include <nil/mtl/spawn_options.hpp>
 #include <nil/mtl/string_algorithms.hpp>
 #include <nil/mtl/uniform_type_info_map.hpp>
+
+#include <nil/mtl/detail/init_fun_factory.hpp>
+#include <nil/mtl/detail/spawn_fwd.hpp>
+#include <nil/mtl/detail/spawnable.hpp>
 
 namespace nil {
     namespace mtl {

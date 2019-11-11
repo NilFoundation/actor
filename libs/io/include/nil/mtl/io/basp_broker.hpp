@@ -26,7 +26,7 @@
 #include <nil/mtl/serialization/binary_deserializer.hpp>
 #include <nil/mtl/forwarding_actor_proxy.hpp>
 
-#include <nil/mtl/io/basp/all.hpp>
+#include <nil/mtl/io/basp/protocol.hpp>
 #include <nil/mtl/io/broker.hpp>
 #include <nil/mtl/io/typed_broker.hpp>
 

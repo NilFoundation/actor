@@ -37,7 +37,7 @@ namespace nil {
             ///    set<string> ifs, string addr, bool reuse_addr)
             ///   -> (uint16_t)
             ///
-            ///   // Opens a new port other CAF instances can connect to. The
+            ///   // Opens a new port other MTL instances can connect to. The
             ///   // difference between `PUBLISH` and `OPEN` is that no actor is mapped to
             ///   // this port, meaning that connecting nodes only get a valid `node_id`
             ///   // handle when connecting.

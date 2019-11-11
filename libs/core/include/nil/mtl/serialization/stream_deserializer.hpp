@@ -132,6 +132,14 @@ namespace nil {
                 return apply_int(x);
             }
 
+            error apply_impl(long &x) override {
+                return apply_int(x);
+            }
+
+            error apply_impl(unsigned long &x) override {
+                return apply_int(x);
+            }
+
             error apply_impl(uint32_t &x) override {
                 return apply_int(x);
             }

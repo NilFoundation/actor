@@ -19,6 +19,8 @@
 #include <type_traits>
 #include <iterator>
 
+#include <boost/integer.hpp>
+
 #include <nil/mtl/fwd.hpp>
 #include <nil/mtl/atom.hpp>
 #include <nil/mtl/error.hpp>
@@ -32,7 +34,6 @@
 #include <nil/mtl/detail/type_list.hpp>
 #include <nil/mtl/detail/apply_args.hpp>
 #include <nil/mtl/detail/delegate_serialize.hpp>
-#include <nil/mtl/detail/select_integer_type.hpp>
 
 namespace nil {
     namespace mtl {
@@ -54,6 +55,7 @@ namespace nil {
                                                 int16_t,
                                                 uint16_t,
                                                 int32_t,
+                                                unsigned long,
                                                 uint32_t,
                                                 int64_t,
                                                 uint64_t,
@@ -115,7 +117,9 @@ namespace nil {
             template<class T>
             typename std::enable_if<std::is_integral<T>::value && !std::is_same<bool, T>::value, error>::type
                 apply(T &x) {
-                using type = detail::select_integer_type_t<sizeof(T), std::is_signed<T>::value>;
+                using type = typename std::conditional<std::is_signed<T>::value,
+                                                       typename boost::int_t<sizeof(T) * CHAR_BIT>::exact,
+                                                       typename boost::uint_t<sizeof(T) * CHAR_BIT>::exact>::type;
                 return apply_impl(reinterpret_cast<type &>(x));
             }
 
@@ -470,6 +474,10 @@ namespace nil {
             virtual error apply_impl(uint16_t &) = 0;
 
             virtual error apply_impl(int32_t &) = 0;
+
+            virtual error apply_impl(long &) = 0;
+
+            virtual error apply_impl(unsigned long &) = 0;
 
             virtual error apply_impl(uint32_t &) = 0;
 

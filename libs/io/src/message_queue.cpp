@@ -64,7 +64,6 @@ namespace nil {
                     std::unique_lock<std::mutex> guard {lock};
                     return next_id++;
                 }
-
             }    // namespace basp
         }        // namespace io
     }            // namespace mtl

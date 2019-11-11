@@ -21,7 +21,7 @@
 #include <nil/mtl/detail/sync_request_bouncer.hpp>
 #include <nil/mtl/event_based_actor.hpp>
 #include <nil/mtl/forwarding_actor_proxy.hpp>
-#include <nil/mtl/io/basp/all.hpp>
+#include <nil/mtl/io/basp/protocol.hpp>
 #include <nil/mtl/io/connection_helper.hpp>
 #include <nil/mtl/io/middleman.hpp>
 #include <nil/mtl/io/network/interfaces.hpp>

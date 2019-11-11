@@ -10,9 +10,9 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/config.hpp>
-
 #define BOOST_TEST_MODULE io_basp_tcp_test
+
+#include <nil/mtl/config.hpp>
 #include <nil/mtl/test/dsl.hpp>
 
 #include <array>

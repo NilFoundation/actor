@@ -39,7 +39,7 @@ namespace nil {
 
                 ~middleman() override;
 
-                /// Tries to open a port for other CAF instances to connect to.
+                /// Tries to open a port for other MTL instances to connect to.
                 /// @experimental
                 expected<uint16_t> open(uint16_t port, const char *in = nullptr, bool reuse = false);
 

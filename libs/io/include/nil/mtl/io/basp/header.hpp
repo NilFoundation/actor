@@ -20,7 +20,13 @@
 #include <nil/mtl/meta/omittable.hpp>
 #include <nil/mtl/meta/type_name.hpp>
 
+#include <nil/marshalling/marshalling.hpp>
+
 #include <nil/mtl/io/basp/message_type.hpp>
+
+#include <nil/mtl/io/basp/messages/fields/payload_len.hpp>
+#include <nil/mtl/io/basp/messages/fields/header.hpp>
+#include <nil/mtl/io/basp/messages/fields/actor_id.hpp>
 
 namespace nil {
     namespace mtl {

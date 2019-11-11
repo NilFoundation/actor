@@ -38,7 +38,7 @@ namespace nil {
                         // further activities for the broker.
                         return false;
                     // A datagram that has a source port of zero is valid and never requires a
-                    // reply. In the case of CAF we can simply drop it as nothing but the
+                    // reply. In the case of MTL we can simply drop it as nothing but the
                     // handshake could be communicated which we could not reply to.
                     // Source: TCP/IP Illustrated, Chapter 10.2
                     if (network::port(handler_.sending_endpoint()) == 0)

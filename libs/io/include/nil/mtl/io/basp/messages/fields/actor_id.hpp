@@ -11,23 +11,26 @@
 
 #pragma once
 
-#include <cstdint>
+#include <nil/mtl/io/basp/version.hpp>
 
-#include <nil/mtl/actor_system.hpp>
-
-#include <nil/mtl/io/middleman.hpp>
+#include <nil/marshalling/marshalling.hpp>
 
 namespace nil {
     namespace mtl {
         namespace io {
+            namespace basp {
 
-            /// Tries to open a port for other MTL instances to connect to.
-            /// @experimental
-            inline expected<uint16_t> open(actor_system &sys, uint16_t port, const char *in = nullptr,
-                                           bool reuse = false) {
-                return sys.middleman().open(port, in, reuse);
-            }
+                /// @addtogroup BASP
 
-        }    // namespace io
-    }        // namespace mtl
+                template<typename FieldBaseType>
+                using dflt_actor_id_field =
+                    marshalling::field::int_value<FieldBaseType, actor_id, marshalling::option::default_num_value<0>>;
+
+                template<typename FieldBaseType>
+                using actor_id_field = marshalling::field::int_value<FieldBaseType, actor_id>;
+
+                /// @}
+            }    // namespace basp
+        }        // namespace io
+    }            // namespace mtl
 }    // namespace nil

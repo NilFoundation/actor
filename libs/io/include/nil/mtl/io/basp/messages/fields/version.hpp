@@ -11,6 +11,10 @@
 
 #pragma once
 
+#include <nil/mtl/io/basp/version.hpp>
+
+#include <nil/marshalling/marshalling.hpp>
+
 namespace nil {
     namespace mtl {
         namespace io {
@@ -18,8 +22,15 @@ namespace nil {
 
                 /// @addtogroup BASP
 
-                /// The current BASP version. Note: BASP is not backwards compatible.
-                constexpr static const uint64_t version = 3;
+                /*!
+                 * @brief Field containing current BASP version information.
+                 * @note BASP is not backwards compatible
+                 */
+                template<typename TFieldBase>
+                using version_field =
+                    marshalling::field::int_value<TFieldBase, std::uint64_t,
+                                                  marshalling::option::default_num_value<version>,
+                                                  marshalling::option::valid_num_value_range<0, version>>;
 
                 /// @}
             }    // namespace basp

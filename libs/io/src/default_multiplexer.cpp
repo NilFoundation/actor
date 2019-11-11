@@ -507,7 +507,7 @@ namespace nil {
                         intrusive_ptr_release(ptr);
                     } else if (static_cast<size_t>(res) < sizeof(ptrval)) {
                         // must not happen: wrote invalid pointer to pipe
-                        std::cerr << "[CAF] Fatal error: wrote invalid data to pipe" << std::endl;
+                        std::cerr << "[MTL] Fatal error: wrote invalid data to pipe" << std::endl;
                         abort();
                     }
                 }

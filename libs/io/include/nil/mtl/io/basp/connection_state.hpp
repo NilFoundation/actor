@@ -11,6 +11,8 @@
 
 #pragma once
 
+#include <nil/mtl/io/basp/messages/fields/endian.hpp>
+
 namespace nil {
     namespace mtl {
         namespace io {
@@ -29,6 +31,10 @@ namespace nil {
                     /// Indicates that this connection no longer exists.
                     close_connection
                 };
+
+                /// @relates connection_state
+                using connection_state_field =
+                    marshalling::field::enum_value<marshalling::field_type<protocol_endian>, connection_state>;
 
                 /// @relates connection_state
                 inline std::string to_string(connection_state x) {

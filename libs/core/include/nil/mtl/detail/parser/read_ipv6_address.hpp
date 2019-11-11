@@ -19,8 +19,6 @@
 #include <nil/mtl/detail/network_order.hpp>
 #include <nil/mtl/detail/parser/add_ascii.hpp>
 #include <nil/mtl/detail/parser/chars.hpp>
-#include <nil/mtl/detail/parser/is_char.hpp>
-#include <nil/mtl/detail/parser/is_digit.hpp>
 #include <nil/mtl/detail/parser/state.hpp>
 #include <nil/mtl/detail/parser/sub_ascii.hpp>
 #include <nil/mtl/detail/scope_guard.hpp>
@@ -64,7 +62,7 @@ namespace nil {
                     // Computes the result on success.
                     auto g = nil::mtl::detail::make_scope_guard([&] {
                         if (ps.code <= pec::trailing_character)
-                            consumer.value(res);
+                            consumer.value(std::move(res));
                     });
                     start();
                     state(init) {transition(read, hexadecimal_chars, rd_hex(ch), pec::integer_overflow)} term_state(

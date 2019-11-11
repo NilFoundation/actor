@@ -45,6 +45,5 @@ namespace nil {
             auto ptr = reinterpret_cast<uint8_t *>(&v);
             return encode<codec::hex<>>(ptr, ptr + sizeof(v));
         }
-
     }    // namespace mtl
 }    // namespace nil
