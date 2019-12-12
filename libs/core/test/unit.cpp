@@ -14,7 +14,6 @@
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
-#include <nil/mtl/actor_system_config.hpp>
 
 #include <nil/mtl/actor_system.hpp>
 #include <nil/mtl/actor_system_config.hpp>

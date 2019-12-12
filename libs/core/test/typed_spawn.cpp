@@ -19,8 +19,8 @@
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
-#include <nil/mtl/string_algorithms.hpp>
 
+#include <nil/mtl/string_algorithms.hpp>
 #include <nil/mtl/all.hpp>
 
 #define ERROR_HANDLER [&](error &err) { BOOST_FAIL(system.render(err)); }
@@ -87,7 +87,7 @@ namespace {
 
     class typed_server3 : public server_type::base {
     public:
-        typed_server3(actor_config &cfg, const std::string &line, actor buddy) : server_type::base(cfg) {
+        typed_server3(actor_config &cfg, const std::string &line, const actor &buddy) : server_type::base(cfg) {
             anon_send(buddy, line);
         }
 

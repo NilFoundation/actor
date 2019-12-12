@@ -16,6 +16,7 @@
 #include <string>
 
 #include <nil/mtl/actor_system.hpp>
+
 #include <nil/mtl/io/middleman_actor.hpp>
 
 namespace nil {

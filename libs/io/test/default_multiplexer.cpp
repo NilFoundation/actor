@@ -51,101 +51,47 @@ BOOST_FIXTURE_TEST_SUITE(default_multiplexer_tests, fixture)
 BOOST_AUTO_TEST_CASE(doorman_io_failure_test) {
     BOOST_TEST_MESSAGE("add doorman to server");
     // The multiplexer adds a pipe reader on startup.
-    BOOST_CHECK_EQUAL(server.mpx.
-
-                    num_socket_handlers(),
-
-                    1u);
+    BOOST_CHECK_EQUAL(server.mpx.num_socket_handlers(), 1u);
     auto doorman = unbox(server.mpx.new_tcp_doorman(0, nullptr, false));
-    doorman->
+    doorman->add_to_loop();
 
-        add_to_loop();
+    server.mpx.handle_internal_events();
 
-    server.mpx.
-
-        handle_internal_events();
-
-    BOOST_CHECK_EQUAL(server.mpx.
-
-                    num_socket_handlers(),
-
-                    2u);
+    BOOST_CHECK_EQUAL(server.mpx.num_socket_handlers(), 2u);
     BOOST_TEST_MESSAGE("trigger I/O failure in doorman");
     doorman->io_failure(&server.mpx, io::network::operation::propagate_error);
-    server.mpx.
+    server.mpx.handle_internal_events();
 
-        handle_internal_events();
-
-    BOOST_CHECK_EQUAL(server.mpx.
-
-                    num_socket_handlers(),
-
-                    1u);
+    BOOST_CHECK_EQUAL(server.mpx.num_socket_handlers(), 1u);
 }
 
 BOOST_AUTO_TEST_CASE(scribe_io_failure_test) {
     BOOST_TEST_MESSAGE("add doorman to server");
-    BOOST_CHECK_EQUAL(server.mpx.
-
-                    num_socket_handlers(),
-
-                    1u);
+    BOOST_CHECK_EQUAL(server.mpx.num_socket_handlers(), 1u);
     auto doorman = unbox(server.mpx.new_tcp_doorman(0, nullptr, false));
-    doorman->
+    doorman->add_to_loop();
 
-        add_to_loop();
+    server.mpx.handle_internal_events();
 
-    server.mpx.
-
-        handle_internal_events();
-
-    BOOST_CHECK_EQUAL(server.mpx.
-
-                    num_socket_handlers(),
-
-                    2u);
+    BOOST_CHECK_EQUAL(server.mpx.num_socket_handlers(), 2u);
     BOOST_TEST_MESSAGE("connect to server (add scribe to client)");
     auto scribe = unbox(client.mpx.new_tcp_scribe("localhost", doorman->port()));
-    BOOST_CHECK_EQUAL(client.mpx.
+    BOOST_CHECK_EQUAL(client.mpx.num_socket_handlers(), 1u);
+    scribe->add_to_loop();
 
-                    num_socket_handlers(),
+    client.mpx.handle_internal_events();
 
-                    1u);
-    scribe->
-
-        add_to_loop();
-
-    client.mpx.
-
-        handle_internal_events();
-
-    BOOST_CHECK_EQUAL(client.mpx.
-
-                    num_socket_handlers(),
-
-                    2u);
+    BOOST_CHECK_EQUAL(client.mpx.num_socket_handlers(), 2u);
     BOOST_TEST_MESSAGE("trigger I/O failure in scribe");
     scribe->io_failure(&client.mpx, io::network::operation::propagate_error);
-    client.mpx.
+    client.mpx.handle_internal_events();
 
-        handle_internal_events();
-
-    BOOST_CHECK_EQUAL(client.mpx.
-
-                    num_socket_handlers(),
-
-                    1u);
+    BOOST_CHECK_EQUAL(client.mpx.num_socket_handlers(), 1u);
     BOOST_TEST_MESSAGE("trigger I/O failure in doorman");
     doorman->io_failure(&server.mpx, io::network::operation::propagate_error);
-    server.mpx.
+    server.mpx.handle_internal_events();
 
-        handle_internal_events();
-
-    BOOST_CHECK_EQUAL(server.mpx.
-
-                    num_socket_handlers(),
-
-                    1u);
+    BOOST_CHECK_EQUAL(server.mpx.num_socket_handlers(), 1u);
 }
 
 BOOST_AUTO_TEST_SUITE_END()

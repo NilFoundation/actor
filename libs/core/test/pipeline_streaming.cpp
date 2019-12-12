@@ -14,6 +14,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
+
 #include <nil/mtl/test/dsl.hpp>
 
 #include <memory>
@@ -88,32 +89,12 @@ namespace {
     VARARGS_TESTEE(file_reader, size_t buf_size) {
         return {[=](string &fname) -> output_stream<int> {
                     BOOST_CHECK_EQUAL(fname, "numbers.txt");
-                    BOOST_CHECK_EQUAL(self->
-
-                                      mailbox()
-
-                                          .
-
-                                      empty(),
-
-                                      true);
-                    return self->
-
-                        make_source(init(buf_size), push_from_buf, is_done(self), fin<buf>(self)
-
-                        );
+                    BOOST_CHECK_EQUAL(self->mailbox().empty(), true);
+                    return self->make_source(init(buf_size), push_from_buf, is_done(self), fin<buf>(self));
                 },
                 [=](string &fname, actor next) {
                     BOOST_CHECK_EQUAL(fname, "numbers.txt");
-                    BOOST_CHECK_EQUAL(self->
-
-                                      mailbox()
-
-                                          .
-
-                                      empty(),
-
-                                      true);
+                    BOOST_CHECK_EQUAL(self->mailbox().empty(), true);
                     self->make_source(next, init(buf_size), push_from_buf, is_done(self), fin<buf>(self));
                 }};
     }

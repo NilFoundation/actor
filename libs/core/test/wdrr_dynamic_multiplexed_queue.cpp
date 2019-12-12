@@ -14,6 +14,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
+
 #include <memory>
 
 #include <nil/mtl/deep_to_string.hpp>

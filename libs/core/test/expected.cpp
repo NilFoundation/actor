@@ -22,8 +22,6 @@
 using namespace std;
 using namespace nil::mtl;
 
-#define CHECK(x) BOOST_CHECK(x);
-
 #define CHECK_EQ(x, y)   \
     BOOST_CHECK(x == y); \
     BOOST_CHECK(y == x);
@@ -42,8 +40,8 @@ namespace {
 BOOST_AUTO_TEST_CASE(both_engaged_equal_test) {
     e_int x {42};
     e_int y {42};
-    CHECK(x);
-    CHECK(y);
+    BOOST_CHECK(x);
+    BOOST_CHECK(y);
     CHECK_EQ(x, y);
     CHECK_EQ(x, 42);
     CHECK_EQ(y, 42);
@@ -64,8 +62,8 @@ BOOST_AUTO_TEST_CASE(both_engaged_not_equal_test) {
 BOOST_AUTO_TEST_CASE(engaged_plus_not_engaged_test) {
     e_int x {42};
     e_int y {sec::unexpected_message};
-    CHECK(x);
-    CHECK(!y);
+    BOOST_CHECK(x);
+    BOOST_CHECK(!y);
     CHECK_EQ(x, 42);
     CHECK_EQ(y, sec::unexpected_message);
     CHECK_NEQ(x, sec::unexpected_message);
@@ -77,8 +75,8 @@ BOOST_AUTO_TEST_CASE(engaged_plus_not_engaged_test) {
 BOOST_AUTO_TEST_CASE(both_not_engaged_test) {
     e_int x {sec::unexpected_message};
     e_int y {sec::unexpected_message};
-    CHECK(!x);
-    CHECK(!y);
+    BOOST_CHECK(!x);
+    BOOST_CHECK(!y);
     CHECK_EQ(x, y);
     CHECK_EQ(x, sec::unexpected_message);
     CHECK_EQ(y, sec::unexpected_message);
@@ -109,14 +107,14 @@ BOOST_AUTO_TEST_CASE(move_and_copy_test) {
 
 BOOST_AUTO_TEST_CASE(construction_with_none_test) {
     e_int x {none};
-    CHECK(!x);
-    CHECK(!x.error());
+    BOOST_CHECK(!x);
+    BOOST_CHECK(!x.error());
 }
 
 BOOST_AUTO_TEST_CASE(construction_with_no_error_test) {
     e_int x {no_error};
-    CHECK(!x);
-    CHECK(!x.error());
+    BOOST_CHECK(!x);
+    BOOST_CHECK(!x.error());
     auto f = []() -> e_int { return no_error; };
     CHECK_EQ(f(), x);
 }

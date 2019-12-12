@@ -33,6 +33,7 @@ BOOST_AUTO_TEST_CASE(type_sequences_test) {
     auto df = [](double, float) {};
     auto fs = [](float, const string &) {};
     auto iu = [](int, uint64_t) {};
+
     BOOST_CHECK_EQUAL(to_string(msg.extract(df)), to_string(make_message(str, 42, _64)));
     BOOST_CHECK_EQUAL(to_string(msg.extract(fs)), to_string(make_message(1.0, 42, _64)));
     BOOST_CHECK_EQUAL(to_string(msg.extract(iu)), to_string(make_message(1.0, 2.f, str)));

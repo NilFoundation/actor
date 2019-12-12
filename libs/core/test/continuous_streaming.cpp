@@ -44,15 +44,7 @@ namespace {
     VARARGS_TESTEE(file_reader, size_t buf_size) {
         return {[=](string &fname) -> output_stream<int, string> {
             BOOST_CHECK_EQUAL(fname, "numbers.txt");
-            BOOST_CHECK_EQUAL(self->
-
-                              mailbox()
-
-                                  .
-
-                              empty(),
-
-                              true);
+            BOOST_CHECK_EQUAL(self->mailbox().empty(), true);
             return self->make_source(
                 // forward file name in handshake to next stage
                 std::forward_as_tuple(std::move(fname)),
