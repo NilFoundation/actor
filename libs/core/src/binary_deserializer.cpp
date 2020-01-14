@@ -134,14 +134,6 @@ namespace nil {
             return apply_int(*this, x);
         }
 
-        error binary_deserializer::apply_impl(long &x) {
-            return apply_int(*this, x);
-        }
-
-        error binary_deserializer::apply_impl(unsigned long &x) {
-            return apply_int(*this, x);
-        }
-
         error binary_deserializer::apply_impl(uint32_t &x) {
             return apply_int(*this, x);
         }
@@ -210,6 +202,5 @@ namespace nil {
             }
             return none;
         }
-
     }    // namespace mtl
 }    // namespace nil

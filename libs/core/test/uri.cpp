@@ -14,8 +14,8 @@
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
-#include <nil/mtl/config.hpp>
 
+#include <nil/mtl/config.hpp>
 #include <nil/mtl/test/dsl.hpp>
 
 #include <nil/mtl/ipv4_address.hpp>

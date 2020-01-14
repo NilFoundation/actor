@@ -153,7 +153,6 @@ namespace {
             T2 v2;
         };
     };
-
 }    // namespace
 
 namespace nil {

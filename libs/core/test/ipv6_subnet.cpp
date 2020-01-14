@@ -14,6 +14,7 @@
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
+
 #include <nil/mtl/test/dsl.hpp>
 
 #include <nil/mtl/ipv6_subnet.hpp>

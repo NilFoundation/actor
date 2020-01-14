@@ -14,9 +14,10 @@
 
 #define BOOST_TEST_MODULE inbound_path_test
 
+#include <string>
+
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
-#include <string>
 
 #include <nil/mtl/inbound_path.hpp>
 

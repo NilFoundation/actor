@@ -155,7 +155,7 @@ namespace nil {
             actor_config &cfg;
             void operator()(Ts... xs) {
                 BOOST_ASSERT(cfg.host);
-                result = cfg.host->system().spawn_class<T, no_spawn_options>(cfg, xs...);
+                result = cfg.host->system().template spawn_class<T, no_spawn_options>(cfg, xs...);
             }
         };
 

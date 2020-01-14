@@ -24,12 +24,14 @@
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
+
 #include <nil/mtl/actor_system.hpp>
 #include <nil/mtl/type_erased_value.hpp>
-#include <nil/mtl/serialization/binary_serializer.hpp>
 #include <nil/mtl/actor_system_config.hpp>
-#include <nil/mtl/serialization/binary_deserializer.hpp>
 #include <nil/mtl/make_type_erased_value.hpp>
+
+#include <nil/mtl/serialization/binary_serializer.hpp>
+#include <nil/mtl/serialization/binary_deserializer.hpp>
 
 #include <nil/mtl/detail/stringification_inspector.hpp>
 

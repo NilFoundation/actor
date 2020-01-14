@@ -526,6 +526,8 @@ class test_coordinator_fixture {
     static inline nil::mtl::actor_system_config &config(nil::mtl::actor_system_config &cfg) {
         cfg.scheduler_policy = nil::mtl::atom("testing");
         cfg.middleman_network_backend = nil::mtl::atom("testing");
+        cfg.logger_file_verbosity = nil::mtl::atom("quiet");
+        cfg.middleman_workers = size_t{0};
         return cfg;
     }
 
