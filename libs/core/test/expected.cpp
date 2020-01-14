@@ -50,8 +50,8 @@ BOOST_AUTO_TEST_CASE(both_engaged_equal_test) {
 BOOST_AUTO_TEST_CASE(both_engaged_not_equal_test) {
     e_int x {42};
     e_int y {24};
-    CHECK(x);
-    CHECK(y);
+    BOOST_CHECK(x);
+    BOOST_CHECK(y);
     CHECK_NEQ(x, y);
     CHECK_NEQ(x, sec::unexpected_message);
     CHECK_NEQ(y, sec::unexpected_message);

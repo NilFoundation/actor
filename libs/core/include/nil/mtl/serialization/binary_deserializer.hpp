@@ -94,10 +94,6 @@ namespace nil {
 
             error apply_impl(int32_t &) override;
 
-            error apply_impl(long &) override;
-
-            error apply_impl(unsigned long &) override;
-
             error apply_impl(uint32_t &) override;
 
             error apply_impl(int64_t &) override;

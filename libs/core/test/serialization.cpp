@@ -464,6 +464,26 @@ BOOST_AUTO_TEST_CASE(long_sequences_test) {
     BOOST_CHECK_EQUAL(n, m);
 }
 
+BOOST_AUTO_TEST_CASE(non_empty_vector) {
+    BOOST_TEST_MESSAGE("deserializing into a non-empty vector overrides any content");
+    std::vector<int> foo {1, 2, 3};
+    std::vector<int> bar {0};
+    auto buf = serialize(foo);
+    deserialize(buf, bar);
+    BOOST_CHECK_EQUAL(foo, bar);
+}
+
+BOOST_AUTO_TEST_CASE(variant_with_tree_types) {
+    BOOST_TEST_MESSAGE("deserializing into a non-empty vector overrides any content");
+    using test_variant = variant<int, double, std::string>;
+    test_variant x {42};
+    BOOST_CHECK_EQUAL(x, roundtrip(x));
+    x = 12.34;
+    BOOST_CHECK_EQUAL(x, roundtrip(x));
+    x = std::string {"foobar"};
+    BOOST_CHECK_EQUAL(x, roundtrip(x));
+}
+
 // -- our vector<bool> serialization packs into an uint64_t. Hence, the
 // critical sizes to test are 0, 1, 63, 64, and 65.
 
@@ -487,12 +507,12 @@ BOOST_AUTO_TEST_CASE(bool_vector_size_63_test) {
         xs.push_back(i % 3 == 0);
     }
     BOOST_CHECK_EQUAL(deep_to_string(xs),
-        "[true, false, false, true, false, false, true, false, false, true, false, "
-        "false, true, false, false, true, false, false, true, false, false, true, "
-        "false, false, true, false, false, true, false, false, true, false, false, "
-        "true, false, false, true, false, false, true, false, false, true, false, "
-        "false, true, false, false, true, false, false, true, false, false, true, "
-        "false, false, true, false, false, true, false, false]");
+                      "[true, false, false, true, false, false, true, false, false, true, false, "
+                      "false, true, false, false, true, false, false, true, false, false, true, "
+                      "false, false, true, false, false, true, false, false, true, false, false, "
+                      "true, false, false, true, false, false, true, false, false, true, false, "
+                      "false, true, false, false, true, false, false, true, false, false, true, "
+                      "false, false, true, false, false, true, false, false]");
     BOOST_CHECK(xs == roundtrip(xs));
     BOOST_CHECK(xs == msg_roundtrip(xs));
 }
@@ -503,14 +523,14 @@ BOOST_AUTO_TEST_CASE(bool_vector_size_64_test) {
         xs.push_back(i % 5 == 0);
     }
     BOOST_CHECK_EQUAL(deep_to_string(xs),
-        "[true, false, false, false, false, true, false, false, "
-        "false, false, true, false, false, false, false, true, "
-        "false, false, false, false, true, false, false, false, "
-        "false, true, false, false, false, false, true, false, "
-        "false, false, false, true, false, false, false, false, "
-        "true, false, false, false, false, true, false, false, "
-        "false, false, true, false, false, false, false, true, "
-        "false, false, false, false, true, false, false, false]");
+                      "[true, false, false, false, false, true, false, false, "
+                      "false, false, true, false, false, false, false, true, "
+                      "false, false, false, false, true, false, false, false, "
+                      "false, true, false, false, false, false, true, false, "
+                      "false, false, false, true, false, false, false, false, "
+                      "true, false, false, false, false, true, false, false, "
+                      "false, false, true, false, false, false, false, true, "
+                      "false, false, false, false, true, false, false, false]");
     BOOST_CHECK(xs == roundtrip(xs));
     BOOST_CHECK(xs == msg_roundtrip(xs));
 }
@@ -521,12 +541,12 @@ BOOST_AUTO_TEST_CASE(bool_vector_size_65_test) {
         xs.push_back(!(i % 7 == 0));
     }
     BOOST_CHECK_EQUAL(deep_to_string(xs),
-        "[false, true, true, true, true, true, true, false, true, true, true, "
-        "true, true, true, false, true, true, true, true, true, true, false, true, "
-        "true, true, true, true, true, false, true, true, true, true, true, true, "
-        "false, true, true, true, true, true, true, false, true, true, true, true, "
-        "true, true, false, true, true, true, true, true, true, false, true, true, "
-        "true, true, true, true, false, true]");
+                      "[false, true, true, true, true, true, true, false, true, true, true, "
+                      "true, true, true, false, true, true, true, true, true, true, false, true, "
+                      "true, true, true, true, true, false, true, true, true, true, true, true, "
+                      "false, true, true, true, true, true, true, false, true, true, true, true, "
+                      "true, true, false, true, true, true, true, true, true, false, true, true, "
+                      "true, true, true, true, false, true]");
     BOOST_CHECK(xs == roundtrip(xs));
     BOOST_CHECK(xs == msg_roundtrip(xs));
 }

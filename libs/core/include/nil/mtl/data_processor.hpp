@@ -55,7 +55,6 @@ namespace nil {
                                                 int16_t,
                                                 uint16_t,
                                                 int32_t,
-                                                unsigned long,
                                                 uint32_t,
                                                 int64_t,
                                                 uint64_t,
@@ -474,10 +473,6 @@ namespace nil {
             virtual error apply_impl(uint16_t &) = 0;
 
             virtual error apply_impl(int32_t &) = 0;
-
-            virtual error apply_impl(long &) = 0;
-
-            virtual error apply_impl(unsigned long &) = 0;
 
             virtual error apply_impl(uint32_t &) = 0;
 

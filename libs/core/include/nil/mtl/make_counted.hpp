@@ -29,6 +29,5 @@ namespace nil {
         intrusive_ptr<T> make_counted(Ts &&... xs) {
             return intrusive_ptr<T>(new T(std::forward<Ts>(xs)...), false);
         }
-
     }    // namespace mtl
 }    // namespace nil

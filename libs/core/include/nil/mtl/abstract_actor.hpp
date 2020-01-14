@@ -217,6 +217,5 @@ namespace nil {
             abstract_actor(const abstract_actor &) = delete;
             abstract_actor &operator=(const abstract_actor &) = delete;
         };
-
     }    // namespace mtl
 }    // namespace nil
