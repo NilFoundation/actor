@@ -21,6 +21,7 @@
 #include <nil/mtl/ipv4_address.hpp>
 #include <nil/mtl/uri.hpp>
 #include <nil/mtl/uri_builder.hpp>
+#include <nil/mtl/error_code.hpp>
 
 using namespace nil::mtl;
 
@@ -69,7 +70,7 @@ namespace {
             return add(authority_separator, str, '@');
         }
 
-        uri_str_builder &host(std::string str) {
+        uri_str_builder &host(const std::string &str) {
             return add(authority_separator, str);
         }
 
@@ -81,7 +82,7 @@ namespace {
             return add(':', std::to_string(value));
         }
 
-        uri_str_builder &path(std::string str) {
+        uri_str_builder &path(const std::string &str) {
             return add(path_separator, str);
         }
 
@@ -104,7 +105,7 @@ namespace {
             return *this;
         }
 
-        uri_str_builder &fragment(std::string str) {
+        uri_str_builder &fragment(const std::string &str) {
             return add('#', str);
         }
 
@@ -139,23 +140,19 @@ namespace {
         // -- utility functions
         // ------------------------------------------------------
 
-        buffer serialize(uri x) {
-            buffer buf;
-            binary_serializer dst {nullptr, buf};
-            auto err = inspect(dst, x);
-            if (err) {
+        byte_buffer serialize(uri x) {
+            byte_buffer buf;
+            binary_serializer sink {nullptr, buf};
+            if (auto err = sink(x))
                 BOOST_FAIL("unable to serialize " << to_string(x) << ": " << to_string(err));
-            }
             return buf;
         }
 
-        uri deserialize(buffer buf) {
+        uri deserialize(byte_buffer buf) {
             uri result;
-            binary_deserializer src {nullptr, buf};
-            auto err = inspect(src, result);
-            if (err) {
-                BOOST_FAIL("unable to deserialize from buffer: " << to_string(err));
-            }
+            binary_deserializer source {nullptr, buf};
+            if (auto err = source(result))
+                BOOST_FAIL("unable to deserialize from byte_buffer: " << to_string(err));
             return result;
         }
     };

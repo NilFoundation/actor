@@ -266,14 +266,14 @@ namespace nil {
                     static constexpr bool value = decltype(sfinae<Iter>(nullptr))::value;
                 };
 
-                template<class I, class E = enable_if_t<!is_valid_erase_iter<I>::value>>
+                template<class I, class E = typename std::enable_if<!is_valid_erase_iter<I>::value>::type>
                 iterator gcc48_iterator_workaround(I i) {
                     auto j = begin();
                     std::advance(j, std::distance(cbegin(), i));
                     return j;
                 }
 
-                template<class I, class E = enable_if_t<is_valid_erase_iter<I>::value>>
+                template<class I, class E = typename std::enable_if<is_valid_erase_iter<I>::value>::type>
                 const_iterator gcc48_iterator_workaround(I i) {
                     return i;
                 }

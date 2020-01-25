@@ -25,8 +25,11 @@ namespace nil {
         public:
             explicit execution_unit(actor_system *sys);
 
-            execution_unit(execution_unit &&) = delete;
-            execution_unit(const execution_unit &) = delete;
+            execution_unit() = default;
+            execution_unit(execution_unit &&) = default;
+            execution_unit &operator=(execution_unit &&) = default;
+            execution_unit(const execution_unit &) = default;
+            execution_unit &operator=(const execution_unit &) = default;
 
             virtual ~execution_unit();
 
@@ -53,8 +56,8 @@ namespace nil {
             }
 
         protected:
-            actor_system *system_;
-            proxy_registry *proxies_;
+            actor_system *system_ = nullptr;
+            proxy_registry *proxies_ = nullptr;
         };
 
     }    // namespace mtl

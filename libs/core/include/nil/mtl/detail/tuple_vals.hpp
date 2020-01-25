@@ -16,11 +16,12 @@
 #include <stdexcept>
 
 #include <nil/mtl/deep_to_string.hpp>
-#include <nil/mtl/serialization/deserializer.hpp>
 #include <nil/mtl/make_type_erased_value.hpp>
 #include <nil/mtl/rtti_pair.hpp>
-#include <nil/mtl/serialization/serializer.hpp>
 #include <nil/mtl/type_nr.hpp>
+
+#include <nil/mtl/serialization/binary_deserializer.hpp>
+#include <nil/mtl/serialization/binary_serializer.hpp>
 
 #include <nil/mtl/detail/type_list.hpp>
 #include <nil/mtl/detail/safe_equal.hpp>
@@ -130,6 +131,10 @@ namespace nil {
                     return dispatch(pos, source);
                 }
 
+                error_code<sec> load(size_t pos, binary_deserializer &source) override {
+                    return dispatch(pos, source);
+                }
+
                 uint32_t type_token() const noexcept override {
                     return make_type_token<Ts...>();
                 }
@@ -139,6 +144,10 @@ namespace nil {
                 }
 
                 error save(size_t pos, serializer &sink) const override {
+                    return mptr()->dispatch(pos, sink);
+                }
+
+                error_code<sec> save(size_t pos, binary_serializer &sink) const override {
                     return mptr()->dispatch(pos, sink);
                 }
 

@@ -48,6 +48,8 @@ namespace nil {
 
                 error load(size_t pos, deserializer &source) override;
 
+                error_code<sec> load(size_t pos, binary_deserializer& source) override;
+
                 // -- overridden observers of type_erased_tuple ------------------------------
 
                 size_t size() const noexcept override;
@@ -63,6 +65,8 @@ namespace nil {
                 type_erased_value_ptr copy(size_t pos) const override;
 
                 error save(size_t pos, serializer &sink) const override;
+
+                error_code<sec> save(size_t pos, binary_serializer& sink) const override;
 
                 // -- modifiers --------------------------------------------------------------
 

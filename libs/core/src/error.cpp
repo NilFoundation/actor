@@ -146,15 +146,19 @@ namespace nil {
 
         // -- inspection support -----------------------------------------------------
 
-        error error::apply(const inspect_fun &f) {
-            data tmp {0, atom(""), message {}};
-            data &ref = data_ != nullptr ? *data_ : tmp;
-            auto result = f(meta::type_name("error"), ref.code, ref.category, meta::omittable_if_empty(), ref.context);
-            if (ref.code == 0)
-                clear();
-            else if (&tmp == &ref)
-                data_ = new data(std::move(tmp));
-            return result;
+        uint8_t &error::code_ref() noexcept {
+            MTL_ASSERT(data_ != nullptr);
+            return data_->code;
+        }
+
+        atom_value &error::category_ref() noexcept {
+            MTL_ASSERT(data_ != nullptr);
+            return data_->category;
+        }
+
+        void error::init() {
+            if (data_ == nullptr)
+                data_ = new data;
         }
 
         std::string to_string(const error &x) {

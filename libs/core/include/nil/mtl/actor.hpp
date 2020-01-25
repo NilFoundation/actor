@@ -23,6 +23,7 @@
 #include <nil/mtl/fwd.hpp>
 #include <nil/mtl/message.hpp>
 #include <nil/mtl/actor_marker.hpp>
+#include <nil/mtl/error_code.hpp>
 #include <nil/mtl/abstract_actor.hpp>
 #include <nil/mtl/actor_control_block.hpp>
 
@@ -140,8 +141,6 @@ namespace nil {
 
             intptr_t compare(const strong_actor_ptr &) const noexcept;
 
-            static actor splice_impl(std::initializer_list<actor> xs);
-
             actor(actor_control_block *, bool);
 
             /// @endcond
@@ -189,12 +188,6 @@ namespace nil {
 
         /// Combine `f` and `g` so that `(f*g)(x) = f(g(x))`.
         actor operator*(actor f, actor g);
-
-        /// @relates actor
-        template<class... Ts>
-        actor splice(const actor &x, const actor &y, const Ts &... zs) {
-            return actor::splice_impl({x, y, zs...});
-        }
 
         /// @relates actor
         bool operator==(const actor &lhs, abstract_actor *rhs);

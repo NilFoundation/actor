@@ -53,6 +53,7 @@ namespace nil {
                                              "@addr",
                                              "@addrvec",
                                              "@atom",
+                                             "@bytebuf",
                                              "@charbuf",
                                              "@config_value",
                                              "@down",

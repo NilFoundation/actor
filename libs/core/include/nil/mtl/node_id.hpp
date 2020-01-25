@@ -51,6 +51,10 @@ namespace nil {
                 virtual error serialize(serializer &sink) const = 0;
 
                 virtual error deserialize(deserializer &source) = 0;
+
+                virtual error_code<sec> serialize(binary_serializer &sink) const = 0;
+
+                virtual error_code<sec> deserialize(binary_deserializer &source) = 0;
             };
 
             // A technology-agnostic node identifier with process ID and hash value.
@@ -110,6 +114,10 @@ namespace nil {
 
                 error deserialize(deserializer &source) override;
 
+                error_code<sec> serialize(binary_serializer &sink) const override;
+
+                error_code<sec> deserialize(binary_deserializer &source) override;
+
             private:
                 // -- member variables -----------------------------------------------------
 
@@ -154,6 +162,10 @@ namespace nil {
 
                 error deserialize(deserializer &source) override;
 
+                error_code<sec> serialize(binary_serializer &sink) const override;
+
+                error_code<sec> deserialize(binary_deserializer &source) override;
+
             private:
                 // -- member variables -----------------------------------------------------
 
@@ -194,10 +206,6 @@ namespace nil {
 
             /// @cond PRIVATE
 
-            error serialize(serializer &sink) const;
-
-            error deserialize(deserializer &source);
-
             data *operator->() noexcept {
                 return data_.get();
             }
@@ -215,6 +223,14 @@ namespace nil {
             }
 
             /// @endcond
+
+            friend error inspect(serializer &sink, node_id &x);
+
+            friend error_code<sec> inspect(binary_serializer &sink, node_id &x);
+
+            friend error inspect(deserializer &source, node_id &x);
+
+            friend error_code<sec> inspect(binary_deserializer &source, node_id &x);
 
         private:
             intrusive_ptr<data> data_;
@@ -269,12 +285,6 @@ namespace nil {
         inline bool operator!=(const none_t &, const node_id &x) noexcept {
             return static_cast<bool>(x);
         }
-
-        /// @relates node_id
-        error inspect(serializer &sink, const node_id &x);
-
-        /// @relates node_id
-        error inspect(deserializer &source, node_id &x);
 
         /// Appends `x` in human-readable string representation to `str`.
         /// @relates node_id

@@ -26,7 +26,7 @@ set(${CURRENT_PROJECT_NAME}_SOURCES
     src/abstract_group.cpp
     src/abstract_worker.cpp
     src/abstract_worker_hub.cpp
-    src/actor_id.cpp
+    src/actor.cpp
     src/actor_addr.cpp
     src/actor_clock.cpp
     src/actor_companion.cpp
@@ -45,12 +45,13 @@ set(${CURRENT_PROJECT_NAME}_SOURCES
     src/behavior_impl.cpp
     src/behavior_stack.cpp
     src/binary_deserializer.cpp
+    src/binary_serializer.cpp
     src/blocking_actor.cpp
     src/blocking_behavior.cpp
     src/chars.cpp
-    src/concatenated_tuple.cpp
+#    src/concatenated_tuple.cpp
     src/config_value.cpp
-    src/decorated_tuple.cpp
+#    src/decorated_tuple.cpp
     src/default_attachable.cpp
     src/defaults.cpp
     src/deserializer.cpp
@@ -84,7 +85,7 @@ set(${CURRENT_PROJECT_NAME}_SOURCES
     src/mailbox_element.cpp
     src/match_case.cpp
     src/memory_managed.cpp
-    src/merged_tuple.cpp
+#    src/merged_tuple.cpp
     src/message.cpp
     src/message_builder.cpp
     src/message_data.cpp
@@ -111,13 +112,13 @@ set(${CURRENT_PROJECT_NAME}_SOURCES
     src/scoped_execution_unit.cpp
     src/sec.cpp
     src/sequencer.cpp
-    src/serialized_size.cpp
+    src/error_code.cpp
     src/serializer.cpp
     src/set_thread_name.cpp
     src/shared_spinlock.cpp
     src/simple_actor_clock.cpp
     src/skip.cpp
-    src/splitter.cpp
+#    src/splitter.cpp
     src/stream_aborter.cpp
     src/stream_manager.cpp
     src/stream_priority.cpp
@@ -160,7 +161,7 @@ add_library(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} ${${CURRENT_PROJECT_
 set_target_properties(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} PROPERTIES
                       LINKER_LANGUAGE CXX
                       EXPORT_NAME ${CURRENT_PROJECT_NAME}
-                      CXX_STANDARD 11
+                      CXX_STANDARD 17
                       CXX_STANDARD_REQUIRED TRUE)
 
 target_include_directories(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} PUBLIC

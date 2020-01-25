@@ -12,12 +12,12 @@
 
 #define BOOST_TEST_MODULE behavior_test
 
+#include <boost/test/unit_test.hpp>
+#include <boost/test/data/test_case.hpp>
+
 #include <functional>
 
 #include <nil/mtl/config.hpp>
-
-#include <boost/test/unit_test.hpp>
-#include <boost/test/data/test_case.hpp>
 
 #include <nil/mtl/send.hpp>
 #include <nil/mtl/behavior.hpp>

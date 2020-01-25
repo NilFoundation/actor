@@ -328,6 +328,11 @@ namespace nil {
                         return sec::no_such_group_module;
                     }
 
+                    error_code<sec> load(binary_deserializer &, group &) override {
+                        // never called, because we hand out group instances of the local module
+                        return sec::no_such_group_module;
+                    }
+
                 private:
                     middleman &parent_;
                 };

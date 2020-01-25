@@ -110,8 +110,11 @@ namespace nil {
             /// Type of a single element.
             using output_type = OutputType;
 
-            /// The return type for `scheduled_actor::make_source`.
-            using output_stream_type = output_stream<output_type, HandshakeArgs...>;
+            /// Type of a stream over the elements.
+            using stream_type = stream<output_type>;
+
+            /// Type of user-defined handshake arguments.
+            using handshake_arguments = std::tuple<HandshakeArgs...>;
 
             // -- constructors, destructors, and assignment operators --------------------
 
@@ -120,15 +123,14 @@ namespace nil {
             }
 
             outbound_stream_slot(outbound_stream_slot &&) = default;
+
             outbound_stream_slot(const outbound_stream_slot &) = default;
+
             outbound_stream_slot &operator=(outbound_stream_slot &&) = default;
+
             outbound_stream_slot &operator=(const outbound_stream_slot &) = default;
 
             // -- conversion operators ---------------------------------------------------
-
-            constexpr operator output_stream_type() const noexcept {
-                return {};
-            }
 
             constexpr operator stream_slot() const noexcept {
                 return value_;
@@ -156,6 +158,5 @@ namespace nil {
         typename Inspector::result_type inspect(Inspector &f, stream_slots &x) {
             return f(x.sender, x.receiver);
         }
-
     }    // namespace mtl
 }    // namespace nil

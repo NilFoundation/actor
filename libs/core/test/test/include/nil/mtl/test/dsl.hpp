@@ -155,7 +155,7 @@ public:
         return *this;
     }
 
-    template<class T, class E = nil::mtl::detail::enable_if_t<!std::is_pointer<T>::value>>
+    template<class T, class E = typename std::enable_if_t<!std::is_pointer<T>::value>::type>
     mtl_handle &operator=(const T &x) {
         ptr_ = nil::mtl::actor_cast<pointer>(x);
         return *this;
@@ -526,8 +526,9 @@ class test_coordinator_fixture {
     static inline nil::mtl::actor_system_config &config(nil::mtl::actor_system_config &cfg) {
         cfg.scheduler_policy = nil::mtl::atom("testing");
         cfg.middleman_network_backend = nil::mtl::atom("testing");
+        cfg.middleman_manual_multiplexing = true;
+        cfg.middleman_workers = size_t {0};
         cfg.logger_file_verbosity = nil::mtl::atom("quiet");
-        cfg.middleman_workers = size_t{0};
         return cfg;
     }
 

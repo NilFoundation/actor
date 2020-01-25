@@ -102,6 +102,8 @@ namespace nil {
 
                 error save(serializer &sink) const override;
 
+                error_code<sec> save(binary_serializer &sink) const override;
+
                 void stop() override {
                     MTL_LOG_TRACE("");
                     await_all_locals_down(system(), {broker_});
@@ -321,7 +323,8 @@ namespace nil {
                     return group {result};
                 }
 
-                error load(deserializer &source, group &storage) override {
+                template<class Deserializer>
+                typename Deserializer::result_type load_impl(Deserializer &source, group &storage) {
                     MTL_LOG_TRACE("");
                     // deserialize identifier and broker
                     std::string identifier;
@@ -353,13 +356,29 @@ namespace nil {
                     storage = group {p.first->second};
                     return none;
                 }
+                error load(deserializer &source, group &storage) override {
+                    return load_impl(source, storage);
+                }
 
-                error save(const local_group *ptr, serializer &sink) const {
+                error_code<sec> load(binary_deserializer &source, group &storage) override {
+                    return load_impl(source, storage);
+                }
+
+                template<class Serializer>
+                auto save_impl(const local_group *ptr, Serializer &sink) const {
                     MTL_ASSERT(ptr != nullptr);
                     MTL_LOG_TRACE("");
                     auto bro = actor_cast<strong_actor_ptr>(ptr->broker());
                     auto &id = const_cast<std::string &>(ptr->identifier());
                     return sink(id, bro);
+                }
+
+                error save(const local_group *ptr, serializer &sink) const {
+                    return save_impl(ptr, sink);
+                }
+
+                error_code<sec> save(const local_group *ptr, binary_serializer &sink) const {
+                    return save_impl(ptr, sink);
                 }
 
                 void stop() override {
@@ -399,6 +418,11 @@ namespace nil {
                 MTL_LOG_TRACE("");
                 // this cast is safe, because the only available constructor accepts
                 // local_group_module* as module pointer
+                return static_cast<local_group_module &>(parent_).save(this, sink);
+            }
+
+            error_code<sec> local_group::save(binary_serializer &sink) const {
+                MTL_LOG_TRACE("");
                 return static_cast<local_group_module &>(parent_).save(this, sink);
             }
 

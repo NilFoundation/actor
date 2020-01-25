@@ -304,19 +304,6 @@ namespace nil {
                                                             actor_cast<strong_actor_ptr>(std::move(f)),
                                                             actor_cast<strong_actor_ptr>(std::move(g)), std::move(mts));
         }
-
-        template<class... Xs, class... Ts>
-        typename detail::mpi_splice<typed_actor, detail::type_list<Xs...>, typename Ts::signatures...>::type
-            splice(const typed_actor<Xs...> &x, const Ts &... xs) {
-            using result =
-                typename detail::mpi_splice<typed_actor, detail::type_list<Xs...>, typename Ts::signatures...>::type;
-            std::vector<strong_actor_ptr> tmp {actor_cast<strong_actor_ptr>(x), actor_cast<strong_actor_ptr>(xs)...};
-            auto &sys = x->home_system();
-            auto mts = sys.message_types(detail::type_list<result> {});
-            return make_actor<decorator::splitter, result>(sys.next_actor_id(), sys.node(), &sys, std::move(tmp),
-                                                           std::move(mts));
-        }
-
     }    // namespace mtl
 }    // namespace nil
 

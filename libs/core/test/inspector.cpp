@@ -10,6 +10,11 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
+#define BOOST_TEST_MODULE inspector_test
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/data/test_case.hpp>
+
 #include <set>
 #include <map>
 #include <list>
@@ -20,11 +25,7 @@
 
 #include <nil/mtl/config.hpp>
 
-#define BOOST_TEST_MODULE inspector_test
-
-#include <boost/test/unit_test.hpp>
-#include <boost/test/data/test_case.hpp>
-
+#include <nil/mtl/atom.hpp>
 #include <nil/mtl/actor_system.hpp>
 #include <nil/mtl/type_erased_value.hpp>
 #include <nil/mtl/actor_system_config.hpp>
@@ -223,21 +224,47 @@ BOOST_AUTO_TEST_CASE(stringification_inspector_test) {
 }
 
 namespace {
+
+    template<class T>
+    struct is_integral_or_enum {
+        static constexpr bool value = std::is_integral<T>::value || std::is_enum<T>::value;
+    };
+
     struct binary_serialization_policy {
         execution_unit &context;
 
         template<class T>
-        bool operator()(T &x) {
-            std::vector<char> buf;
-            binary_serializer f {&context, buf};
-            f(x);
-            binary_deserializer g {&context, buf};
+        auto to_buf(const T &x) {
+            byte_buffer result;
+            binary_serializer sink {&context, result};
+            if (auto err = sink(x))
+                BOOST_FAIL("failed to serialize " << to_string(x) << ": " << to_string(err));
+            return result;
+        }
+
+        template<class T>
+        typename std::enable_if<is_integral_or_enum<T>::value, bool>::type operator()(T &x) {
+            auto buf = to_buf(x);
+            binary_deserializer source {&context, buf};
+            auto y = static_cast<T>(0);
+            if (auto err = source(y))
+                BOOST_FAIL("failed to deserialize from buffer: " << to_string(err));
+            BOOST_CHECK_EQUAL(x, y);
+            return detail::safe_equal(x, y);
+        }
+
+        template<class T>
+        typename std::enable_if<!is_integral_or_enum<T>::value, bool>::type operator()(T &x) {
+            auto buf = to_buf(x);
+            binary_deserializer source {&context, buf};
             T y;
-            g(y);
-            BOOST_CHECK(x == y);
+            if (auto err = source(y))
+                BOOST_FAIL("failed to deserialize from buffer: " << to_string(err));
+            BOOST_CHECK_EQUAL(x, y);
             return detail::safe_equal(x, y);
         }
     };
+
 }    // namespace
 
 BOOST_AUTO_TEST_CASE(binary_serialization_inspectors_test) {

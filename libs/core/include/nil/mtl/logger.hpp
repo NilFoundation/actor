@@ -179,7 +179,7 @@ namespace nil {
                 line_builder();
 
                 template<class T>
-                detail::enable_if_t<!std::is_pointer<T>::value, line_builder &> operator<<(const T &x) {
+                typename std::enable_if<!std::is_pointer<T>::value, line_builder &>::type operator<<(const T &x) {
                     if (!str_.empty())
                         str_ += " ";
                     str_ += deep_to_string(x);

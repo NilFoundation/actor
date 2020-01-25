@@ -11,17 +11,23 @@
 //---------------------------------------------------------------------------//
 
 #include <nil/mtl/uri.hpp>
+#include <nil/mtl/optional.hpp>
 
+#include <nil/mtl/serialization/binary_serializer.hpp>
+#include <nil/mtl/serialization/binary_deserializer.hpp>
 #include <nil/mtl/serialization/deserializer.hpp>
+#include <nil/mtl/serialization/serializer.hpp>
+
 #include <nil/mtl/detail/append_percent_encoded.hpp>
 #include <nil/mtl/detail/fnv_hash.hpp>
 #include <nil/mtl/detail/overload.hpp>
 #include <nil/mtl/detail/parse.hpp>
 #include <nil/mtl/detail/parser/read_uri.hpp>
 #include <nil/mtl/detail/uri_impl.hpp>
+
 #include <nil/mtl/error.hpp>
+#include <nil/mtl/expected.hpp>
 #include <nil/mtl/make_counted.hpp>
-#include <nil/mtl/serialization/serializer.hpp>
 
 namespace nil {
     namespace mtl {
@@ -66,6 +72,19 @@ namespace nil {
             return detail::fnv_hash(str());
         }
 
+        optional<uri> uri::authority_only() const {
+            if (empty() || authority().empty())
+                return none;
+            auto result = make_counted<detail::uri_impl>();
+            result->scheme = impl_->scheme;
+            result->authority = impl_->authority;
+            auto &str = result->str;
+            str = impl_->scheme;
+            str += "://";
+            str += to_string(impl_->authority);
+            return uri {std::move(result)};
+        }
+
         // -- comparison ---------------------------------------------------------------
 
         int uri::compare(const uri &other) const noexcept {
@@ -83,6 +102,18 @@ namespace nil {
         }
 
         error inspect(nil::mtl::deserializer &src, uri &x) {
+            auto impl = make_counted<detail::uri_impl>();
+            auto err = inspect(src, *impl);
+            if (err == none)
+                x = uri {std::move(impl)};
+            return err;
+        }
+
+        error_code<sec> inspect(nil::mtl::binary_serializer &dst, uri &x) {
+            return inspect(dst, const_cast<detail::uri_impl &>(*x.impl_));
+        }
+
+        error_code<sec> inspect(nil::mtl::binary_deserializer &src, uri &x) {
             auto impl = make_counted<detail::uri_impl>();
             auto err = inspect(src, *impl);
             if (err == none)
@@ -131,5 +162,11 @@ namespace nil {
             return make_error(ps.code, static_cast<size_t>(ps.line), static_cast<size_t>(ps.column));
         }
 
+        expected<uri> make_uri(string_view str) {
+            uri result;
+            if (auto err = parse(str, result))
+                return err;
+            return result;
+        }
     }    // namespace mtl
 }    // namespace nil

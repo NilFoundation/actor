@@ -70,6 +70,10 @@ namespace nil {
                 return self_->system();
             }
 
+            actor_system &home_system() const {
+                return self_->home_system();
+            }
+
             void quit(exit_reason reason = exit_reason::normal) {
                 self_->quit(reason);
             }

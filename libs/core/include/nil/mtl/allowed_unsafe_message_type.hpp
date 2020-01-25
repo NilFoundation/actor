@@ -37,6 +37,9 @@ namespace nil {
         template<class T>
         struct is_allowed_unsafe_message_type<const T &> : allowed_unsafe_message_type<T> {};
 
+        template<class T>
+        constexpr bool is_allowed_unsafe_message_type_v = allowed_unsafe_message_type<T>::value;
+
     }    // namespace mtl
 }    // namespace nil
 

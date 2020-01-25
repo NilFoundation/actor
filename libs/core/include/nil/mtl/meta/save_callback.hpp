@@ -18,26 +18,34 @@ namespace nil {
     namespace mtl {
         namespace meta {
 
-            template<class F>
+            template <class F>
             struct save_callback_t : annotation {
-                save_callback_t(F &&f) : fun(f) {
+                save_callback_t(F&& f) : fun(f) {
                     // nop
                 }
 
-                save_callback_t(save_callback_t &&) = default;
+                save_callback_t(save_callback_t&&) = default;
 
-                save_callback_t(const save_callback_t &) = default;
+                save_callback_t(const save_callback_t&) = default;
 
                 F fun;
             };
 
-            /// Returns an annotation that allows inspectors to call
-            /// user-defined code after performing save operations.
-            template<class F>
+            template <class T>
+            struct is_save_callback : std::false_type {};
+
+            template <class F>
+            struct is_save_callback<save_callback_t<F>> : std::true_type {};
+
+            template <class F>
+            constexpr bool is_save_callback_v = is_save_callback<F>::value;
+
+/// Returns an annotation that allows inspectors to call
+/// user-defined code after performing save operations.
+            template <class F>
             save_callback_t<F> save_callback(F fun) {
                 return {std::move(fun)};
             }
-
         }    // namespace meta
     }        // namespace mtl
 }    // namespace nil

@@ -17,11 +17,11 @@
 namespace nil {
     namespace mtl {
 
-        serializer::serializer(actor_system &sys) : super(sys.dummy_execution_unit()) {
+        serializer::serializer(actor_system &sys) noexcept : context_(sys.dummy_execution_unit()) {
             // nop
         }
 
-        serializer::serializer(execution_unit *ctx) : super(ctx) {
+        serializer::serializer(execution_unit *ctx) noexcept : context_(ctx) {
             // nop
         }
 
@@ -29,5 +29,13 @@ namespace nil {
             // nop
         }
 
+        auto serializer::apply(const std::vector<bool> &xs) -> result_type {
+            if (auto err = begin_sequence(xs.size()))
+                return err;
+            for (bool value : xs)
+                if (auto err = apply(value))
+                    return err;
+            return end_sequence();
+        }
     }    // namespace mtl
 }    // namespace nil

@@ -231,6 +231,21 @@ namespace nil {
                             system().registry().put(whom->id(), whom);
                         instance.add_published_actor(port, whom, std::move(sigs));
                     },
+                    // received from test code to set up two instances without doorman
+                    [=](publish_atom, scribe_ptr &ptr, uint16_t port, const strong_actor_ptr &whom,
+                        std::set<std::string> &sigs) {
+                        MTL_LOG_TRACE(MTL_ARG(ptr) << MTL_ARG(port) << MTL_ARG(whom) << MTL_ARG(sigs));
+                        MTL_ASSERT(ptr != nullptr);
+                        auto hdl = ptr->hdl();
+                        add_scribe(std::move(ptr));
+                        if (whom)
+                            system().registry().put(whom->id(), whom);
+                        instance.add_published_actor(port, whom, std::move(sigs));
+                        set_context(hdl);
+                        instance.write_server_handshake(context(), get_buffer(hdl), port);
+                        flush(hdl);
+                        configure_read(hdl, receive_policy::exactly(basp::header_size));
+                    },
                     // received from middleman actor (delegated)
                     [=](connect_atom, scribe_ptr &ptr, uint16_t port) {
                         MTL_LOG_TRACE(MTL_ARG(ptr) << MTL_ARG(port));
@@ -259,7 +274,7 @@ namespace nil {
                         MTL_LOG_TRACE(MTL_ARG(whom) << MTL_ARG(port));
                         auto cb = make_callback([&](const strong_actor_ptr &, uint16_t x) -> error {
                             close(hdl_by_port(x));
-                            return none;
+                            return error_code<sec>{};
                         });
                         if (instance.remove_published_actor(whom, port, &cb) == 0)
                             return sec::no_actor_published_at_port;
@@ -476,8 +491,9 @@ namespace nil {
                 // connection to the routing table; hence, spawning our helper here exactly
                 // once and there is no need to track in-flight connection requests.
                 using namespace detail;
-                auto tmp = config().middleman_attach_utility_actors ? system().spawn<hidden>(connection_helper, this) :
-                                                            system().spawn<detached + hidden>(connection_helper, this);
+                auto tmp = config().middleman_attach_utility_actors ?
+                               system().spawn<hidden>(connection_helper, this) :
+                               system().spawn<detached + hidden>(connection_helper, this);
                 auto sender = actor_cast<strong_actor_ptr>(tmp);
                 system().registry().put(sender->id(), sender);
                 std::vector<strong_actor_ptr> fwd_stack;
@@ -541,7 +557,6 @@ namespace nil {
             strong_actor_ptr basp_broker::this_actor() {
                 return ctrl();
             }
-
         }    // namespace io
     }        // namespace mtl
 }    // namespace nil

@@ -29,7 +29,7 @@ namespace nil {
 
             /// Moves the value from `x` if it is not a pointer (e.g., `optional` or
             /// `expected`), returns `*x` otherwise.
-            template<class T, class E = enable_if_t<!std::is_pointer<T>::value>>
+            template<class T, class E = typename std::enable_if<!std::is_pointer<T>::value>::type>
             auto move_if_not_ptr(T &x) -> decltype(std::move(*x)) {
                 return std::move(*x);
             }

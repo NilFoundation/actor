@@ -103,10 +103,10 @@ namespace nil {
 
                     /// Describes a function object responsible for writing
                     /// the payload for a BASP message.
-                    using payload_writer = callback<serializer &>;
+                    using payload_writer = callback<error_code<sec>(binary_serializer &)>;
 
                     /// Describes a callback function object for `remove_published_actor`.
-                    using removed_published_actor = callback<const strong_actor_ptr &, uint16_t>;
+                    using removed_published_actor = callback<error_code<sec>(const strong_actor_ptr &, uint16_t)>;
 
                     instance(abstract_broker *parent, callee &lstnr);
 
@@ -232,4 +232,4 @@ namespace nil {
             }    // namespace basp
         }        // namespace io
     }            // namespace mtl
-}
+}    // namespace nil

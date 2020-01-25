@@ -58,13 +58,6 @@ namespace nil {
                     return deficit_;
                 }
 
-                /// Applies `f` to each element in the queue.
-                template<class F>
-                void peek_all(F f) const {
-                    for (auto i = super::begin(); i != super::end(); ++i)
-                        f(*promote(i.ptr));
-                }
-
                 // -- modifiers --------------------------------------------------------------
 
                 void inc_deficit(deficit_type x) noexcept {
@@ -123,7 +116,6 @@ namespace nil {
                 /// Stores the deficit on this queue.
                 deficit_type deficit_ = 0;
             };
-
         }    // namespace intrusive
     }        // namespace mtl
 }    // namespace nil

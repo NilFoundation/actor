@@ -402,6 +402,5 @@ namespace nil {
             /// Factory function for returning initial behavior in function-based actors.
             detail::unique_function<behavior(local_actor *)> initial_behavior_fac_;
         };
-
     }    // namespace mtl
 }    // namespace nil

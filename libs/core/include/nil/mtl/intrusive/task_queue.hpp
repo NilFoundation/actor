@@ -53,6 +53,13 @@ namespace nil {
 
                 using const_iterator = forward_iterator<const value_type>;
 
+                // -- static utility functions -----------------------------------------------
+
+                /// Casts a node type to its value type.
+                static pointer promote(node_pointer ptr) noexcept {
+                    return static_cast<pointer>(ptr);
+                }
+
                 // -- constructors, destructors, and assignment operators -------------------
 
                 task_queue(policy_type p) : old_last_(nullptr), new_head_(nullptr), policy_(std::move(p)) {
@@ -118,6 +125,13 @@ namespace nil {
                     return ptr != &tail_ ? promote(ptr) : nullptr;
                 }
 
+                /// Applies `f` to each element in the queue.
+                template<class F>
+                void peek_all(F f) const {
+                    for (auto i = begin(); i != end(); ++i)
+                        f(*i);
+                }
+
                 // -- modifiers -------------------------------------------------------------
 
                 /// Removes all elements from the queue.
@@ -150,10 +164,8 @@ namespace nil {
 
                 /// @private
                 task_size_type next_task_size() const noexcept {
-                    if (head_.next == nullptr)
-                        return 0;
-                    auto ptr = promote(head_.next);
-                    return policy_.task_size(*ptr);
+                    auto ptr = head_.next;
+                    return ptr != &tail_ ? policy_.task_size(*promote(ptr)) : 0;
                 }
 
                 /// @private
@@ -179,16 +191,6 @@ namespace nil {
                 }
 
                 // -- iterator access --------------------------------------------------------
-
-                /// Returns an iterator to the dummy before the first element.
-                iterator before_begin() noexcept {
-                    return &head_;
-                }
-
-                /// Returns an iterator to the dummy before the first element.
-                const_iterator before_begin() const noexcept {
-                    return &head_;
-                }
 
                 /// Returns an iterator to the dummy before the first element.
                 iterator begin() noexcept {
@@ -229,6 +231,7 @@ namespace nil {
 
                 /// Returns a pointer to the last element.
                 pointer back() noexcept {
+                    MTL_ASSERT(head_.next != &tail_);
                     return promote(tail_.next);
                 }
 
@@ -296,7 +299,7 @@ namespace nil {
                 /// @private
                 void lifo_append(node_pointer ptr) {
                     if (old_last_ == nullptr) {
-                        old_last_ = back();
+                        old_last_ = tail_.next;
                         push_back(promote(ptr));
                     } else {
                         ptr->next = new_head_;
@@ -358,7 +361,6 @@ namespace nil {
                 /// Manipulates instances of T.
                 policy_type policy_;
             };
-
         }    // namespace intrusive
     }        // namespace mtl
 }    // namespace nil

@@ -103,7 +103,6 @@ namespace nil {
             splitter::message_types_set splitter::message_types() const {
                 return msg_types_;
             }
-
         }    // namespace decorator
     }        // namespace mtl
 }    // namespace nil

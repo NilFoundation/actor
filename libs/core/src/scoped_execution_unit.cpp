@@ -18,7 +18,7 @@
 namespace nil {
     namespace mtl {
 
-        scoped_execution_unit::scoped_execution_unit(actor_system *sys) : execution_unit(sys) {
+        scoped_execution_unit::~scoped_execution_unit() {
             // nop
         }
 

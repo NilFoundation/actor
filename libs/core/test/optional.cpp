@@ -17,7 +17,6 @@
 #include <nil/mtl/config.hpp>
 #include <nil/mtl/optional.hpp>
 
-using namespace std;
 using namespace nil::mtl;
 
 namespace {

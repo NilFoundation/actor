@@ -10,13 +10,13 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#define BOOST_TEST_MODULE delayed_send_test
+#define BOOST_TEST_MODULE sender_test
 
-#include <nil/mtl/actor_system.hpp>
-#include <nil/mtl/behavior.hpp>
-#include <nil/mtl/event_based_actor.hpp>
+#include <nil/mtl/mixin/sender.hpp>
 
 #include <nil/mtl/test/dsl.hpp>
+
+#include <chrono>
 
 using namespace nil::mtl;
 
@@ -31,12 +31,25 @@ namespace {
         }};
     }
 
+    struct fixture : test_coordinator_fixture<> {
+        group grp;
+        actor testee;
+
+        fixture() {
+            grp = sys.groups().anonymous();
+            testee = sys.spawn_in_group(grp, testee_impl);
+        }
+
+        ~fixture() {
+            anon_send_exit(testee, exit_reason::user_shutdown);
+        }
+    };
+
 }    // namespace
 
-BOOST_FIXTURE_TEST_SUITE(request_timeout_tests, test_coordinator_fixture<>)
+BOOST_FIXTURE_TEST_SUITE(request_timeout_tests, fixture)
 
 BOOST_AUTO_TEST_CASE(delayed_actor_message_test) {
-    auto testee = sys.spawn(testee_impl);
     self->delayed_send(testee, seconds(1), "hello world");
     sched.
 
@@ -46,16 +59,22 @@ BOOST_AUTO_TEST_CASE(delayed_actor_message_test) {
 }
 
 BOOST_AUTO_TEST_CASE(delayed_group_message_test) {
-    auto grp = sys.groups().anonymous();
-    auto testee = sys.spawn_in_group(grp, testee_impl);
     self->delayed_send(grp, seconds(1), "hello world");
-    sched.
-
-        trigger_timeout();
+    sched.trigger_timeout();
 
     expect((std::string), from(self).to(testee).with("hello world"));
-    // The group keeps a reference, so we need to shutdown 'manually'.
-    anon_send_exit(testee, exit_reason::user_shutdown);
+}
+
+BOOST_AUTO_TEST_CASE(scheduled_actor_message) {
+    self->scheduled_send(testee, self->clock().now() + seconds(1), "hello world");
+    sched.trigger_timeout();
+    expect((std::string), from(self).to(testee).with("hello world"));
+}
+
+BOOST_AUTO_TEST_CASE(scheduled_group_message) {
+    self->scheduled_send(grp, self->clock().now() + seconds(1), "hello world");
+    sched.trigger_timeout();
+    expect((std::string), from(self).to(testee).with("hello world"));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

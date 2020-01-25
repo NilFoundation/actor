@@ -218,14 +218,10 @@ namespace {
         using payload_writer = basp::instance::payload_writer;
 
         template<class... Ts>
-        void to_payload(binary_serializer &bs, const Ts &... xs) {
-            bs(const_cast<Ts &>(xs)...);
-        }
-
-        template<class... Ts>
-        void to_payload(buffer &buf, const Ts &... xs) {
-            binary_serializer bs {mpx_, buf};
-            to_payload(bs, xs...);
+        void to_payload(byte_buffer &buf, const Ts &... xs) {
+            binary_serializer sink {mpx_, buf};
+            if (auto err = sink(xs...))
+                BOOST_FAIL("failed to serialize payload: " << sys.render(err));
         }
 
         void to_buf(buffer &buf, basp::header &hdr, payload_writer *writer) {
@@ -236,7 +232,8 @@ namespace {
         void to_buf(buffer &buf, basp::header &hdr, payload_writer *writer, const T &x, const Ts &... xs) {
             auto pw = make_callback([&](serializer &sink) -> error {
                 if (writer)
-                    return error::eval([&] { return (*writer)(sink); }, [&] { return sink(const_cast<T &>(x)); });
+                    if (auto err = (*writer)(sink))
+                        return err;
                 return sink(const_cast<T &>(x));
             });
             to_buf(buf, hdr, &pw, xs...);

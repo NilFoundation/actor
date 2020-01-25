@@ -133,7 +133,7 @@ namespace nil {
                         return false;
                     do {
                         auto next = head->next;
-                        queue_.lifo_append(promote(head));
+                        queue_.lifo_append(lifo_inbox_type::promote(head));
                         head = next;
                     } while (head != nullptr);
                     queue_.stop_lifo_append();

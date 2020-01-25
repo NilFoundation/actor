@@ -16,8 +16,7 @@
 
 #pragma once
 
-#include <nil/mtl/error.hpp>
-#include <nil/mtl/make_message.hpp>
+#include <nil/mtl/fwd.hpp>
 
 namespace nil {
     namespace mtl {
@@ -130,11 +129,12 @@ namespace nil {
         error make_error(sec);
 
         /// @relates sec
-        template<class T, class... Ts>
-        error make_error(sec code, T &&x, Ts &&... xs) {
-            return {static_cast<uint8_t>(code), atom("system"),
-                    make_message(std::forward<T>(x), std::forward<Ts>(xs)...)};
-        }
+        error make_error(sec, message);
 
+        /// @relates sec
+        template<class T, class... Ts>
+        auto make_error(sec code, T &&x, Ts &&... xs) {
+            return make_error(code, make_message(std::forward<T>(x), std::forward<Ts>(xs)...));
+        }
     }    // namespace mtl
 }    // namespace nil

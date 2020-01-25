@@ -99,9 +99,6 @@ namespace nil {
             ///          is undefined behavior (dereferencing a `nullptr`)
             message move_to_message();
 
-            /// @copydoc message::extract
-            message extract(message_handler f) const;
-
             /// @copydoc message::apply
             optional<message> apply(message_handler handler);
 

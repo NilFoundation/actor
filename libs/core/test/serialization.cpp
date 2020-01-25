@@ -15,7 +15,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
 
-#include <nil/mtl/config.hpp>
+#include <nil/mtl/test/dsl.hpp>
 
 #include <new>
 #include <set>
@@ -41,7 +41,6 @@
 #include <type_traits>
 
 #include <nil/mtl/message.hpp>
-#include <nil/mtl/streambuf.hpp>
 #include <nil/mtl/serialization/serializer.hpp>
 #include <nil/mtl/ref_counted.hpp>
 #include <nil/mtl/serialization/deserializer.hpp>
@@ -56,8 +55,6 @@
 
 #include <nil/mtl/serialization/binary_serializer.hpp>
 #include <nil/mtl/serialization/binary_deserializer.hpp>
-#include <nil/mtl/serialization/stream_serializer.hpp>
-#include <nil/mtl/serialization/stream_deserializer.hpp>
 
 #include <nil/mtl/detail/ieee_754.hpp>
 #include <nil/mtl/detail/int_list.hpp>
@@ -66,16 +63,15 @@
 #include <nil/mtl/detail/enum_to_string.hpp>
 #include <nil/mtl/detail/get_mac_addresses.hpp>
 
-using namespace std;
 using namespace nil::mtl;
 using nil::mtl::detail::type_erased_value_impl;
 
 namespace {
 
-    using strmap = map<string, u16string>;
+    using strmap = std::map<std::string, std::u16string>;
 
     struct raw_struct {
-        string str;
+        std::string str;
     };
 
     template<class Inspector>
@@ -87,12 +83,20 @@ namespace {
         return lhs.str == rhs.str;
     }
 
-    enum class test_enum : uint32_t { a, b, c };
+    enum class test_enum : uint32_t {
+        a,
+        b,
+        c,
+    };
 
-    const char *test_enum_strings[] = {"a", "b", "c"};
+    const char *test_enum_strings[] = {
+        "a",
+        "b",
+        "c",
+    };
 
     std::string to_string(test_enum x) {
-        return detail::enum_to_string(x, test_enum_strings);
+        return test_enum_strings[static_cast<uint32_t>(x)];
     }
 
     struct test_array {
@@ -107,15 +111,11 @@ namespace {
 
     struct test_empty_non_pod {
         test_empty_non_pod() = default;
-
         test_empty_non_pod(const test_empty_non_pod &) = default;
-
         test_empty_non_pod &operator=(const test_empty_non_pod &) = default;
-
         virtual void foo() {
             // nop
         }
-
         virtual ~test_empty_non_pod() {
             // nop
         }
@@ -137,7 +137,7 @@ namespace {
         }
     };
 
-    struct fixture {
+    struct fixture : test_coordinator_fixture<config> {
         int32_t i32 = -345;
         int64_t i64 = -1234567890123456789ll;
         float f32 = 3.45f;
@@ -145,7 +145,7 @@ namespace {
         duration dur = duration {time_unit::seconds, 123};
         timestamp ts = timestamp {timestamp::duration {1478715821 * 1000000000ll}};
         test_enum te = test_enum::b;
-        string str = "Lorem ipsum dolor sit amet.";
+        std::string str = "Lorem ipsum dolor sit amet.";
         raw_struct rs;
         test_array ta {
             {0, 1, 2, 3},
@@ -153,23 +153,24 @@ namespace {
         };
         int ra[3] = {1, 2, 3};
 
-        config cfg;
-        actor_system system;
-        scoped_execution_unit context;
         message msg;
+        message recursive;
 
-        template<class T, class... Ts>
-        vector<char> serialize(T &x, Ts &... xs) {
-            vector<char> buf;
-            binary_serializer bs {&context, buf};
-            bs(x, xs...);
+        template<class... Ts>
+        byte_buffer serialize(const Ts &... xs) {
+            byte_buffer buf;
+            binary_serializer sink {sys, buf};
+            if (auto err = sink(xs...))
+                BOOST_FAIL("serialization failed: " << sys.render(err)
+                                                    << ", data: " << deep_to_string(std::forward_as_tuple(xs...)));
             return buf;
         }
 
-        template<class T, class... Ts>
-        void deserialize(const vector<char> &buf, T &x, Ts &... xs) {
-            binary_deserializer bd {&context, buf};
-            bd(x, xs...);
+        template<class... Ts>
+        void deserialize(const byte_buffer &buf, Ts &... xs) {
+            binary_deserializer source {sys, buf};
+            if (auto err = source(xs...))
+                BOOST_FAIL("deserialization failed: " << sys.render(err));
         }
 
         // serializes `x` and then deserializes and returns the serialized value
@@ -187,13 +188,19 @@ namespace {
             message result;
             auto tmp = make_message(x);
             deserialize(serialize(tmp), result);
-            BOOST_REQUIRE(result.match_elements<T>());
+            if (!result.match_elements<T>())
+                BOOST_FAIL("expected: " << x << ", got: " << result);
             return result.get_as<T>(0);
         }
 
-        fixture() : system(cfg), context(&system) {
+        fixture() {
             rs.str.assign(string(str.rbegin(), str.rend()));
             msg = make_message(i32, i64, dur, ts, te, str, rs);
+            config_value::dictionary dict;
+            put(dict, "scheduler.policy", atom("none"));
+            put(dict, "scheduler.max-threads", 42);
+            put(dict, "nodes.preload", make_config_value_list("sun", "venus", "mercury", "earth", "mars"));
+            recursive = make_message(config_value {std::move(dict)});
         }
     };
 
@@ -217,9 +224,13 @@ namespace {
 
 }    // namespace
 
+#define CHECK_RT(val) BOOST_CHECK_EQUAL(val, roundtrip(val))
+
+#define CHECK_MSG_RT(val) BOOST_CHECK_EQUAL(val, msg_roundtrip(val))
+
 BOOST_FIXTURE_TEST_SUITE(serialization_tests, fixture)
 
-BOOST_AUTO_TEST_CASE(ieee_754_conversion_test) {
+BOOST_AUTO_TEST_CASE(ieee_754_conversion) {
     // check conversion of float
     float f1 = 3.1415925f;                      // float value
     auto p1 = nil::mtl::detail::pack754(f1);    // packet value
@@ -234,79 +245,33 @@ BOOST_AUTO_TEST_CASE(ieee_754_conversion_test) {
     BOOST_CHECK_EQUAL(f2, u2);
 }
 
-BOOST_AUTO_TEST_CASE(i32_values_test) {
-    auto buf = serialize(i32);
-    int32_t x;
-    deserialize(buf, x);
-    BOOST_CHECK_EQUAL(i32, x);
+BOOST_AUTO_TEST_CASE(serializing_and_then_deserializing_produces_the_same_value) {
+    CHECK_RT(i32);
+    CHECK_RT(i64);
+    CHECK_RT(f32);
+    CHECK_RT(f64);
+    CHECK_RT(dur);
+    CHECK_RT(ts);
+    CHECK_RT(te);
+    CHECK_RT(str);
+    CHECK_RT(rs);
+    CHECK_RT(atom("foo"));
 }
 
-BOOST_AUTO_TEST_CASE(i64_values_test) {
-    auto buf = serialize(i64);
-    int64_t x;
-    deserialize(buf, x);
-    BOOST_CHECK_EQUAL(i64, x);
+BOOST_AUTO_TEST_CASE(messages_serialize_and_deserialize_their_content) {
+    CHECK_MSG_RT(i32);
+    CHECK_MSG_RT(i64);
+    CHECK_MSG_RT(f32);
+    CHECK_MSG_RT(f64);
+    CHECK_MSG_RT(dur);
+    CHECK_MSG_RT(ts);
+    CHECK_MSG_RT(te);
+    CHECK_MSG_RT(str);
+    CHECK_MSG_RT(rs);
+    CHECK_MSG_RT(atom("foo"));
 }
 
-BOOST_AUTO_TEST_CASE(float_values_test) {
-    auto buf = serialize(f32);
-    float x;
-    deserialize(buf, x);
-    BOOST_CHECK_EQUAL(f32, x);
-}
-
-BOOST_AUTO_TEST_CASE(double_values_test) {
-    auto buf = serialize(f64);
-    double x;
-    deserialize(buf, x);
-    BOOST_CHECK_EQUAL(f64, x);
-}
-
-BOOST_AUTO_TEST_CASE(duration_values_test) {
-    auto buf = serialize(dur);
-    duration x;
-    deserialize(buf, x);
-    BOOST_CHECK(dur == x);
-}
-
-BOOST_AUTO_TEST_CASE(timestamp_values_test) {
-    auto buf = serialize(ts);
-    timestamp x;
-    deserialize(buf, x);
-    BOOST_CHECK(ts == x);
-}
-
-BOOST_AUTO_TEST_CASE(enum_classes_test) {
-    auto buf = serialize(te);
-    test_enum x;
-    deserialize(buf, x);
-    BOOST_CHECK(te == x);
-}
-
-BOOST_AUTO_TEST_CASE(strings_test) {
-    auto buf = serialize(str);
-    string x;
-    deserialize(buf, x);
-    BOOST_CHECK_EQUAL(str, x);
-}
-
-BOOST_AUTO_TEST_CASE(custom_struct_test) {
-    auto buf = serialize(rs);
-    raw_struct x;
-    deserialize(buf, x);
-    BOOST_CHECK(rs == x);
-}
-
-BOOST_AUTO_TEST_CASE(atoms_test) {
-    auto foo = atom("foo");
-    BOOST_CHECK(foo == roundtrip(foo));
-    BOOST_CHECK(foo == msg_roundtrip(foo));
-    using bar_atom = atom_constant<atom("bar")>;
-    BOOST_CHECK(bar_atom::value == roundtrip(atom("bar")));
-    BOOST_CHECK(bar_atom::value == msg_roundtrip(atom("bar")));
-}
-
-BOOST_AUTO_TEST_CASE(raw_arrays_test) {
+BOOST_AUTO_TEST_CASE(raw_arrays) {
     auto buf = serialize(ra);
     int x[3];
     deserialize(buf, x);
@@ -314,20 +279,18 @@ BOOST_AUTO_TEST_CASE(raw_arrays_test) {
         BOOST_CHECK_EQUAL(ra[i], x[i]);
 }
 
-BOOST_AUTO_TEST_CASE(arrays_test) {
+BOOST_AUTO_TEST_CASE(arrays) {
     auto buf = serialize(ta);
     test_array x;
     deserialize(buf, x);
     for (auto i = 0; i < 4; ++i)
         BOOST_CHECK_EQUAL(ta.value[i], x.value[i]);
-    for (auto i = 0; i < 2; ++i) {
-        for (auto j = 0; j < 4; ++j) {
+    for (auto i = 0; i < 2; ++i)
+        for (auto j = 0; j < 4; ++j)
             BOOST_CHECK_EQUAL(ta.value2[i][j], x.value2[i][j]);
-        }
-    }
 }
 
-BOOST_AUTO_TEST_CASE(empty_non_pods_test) {
+BOOST_AUTO_TEST_CASE(empty_non_pods) {
     test_empty_non_pod x;
     auto buf = serialize(x);
     BOOST_REQUIRE(buf.empty());
@@ -346,7 +309,7 @@ std::string hexstr(const std::vector<char> &buf) {
     return oss.str();
 }
 
-BOOST_AUTO_TEST_CASE(messages_test) {
+BOOST_AUTO_TEST_CASE(messages) {
     // serialize original message which uses tuple_vals internally and
     // deserialize into a message which uses type_erased_value pointers
     message x;
@@ -357,33 +320,35 @@ BOOST_AUTO_TEST_CASE(messages_test) {
     // serialize fully dynamic message again (do another roundtrip)
     message y;
     auto buf2 = serialize(x);
-    BOOST_CHECK(buf1 == buf2);
+    BOOST_CHECK_EQUAL(buf1, buf2);
     deserialize(buf2, y);
     BOOST_CHECK_EQUAL(to_string(msg), to_string(y));
     BOOST_CHECK(is_message(y).equal(i32, i64, dur, ts, te, str, rs));
+    BOOST_CHECK_EQUAL(to_string(recursive), to_string(roundtrip(recursive)));
 }
 
-BOOST_AUTO_TEST_CASE(multiple_messages_test) {
+BOOST_AUTO_TEST_CASE(multiple_messages) {
     auto m = make_message(rs, te);
     auto buf = serialize(te, m, msg);
     test_enum t;
     message m1;
     message m2;
     deserialize(buf, t, m1, m2);
-    BOOST_CHECK(std::make_tuple(t, to_string(m1), to_string(m2)) == std::make_tuple(te, to_string(m), to_string(msg)));
+    BOOST_CHECK_EQUAL(std::make_tuple(t, to_string(m1), to_string(m2)),
+                      std::make_tuple(te, to_string(m), to_string(msg)));
     BOOST_CHECK(is_message(m1).equal(rs, te));
     BOOST_CHECK(is_message(m2).equal(i32, i64, dur, ts, te, str, rs));
 }
 
-BOOST_AUTO_TEST_CASE(type_erased_value_test) {
+BOOST_AUTO_TEST_CASE(type_erased_value) {
     auto buf = serialize(str);
     type_erased_value_ptr ptr {new type_erased_value_impl<std::string>};
-    binary_deserializer bd {&context, buf.data(), buf.size()};
-    ptr->load(bd);
+    binary_deserializer source {sys, buf};
+    ptr->load(source);
     BOOST_CHECK_EQUAL(str, *reinterpret_cast<const std::string *>(ptr->get()));
 }
 
-BOOST_AUTO_TEST_CASE(type_erased_view_test) {
+BOOST_AUTO_TEST_CASE(type_erased_view) {
     auto str_view = make_type_erased_view(str);
     auto buf = serialize(str_view);
     std::string res;
@@ -391,7 +356,7 @@ BOOST_AUTO_TEST_CASE(type_erased_view_test) {
     BOOST_CHECK_EQUAL(str, res);
 }
 
-BOOST_AUTO_TEST_CASE(type_erased_tuple_test) {
+BOOST_AUTO_TEST_CASE(type_erased_tuple) {
     auto tview = make_type_erased_tuple_view(str, i32);
     BOOST_CHECK_EQUAL(to_string(tview), deep_to_string(std::make_tuple(str, i32)));
     auto buf = serialize(tview);
@@ -405,54 +370,8 @@ BOOST_AUTO_TEST_CASE(type_erased_tuple_test) {
     BOOST_CHECK_EQUAL(to_string(tview), deep_to_string(std::make_tuple(str, i32)));
 }
 
-BOOST_AUTO_TEST_CASE(streambuf_serialization_test) {
-    auto data = std::string {"The quick brown fox jumps over the lazy dog"};
-    std::vector<char> buf;
-    // First, we check the standard use case in MTL where stream serializers own
-    // their stream buffers.
-    stream_serializer<vectorbuf> bs {vectorbuf {buf}};
-    auto e = bs(data);
-    BOOST_REQUIRE(e == none);
-    stream_deserializer<charbuf> bd {charbuf {buf}};
-    std::string target;
-    e = bd(target);
-    BOOST_REQUIRE(e == none);
-    BOOST_CHECK_EQUAL(data, target);
-    // Second, we test another use case where the serializers only keep
-    // references of the stream buffers.
-    buf.clear();
-    target.clear();
-    vectorbuf vb {buf};
-    stream_serializer<vectorbuf &> vs {vb};
-    e = vs(data);
-    BOOST_REQUIRE(e == none);
-    charbuf cb {buf};
-    stream_deserializer<charbuf &> vd {cb};
-    e = vd(target);
-    BOOST_REQUIRE(e == none);
-    BOOST_CHECK(data == target);
-}
-
-BOOST_AUTO_TEST_CASE(byte_sequence_optimization_test) {
-    std::vector<uint8_t> data(42);
-    std::fill(data.begin(), data.end(), 0x2a);
-    std::vector<uint8_t> buf;
-    using streambuf_type = containerbuf<std::vector<uint8_t>>;
-    streambuf_type cb {buf};
-    stream_serializer<streambuf_type &> bs {cb};
-    auto e = bs(data);
-    BOOST_REQUIRE(!e);
-    data.clear();
-    streambuf_type cb2 {buf};
-    stream_deserializer<streambuf_type &> bd {cb2};
-    e = bd(data);
-    BOOST_REQUIRE(!e);
-    BOOST_CHECK_EQUAL(data.size(), 42u);
-    BOOST_CHECK(std::all_of(data.begin(), data.end(), [](uint8_t c) { return c == 0x2a; }));
-}
-
-BOOST_AUTO_TEST_CASE(long_sequences_test) {
-    std::vector<char> data;
+BOOST_AUTO_TEST_CASE(long_sequences) {
+    byte_buffer data;
     binary_serializer sink {nullptr, data};
     size_t n = std::numeric_limits<uint32_t>::max();
     sink.begin_sequence(n);
@@ -487,25 +406,31 @@ BOOST_AUTO_TEST_CASE(variant_with_tree_types) {
 // -- our vector<bool> serialization packs into an uint64_t. Hence, the
 // critical sizes to test are 0, 1, 63, 64, and 65.
 
-BOOST_AUTO_TEST_CASE(bool_vector_size_0_test) {
+BOOST_AUTO_TEST_CASE(bool_vector_size_0) {
     std::vector<bool> xs;
     BOOST_CHECK_EQUAL(deep_to_string(xs), "[]");
-    BOOST_CHECK(xs == roundtrip(xs));
-    BOOST_CHECK(xs == msg_roundtrip(xs));
+    BOOST_CHECK_EQUAL(xs, roundtrip(xs));
+    BOOST_CHECK_EQUAL(xs, msg_roundtrip(xs));
 }
 
-BOOST_AUTO_TEST_CASE(bool_vector_size_1_test) {
+BOOST_AUTO_TEST_CASE(bool_vector_size_1) {
     std::vector<bool> xs {true};
     BOOST_CHECK_EQUAL(deep_to_string(xs), "[true]");
-    BOOST_CHECK(xs == roundtrip(xs));
-    BOOST_CHECK(xs == msg_roundtrip(xs));
+    BOOST_CHECK_EQUAL(xs, roundtrip(xs));
+    BOOST_CHECK_EQUAL(xs, msg_roundtrip(xs));
 }
 
-BOOST_AUTO_TEST_CASE(bool_vector_size_63_test) {
+BOOST_AUTO_TEST_CASE(bool_vector_size_2) {
+    std::vector<bool> xs {true, true};
+    BOOST_CHECK_EQUAL(deep_to_string(xs), "[true, true]");
+    BOOST_CHECK_EQUAL(xs, roundtrip(xs));
+    BOOST_CHECK_EQUAL(xs, msg_roundtrip(xs));
+}
+
+BOOST_AUTO_TEST_CASE(bool_vector_size_63) {
     std::vector<bool> xs;
-    for (int i = 0; i < 63; ++i) {
+    for (int i = 0; i < 63; ++i)
         xs.push_back(i % 3 == 0);
-    }
     BOOST_CHECK_EQUAL(deep_to_string(xs),
                       "[true, false, false, true, false, false, true, false, false, true, false, "
                       "false, true, false, false, true, false, false, true, false, false, true, "
@@ -513,15 +438,14 @@ BOOST_AUTO_TEST_CASE(bool_vector_size_63_test) {
                       "true, false, false, true, false, false, true, false, false, true, false, "
                       "false, true, false, false, true, false, false, true, false, false, true, "
                       "false, false, true, false, false, true, false, false]");
-    BOOST_CHECK(xs == roundtrip(xs));
-    BOOST_CHECK(xs == msg_roundtrip(xs));
+    BOOST_CHECK_EQUAL(xs, roundtrip(xs));
+    BOOST_CHECK_EQUAL(xs, msg_roundtrip(xs));
 }
 
-BOOST_AUTO_TEST_CASE(bool_vector_size_64_test) {
+BOOST_AUTO_TEST_CASE(bool_vector_size_64) {
     std::vector<bool> xs;
-    for (int i = 0; i < 64; ++i) {
+    for (int i = 0; i < 64; ++i)
         xs.push_back(i % 5 == 0);
-    }
     BOOST_CHECK_EQUAL(deep_to_string(xs),
                       "[true, false, false, false, false, true, false, false, "
                       "false, false, true, false, false, false, false, true, "
@@ -531,15 +455,14 @@ BOOST_AUTO_TEST_CASE(bool_vector_size_64_test) {
                       "true, false, false, false, false, true, false, false, "
                       "false, false, true, false, false, false, false, true, "
                       "false, false, false, false, true, false, false, false]");
-    BOOST_CHECK(xs == roundtrip(xs));
-    BOOST_CHECK(xs == msg_roundtrip(xs));
+    BOOST_CHECK_EQUAL(xs, roundtrip(xs));
+    BOOST_CHECK_EQUAL(xs, msg_roundtrip(xs));
 }
 
-BOOST_AUTO_TEST_CASE(bool_vector_size_65_test) {
+BOOST_AUTO_TEST_CASE(bool_vector_size_65) {
     std::vector<bool> xs;
-    for (int i = 0; i < 65; ++i) {
+    for (int i = 0; i < 65; ++i)
         xs.push_back(!(i % 7 == 0));
-    }
     BOOST_CHECK_EQUAL(deep_to_string(xs),
                       "[false, true, true, true, true, true, true, false, true, true, true, "
                       "true, true, true, false, true, true, true, true, true, true, false, true, "
@@ -547,8 +470,8 @@ BOOST_AUTO_TEST_CASE(bool_vector_size_65_test) {
                       "false, true, true, true, true, true, true, false, true, true, true, true, "
                       "true, true, false, true, true, true, true, true, true, false, true, true, "
                       "true, true, true, true, false, true]");
-    BOOST_CHECK(xs == roundtrip(xs));
-    BOOST_CHECK(xs == msg_roundtrip(xs));
+    BOOST_CHECK_EQUAL(xs, roundtrip(xs));
+    BOOST_CHECK_EQUAL(xs, msg_roundtrip(xs));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

@@ -196,7 +196,7 @@ namespace {
     public:
         result<void> operator()(int x) override {
             BOOST_CHECK_EQUAL(x, 42);
-            self->delayed_anon_send(self, std::chrono::milliseconds(10), true);
+            delayed_anon_send(self, std::chrono::milliseconds(10), true);
             return unit;
         }
 

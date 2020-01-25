@@ -77,7 +77,8 @@ namespace nil {
 
             config_value(const config_value &other) = default;
 
-            template<class T, class E = detail::enable_if_t<!std::is_same<detail::decay_t<T>, config_value>::value>>
+            template<class T,
+                     class E = typename std::enable_if<!std::is_same<detail::decay_t<T>, config_value>::value>::type>
             explicit config_value(T &&x) {
                 set(std::forward<T>(x));
             }
@@ -86,7 +87,8 @@ namespace nil {
 
             config_value &operator=(const config_value &other) = default;
 
-            template<class T, class E = detail::enable_if_t<!std::is_same<detail::decay_t<T>, config_value>::value>>
+            template<class T,
+                     class E = typename std::enable_if<!std::is_same<detail::decay_t<T>, config_value>::value>::type>
             config_value &operator=(T &&x) {
                 set(std::forward<T>(x));
                 return *this;
@@ -159,7 +161,8 @@ namespace nil {
             }
 
             template<class T>
-            detail::enable_if_t<detail::is_one_of<T, real, atom, timespan, uri, string, list, dictionary>::value>
+            typename std::enable_if<
+                detail::is_one_of<T, real, atom, timespan, uri, string, list, dictionary>::value>::type
                 set(T x) {
                 data_ = std::move(x);
             }
@@ -180,7 +183,8 @@ namespace nil {
             }
 
             template<class T>
-            detail::enable_if_t<detail::is_iterable<T>::value && !detail::is_one_of<T, string, list, dictionary>::value>
+            typename std::enable_if<detail::is_iterable<T>::value &&
+                                    !detail::is_one_of<T, string, list, dictionary>::value>::type
                 set(T xs) {
                 using value_type = typename T::value_type;
                 detail::bool_token<detail::is_pair<value_type>::value> is_map_type;
@@ -188,7 +192,7 @@ namespace nil {
             }
 
             template<class T>
-            detail::enable_if_t<std::is_integral<T>::value> set(T x) {
+            typename std::enable_if<std::is_integral<T>::value>::type set(T x) {
                 data_ = static_cast<int64_t>(x);
             }
 

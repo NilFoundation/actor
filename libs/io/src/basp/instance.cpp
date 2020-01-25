@@ -18,7 +18,6 @@
 #include <nil/mtl/io/basp/remote_message_handler.hpp>
 #include <nil/mtl/io/basp/version.hpp>
 #include <nil/mtl/io/basp/worker.hpp>
-#include <nil/mtl/streambuf.hpp>
 
 namespace nil {
     namespace mtl {
@@ -168,7 +167,7 @@ namespace nil {
                                     sender ? sender->id() : invalid_actor_id,
                                     dest_actor};
                         auto writer =
-                            make_callback([&](serializer &sink) -> error { return sink(forwarding_stack, msg); });
+                            make_callback([&](binary_serializer &sink) { return sink(forwarding_stack, msg); });
                         write(ctx, callee_.get_buffer(path->hdl), hdr, &writer);
                     } else {
                         header hdr {message_type::routed_message,
@@ -177,7 +176,7 @@ namespace nil {
                                     mid.integer_value(),
                                     sender ? sender->id() : invalid_actor_id,
                                     dest_actor};
-                        auto writer = make_callback([&](serializer &sink) -> error {
+                        auto writer = make_callback([&](binary_serializer &sink) {
                             return sink(source_node, dest_node, forwarding_stack, msg);
                         });
                         write(ctx, callee_.get_buffer(path->hdl), hdr, &writer);
@@ -214,7 +213,7 @@ namespace nil {
                             pa = &i->second;
                     }
                     MTL_LOG_DEBUG_IF(!pa && port, "no actor published");
-                    auto writer = make_callback([&](serializer &sink) -> error {
+                    auto writer = make_callback([&](binary_serializer &sink) -> error {
                         auto app_ids = config().middleman_app_identifiers;
                         auto aid = invalid_actor_id;
                         auto iface = std::set<std::string> {};
@@ -229,7 +228,7 @@ namespace nil {
                 }
 
                 void instance::write_client_handshake(execution_unit *ctx, buffer_type &buf) {
-                    auto writer = make_callback([&](serializer &sink) -> error { return sink(this_node_); });
+                    auto writer = make_callback([&](binary_serializer &sink) -> error { return sink(this_node_); });
                     header hdr {message_type::client_handshake, 0, 0, 0, invalid_actor_id, invalid_actor_id};
                     write(ctx, buf, hdr, &writer);
                 }
@@ -237,7 +236,8 @@ namespace nil {
                 void instance::write_monitor_message(execution_unit *ctx, buffer_type &buf, const node_id &dest_node,
                                                      actor_id aid) {
                     MTL_LOG_TRACE(MTL_ARG(dest_node) << MTL_ARG(aid));
-                    auto writer = make_callback([&](serializer &sink) -> error { return sink(this_node_, dest_node); });
+                    auto writer =
+                        make_callback([&](binary_serializer &sink) -> error { return sink(this_node_, dest_node); });
                     header hdr {message_type::monitor_message, 0, 0, 0, invalid_actor_id, aid};
                     write(ctx, buf, hdr, &writer);
                 }
@@ -245,8 +245,8 @@ namespace nil {
                 void instance::write_down_message(execution_unit *ctx, buffer_type &buf, const node_id &dest_node,
                                                   actor_id aid, const error &rsn) {
                     MTL_LOG_TRACE(MTL_ARG(dest_node) << MTL_ARG(aid) << MTL_ARG(rsn));
-                    auto writer =
-                        make_callback([&](serializer &sink) -> error { return sink(this_node_, dest_node, rsn); });
+                    auto writer = make_callback(
+                        [&](binary_serializer &sink) -> error { return sink(this_node_, dest_node, rsn); });
                     header hdr {message_type::down_message, 0, 0, 0, aid, invalid_actor_id};
                     write(ctx, buf, hdr, &writer);
                 }
@@ -369,7 +369,8 @@ namespace nil {
                                 MTL_LOG_DEBUG("launch BASP worker for deserializing a" << hdr.operation);
                                 worker->launch(last_hop, hdr, *payload);
                             } else {
-                                MTL_LOG_DEBUG("out of BASP middleman_workers, continue deserializing a" << hdr.operation);
+                                MTL_LOG_DEBUG("out of BASP middleman_workers, continue deserializing a"
+                                              << hdr.operation);
                                 // If no worker is available then we have no other choice than to take
                                 // the performance hit and deserialize in this thread.
                                 struct handler : remote_message_handler<handler> {

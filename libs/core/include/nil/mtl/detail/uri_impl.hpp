@@ -88,15 +88,13 @@ namespace nil {
             /// @relates uri_impl
             template<class Inspector>
             typename Inspector::result_type inspect(Inspector &f, uri_impl &x) {
-                auto load = [&]() -> error {
+                auto load = [&] {
                     x.str.clear();
                     if (x.valid())
                         x.assemble_str();
-                    return none;
                 };
                 return f(x.scheme, x.authority, x.path, x.query, x.fragment, meta::load_callback(load));
             }
-
         }    // namespace detail
     }        // namespace mtl
-}
+}    // namespace nil

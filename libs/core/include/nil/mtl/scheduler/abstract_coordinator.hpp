@@ -25,6 +25,7 @@
 #include <nil/mtl/actor_cast.hpp>
 #include <nil/mtl/actor_clock.hpp>
 #include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/error_code.hpp>
 
 namespace nil {
     namespace mtl {

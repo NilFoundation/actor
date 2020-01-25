@@ -92,7 +92,7 @@ namespace nil {
                 /// @throws std::runtime_error if more than three dimensions are set,
                 ///                            `dims.empty()`, or `clCreateKernel` failed.
                 template<class T, class... Ts>
-                detail::enable_if_t<opencl::is_opencl_arg<T>::value, actor>
+                typename std::enable_if<opencl::is_opencl_arg<T>::value, actor>::type
                     spawn(const opencl::program_ptr prog, const char *fname, const opencl::nd_range &range, T &&x,
                           Ts &&... xs) {
                     detail::cl_spawn_helper<false, T, Ts...> f;
@@ -106,7 +106,7 @@ namespace nil {
                 ///                            <tt>dims.empty()</tt>, a compilation error
                 ///                            occured, or @p clCreateKernel failed.
                 template<class T, class... Ts>
-                detail::enable_if_t<opencl::is_opencl_arg<T>::value, actor>
+                typename std::enable_if<opencl::is_opencl_arg<T>::value, actor>::type
                     spawn(const char *source, const char *fname, const opencl::nd_range &range, T &&x, Ts &&... xs) {
                     detail::cl_spawn_helper<false, T, Ts...> f;
                     return f(actor_config {system_.dummy_execution_unit()}, create_program(source), fname, range,
@@ -145,7 +145,7 @@ namespace nil {
                 /// @throws std::runtime_error if more than three dimensions are set,
                 ///                            `dims.empty()`, or `clCreateKernel` failed.
                 template<class T, class... Ts>
-                detail::enable_if_t<opencl::is_opencl_arg<T>::value, actor>
+                typename std::enable_if<opencl::is_opencl_arg<T>::value, actor>::type
                     spawn(const opencl::program_ptr prog, const char *fname, const opencl::nd_range &range,
                           std::function<optional<message>(message &)> map_args, T &&x, Ts &&... xs) {
                     detail::cl_spawn_helper<false, Ts...> f;
@@ -159,7 +159,7 @@ namespace nil {
                 ///                            <tt>dims.empty()</tt>, a compilation error
                 ///                            occured, or @p clCreateKernel failed.
                 template<class T, class... Ts>
-                detail::enable_if_t<opencl::is_opencl_arg<T>::value, actor>
+                typename std::enable_if<opencl::is_opencl_arg<T>::value, actor>::type
                     spawn(const char *source, const char *fname, const opencl::nd_range &range,
                           std::function<optional<message>(message &)> map_args, T &&x, Ts &&... xs) {
                     detail::cl_spawn_helper<false, Ts...> f;
@@ -174,7 +174,7 @@ namespace nil {
                 /// @throws std::runtime_error if more than three dimensions are set,
                 ///                            `dims.empty()`, or `clCreateKernel` failed.
                 template<class Fun, class... Ts>
-                detail::enable_if_t<!opencl::is_opencl_arg<Fun>::value, actor>
+                typename std::enable_if<!opencl::is_opencl_arg<Fun>::value, actor>::type
                     spawn(const opencl::program_ptr prog, const char *fname, const opencl::nd_range &range,
                           std::function<optional<message>(nd_range &, message &)> map_args, Fun map_result,
                           Ts &&... xs) {
@@ -189,7 +189,7 @@ namespace nil {
                 ///                            <tt>dims.empty()</tt>, a compilation error
                 ///                            occured, or @p clCreateKernel failed.
                 template<class Fun, class... Ts>
-                detail::enable_if_t<!opencl::is_opencl_arg<Fun>::value, actor>
+                typename std::enable_if<!opencl::is_opencl_arg<Fun>::value, actor>::type
                     spawn(const char *source, const char *fname, const opencl::nd_range &range,
                           std::function<optional<message>(nd_range &, message &)> map_args, Fun map_result,
                           Ts &&... xs) {
@@ -203,7 +203,7 @@ namespace nil {
                 /// @throws std::runtime_error if more than three dimensions are set,
                 ///                            `dims.empty()`, or `clCreateKernel` failed.
                 template<class T, class... Ts>
-                detail::enable_if_t<opencl::is_opencl_arg<T>::value, actor>
+                typename std::enable_if<opencl::is_opencl_arg<T>::value, actor>::type
                     spawn(const opencl::program_ptr prog, const char *fname, const opencl::nd_range &range,
                           std::function<optional<message>(nd_range &, message &)> map_args, T &&x, Ts &&... xs) {
                     detail::cl_spawn_helper<true, T, Ts...> f;
@@ -217,7 +217,7 @@ namespace nil {
                 ///                            <tt>dims.empty()</tt>, a compilation error
                 ///                            occured, or @p clCreateKernel failed.
                 template<class T, class... Ts>
-                detail::enable_if_t<opencl::is_opencl_arg<T>::value, actor>
+                typename std::enable_if<opencl::is_opencl_arg<T>::value, actor>::type
                     spawn(const char *source, const char *fname, const opencl::nd_range &range,
                           std::function<optional<message>(nd_range &, message &)> map_args, T &&x, Ts &&... xs) {
                     detail::cl_spawn_helper<true, T, Ts...> f;

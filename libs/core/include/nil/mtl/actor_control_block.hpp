@@ -168,9 +168,9 @@ namespace nil {
         /// @relates actor_control_block
         using weak_actor_ptr = weak_intrusive_ptr<actor_control_block>;
 
-        error load_actor(strong_actor_ptr &storage, execution_unit *, actor_id aid, const node_id &nid);
+        error_code<sec> load_actor(strong_actor_ptr &storage, execution_unit *, actor_id aid, const node_id &nid);
 
-        error save_actor(strong_actor_ptr &storage, execution_unit *, actor_id aid, const node_id &nid);
+        error_code<sec> save_actor(strong_actor_ptr &storage, execution_unit *, actor_id aid, const node_id &nid);
 
         template<class Inspector>
         auto context_of(Inspector *f) -> decltype(f->context()) {
@@ -207,10 +207,7 @@ namespace nil {
         typename Inspector::result_type inspect(Inspector &f, weak_actor_ptr &x) {
             // inspect as strong pointer, then write back to weak pointer on save
             auto tmp = x.lock();
-            auto load = [&]() -> error {
-                x.reset(tmp.get());
-                return none;
-            };
+            auto load = [&] { x.reset(tmp.get()); };
             return f(tmp, meta::load_callback(load));
         }
 

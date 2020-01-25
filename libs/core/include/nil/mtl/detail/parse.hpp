@@ -59,7 +59,7 @@ namespace nil {
             // -- non-fixed size integer types ---------------------------------------------
 
             template<class T>
-            detail::enable_if_t<std::is_integral<T>::value> parse(parse_state &ps, T &x) {
+            typename std::enable_if<std::is_integral<T>::value>::type parse(parse_state &ps, T &x) {
                 using squashed_type = squashed_int_t<T>;
                 return parse(ps, reinterpret_cast<squashed_type &>(x));
             }
@@ -99,7 +99,7 @@ namespace nil {
             void parse_element(parse_state &ps, std::string &x, const char *char_blacklist);
 
             template<class T>
-            enable_if_t<!is_pair<T>::value> parse_element(parse_state &ps, T &x, const char *) {
+            typename std::enable_if<!is_pair<T>::value>::type parse_element(parse_state &ps, T &x, const char *) {
                 parse(ps, x);
             }
 

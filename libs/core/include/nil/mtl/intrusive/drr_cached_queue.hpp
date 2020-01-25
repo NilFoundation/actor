@@ -108,8 +108,7 @@ namespace nil {
                 /// elements.
                 template<class F>
                 void peek_all(F f) const {
-                    for (auto i = list_.begin(); i != list_.end(); ++i)
-                        f(*promote(i.ptr));
+                    list_.peek_all(f);
                 }
 
                 // -- modifiers

@@ -52,7 +52,6 @@ namespace nil {
 
                 bool shared() const noexcept override;
             };
-
         }    // namespace detail
     }        // namespace mtl
 }    // namespace nil

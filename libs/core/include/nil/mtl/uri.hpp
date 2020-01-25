@@ -104,6 +104,11 @@ namespace nil {
             /// Returns a hash code over all components.
             size_t hash_code() const noexcept;
 
+            /// Returns a new URI with the `authority` component only.
+            /// @returns A new URI in the form `scheme://authority` if the authority
+            ///          exists, otherwise `none`.`
+            optional<uri> authority_only() const;
+
             // -- comparison -------------------------------------------------------------
 
             int compare(const uri &other) const noexcept;
@@ -114,7 +119,11 @@ namespace nil {
 
             friend error inspect(nil::mtl::serializer &dst, uri &x);
 
+            friend error_code<sec> inspect(nil::mtl::binary_serializer &dst, uri &x);
+
             friend error inspect(nil::mtl::deserializer &src, uri &x);
+
+            friend error_code<sec> inspect(nil::mtl::binary_deserializer &src, uri &x);
 
         private:
             impl_ptr impl_;
@@ -135,6 +144,9 @@ namespace nil {
 
         /// @relates uri
         error parse(string_view str, uri &dest);
+
+        /// @relates uri
+        expected<uri> make_uri(string_view str);
 
     }    // namespace mtl
 }    // namespace nil

@@ -87,7 +87,6 @@ namespace nil {
                 MTL_ASSERT(pos < size());
                 return decorated_->save(mapping_[pos], sink);
             }
-
         }    // namespace detail
     }        // namespace mtl
 }    // namespace nil

@@ -847,7 +847,8 @@ namespace nil {
                     to.first = from.first;
                     MTL_ASSERT(to.second.capacity() > from.second.size());
                     to.second.resize(from.second.size());
-                    std::copy(from.second.begin(), from.second.end(), to.second.begin());
+                    std::transform(from.second.begin(), from.second.end(), to.second.begin(),
+                                   [](byte x) { return nil::mtl::to_integer<char>(x); });
                     data->vn_buf.pop_front();
                     auto sitr = datagram_data_.find(data->rd_buf.first);
                     if (sitr == datagram_data_.end()) {

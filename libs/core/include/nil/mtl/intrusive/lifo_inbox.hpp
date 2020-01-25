@@ -42,6 +42,13 @@ namespace nil {
 
                 using deleter_type = typename unique_pointer::deleter_type;
 
+                // -- static utility functions -----------------------------------------------
+
+                /// Casts a node type to its value type.
+                static pointer promote(node_pointer ptr) noexcept {
+                    return static_cast<pointer>(ptr);
+                }
+
                 /// Tries to enqueue a new element to the inbox.
                 /// @threadsafe
                 inbox_result push_front(pointer new_element) noexcept {

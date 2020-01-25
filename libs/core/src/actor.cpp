@@ -83,19 +83,6 @@ namespace nil {
                 actor_cast<strong_actor_ptr>(std::move(g)), std::set<std::string> {});
         }
 
-        actor actor::splice_impl(std::initializer_list<actor> xs) {
-            assert(xs.size() >= 2);
-            actor_system *sys = nullptr;
-            std::vector<strong_actor_ptr> tmp;
-            for (auto &x : xs) {
-                if (sys == nullptr)
-                    sys = &(x->home_system());
-                tmp.push_back(actor_cast<strong_actor_ptr>(x));
-            }
-            return make_actor<decorator::splitter, actor>(sys->next_actor_id(), sys->node(), sys, std::move(tmp),
-                                                          std::set<std::string> {});
-        }
-
         bool operator==(const actor &lhs, abstract_actor *rhs) {
             return lhs ? actor_cast<abstract_actor *>(lhs) == rhs : rhs == nullptr;
         }
@@ -111,6 +98,5 @@ namespace nil {
         bool operator!=(abstract_actor *lhs, const actor &rhs) {
             return !(lhs == rhs);
         }
-
     }    // namespace mtl
 }    // namespace nil

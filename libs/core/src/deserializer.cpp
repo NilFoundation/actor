@@ -16,18 +16,30 @@
 
 namespace nil {
     namespace mtl {
+        deserializer::deserializer(actor_system &x) noexcept : context_(x.dummy_execution_unit()) {
+            // nop
+        }
+
+        deserializer::deserializer(execution_unit *x) noexcept : context_(x) {
+            // nop
+        }
 
         deserializer::~deserializer() {
             // nop
         }
 
-        deserializer::deserializer(actor_system &x) : super(x.dummy_execution_unit()) {
-            // nop
+        auto deserializer::apply(std::vector<bool> &x) noexcept -> result_type {
+            x.clear();
+            size_t size = 0;
+            if (auto err = begin_sequence(size))
+                return err;
+            for (size_t i = 0; i < size; ++i) {
+                bool tmp = false;
+                if (auto err = apply(tmp))
+                    return err;
+                x.emplace_back(tmp);
+            }
+            return end_sequence();
         }
-
-        deserializer::deserializer(execution_unit *x) : super(x) {
-            // nop
-        }
-
     }    // namespace mtl
 }    // namespace nil

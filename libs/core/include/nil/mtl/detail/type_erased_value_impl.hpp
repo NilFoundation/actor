@@ -70,6 +70,10 @@ namespace nil {
                     return source(*addr_of(x_));
                 }
 
+                error_code<sec> load(binary_deserializer &source) override {
+                    return source(*addr_of(x_));
+                }
+
                 // -- overridden observers ---------------------------------------------------
 
                 static rtti_pair type(std::integral_constant<uint16_t, 0>) {
@@ -92,6 +96,10 @@ namespace nil {
                 }
 
                 error save(serializer &sink) const override {
+                    return sink(*addr_of(const_cast<T &>(x_)));
+                }
+
+                error_code<sec> save(binary_serializer &sink) const override {
                     return sink(*addr_of(const_cast<T &>(x_)));
                 }
 

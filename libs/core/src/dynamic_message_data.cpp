@@ -56,6 +56,11 @@ namespace nil {
                 return elements_[pos]->load(source);
             }
 
+            error_code<sec> dynamic_message_data::load(size_t pos, binary_deserializer &source) {
+                MTL_ASSERT(pos < size());
+                return elements_[pos]->load(source);
+            }
+
             size_t dynamic_message_data::size() const noexcept {
                 return elements_.size();
             }
@@ -85,6 +90,11 @@ namespace nil {
             }
 
             error dynamic_message_data::save(size_t pos, serializer &sink) const {
+                MTL_ASSERT(pos < size());
+                return elements_[pos]->save(sink);
+            }
+
+            error_code<sec> dynamic_message_data::save(size_t pos, binary_serializer &sink) const {
                 MTL_ASSERT(pos < size());
                 return elements_[pos]->save(sink);
             }

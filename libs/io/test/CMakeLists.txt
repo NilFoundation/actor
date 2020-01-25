@@ -22,7 +22,7 @@ macro(define_io_test name)
                                ${Boost_INCLUDE_DIRS})
 
     set_target_properties(io_${name}_test PROPERTIES
-                          CXX_STANDARD 11
+                          CXX_STANDARD 17
                           CXX_STANDARD_REQUIRED TRUE)
 
     get_target_property(target_type Boost::unit_test_framework TYPE)
@@ -37,7 +37,7 @@ list(APPEND TESTS_NAMES
      triggering
      default_multiplexer
      remote_group
-     basp
+     basp_broker
      typed_remote_actor
      automatic_connection
      #     remote_actor_udp

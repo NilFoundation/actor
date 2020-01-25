@@ -63,7 +63,7 @@ namespace nil {
                 /// Only called if the results includes at least one type that is not a
                 /// mem_ref.
                 template<class Q = result_types>
-                detail::enable_if_t<!detail::tl_forall<Q, is_ref_type>::value> enqueue() {
+                typename std::enable_if<!detail::tl_forall<Q, is_ref_type>::value>::type enqueue() {
                     // Errors in this function can not be handled by opencl_err.hpp
                     // because they require non-standard error handling
                     MTL_LOG_TRACE("");
@@ -112,7 +112,7 @@ namespace nil {
                 /// once the execution is finished. Only called if the results only consist
                 /// of mem_ref types.
                 template<class Q = result_types>
-                detail::enable_if_t<detail::tl_forall<Q, is_ref_type>::value> enqueue() {
+                typename std::enable_if<detail::tl_forall<Q, is_ref_type>::value>::type enqueue() {
                     // Errors in this function can not be handled by opencl_err.hpp
                     // because they require non-standard error handling
                     MTL_LOG_TRACE("");

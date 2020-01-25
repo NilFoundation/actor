@@ -23,11 +23,7 @@ namespace nil {
     namespace mtl {
 
         /// The value type of atoms.
-        enum class atom_value : uint64_t {
-            /// @cond PRIVATE
-            dirty_little_hack = 31337
-            /// @endcond
-        };
+        enum class atom_value : uint64_t {};
 
         /// @relates atom_value
         std::string to_string(const atom_value &what);
