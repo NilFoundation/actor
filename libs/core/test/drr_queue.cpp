@@ -81,7 +81,6 @@ BOOST_AUTO_TEST_CASE(default_constructed_test) {
     BOOST_REQUIRE_EQUAL(queue.peek(), nullptr);
     BOOST_REQUIRE_EQUAL(queue.next(), nullptr);
     BOOST_REQUIRE(queue.begin() == queue.end());
-    BOOST_REQUIRE_EQUAL(queue.before_begin()->next, queue.end().ptr);
 }
 
 BOOST_AUTO_TEST_CASE(inc_deficit_test) {

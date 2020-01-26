@@ -66,6 +66,48 @@
 using namespace nil::mtl;
 using nil::mtl::detail::type_erased_value_impl;
 
+namespace boost {
+    namespace test_tools {
+        namespace tt_detail {
+            template<>
+            struct print_log_value<duration> {
+                void operator()(std::ostream &, duration const &) {
+                }
+            };
+
+            template<typename... T>
+            struct print_log_value<std::chrono::time_point<T...>> {
+                void operator()(std::ostream &, std::chrono::time_point<T...> const &) {
+                }
+            };
+
+            template<typename... T>
+            struct print_log_value<std::tuple<T...>> {
+                void operator()(std::ostream &, std::tuple<T...> const &) {
+                }
+            };
+
+            template<typename T, template<typename> class Allocator>
+            struct print_log_value<std::vector<T, Allocator<T>>> {
+                void operator()(std::ostream &, std::vector<T, Allocator<T>> const &) {
+                }
+            };
+
+            template<typename... T>
+            struct print_log_value<nil::mtl::variant<T...>> {
+                void operator()(std::ostream &, nil::mtl::variant<T...> const &) {
+                }
+            };
+
+            template<>
+            struct print_log_value<nil::mtl::byte> {
+                void operator()(std::ostream &, nil::mtl::byte const &) {
+                }
+            };
+        }    // namespace tt_detail
+    }        // namespace test_tools
+}    // namespace boost
+
 namespace {
 
     using strmap = std::map<std::string, std::u16string>;
@@ -189,18 +231,13 @@ namespace {
             auto tmp = make_message(x);
             deserialize(serialize(tmp), result);
             if (!result.match_elements<T>())
-                BOOST_FAIL("expected: " << x << ", got: " << result);
+                BOOST_FAIL("got: " << nil::mtl::to_string(result));
             return result.get_as<T>(0);
         }
 
         fixture() {
-            rs.str.assign(string(str.rbegin(), str.rend()));
+            rs.str.assign(std::string(str.rbegin(), str.rend()));
             msg = make_message(i32, i64, dur, ts, te, str, rs);
-            config_value::dictionary dict;
-            put(dict, "scheduler.policy", atom("none"));
-            put(dict, "scheduler.max-threads", 42);
-            put(dict, "nodes.preload", make_config_value_list("sun", "venus", "mercury", "earth", "mars"));
-            recursive = make_message(config_value {std::move(dict)});
         }
     };
 
@@ -215,8 +252,8 @@ namespace {
         bool equal(T &&v, Ts &&... vs) {
             bool ok = false;
             // work around for gcc 4.8.4 bug
-            auto tup = tie(v, vs...);
-            message_handler impl {[&](T const &u, Ts const &... us) { ok = tup == tie(u, us...); }};
+            auto tup = std::tie(v, vs...);
+            message_handler impl {[&](T const &u, Ts const &... us) { ok = tup == std::tie(u, us...); }};
             impl(msg);
             return ok;
         }
@@ -224,9 +261,9 @@ namespace {
 
 }    // namespace
 
-#define CHECK_RT(val) BOOST_CHECK_EQUAL(val, roundtrip(val))
+#define CHECK_RT(val) BOOST_CHECK(val == roundtrip(val))
 
-#define CHECK_MSG_RT(val) BOOST_CHECK_EQUAL(val, msg_roundtrip(val))
+#define CHECK_MSG_RT(val) BOOST_CHECK(val == msg_roundtrip(val))
 
 BOOST_FIXTURE_TEST_SUITE(serialization_tests, fixture)
 
@@ -320,7 +357,7 @@ BOOST_AUTO_TEST_CASE(messages) {
     // serialize fully dynamic message again (do another roundtrip)
     message y;
     auto buf2 = serialize(x);
-    BOOST_CHECK_EQUAL(buf1, buf2);
+    BOOST_CHECK_EQUAL_COLLECTIONS(buf1.begin(), buf1.end(), buf2.begin(), buf2.end());
     deserialize(buf2, y);
     BOOST_CHECK_EQUAL(to_string(msg), to_string(y));
     BOOST_CHECK(is_message(y).equal(i32, i64, dur, ts, te, str, rs));

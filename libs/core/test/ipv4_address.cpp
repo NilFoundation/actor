@@ -21,6 +21,7 @@
 #include <nil/mtl/ipv4_address.hpp>
 #include <nil/mtl/ipv4_endpoint.hpp>
 
+#include <nil/mtl/detail/parse.hpp>
 #include <nil/mtl/detail/network_order.hpp>
 
 using namespace nil::mtl;
@@ -34,6 +35,12 @@ namespace boost {
                 void operator()(std::ostream &, ipv4_address const &) {
                 }
             };
+
+            template<>
+            struct print_log_value<ipv4_endpoint> {
+                void operator()(std::ostream &, ipv4_endpoint const &) {
+                }
+            };
         }    // namespace tt_detail
     }        // namespace test_tools
 }    // namespace boost
@@ -43,7 +50,7 @@ namespace {
     ipv4_endpoint operator"" _ep(const char *str, size_t size) {
         ipv4_endpoint result;
         if (auto err = detail::parse(string_view {str, size}, result))
-            BOOST_FAIL("unable to parse input: " << err);
+            BOOST_FAIL("unable to parse input: " << to_string(err));
         return result;
     }
 
@@ -65,19 +72,19 @@ namespace {
         }
     };
 
-#define CHECK_TO_STRING(addr) BOOST_CHECK_EQUAL(addr, to_string(addr##_ep))
+#define CHECK_TO_STRING(addr) BOOST_CHECK_EQUAL(addr, nil::mtl::to_string(addr##_ep))
 
-#define CHECK_COMPARISON(addr1, addr2)                  \
-    BOOST_CHECK_GT(addr2##_ep, addr1##_ep);          \
-    BOOST_CHECK_GE(addr2##_ep, addr1##_ep); \
-    BOOST_CHECK_GE(addr1##_ep, addr1##_ep); \
-    BOOST_CHECK_GE(addr2##_ep, addr2##_ep); \
-    BOOST_CHECK_EQUAL(addr1##_ep, addr1##_ep);            \
-    BOOST_CHECK_EQUAL(addr2##_ep, addr2##_ep);            \
+#define CHECK_COMPARISON(addr1, addr2)         \
+    BOOST_CHECK_GT(addr2##_ep, addr1##_ep);    \
+    BOOST_CHECK_GE(addr2##_ep, addr1##_ep);    \
+    BOOST_CHECK_GE(addr1##_ep, addr1##_ep);    \
+    BOOST_CHECK_GE(addr2##_ep, addr2##_ep);    \
+    BOOST_CHECK_EQUAL(addr1##_ep, addr1##_ep); \
+    BOOST_CHECK_EQUAL(addr2##_ep, addr2##_ep); \
     BOOST_CHECK_LE(addr1##_ep, addr2##_ep);    \
     BOOST_CHECK_LE(addr1##_ep, addr1##_ep);    \
     BOOST_CHECK_LE(addr2##_ep, addr2##_ep);    \
-    BOOST_CHECK_NE(addr1##_ep, addr2##_ep);        \
+    BOOST_CHECK_NE(addr1##_ep, addr2##_ep);    \
     BOOST_CHECK_NE(addr2##_ep, addr1##_ep);
 
 #define CHECK_SERIALIZATION(addr) BOOST_CHECK_EQUAL(addr##_ep, roundtrip(addr##_ep))

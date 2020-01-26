@@ -39,7 +39,6 @@
 using namespace nil::mtl;
 
 namespace {
-
     template<class T>
     class inspector_adapter_base {
     public:
@@ -238,7 +237,7 @@ namespace {
             byte_buffer result;
             binary_serializer sink {&context, result};
             if (auto err = sink(x))
-                BOOST_FAIL("failed to serialize " << to_string(x) << ": " << to_string(err));
+                BOOST_FAIL("failed to serialize: " << to_string(err));
             return result;
         }
 
@@ -249,7 +248,7 @@ namespace {
             auto y = static_cast<T>(0);
             if (auto err = source(y))
                 BOOST_FAIL("failed to deserialize from buffer: " << to_string(err));
-            BOOST_CHECK_EQUAL(x, y);
+            BOOST_CHECK(x == y);
             return detail::safe_equal(x, y);
         }
 
@@ -260,7 +259,7 @@ namespace {
             T y;
             if (auto err = source(y))
                 BOOST_FAIL("failed to deserialize from buffer: " << to_string(err));
-            BOOST_CHECK_EQUAL(x, y);
+            BOOST_CHECK(x == y);
             return detail::safe_equal(x, y);
         }
     };
