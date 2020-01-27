@@ -98,12 +98,6 @@ namespace boost {
                 void operator()(std::ostream &, nil::mtl::variant<T...> const &) {
                 }
             };
-
-            template<>
-            struct print_log_value<nil::mtl::byte> {
-                void operator()(std::ostream &, nil::mtl::byte const &) {
-                }
-            };
         }    // namespace tt_detail
     }        // namespace test_tools
 }    // namespace boost
