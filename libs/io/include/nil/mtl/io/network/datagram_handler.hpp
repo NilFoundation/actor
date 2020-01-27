@@ -37,7 +37,7 @@ namespace nil {
                     using manager_ptr = intrusive_ptr<datagram_manager>;
 
                     /// A buffer class providing a compatible interface to `std::vector`.
-                    using write_buffer_type = std::vector<char>;
+                    using write_buffer_type = byte_buffer;
                     using read_buffer_type = network::receive_buffer;
 
                     /// A job for sending a datagram consisting of the sender and a buffer.
@@ -67,7 +67,7 @@ namespace nil {
                     /// Enqueues a buffer to be sent as a datagram.
                     /// @warning Must not be modified outside the IO multiplexers event loop
                     ///          once the stream has been started.
-                    void enqueue_datagram(datagram_handle hdl, std::vector<char> buf) {
+                    void enqueue_datagram(datagram_handle hdl, write_buffer_type buf) {
                         wr_offline_buf_.emplace_back(hdl, move(buf));
                     }
 
@@ -125,7 +125,7 @@ namespace nil {
                                     MTL_RAISE_ERROR("got write event for undefined endpoint");
                                 auto &id = itr->first;
                                 auto &ep = itr->second;
-                                std::vector<char> buf;
+                                write_buffer_type buf;
                                 std::swap(buf, wr_buf_.second);
                                 auto size_as_int = static_cast<int>(buf.size());
                                 if (size_as_int > send_buffer_size_) {
@@ -151,7 +151,7 @@ namespace nil {
 
                     bool handle_read_result(bool read_result);
 
-                    void handle_write_result(bool write_result, datagram_handle id, std::vector<char> &buf, size_t wb);
+                    void handle_write_result(bool write_result, datagram_handle id, write_buffer_type &buf, size_t wb);
 
                     void handle_error();
 

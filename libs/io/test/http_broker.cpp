@@ -196,7 +196,7 @@ namespace {
         // mocks some input for our AUT and allows to
         // check the output for this operation
         mock_t mock(const char *what) {
-            std::vector<char> buf;
+            byte_buffer buf;
             for (char c = *what++; c != '\0'; c = *what++) {
                 buf.push_back(c);
             }

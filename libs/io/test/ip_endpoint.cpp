@@ -34,7 +34,7 @@ namespace {
             byte_buffer buf;
             binary_serializer sink {sys, buf};
             if (auto err = sink(x, xs...))
-                CAF_FAIL("serialization failed: " << sys.render(err));
+                BOOST_FAIL("serialization failed: " << sys.render(err));
             return buf;
         }
 
@@ -42,7 +42,7 @@ namespace {
         void deserialize(const Buffer &buf, T &x, Ts &... xs) {
             binary_deserializer source {sys, buf};
             if (auto err = source(x, xs...))
-                CAF_FAIL("serialization failed: " << sys.render(err));
+                BOOST_FAIL("serialization failed: " << sys.render(err));
         }
     };
 }    // namespace
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(ip_endpoint_test) {
     BOOST_CHECK_EQUAL(12345, p);
     BOOST_CHECK(0 < l);
     // serialize the endpoint and clear it
-    std::vector<char> buf = serialize(ep);
+    byte_buffer buf = serialize(ep);
     auto save = ep;
     ep.clear();
     BOOST_CHECK_EQUAL("", network::host(ep));

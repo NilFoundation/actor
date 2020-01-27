@@ -78,7 +78,7 @@ namespace nil {
                     x->ack_writes(enable);
             }
 
-            std::vector<char> &abstract_broker::wr_buf(connection_handle hdl) {
+            byte_buffer &abstract_broker::wr_buf(connection_handle hdl) {
                 MTL_ASSERT(hdl != invalid_connection_handle);
                 auto x = by_id(hdl);
                 if (!x) {
@@ -90,7 +90,7 @@ namespace nil {
 
             void abstract_broker::write(connection_handle hdl, size_t bs, const void *buf) {
                 auto &out = wr_buf(hdl);
-                auto first = reinterpret_cast<const char *>(buf);
+                auto first = reinterpret_cast<const byte *>(buf);
                 auto last = first + bs;
                 out.insert(out.end(), first, last);
             }
@@ -108,7 +108,7 @@ namespace nil {
                     x->ack_writes(enable);
             }
 
-            std::vector<char> &abstract_broker::wr_buf(datagram_handle hdl) {
+            byte_buffer &abstract_broker::wr_buf(datagram_handle hdl) {
                 auto x = by_id(hdl);
                 if (!x) {
                     MTL_LOG_ERROR(
@@ -119,7 +119,7 @@ namespace nil {
                 return x->wr_buf(hdl);
             }
 
-            void abstract_broker::enqueue_datagram(datagram_handle hdl, std::vector<char> buf) {
+            void abstract_broker::enqueue_datagram(datagram_handle hdl, byte_buffer buf) {
                 auto x = by_id(hdl);
                 if (!x)
                     MTL_LOG_ERROR(
@@ -130,7 +130,7 @@ namespace nil {
 
             void abstract_broker::write(datagram_handle hdl, size_t bs, const void *buf) {
                 auto &out = wr_buf(hdl);
-                auto first = reinterpret_cast<const char *>(buf);
+                auto first = reinterpret_cast<const byte *>(buf);
                 auto last = first + bs;
                 out.insert(out.end(), first, last);
             }

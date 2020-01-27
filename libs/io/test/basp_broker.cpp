@@ -79,7 +79,7 @@ namespace {
 
     constexpr uint32_t num_remote_nodes = 2;
 
-    using buffer = std::vector<char>;
+    using buffer = byte_buffer;
 
     std::string hexstr(const buffer &buf) {
         return deep_to_string(meta::hex_formatted(), buf);
@@ -230,7 +230,7 @@ namespace {
 
         template<class T, class... Ts>
         void to_buf(buffer &buf, basp::header &hdr, payload_writer *writer, const T &x, const Ts &... xs) {
-            auto pw = make_callback([&](serializer &sink) -> error {
+            auto pw = make_callback([&](binary_serializer &sink) {
                 if (writer)
                     if (auto err = (*writer)(sink))
                         return err;

@@ -13,12 +13,15 @@
 
 #include <limits>
 
-#include <nil/mtl/actor_system_config.hpp>
-#include <nil/mtl/serialization/binary_deserializer.hpp>
-#include <nil/mtl/callback.hpp>
 #include <nil/mtl/detail/worker_hub.hpp>
+
+#include <nil/mtl/serialization/binary_deserializer.hpp>
+
+#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/callback.hpp>
 #include <nil/mtl/error.hpp>
-#include <nil/mtl/io/basp/buffer_type.hpp>
+#include <nil/mtl/byte_buffer.hpp>
+
 #include <nil/mtl/io/basp/connection_state.hpp>
 #include <nil/mtl/io/basp/header.hpp>
 #include <nil/mtl/io/basp/message_queue.hpp>
@@ -38,12 +41,14 @@ namespace nil {
                 /// Describes a protocol instance managing multiple connections.
                 class instance {
                 public:
+                    typedef byte_buffer buffer_type;
+
                     /// Provides a callback-based interface for certain BASP events.
                     class callee {
                     public:
                         // -- member types ---------------------------------------------------------
 
-                        using buffer_type = std::vector<char>;
+                        typedef byte_buffer buffer_type;
 
                         // -- constructors, destructors, and assignment operators ------------------
 
@@ -213,11 +218,11 @@ namespace nil {
                         return system().config();
                     }
 
-                    bool handle(execution_unit *ctx, connection_handle hdl, header &hdr, std::vector<char> *payload);
+                    bool handle(execution_unit *ctx, connection_handle hdl, header &hdr, buffer_type *payload);
 
                 private:
                     void forward(execution_unit *ctx, const node_id &dest_node, const header &hdr,
-                                 std::vector<char> &payload);
+                                 buffer_type &payload);
 
                     routing_table tbl_;
                     published_actor_map published_actors_;

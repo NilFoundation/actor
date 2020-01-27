@@ -272,7 +272,7 @@ namespace nil {
                     },
                     [=](unpublish_atom, const actor_addr &whom, uint16_t port) -> result<void> {
                         MTL_LOG_TRACE(MTL_ARG(whom) << MTL_ARG(port));
-                        auto cb = make_callback([&](const strong_actor_ptr &, uint16_t x) -> error {
+                        auto cb = make_callback([&](const strong_actor_ptr &, uint16_t x) {
                             close(hdl_by_port(x));
                             return error_code<sec>{};
                         });
@@ -453,7 +453,7 @@ namespace nil {
                             tself->become([=](spawn_atom, std::string &type,
                                               message &args) -> delegated<strong_actor_ptr, std::set<std::string>> {
                                 MTL_LOG_TRACE(MTL_ARG(type) << MTL_ARG(args));
-                                tself->delegate(actor_cast<actor>(std::move(config_serv)), get_atom::value,
+                                tself->delegate(actor_cast<actor>(config_serv), get_atom::value,
                                                 std::move(type), std::move(args));
                                 return {};
                             });

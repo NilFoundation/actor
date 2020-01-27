@@ -96,8 +96,6 @@ namespace nil {
 
             error_code<sec> end_sequence();
 
-            void apply(byte x);
-
             void apply(uint8_t x);
 
             void apply(uint16_t x);
@@ -121,14 +119,14 @@ namespace nil {
             void apply(span<const byte> x);
 
             template<class T>
-            std::enable_if_t<std::is_integral<T>::value && std::is_signed<T>::value> apply(T x) {
+            typename std::enable_if<std::is_integral<T>::value && std::is_signed<T>::value>::type apply(T x) {
                 using unsigned_type = std::make_unsigned_t<T>;
                 using squashed_unsigned_type = detail::squashed_int_t<unsigned_type>;
                 return apply(static_cast<squashed_unsigned_type>(x));
             }
 
             template<class Enum>
-            std::enable_if_t<std::is_enum<Enum>::value> apply(Enum x) {
+            typename std::enable_if<std::is_enum<Enum>::value>::type apply(Enum x) {
                 return apply(static_cast<std::underlying_type_t<Enum>>(x));
             }
 

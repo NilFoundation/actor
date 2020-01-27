@@ -76,10 +76,10 @@ namespace nil {
                         void ack_writes(bool enable) override {
                             mpx_->ack_writes(hdl()) = enable;
                         }
-                        std::vector<char> &wr_buf() override {
+                        byte_buffer &wr_buf() override {
                             return mpx_->output_buffer(hdl());
                         }
-                        std::vector<char> &rd_buf() override {
+                        byte_buffer &rd_buf() override {
                             return mpx_->input_buffer(hdl());
                         }
                         void graceful_shutdown() override {
@@ -321,12 +321,12 @@ namespace nil {
                         void ack_writes(bool enable) override {
                             mpx_->ack_writes(hdl()) = enable;
                         }
-                        std::vector<char> &wr_buf(datagram_handle dh) override {
+                        byte_buffer &wr_buf(datagram_handle dh) override {
                             auto &buf = mpx_->output_buffer(dh);
                             buf.first = dh;
                             return buf.second;
                         }
-                        void enqueue_datagram(datagram_handle dh, std::vector<char> buf) override {
+                        void enqueue_datagram(datagram_handle dh, byte_buffer buf) override {
                             auto &q = mpx_->output_queue(dh);
                             q.emplace_back(dh, std::move(buf));
                         }

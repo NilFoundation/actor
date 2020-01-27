@@ -39,11 +39,11 @@ namespace nil {
                     stream_.ack_writes(enable);
                 }
 
-                std::vector<char> &scribe_impl::wr_buf() {
+                byte_buffer &scribe_impl::wr_buf() {
                     return stream_.wr_buf();
                 }
 
-                std::vector<char> &scribe_impl::rd_buf() {
+                byte_buffer &scribe_impl::rd_buf() {
                     return stream_.rd_buf();
                 }
 

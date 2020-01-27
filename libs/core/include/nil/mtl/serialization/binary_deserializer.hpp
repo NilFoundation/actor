@@ -104,8 +104,6 @@ namespace nil {
 
             result_type apply(bool &) noexcept;
 
-            result_type apply(byte &) noexcept;
-
             result_type apply(int8_t &) noexcept;
 
             result_type apply(uint8_t &) noexcept;
@@ -136,7 +134,7 @@ namespace nil {
 
             result_type apply(std::u32string &);
 
-            template<class Enum, class = std::enable_if_t<std::is_enum<Enum>::value>>
+            template<typename Enum, typename = typename std::enable_if<std::is_enum<Enum>::value>::type>
             auto apply(Enum &x) noexcept {
                 return apply(reinterpret_cast<std::underlying_type_t<Enum> &>(x));
             }

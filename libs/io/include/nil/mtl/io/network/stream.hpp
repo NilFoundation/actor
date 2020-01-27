@@ -38,7 +38,7 @@ namespace nil {
 
                     /// A buffer class providing a compatible
                     /// interface to `std::vector`.
-                    using buffer_type = std::vector<char>;
+                    using buffer_type = byte_buffer;
 
                     stream(default_multiplexer &backend_ref, native_socket sockfd);
 

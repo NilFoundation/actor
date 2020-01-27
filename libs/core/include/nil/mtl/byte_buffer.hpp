@@ -22,5 +22,5 @@ namespace nil {
         /// A buffer for storing binary data.
         using byte_buffer = std::vector<byte>;
 
-    }
-}    // namespace caf
+    }    // namespace mtl
+}    // namespace nil

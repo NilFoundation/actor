@@ -65,7 +65,7 @@ add_library(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} ${${CURRENT_PROJECT_
 set_target_properties(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} PROPERTIES
                       LINKER_LANGUAGE CXX
                       EXPORT_NAME ${CURRENT_PROJECT_NAME}
-                      CXX_STANDARD 11
+                      CXX_STANDARD 17
                       CXX_STANDARD_REQUIRED TRUE)
 
 target_link_libraries(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} PRIVATE

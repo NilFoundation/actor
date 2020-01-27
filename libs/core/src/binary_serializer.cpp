@@ -91,16 +91,12 @@ namespace nil {
             MTL_ASSERT(write_pos_ <= buf_.size());
         }
 
-        void binary_serializer::apply(byte x) {
+        void binary_serializer::apply(uint8_t x) {
             if (write_pos_ == buf_.size())
                 buf_.emplace_back(x);
             else
                 buf_[write_pos_] = x;
             ++write_pos_;
-        }
-
-        void binary_serializer::apply(uint8_t x) {
-            apply(static_cast<byte>(x));
         }
 
         void binary_serializer::apply(uint16_t x) {

@@ -223,8 +223,7 @@ namespace nil {
                 template<class T, class... Ts>
                 void traverse(const meta::hex_formatted_t &, const T &x, const Ts &... xs) {
                     sep();
-                    std::string hex_enc = crypto3::encode<crypto3::codec::hex<>>(x);
-                    result_ += hex_enc;
+                    result_ += std::string(crypto3::encode<crypto3::codec::hex<>>(x));
                     traverse(xs...);
                 }
 

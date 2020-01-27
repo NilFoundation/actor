@@ -112,14 +112,6 @@ namespace nil {
             return none;
         }
 
-        apply_result binary_deserializer::apply(byte &x) noexcept {
-            if (range_check(1)) {
-                x = *current_++;
-                return none;
-            }
-            return sec::end_of_stream;
-        }
-
         apply_result binary_deserializer::apply(int8_t &x) noexcept {
             if (range_check(1)) {
                 x = static_cast<int8_t>(*current_++);

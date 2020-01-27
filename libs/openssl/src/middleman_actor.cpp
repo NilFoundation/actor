@@ -118,11 +118,11 @@ namespace nil {
                         stream_.ack_writes(enable);
                     }
 
-                    std::vector<char> &wr_buf() override {
+                    byte_buffer &wr_buf() override {
                         return stream_.wr_buf();
                     }
 
-                    std::vector<char> &rd_buf() override {
+                    byte_buffer &rd_buf() override {
                         return stream_.rd_buf();
                     }
 

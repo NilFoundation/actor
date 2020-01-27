@@ -26,8 +26,8 @@ namespace nil {
 
                 stream::stream(default_multiplexer &backend_ref, native_socket sockfd) :
                     event_handler(backend_ref, sockfd),
-                    max_consecutive_reads_(backend().system().config().middleman_max_consecutive_reads), read_threshold_(1),
-                    collected_(0), written_(0) {
+                    max_consecutive_reads_(backend().system().config().middleman_max_consecutive_reads),
+                    read_threshold_(1), collected_(0), written_(0) {
                     configure_read(receive_policy::at_most(1024));
                 }
 
@@ -51,7 +51,7 @@ namespace nil {
 
                 void stream::write(const void *buf, size_t num_bytes) {
                     MTL_LOG_TRACE(MTL_ARG(num_bytes));
-                    auto first = reinterpret_cast<const char *>(buf);
+                    auto first = reinterpret_cast<const byte *>(buf);
                     auto last = first + num_bytes;
                     wr_offline_buf_.insert(wr_offline_buf_.end(), first, last);
                 }
