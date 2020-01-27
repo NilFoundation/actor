@@ -274,7 +274,7 @@ namespace nil {
                         MTL_LOG_TRACE(MTL_ARG(whom) << MTL_ARG(port));
                         auto cb = make_callback([&](const strong_actor_ptr &, uint16_t x) {
                             close(hdl_by_port(x));
-                            return error_code<sec>{};
+                            return error_code<sec> {};
                         });
                         if (instance.remove_published_actor(whom, port, &cb) == 0)
                             return sec::no_actor_published_at_port;
@@ -453,8 +453,8 @@ namespace nil {
                             tself->become([=](spawn_atom, std::string &type,
                                               message &args) -> delegated<strong_actor_ptr, std::set<std::string>> {
                                 MTL_LOG_TRACE(MTL_ARG(type) << MTL_ARG(args));
-                                tself->delegate(actor_cast<actor>(config_serv), get_atom::value,
-                                                std::move(type), std::move(args));
+                                tself->delegate(actor_cast<actor>(config_serv), get_atom::value, std::move(type),
+                                                std::move(args));
                                 return {};
                             });
                         },

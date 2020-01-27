@@ -23,10 +23,6 @@
 #include <nil/mtl/broadcast_downstream_manager.hpp>
 #include <nil/mtl/scheduled_actor.hpp>
 
-#include <nil/mtl/actor_system_config.hpp>
-
-#include <nil/mtl/mixin/sender.hpp>
-
 using namespace nil::mtl;
 
 namespace {

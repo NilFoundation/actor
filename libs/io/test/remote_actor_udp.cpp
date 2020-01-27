@@ -39,9 +39,7 @@ namespace {
         io::middleman &client_side_mm;
 
         fixture() :
-            server_side(server_side_config),
-            server_side_mm(server_side.middleman()),
-            client_side(client_side_config),
+            server_side(server_side_config), server_side_mm(server_side.middleman()), client_side(client_side_config),
             client_side_mm(client_side.middleman()) {
             // nop
         }

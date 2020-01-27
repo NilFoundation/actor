@@ -383,4 +383,4 @@ namespace nil {
         /// Returns all user-provided configuration parameters.
         const settings &content(const actor_system_config &cfg);
     }    // namespace mtl
-}
+}    // namespace nil

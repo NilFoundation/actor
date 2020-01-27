@@ -30,6 +30,8 @@ namespace nil {
             /// @ingroup Broker
             class scribe : public scribe_base {
             public:
+                typedef byte_buffer buffer_type;
+
                 scribe(connection_handle conn_hdl);
 
                 ~scribe() override;

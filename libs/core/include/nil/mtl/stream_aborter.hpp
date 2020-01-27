@@ -56,4 +56,4 @@ namespace nil {
                                            stream_aborter::mode m);
 
     }    // namespace mtl
-}
+}    // namespace nil

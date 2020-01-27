@@ -4,7 +4,7 @@ cm_find_package(CM)
 include(CMDeploy)
 include(CMSetupVersion)
 
-if(NOT Boost_FOUND)
+if(NOT Boost_THREAD_FOUND)
     cm_find_package(Boost COMPONENTS thread)
 endif()
 
@@ -27,6 +27,7 @@ set(${CURRENT_PROJECT_NAME}_SOURCES
 
     src/network/acceptor.cpp
     src/network/acceptor_manager.cpp
+#    src/network/asio_multiplexer.cpp
     src/network/datagram_handler.cpp
     src/network/datagram_manager.cpp
     src/network/datagram_servant_impl.cpp
