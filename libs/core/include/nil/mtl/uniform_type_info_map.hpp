@@ -40,7 +40,7 @@ namespace nil {
 
         class uniform_type_info_map {
         public:
-            friend class actor_system;
+            friend class spawner;
 
             using value_factory = std::function<type_erased_value_ptr()>;
 
@@ -79,7 +79,7 @@ namespace nil {
             }
 
             /// Returns the enclosing actor system.
-            actor_system &system() const {
+            spawner &system() const {
                 return system_;
             }
 
@@ -89,10 +89,10 @@ namespace nil {
             }
 
         private:
-            uniform_type_info_map(actor_system &sys);
+            uniform_type_info_map(spawner &sys);
 
             /// Reference to the parent system.
-            actor_system &system_;
+            spawner &system_;
 
             /// Value factories for builtin types.
             std::array<value_factory_kvp, type_nrs - 1> builtin_;

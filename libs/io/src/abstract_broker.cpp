@@ -12,7 +12,7 @@
 #include <nil/mtl/none.hpp>
 #include <nil/mtl/config.hpp>
 #include <nil/mtl/logger.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/make_counted.hpp>
 #include <nil/mtl/scheduler/abstract_coordinator.hpp>
 

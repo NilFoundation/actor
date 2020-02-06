@@ -29,7 +29,7 @@ namespace nil {
         public:
             // -- constructors, destructors, and assignment operators --------------------
 
-            group_module(actor_system &sys, std::string mname);
+            group_module(spawner &sys, std::string mname);
 
             virtual ~group_module();
 
@@ -51,7 +51,7 @@ namespace nil {
             // -- observers --------------------------------------------------------------
 
             /// Returns the hosting actor system.
-            inline actor_system &system() const {
+            inline spawner &system() const {
                 return system_;
             }
 
@@ -61,7 +61,7 @@ namespace nil {
             }
 
         private:
-            actor_system &system_;
+            spawner &system_;
             std::string name_;
         };
     }    // namespace mtl

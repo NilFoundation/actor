@@ -50,7 +50,7 @@ namespace nil {
                 std::atomic<bool> self_destroyed_;
                 std::atomic<scheduled_actor *> self_;
                 std::atomic<worker_state> state_;
-                actor_system &system_;
+                spawner &system_;
             };
 
         }    // namespace detail

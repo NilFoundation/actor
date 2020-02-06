@@ -31,7 +31,7 @@ namespace nil {
                 impl(const impl &) : pos_(0) {
                     // nop
                 }
-                void operator()(actor_system &, uplock &guard, const actor_vec &vec, mailbox_element_ptr &ptr,
+                void operator()(spawner &, uplock &guard, const actor_vec &vec, mailbox_element_ptr &ptr,
                                 execution_unit *host) {
                     MTL_ASSERT(!vec.empty());
                     actor selected = vec[pos_++ % vec.size()];
@@ -45,7 +45,7 @@ namespace nil {
 
         namespace {
 
-            void broadcast_dispatch(actor_system &, actor_pool::uplock &, const actor_pool::actor_vec &vec,
+            void broadcast_dispatch(spawner &, actor_pool::uplock &, const actor_pool::actor_vec &vec,
                                     mailbox_element_ptr &ptr, execution_unit *host) {
                 MTL_ASSERT(!vec.empty());
                 auto msg = ptr->move_content_to_message();
@@ -67,7 +67,7 @@ namespace nil {
                 impl(const impl &) : rd_() {
                     // nop
                 }
-                void operator()(actor_system &, uplock &guard, const actor_vec &vec, mailbox_element_ptr &ptr,
+                void operator()(spawner &, uplock &guard, const actor_vec &vec, mailbox_element_ptr &ptr,
                                 execution_unit *host) {
                     upgrade_to_unique_lock<detail::shared_spinlock> unique_guard {guard};
                     auto selected = vec[dis_(rd_, decltype(dis_)::param_type(0, vec.size() - 1))];

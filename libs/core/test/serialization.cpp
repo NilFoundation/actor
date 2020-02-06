@@ -44,12 +44,12 @@
 #include <nil/mtl/serialization/serializer.hpp>
 #include <nil/mtl/ref_counted.hpp>
 #include <nil/mtl/serialization/deserializer.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/proxy_registry.hpp>
 #include <nil/mtl/message_handler.hpp>
 #include <nil/mtl/event_based_actor.hpp>
 #include <nil/mtl/primitive_variant.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/make_type_erased_view.hpp>
 #include <nil/mtl/make_type_erased_tuple_view.hpp>
 
@@ -162,7 +162,7 @@ namespace {
         return f();
     }
 
-    class config : public actor_system_config {
+    class config : public spawner_config {
     public:
         config() {
             add_message_type<test_enum>("test_enum");

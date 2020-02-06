@@ -15,7 +15,7 @@
 #include <utility>
 
 #include <nil/mtl/actor_registry.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/detail/default_invoke_result_visitor.hpp>
 #include <nil/mtl/detail/invoke_result_visitor.hpp>
 #include <nil/mtl/detail/set_thread_name.hpp>

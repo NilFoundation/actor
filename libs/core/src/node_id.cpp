@@ -58,7 +58,7 @@ namespace nil {
 
         }    // namespace
 
-        node_id node_id::default_data::local(const actor_system_config &) {
+        node_id node_id::default_data::local(const spawner_config &) {
             MTL_LOG_TRACE("");
             auto ifs = detail::get_mac_addresses();
             std::vector<std::string> macs;

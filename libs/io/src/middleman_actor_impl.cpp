@@ -21,7 +21,7 @@
 #include <nil/mtl/logger.hpp>
 #include <nil/mtl/node_id.hpp>
 #include <nil/mtl/actor_proxy.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/typed_event_based_actor.hpp>
 
 #include <nil/mtl/io/basp_broker.hpp>

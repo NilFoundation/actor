@@ -98,7 +98,7 @@ namespace nil {
             node_id node() const noexcept;
 
             /// Returns the system that created this actor (or proxy).
-            actor_system &home_system() const noexcept;
+            spawner &home_system() const noexcept;
 
             /****************************************************************************
              *                 here be dragons: end of public interface                 *

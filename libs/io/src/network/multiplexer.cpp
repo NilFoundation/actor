@@ -17,11 +17,11 @@ namespace nil {
         namespace io {
             namespace network {
 
-                multiplexer::multiplexer(actor_system *sys) : execution_unit(sys), tid_(std::this_thread::get_id()) {
+                multiplexer::multiplexer(spawner *sys) : execution_unit(sys), tid_(std::this_thread::get_id()) {
                     // nop
                 }
 
-                multiplexer_ptr multiplexer::make(actor_system &sys) {
+                multiplexer_ptr multiplexer::make(spawner &sys) {
                     MTL_LOG_TRACE("");
                     return multiplexer_ptr {new default_multiplexer(&sys)};
                 }

@@ -22,7 +22,7 @@
 #include <nil/mtl/resumable.hpp>
 #include <nil/mtl/actor_cast.hpp>
 #include <nil/mtl/exit_reason.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/actor_ostream.hpp>
 #include <nil/mtl/serialization/binary_serializer.hpp>
 #include <nil/mtl/default_attachable.hpp>

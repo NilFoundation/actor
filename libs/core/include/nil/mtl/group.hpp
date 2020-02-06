@@ -88,7 +88,7 @@ namespace nil {
 
             /// @cond PRIVATE
 
-            actor_system &system() const {
+            spawner &system() const {
                 return ptr_->system();
             }
 

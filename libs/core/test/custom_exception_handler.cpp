@@ -39,8 +39,8 @@ exception_testee::~exception_testee() {
 }
 
 BOOST_AUTO_TEST_CASE(test_custom_exception_handler_test) {
-    actor_system_config cfg;
-    actor_system system {cfg};
+    spawner_config cfg;
+    spawner system {cfg};
     auto handler = [](std::exception_ptr &eptr) -> error {
         try {
             std::rethrow_exception(eptr);

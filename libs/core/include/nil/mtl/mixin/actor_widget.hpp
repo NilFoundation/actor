@@ -49,7 +49,7 @@ namespace nil {
                         self()->cleanup(error {}, &dummy_);
                 }
 
-                void init(actor_system &system) {
+                void init(spawner &system) {
                     alive_ = true;
                     companion_ = actor_cast<strong_actor_ptr>(system.spawn<actor_companion>());
                     self()->on_enqueue(

@@ -40,8 +40,8 @@ namespace {
     };
 
     struct fixture {
-        actor_system_config config;
-        actor_system system {config};
+        spawner_config config;
+        spawner system {config};
         scoped_actor self {system};
     };
 

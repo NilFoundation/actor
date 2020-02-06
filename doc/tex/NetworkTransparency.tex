@@ -121,15 +121,15 @@ encrypted and unencrypted communication.
 \begin{center}
 \begin{tabular}{ll}
   \hline
-  \lstinline^expected<uint16> open(actor_system&, uint16, const char*, bool)^ & See~\sref{remoting}. \\
+  \lstinline^expected<uint16> open(spawner&, uint16, const char*, bool)^ & See~\sref{remoting}. \\
   \hline
   \lstinline^expected<uint16> publish(T, uint16, const char*, bool)^ & See~\sref{remoting}. \\
   \hline
   \lstinline^expected<void> unpublish(T x, uint16)^ & See~\sref{remoting}. \\
   \hline
-  \lstinline^expected<node_id> connect(actor_system&, std::string host, uint16_t port)^ & See~\sref{remoting}. \\
+  \lstinline^expected<node_id> connect(spawner&, std::string host, uint16_t port)^ & See~\sref{remoting}. \\
   \hline
-  \lstinline^expected<T> remote_actor<T = actor>(actor_system&, string, uint16)^ & See~\sref{remoting}. \\
+  \lstinline^expected<T> remote_actor<T = actor>(spawner&, string, uint16)^ & See~\sref{remoting}. \\
   \hline
 \end{tabular}
 \end{center}

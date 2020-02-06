@@ -22,7 +22,7 @@ namespace nil {
     namespace mtl {
 
         /// SEC stands for "System Error Code". This enum contains error codes for
-        /// ::actor_system and its modules.
+        /// ::spawner and its modules.
         enum class sec : uint8_t {
             /// No error.
             none = 0,

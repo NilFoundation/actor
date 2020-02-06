@@ -65,7 +65,7 @@ namespace nil {
             using data_destructor = void (*)(abstract_actor *);
             using block_destructor = void (*)(actor_control_block *);
 
-            actor_control_block(actor_id x, node_id &y, actor_system *sys, data_destructor ddtor,
+            actor_control_block(actor_id x, node_id &y, spawner *sys, data_destructor ddtor,
                                 block_destructor bdtor) :
                 strong_refs(1),
                 weak_refs(1), aid(x), nid(std::move(y)), home_system(sys), data_dtor(ddtor), block_dtor(bdtor) {
@@ -79,7 +79,7 @@ namespace nil {
             std::atomic<size_t> weak_refs;
             const actor_id aid;
             const node_id nid;
-            actor_system *const home_system;
+            spawner *const home_system;
             const data_destructor data_dtor;
             const block_destructor block_dtor;
 

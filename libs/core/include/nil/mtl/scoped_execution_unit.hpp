@@ -30,7 +30,7 @@ namespace nil {
             /// Delegates the resumable to the scheduler of `system()`.
             void exec_later(resumable *ptr) override;
 
-            void system_ptr(actor_system *ptr) noexcept {
+            void system_ptr(spawner *ptr) noexcept {
                 system_ = ptr;
             }
         };

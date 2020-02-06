@@ -24,8 +24,8 @@
 #include <nil/mtl/config.hpp>
 
 #include <nil/mtl/actor_proxy.hpp>
-#include <nil/mtl/actor_system.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/defaults.hpp>
 #include <nil/mtl/detail/get_process_id.hpp>
 #include <nil/mtl/detail/pretty_type_name.hpp>
@@ -290,7 +290,7 @@ namespace nil {
                 queue_.push_back(std::move(x));
         }
 
-        void logger::set_current_actor_system(actor_system *x) {
+        void logger::set_current_actor_system(spawner *x) {
             if (x != nullptr)
                 set_current_logger(&x->logger());
             else
@@ -308,7 +308,7 @@ namespace nil {
                                 [=](atom_value name) { return name == cname; });
         }
 
-        logger::logger(actor_system &sys) : system_(sys), t0_(make_timestamp()) {
+        logger::logger(spawner &sys) : system_(sys), t0_(make_timestamp()) {
             // nop
         }
 
@@ -320,7 +320,7 @@ namespace nil {
             system_.logger_dtor_cv_.notify_one();
         }
 
-        void logger::init(actor_system_config &cfg) {
+        void logger::init(spawner_config &cfg) {
             MTL_IGNORE_UNUSED(cfg);
             namespace lg = defaults::logger;
             auto blacklist = cfg.logger_component_blacklist;
@@ -615,7 +615,7 @@ namespace nil {
 
         namespace detail {
             template<typename ConfigOptionType>
-            static inline std::string make_message(const actor_system &system,
+            static inline std::string make_message(const spawner &system,
                                                    const std::vector<atom_value> &component_blacklist,
                                                    const ConfigOptionType &option) {
                 std::string msg = "level = ";

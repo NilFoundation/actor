@@ -172,7 +172,7 @@ namespace nil {
                             for (size_t i = 0; i < ipv6_address::num_bytes; ++i)
                                 bytes[i] = prefix[i] | suffix[i];
                             ipv6_address result {bytes};
-                            consumer.value(std::move(result));
+                            consumer.value(result);
                         }
                     });
                     // We need to parse 2-byte hexadecimal numbers (x) and also keep track of

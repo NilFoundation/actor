@@ -70,8 +70,8 @@ namespace {
     };
 
     struct fixture {
-        actor_system_config cfg;
-        actor_system system {cfg};
+        spawner_config cfg;
+        spawner system {cfg};
     };
 
     struct fail_on_copy {

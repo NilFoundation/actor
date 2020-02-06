@@ -117,8 +117,8 @@ namespace {
     }
 
     void run_client(uint16_t port) {
-        actor_system_config cfg;
-        actor_system system {cfg.load<io::middleman>()};
+        spawner_config cfg;
+        spawner system {cfg.load<io::middleman>()};
         auto p = system.spawn(ping, size_t {10});
         BOOST_TEST_MESSAGE("spawn_client...");
         auto cl = unbox(system.middleman().spawn_client(peer_fun, "127.0.0.1", port, p));
@@ -128,8 +128,8 @@ namespace {
     }
 
     void run_server() {
-        actor_system_config cfg;
-        actor_system system {cfg.load<io::middleman>()};
+        spawner_config cfg;
+        spawner system {cfg.load<io::middleman>()};
         scoped_actor self {system};
         BOOST_TEST_MESSAGE("spawn peer acceptor");
         auto serv = system.middleman().spawn_broker(peer_acceptor_fun, system.spawn(pong));

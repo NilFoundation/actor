@@ -23,7 +23,7 @@ namespace nil {
             virtual ~thread_hook();
 
             /// Called by the actor system once before starting any threads.
-            virtual void init(actor_system &) = 0;
+            virtual void init(spawner &) = 0;
 
             /// Called whenever the actor system has started a new thread.
             /// To access a reference to the started thread use `std::this_thread`.

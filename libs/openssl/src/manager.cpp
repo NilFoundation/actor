@@ -21,8 +21,8 @@ MTL_POP_WARNINGS
 #include <mutex>
 
 #include <nil/mtl/actor_control_block.hpp>
-#include <nil/mtl/actor_system.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/expected.hpp>
 #include <nil/mtl/raise_error.hpp>
 #include <nil/mtl/scoped_actor.hpp>
@@ -105,7 +105,7 @@ namespace nil {
                 manager_ = nullptr;
             }
 
-            void manager::init(actor_system_config &) {
+            void manager::init(spawner_config &) {
                 MTL_LOG_TRACE("");
                 ERR_load_crypto_strings();
                 OPENSSL_add_all_algorithms_conf();
@@ -131,7 +131,7 @@ namespace nil {
 #endif
             }
 
-            actor_system::module::id_t manager::id() const {
+            spawner::module::id_t manager::id() const {
                 return openssl_manager;
             }
 
@@ -146,7 +146,7 @@ namespace nil {
                        cfg.openssl_cafile.size() > 0;
             }
 
-            actor_system::module *manager::make(actor_system &sys, detail::type_list<>) {
+            spawner::module *manager::make(spawner &sys, detail::type_list<>) {
                 if (!sys.has_middleman())
                     MTL_RAISE_ERROR("Cannot start OpenSSL module without middleman.");
                 auto ptr = &sys.middleman().backend();
@@ -155,7 +155,7 @@ namespace nil {
                 return new manager(sys);
             }
 
-            manager::manager(actor_system &sys) : system_(sys) {
+            manager::manager(spawner &sys) : system_(sys) {
                 // nop
             }
 

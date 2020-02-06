@@ -36,8 +36,8 @@ set(${CURRENT_PROJECT_NAME}_SOURCES
     src/actor_pool.cpp
     src/actor_proxy.cpp
     src/actor_registry.cpp
-    src/actor_system.cpp
-    src/actor_system_config.cpp
+    src/spawner.cpp
+    src/spawner_config.cpp
     src/append_percent_encoded.cpp
     src/atom.cpp
     src/attachable.cpp

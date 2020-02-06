@@ -25,8 +25,8 @@
 #include <nil/mtl/abstract_group.hpp>
 #include <nil/mtl/actor_cast.hpp>
 #include <nil/mtl/actor_factory.hpp>
-#include <nil/mtl/actor_system.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/downstream_msg.hpp>
 #include <nil/mtl/duration.hpp>
 #include <nil/mtl/group.hpp>
@@ -149,7 +149,7 @@ namespace nil {
             return default_type_name_;
         }
 
-        uniform_type_info_map::uniform_type_info_map(actor_system &sys) : system_(sys), default_type_name_("???") {
+        uniform_type_info_map::uniform_type_info_map(spawner &sys) : system_(sys), default_type_name_("???") {
             sorted_builtin_types list;
             fill_builtins(builtin_, list, 0);
             for (size_t i = 0; i < builtin_names_.size(); ++i)

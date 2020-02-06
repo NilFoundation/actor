@@ -82,7 +82,7 @@ namespace nil {
                 // -- factory functions ----------------------------------------------------
 
                 /// Returns an ID for this node.
-                static node_id local(const actor_system_config &cfg);
+                static node_id local(const spawner_config &cfg);
 
                 // -- properties -----------------------------------------------------------
 

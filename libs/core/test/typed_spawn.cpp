@@ -239,11 +239,11 @@ namespace {
     }
 
     struct fixture {
-        actor_system_config cfg;
-        actor_system system;
+        spawner_config cfg;
+        spawner system;
         scoped_actor self;
 
-        static actor_system_config &init(actor_system_config &cfg) {
+        static spawner_config &init(spawner_config &cfg) {
             cfg.add_message_type<get_state_msg>("get_state_msg");
             return cfg;
         }

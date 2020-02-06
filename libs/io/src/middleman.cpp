@@ -32,7 +32,7 @@
 #include <nil/mtl/function_view.hpp>
 #include <nil/mtl/actor_registry.hpp>
 #include <nil/mtl/event_based_actor.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/raw_event_based_actor.hpp>
 #include <nil/mtl/typed_event_based_actor.hpp>
 
@@ -64,7 +64,7 @@ namespace nil {
                 template<class T>
                 class mm_impl : public middleman {
                 public:
-                    mm_impl(actor_system &ref) : middleman(ref), backend_(&ref) {
+                    mm_impl(spawner &ref) : middleman(ref), backend_(&ref) {
                         // nop
                     }
 
@@ -78,7 +78,7 @@ namespace nil {
 
             }    // namespace
 
-            actor_system::module *middleman::make(actor_system &sys, detail::type_list<>) {
+            spawner::module *middleman::make(spawner &sys, detail::type_list<>) {
                 auto atm = sys.config().middleman_network_backend;
                 switch (atom_uint(atm)) {
                     case atom_uint(atom("testing")):
@@ -88,7 +88,7 @@ namespace nil {
                 }
             }
 
-            middleman::middleman(actor_system &sys) : system_(sys) {
+            middleman::middleman(spawner &sys) : system_(sys) {
                 // nop
             }
 
@@ -301,7 +301,7 @@ namespace nil {
                 destroy(manager_);
             }
 
-            void middleman::init(actor_system_config &cfg) {
+            void middleman::init(spawner_config &cfg) {
                 // never detach actors when using the testing multiplexer
                 auto network_backend = cfg.middleman_network_backend;
                 if (network_backend == atom("testing")) {
@@ -358,7 +358,7 @@ namespace nil {
                 cfg.slave_mode_fun = &middleman::exec_slave_mode;
             }
 
-            actor_system::module::id_t middleman::id() const {
+            spawner::module::id_t middleman::id() const {
                 return module::middleman;
             }
 
@@ -374,7 +374,7 @@ namespace nil {
                 return manager_;
             }
 
-            int middleman::exec_slave_mode(actor_system &, const actor_system_config &) {
+            int middleman::exec_slave_mode(spawner &, const spawner_config &) {
                 // TODO
                 return 0;
             }

@@ -33,15 +33,15 @@ detached actor lives in its own thread of execution.
 \subsection{Environment / Actor Systems}
 \label{actor-system}
 
-All actors live in an \lstinline^actor_system^ representing an actor
+All actors live in an \lstinline^spawner^ representing an actor
 environment including scheduler~\see{scheduler}, registry~\see{registry}, and
 optional components such as a middleman~\see{middleman}. A single process can
-have multiple \lstinline^actor_system^ instances, but this is usually not
+have multiple \lstinline^spawner^ instances, but this is usually not
 recommended (a use case for multiple systems is to strictly separate two or
 more sets of actors by running them in different schedulers). For configuration
 and fine-tuning options of actor systems see \sref{system-config}. A
 distributed MTL application consists of two or more connected actor systems. We
-also refer to interconnected \lstinline^actor_system^ instances as a
+also refer to interconnected \lstinline^spawner^ instances as a
 \emph{distributed actor system}.
 
 \clearpage
@@ -80,9 +80,9 @@ inherited from \lstinline^monitorable_actor^ and \lstinline^abstract_actor^.
   \hline
   \lstinline^actor_addr address()^ & Returns the address of this actor. \\
   \hline
-  \lstinline^actor_system& system()^ & Returns \lstinline^context()->system()^. \\
+  \lstinline^spawner& system()^ & Returns \lstinline^context()->system()^. \\
   \hline
-  \lstinline^actor_system& home_system()^ & Returns the system that spawned this actor. \\
+  \lstinline^spawner& home_system()^ & Returns the system that spawned this actor. \\
   \hline
   \lstinline^execution_unit* context()^ & Returns underlying thread or current scheduler worker. \\
   \hline
@@ -273,7 +273,7 @@ types shown below to grant access to derived types.
 \label{spawn}
 
 Both statically and dynamically typed actors are spawned from an
-\lstinline^actor_system^ using the member function \lstinline^spawn^. The
+\lstinline^spawner^ using the member function \lstinline^spawn^. The
 function either takes a function as first argument or a class as first template
 parameter. For example, the following functions and classes represent actors.
 
@@ -591,7 +591,7 @@ return a \lstinline^blocking_actor*^. Hence, it behaves like the implicit
 at scope end.
 
 \begin{lstlisting}
-void test(actor_system& system) {
+void test(spawner& system) {
   scoped_actor self{system};
   // spawn some actor
   auto aut = self->spawn(my_actor_impl);

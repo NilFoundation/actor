@@ -14,7 +14,7 @@
 #include <utility>
 
 #include <nil/mtl/actor_addr.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/serialization/deserializer.hpp>
 #include <nil/mtl/node_id.hpp>
 #include <nil/mtl/proxy_registry.hpp>
@@ -30,7 +30,7 @@ namespace nil {
             // nop
         }
 
-        proxy_registry::proxy_registry(actor_system &sys, backend &be) : system_(sys), backend_(be) {
+        proxy_registry::proxy_registry(spawner &sys, backend &be) : system_(sys), backend_(be) {
             // nop
         }
 

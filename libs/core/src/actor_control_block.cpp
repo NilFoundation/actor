@@ -15,7 +15,7 @@
 #include <nil/mtl/to_string.hpp>
 
 #include <nil/mtl/message.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/proxy_registry.hpp>
 #include <nil/mtl/abstract_actor.hpp>
 #include <nil/mtl/mailbox_element.hpp>

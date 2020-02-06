@@ -32,8 +32,8 @@ namespace {
 }    // namespace
 
 BOOST_AUTO_TEST_CASE(test_serial_reply_test) {
-    actor_system_config cfg;
-    actor_system system {cfg};
+    spawner_config cfg;
+    spawner system {cfg};
     auto mirror_behavior = [=](event_based_actor *self) -> behavior {
         self->set_default_handler(reflect);
         return {[] {

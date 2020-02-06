@@ -131,7 +131,7 @@ namespace nil {
 
                     void exec_later(resumable *ptr) override;
 
-                    explicit default_multiplexer(actor_system *sys);
+                    explicit default_multiplexer(spawner *sys);
 
                     ~default_multiplexer() override;
 

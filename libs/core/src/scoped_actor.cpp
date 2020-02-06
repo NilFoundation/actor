@@ -48,7 +48,7 @@ namespace nil {
 
         }    // namespace
 
-        scoped_actor::scoped_actor(actor_system &sys, bool hide) : context_(&sys) {
+        scoped_actor::scoped_actor(spawner &sys, bool hide) : context_(&sys) {
             MTL_SET_LOGGER_SYS(&sys);
             actor_config cfg {&context_};
             if (hide)

@@ -34,7 +34,7 @@ namespace nil {
 
             // -- constructors, destructors, and assignment operators --------------------
 
-            explicit serializer(actor_system &sys) noexcept;
+            explicit serializer(spawner &sys) noexcept;
 
             explicit serializer(execution_unit *ctx = nullptr) noexcept;
 
@@ -135,7 +135,7 @@ namespace nil {
             virtual result_type apply(const std::vector<bool> &xs);
 
         protected:
-            /// Provides access to the ::proxy_registry and to the ::actor_system.
+            /// Provides access to the ::proxy_registry and to the ::spawner.
             execution_unit *context_;
         };
     }    // namespace mtl

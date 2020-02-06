@@ -34,7 +34,7 @@ namespace nil {
 
             // -- constructors, destructors, and assignment operators --------------------
 
-            explicit deserializer(actor_system &sys) noexcept;
+            explicit deserializer(spawner &sys) noexcept;
 
             explicit deserializer(execution_unit *ctx = nullptr) noexcept;
 
@@ -136,7 +136,7 @@ namespace nil {
             virtual result_type apply(std::vector<bool> &xs) noexcept;
 
         protected:
-            /// Provides access to the ::proxy_registry and to the ::actor_system.
+            /// Provides access to the ::proxy_registry and to the ::spawner.
             execution_unit *context_;
         };
     }    // namespace mtl

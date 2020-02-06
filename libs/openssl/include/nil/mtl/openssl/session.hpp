@@ -20,7 +20,7 @@ MTL_PUSH_WARNINGS
 #include <openssl/ssl.h>
 MTL_POP_WARNINGS
 
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 
 #include <nil/mtl/io/network/native_socket.hpp>
 #include <nil/mtl/io/network/default_multiplexer.hpp>
@@ -44,7 +44,7 @@ namespace nil {
 
             class session {
             public:
-                session(actor_system &sys);
+                session(spawner &sys);
                 ~session();
 
                 bool init();
@@ -64,7 +64,7 @@ namespace nil {
                 std::string get_ssl_error();
                 bool handle_ssl_result(int ret);
 
-                actor_system &sys_;
+                spawner &sys_;
                 SSL_CTX *ctx_;
                 SSL *ssl_;
                 std::string openssl_passphrase_;
@@ -76,7 +76,7 @@ namespace nil {
             using session_ptr = std::unique_ptr<session>;
 
             /// @relates session
-            session_ptr make_session(actor_system &sys, native_socket fd, bool from_accepted_socket);
+            session_ptr make_session(spawner &sys, native_socket fd, bool from_accepted_socket);
 
         }    // namespace openssl
     }        // namespace mtl

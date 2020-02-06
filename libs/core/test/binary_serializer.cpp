@@ -19,8 +19,8 @@
 
 #include <nil/mtl/serialization/binary_serializer.hpp>
 
-#include <nil/mtl/actor_system.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/byte.hpp>
 #include <nil/mtl/byte_buffer.hpp>
 #include <nil/mtl/duration.hpp>
@@ -66,7 +66,7 @@ namespace {
             byte_buffer result;
             binary_serializer sink {nullptr, result};
             if (auto err = sink(xs...))
-                BOOST_FAIL("binary_serializer failed to save: " << actor_system_config::render(err));
+                BOOST_FAIL("binary_serializer failed to save: " << spawner_config::render(err));
             return result;
         }
 
@@ -74,7 +74,7 @@ namespace {
         void save_to_buf(byte_buffer &data, const Ts &... xs) {
             binary_serializer sink {nullptr, data};
             if (auto err = sink(xs...))
-                BOOST_FAIL("binary_serializer failed to save: " << actor_system_config::render(err));
+                BOOST_FAIL("binary_serializer failed to save: " << spawner_config::render(err));
         }
     };
 

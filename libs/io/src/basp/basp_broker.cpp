@@ -15,7 +15,7 @@
 #include <limits>
 
 #include <nil/mtl/actor_registry.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/after.hpp>
 #include <nil/mtl/defaults.hpp>
 #include <nil/mtl/detail/sync_request_bouncer.hpp>

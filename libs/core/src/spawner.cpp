@@ -10,11 +10,12 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 
+#include <memory>
 #include <unordered_set>
 
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/event_based_actor.hpp>
 #include <nil/mtl/raise_error.hpp>
 #include <nil/mtl/raw_event_based_actor.hpp>
@@ -198,7 +199,7 @@ namespace nil {
             }
         }
 
-        actor_system::actor_system(actor_system_config &cfg) :
+        actor_system::spawner(actor_system_config &cfg) :
             ids_(0), types_(*this), logger_(new nil::mtl::logger(*this), false), registry_(*this), groups_(*this),
             dummy_execution_unit_(this), await_actors_before_shutdown_(true), detached_(0), cfg_(cfg),
             logger_dtor_done_(false) {
@@ -243,19 +244,19 @@ namespace nil {
                     sc = static_cast<sched_conf>(sc | profiled);
                 switch (sc) {
                     default:    // any invalid configuration falls back to work stealing
-                        sched.reset(new steal(*this));
+                        sched = std::make_unique<steal>(*this);
                         break;
                     case sharing:
-                        sched.reset(new share(*this));
+                        sched = std::make_unique<share>(*this);
                         break;
                     case profiled_stealing:
-                        sched.reset(new profiled_steal(*this));
+                        sched = std::make_unique<profiled_steal>(*this);
                         break;
                     case profiled_sharing:
-                        sched.reset(new profiled_share(*this));
+                        sched = std::make_unique<profiled_share>(*this);
                         break;
                     case testing:
-                        sched.reset(new test_coordinator(*this));
+                        sched = std::make_unique<test_coordinator>(*this);
                 }
             }
             // initialize state for each module and give each module the opportunity
@@ -283,7 +284,7 @@ namespace nil {
             logger_->start();
         }
 
-        actor_system::~actor_system() {
+        actor_system::~spawner() {
             {
                 MTL_LOG_TRACE("");
                 MTL_LOG_DEBUG("shutdown actor system");

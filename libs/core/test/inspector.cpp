@@ -26,9 +26,9 @@
 #include <nil/mtl/config.hpp>
 
 #include <nil/mtl/atom.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/type_erased_value.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/make_type_erased_value.hpp>
 
 #include <nil/mtl/serialization/binary_serializer.hpp>
@@ -267,9 +267,9 @@ namespace {
 }    // namespace
 
 BOOST_AUTO_TEST_CASE(binary_serialization_inspectors_test) {
-    actor_system_config cfg;
+    spawner_config cfg;
     cfg.add_message_type<dummy_struct>("dummy_struct");
-    actor_system sys {cfg};
+    spawner sys {cfg};
     scoped_execution_unit context;
     binary_serialization_policy p {context};
     test_impl(p);

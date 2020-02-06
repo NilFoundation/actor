@@ -15,7 +15,7 @@
 #include <set>
 #include <string>
 
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 
 #include <nil/mtl/io/middleman_actor.hpp>
 
@@ -25,7 +25,7 @@ namespace nil {
 
             /// Stores OpenSSL context information and provides access to necessary
             /// credentials for establishing connections.
-            class manager : public actor_system::module {
+            class manager : public spawner::module {
             public:
                 ~manager() override;
 
@@ -33,7 +33,7 @@ namespace nil {
 
                 void stop() override;
 
-                void init(actor_system_config &) override;
+                void init(spawner_config &) override;
 
                 id_t id() const override;
 
@@ -45,12 +45,12 @@ namespace nil {
                 }
 
                 /// Returns the enclosing actor system.
-                inline actor_system &system() {
+                inline spawner &system() {
                     return system_;
                 }
 
                 /// Returns the system-wide configuration.
-                inline const actor_system_config &config() const {
+                inline const spawner_config &config() const {
                     return system_.config();
                 }
 
@@ -63,14 +63,14 @@ namespace nil {
                 //           a custom implementation.
                 /// @throws `logic_error` if the middleman is not loaded or is not using the
                 ///         default network backend.
-                static actor_system::module *make(actor_system &, detail::type_list<>);
+                static spawner::module *make(spawner &, detail::type_list<>);
 
             private:
                 /// Private since instantiation is only allowed via `make`.
-                manager(actor_system &sys);
+                manager(spawner &sys);
 
                 /// Reference to the parent.
-                actor_system &system_;
+                spawner &system_;
 
                 /// OpenSSL-aware connection manager.
                 io::middleman_actor manager_;

@@ -12,7 +12,7 @@
 
 #include <nil/mtl/decorator/sequencer.hpp>
 
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/default_attachable.hpp>
 
 #include <nil/mtl/detail/disposer.hpp>

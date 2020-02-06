@@ -53,7 +53,7 @@
 #include <nil/mtl/stream_slot.hpp>
 #include <nil/mtl/thread_hook.hpp>
 #include <nil/mtl/typed_actor.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/config_value.hpp>
 #include <nil/mtl/serialization/deserializer.hpp>
 #include <nil/mtl/scoped_actor.hpp>
@@ -86,7 +86,7 @@
 #include <nil/mtl/event_based_actor.hpp>
 #include <nil/mtl/primitive_variant.hpp>
 #include <nil/mtl/timeout_definition.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/serialization/binary_deserializer.hpp>
 #include <nil/mtl/composable_behavior.hpp>
 #include <nil/mtl/typed_actor_pointer.hpp>
@@ -208,8 +208,8 @@
 ///
 /// ~~
 /// // spawn some actors
-/// actor_system_config cfg;
-/// actor_system system{cfg};
+/// spawner_config cfg;
+/// spawner system{cfg};
 /// auto a1 = system.spawn(...);
 /// auto a2 = system.spawn(...);
 /// auto a3 = system.spawn(...);

@@ -108,7 +108,7 @@ namespace nil {
 
         /// Actor environment including scheduler, registry, and optional components
         /// such as a middleman.
-        class actor_system {
+        class spawner {
         public:
             friend class logger;
             friend class io::middleman;
@@ -134,9 +134,9 @@ namespace nil {
                 return internal_actors_[internal_actor_id(atom("ConfigServ"))];
             }
 
-            actor_system() = delete;
-            actor_system(const actor_system &) = delete;
-            actor_system &operator=(const actor_system &) = delete;
+            spawner() = delete;
+            spawner(const spawner &) = delete;
+            spawner &operator=(const spawner &) = delete;
 
             /// An (optional) component of the actor system.
             class module {
@@ -156,7 +156,7 @@ namespace nil {
 
                 /// Allows the module to change the
                 /// configuration of the actor system during startup.
-                virtual void init(actor_system_config &) = 0;
+                virtual void init(spawner_config &) = 0;
 
                 /// Returns the identifier of this module.
                 virtual id_t id() const = 0;
@@ -171,9 +171,9 @@ namespace nil {
 
             /// @warning The system stores a reference to `cfg`, which means the
             ///          config object must outlive the actor system.
-            explicit actor_system(actor_system_config &cfg);
+            explicit spawner(spawner_config &cfg);
 
-            virtual ~actor_system();
+            virtual ~spawner();
 
             /// A message passing interface (MPI) in run-time checkable representation.
             using mpi = std::set<std::string>;
@@ -440,7 +440,7 @@ namespace nil {
             }
 
             /// Returns the configuration of this actor system.
-            const actor_system_config &config() const {
+            const spawner_config &config() const {
                 return cfg_;
             }
 
@@ -567,7 +567,7 @@ namespace nil {
             mutable std::condition_variable detached_cv_;
 
             /// The system-wide, user-provided configuration.
-            actor_system_config &cfg_;
+            spawner_config &cfg_;
 
             /// Stores whether the logger has run its destructor and stopped any thread,
             /// file handle, etc.

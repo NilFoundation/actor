@@ -24,7 +24,7 @@
 #include <nil/mtl/actor_addr.hpp>
 #include <nil/mtl/actor_cast.hpp>
 #include <nil/mtl/actor_clock.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/error_code.hpp>
 
 namespace nil {
@@ -35,11 +35,11 @@ namespace nil {
             /// the central printer instance for {@link aout}. It also forwards
             /// sends from detached workers or non-actor threads to randomly
             /// chosen workers.
-            class abstract_coordinator : public actor_system::module {
+            class abstract_coordinator : public spawner::module {
             public:
                 enum utility_actor_id : size_t { printer_id, max_id };
 
-                explicit abstract_coordinator(actor_system &sys);
+                explicit abstract_coordinator(spawner &sys);
 
                 /// Returns a handle to the central printing actor.
                 inline actor printer() const {
@@ -54,11 +54,11 @@ namespace nil {
                 /// Puts `what` into the queue of a randomly chosen worker.
                 virtual void enqueue(resumable *what) = 0;
 
-                inline actor_system &system() {
+                inline spawner &system() {
                     return system_;
                 }
 
-                const actor_system_config &config() const;
+                const spawner_config &config() const;
 
                 inline size_t max_throughput() const {
                     return max_throughput_;
@@ -73,7 +73,7 @@ namespace nil {
 
                 void start() override;
 
-                void init(actor_system_config &cfg) override;
+                void init(spawner_config &cfg) override;
 
                 id_t id() const override;
 
@@ -99,7 +99,7 @@ namespace nil {
                 std::array<actor, max_id> utility_actors_;
 
                 /// Reference to the host system.
-                actor_system &system_;
+                spawner &system_;
             };
 
         }    // namespace scheduler

@@ -18,7 +18,7 @@
 
 #include <nil/mtl/detail/ieee_754.hpp>
 #include <nil/mtl/detail/network_order.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/sec.hpp>
 
 namespace nil {
@@ -57,7 +57,7 @@ namespace nil {
 
         }    // namespace
 
-        binary_deserializer::binary_deserializer(actor_system &sys) noexcept : context_(sys.dummy_execution_unit()) {
+        binary_deserializer::binary_deserializer(spawner &sys) noexcept : context_(sys.dummy_execution_unit()) {
             // nop
         }
 

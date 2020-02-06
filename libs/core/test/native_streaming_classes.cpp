@@ -31,8 +31,8 @@
 
 #include <boost/integer/common_factor_rt.hpp>
 
-#include <nil/mtl/actor_system.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/broadcast_downstream_manager.hpp>
 #include <nil/mtl/buffered_downstream_manager.hpp>
 #include <nil/mtl/downstream_manager.hpp>
@@ -484,8 +484,8 @@ namespace {
 
         timing_config tc;
 
-        actor_system_config cfg;
-        actor_system sys;
+        spawner_config cfg;
+        spawner sys;
         scheduler_type &sched;
         actor alice_hdl;
         actor bob_hdl;
@@ -495,7 +495,7 @@ namespace {
         entity &bob;
         entity &carl;
 
-        static actor spawn(actor_system &sys, actor_id id, const char *name, timing_config &tc) {
+        static actor spawn(spawner &sys, actor_id id, const char *name, timing_config &tc) {
             actor_config conf;
             auto &clock = dynamic_cast<scheduler_type &>(sys.scheduler()).clock();
             auto global_time = &clock.current_time;
@@ -507,7 +507,7 @@ namespace {
             return *static_cast<entity *>(actor_cast<abstract_actor *>(hdl));
         }
 
-        static inline actor_system_config &config(actor_system_config &cfg) {
+        static inline spawner_config &config(spawner_config &cfg) {
             cfg.scheduler_policy = nil::mtl::atom("testing");
             return cfg;
         }

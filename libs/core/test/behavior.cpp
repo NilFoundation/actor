@@ -21,10 +21,10 @@
 
 #include <nil/mtl/send.hpp>
 #include <nil/mtl/behavior.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/message_handler.hpp>
 #include <nil/mtl/event_based_actor.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/make_type_erased_tuple_view.hpp>
 
 using namespace nil::mtl;
@@ -91,8 +91,8 @@ BOOST_AUTO_TEST_CASE(multiple_lambda_construct_test) {
 }
 
 BOOST_AUTO_TEST_CASE(become_empty_behavior_test) {
-    actor_system_config cfg {};
-    actor_system sys {cfg};
+    spawner_config cfg {};
+    spawner sys {cfg};
     auto make_bhvr = [](event_based_actor *self) -> behavior { return {[=](int) { self->become(behavior {}); }}; };
     anon_send(sys.spawn(make_bhvr), int {5});
 }

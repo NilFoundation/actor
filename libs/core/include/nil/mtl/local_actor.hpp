@@ -24,7 +24,7 @@
 #include <nil/mtl/actor.hpp>
 #include <nil/mtl/actor_cast.hpp>
 #include <nil/mtl/actor_config.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/behavior.hpp>
 #include <nil/mtl/check_typed_input.hpp>
 #include <nil/mtl/delegated.hpp>
@@ -184,12 +184,12 @@ namespace nil {
             }
 
             /// Returns the hosting actor system.
-            inline actor_system &system() const {
+            inline spawner &system() const {
                 return home_system();
             }
 
             /// Returns the config of the hosting actor system.
-            inline const actor_system_config &config() const {
+            inline const spawner_config &config() const {
                 return system().config();
             }
 

@@ -12,11 +12,11 @@
 
 #include <nil/mtl/serialization/deserializer.hpp>
 
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 
 namespace nil {
     namespace mtl {
-        deserializer::deserializer(actor_system &x) noexcept : context_(x.dummy_execution_unit()) {
+        deserializer::deserializer(spawner &x) noexcept : context_(x.dummy_execution_unit()) {
             // nop
         }
 

@@ -22,8 +22,8 @@
 #include <condition_variable>
 
 #include <nil/mtl/actor_ostream.hpp>
-#include <nil/mtl/actor_system.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/after.hpp>
 #include <nil/mtl/defaults.hpp>
 #include <nil/mtl/duration.hpp>
@@ -108,7 +108,7 @@ namespace nil {
                     sink_cache::iterator iter_;
                 };
 
-                string_sink make_sink(actor_system &sys, const std::string &fn, int flags) {
+                string_sink make_sink(spawner &sys, const std::string &fn, int flags) {
                     if (fn.empty())
                         return nullptr;
                     if (fn.front() == ':') {
@@ -125,7 +125,7 @@ namespace nil {
                     return nullptr;
                 }
 
-                sink_handle get_sink_handle(actor_system &sys, sink_cache &fc, const std::string &fn, int flags) {
+                sink_handle get_sink_handle(spawner &sys, sink_cache &fc, const std::string &fn, int flags) {
                     auto i = fc.find(fn);
                     if (i != fc.end())
                         return {&fc, i};
@@ -224,7 +224,7 @@ namespace nil {
              *                       implementation of coordinator                        *
              ******************************************************************************/
 
-            const actor_system_config &abstract_coordinator::config() const {
+            const spawner_config &abstract_coordinator::config() const {
                 return system_.config();
             }
 
@@ -239,13 +239,13 @@ namespace nil {
                 utility_actors_[printer_id] = system_.spawn<printer_actor, fs>();
             }
 
-            void abstract_coordinator::init(actor_system_config &cfg) {
+            void abstract_coordinator::init(spawner_config &cfg) {
                 namespace sr = defaults::scheduler;
                 max_throughput_ = cfg.scheduler_max_throughput;
                 num_workers_ = cfg.scheduler_max_threads;
             }
 
-            actor_system::module::id_t abstract_coordinator::id() const {
+            spawner::module::id_t abstract_coordinator::id() const {
                 return module::scheduler;
             }
 
@@ -261,7 +261,7 @@ namespace nil {
                 self->wait_for(utility_actors_);
             }
 
-            abstract_coordinator::abstract_coordinator(actor_system &sys) :
+            abstract_coordinator::abstract_coordinator(spawner &sys) :
                 next_worker_(0), max_throughput_(0), num_workers_(0), system_(sys) {
                 // nop
             }

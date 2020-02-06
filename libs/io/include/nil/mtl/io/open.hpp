@@ -13,7 +13,7 @@
 
 #include <cstdint>
 
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 
 #include <nil/mtl/io/middleman.hpp>
 
@@ -23,7 +23,7 @@ namespace nil {
 
             /// Tries to open a port for other MTL instances to connect to.
             /// @experimental
-            inline expected<uint16_t> open(actor_system &sys, uint16_t port, const char *in = nullptr,
+            inline expected<uint16_t> open(spawner &sys, uint16_t port, const char *in = nullptr,
                                            bool reuse = false) {
                 return sys.middleman().open(port, in, reuse);
             }

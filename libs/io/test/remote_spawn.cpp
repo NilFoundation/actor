@@ -34,7 +34,7 @@ namespace {
         return {[](add_atom, int a, int b) { return a + b; }, [](sub_atom, int a, int b) { return a - b; }};
     }
 
-    struct config : actor_system_config {
+    struct config : spawner_config {
         config() {
             load<io::middleman>();
             add_actor_type("calculator", calculator_fun);
@@ -44,7 +44,7 @@ namespace {
 
     void run_client(uint16_t port) {
         config cfg {};
-        actor_system system {cfg};
+        spawner system {cfg};
         auto &mm = system.middleman();
         auto nid = mm.connect("localhost", port);
         BOOST_REQUIRE(nid);
@@ -65,7 +65,7 @@ namespace {
 
     void run_server() {
         config cfg {};
-        actor_system system {cfg};
+        spawner system {cfg};
         auto port = unbox(system.middleman().open(0));
         std::thread child {[=] { run_client(port); }};
         child.join();

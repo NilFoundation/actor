@@ -13,7 +13,7 @@
 
 #include <algorithm>
 
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/config_value.hpp>
 #include <nil/mtl/defaults.hpp>
 #include <nil/mtl/io/network/default_multiplexer.hpp>

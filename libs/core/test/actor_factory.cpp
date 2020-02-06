@@ -28,10 +28,10 @@ namespace {
     using down_atom = atom_constant<atom("down")>;
 
     struct fixture {
-        actor_system_config cfg;
+        spawner_config cfg;
 
         void test_spawn(message args, bool expect_fail = false) {
-            actor_system system {cfg};
+            spawner system {cfg};
             scoped_actor self {system};
             BOOST_TEST_MESSAGE("set aut");
             strong_actor_ptr res;

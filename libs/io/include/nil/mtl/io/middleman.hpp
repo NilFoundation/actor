@@ -16,7 +16,7 @@
 #include <memory>
 #include <thread>
 
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/detail/unique_function.hpp>
 #include <nil/mtl/expected.hpp>
 #include <nil/mtl/fwd.hpp>
@@ -33,9 +33,9 @@ namespace nil {
         namespace io {
 
             /// Manages brokers and network backends.
-            class middleman : public actor_system::module {
+            class middleman : public spawner::module {
             public:
-                friend class ::nil::mtl::actor_system;
+                friend class ::nil::mtl::spawner;
 
                 ~middleman() override;
 
@@ -101,12 +101,12 @@ namespace nil {
                                              uint16_t port);
 
                 /// Returns the enclosing actor system.
-                inline actor_system &system() {
+                inline spawner &system() {
                     return system_;
                 }
 
                 /// Returns the systemw-wide configuration.
-                inline const actor_system_config &config() const {
+                inline const spawner_config &config() const {
                     return system_.config();
                 }
 
@@ -172,7 +172,7 @@ namespace nil {
 
                 void stop() override;
 
-                void init(actor_system_config &) override;
+                void init(spawner_config &) override;
 
                 id_t id() const override;
 
@@ -218,13 +218,13 @@ namespace nil {
                 }
 
                 /// Returns a middleman using the default network backend.
-                static actor_system::module *make(actor_system &, detail::type_list<>);
+                static spawner::module *make(spawner &, detail::type_list<>);
 
                 template<class Backend>
-                static actor_system::module *make(actor_system &sys, detail::type_list<Backend>) {
+                static spawner::module *make(spawner &sys, detail::type_list<Backend>) {
                     class impl : public middleman {
                     public:
-                        impl(actor_system &ref) : middleman(ref), backend_(&ref) {
+                        impl(spawner &ref) : middleman(ref), backend_(&ref) {
                             // nop
                         }
 
@@ -239,7 +239,7 @@ namespace nil {
                 }
 
             protected:
-                middleman(actor_system &sys);
+                middleman(spawner &sys);
 
             private:
                 template<spawn_options Os, class Impl, class F, class... Ts>
@@ -288,10 +288,10 @@ namespace nil {
 
                 expected<strong_actor_ptr> remote_actor(std::set<std::string> ifs, std::string host, uint16_t port);
 
-                static int exec_slave_mode(actor_system &, const actor_system_config &);
+                static int exec_slave_mode(spawner &, const spawner_config &);
 
                 // environment
-                actor_system &system_;
+                spawner &system_;
                 // prevents backend from shutting down unless explicitly requested
                 network::multiplexer::supervisor_ptr backend_supervisor_;
                 // runs the backend

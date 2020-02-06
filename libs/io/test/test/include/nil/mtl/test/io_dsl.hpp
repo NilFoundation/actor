@@ -28,7 +28,7 @@ public:
 };
 
 /// A fixture containing all required state to simulate a single MTL node.
-template<class BaseFixture = test_coordinator_fixture<nil::mtl::actor_system_config>>
+template<class BaseFixture = test_coordinator_fixture<nil::mtl::spawner_config>>
 class test_node_fixture : public BaseFixture, test_node_fixture_base<BaseFixture> {
 public:
     // -- member types -----------------------------------------------------------
@@ -194,7 +194,7 @@ private:
 
 /// A simple fixture that includes two nodes (`earth` and `mars`) that can
 /// connect to each other.
-template<class BaseFixture = test_coordinator_fixture<nil::mtl::actor_system_config>>
+template<class BaseFixture = test_coordinator_fixture<nil::mtl::spawner_config>>
 class point_to_point_fixture : public test_network_fixture_base<test_node_fixture<BaseFixture>> {
 public:
     using planet_type = test_node_fixture<BaseFixture>;
@@ -213,7 +213,7 @@ public:
 
 /// A simple fixture that includes three nodes (`earth`, `mars`, and `jupiter`)
 /// that can connect to each other.
-template<class BaseFixture = test_coordinator_fixture<nil::mtl::actor_system_config>>
+template<class BaseFixture = test_coordinator_fixture<nil::mtl::spawner_config>>
 class belt_fixture : public test_network_fixture_base<test_node_fixture<BaseFixture>> {
 public:
     using planet_type = test_node_fixture<BaseFixture>;

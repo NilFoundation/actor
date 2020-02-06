@@ -28,7 +28,7 @@ namespace nil {
         namespace openssl {
 
             /// @private
-            expected<uint16_t> publish(actor_system &sys, const strong_actor_ptr &whom, std::set<std::string> &&sigs,
+            expected<uint16_t> publish(spawner &sys, const strong_actor_ptr &whom, std::set<std::string> &&sigs,
                                        uint16_t port, const char *cstr, bool ru);
 
             /// Tries to publish `whom` at `port` and returns either an `error` or the

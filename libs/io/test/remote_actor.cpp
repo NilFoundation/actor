@@ -18,7 +18,7 @@ namespace {
 
     constexpr char local_host[] = "127.0.0.1";
 
-    class config : public actor_system_config {
+    class config : public spawner_config {
     public:
         config() {
             load<io::middleman>();
@@ -29,12 +29,12 @@ namespace {
     struct fixture {
         // State for the server.
         config server_side_config;
-        actor_system server_side;
+        spawner server_side;
         io::middleman &server_side_mm;
 
         // State for the client.
         config client_side_config;
-        actor_system client_side;
+        spawner client_side;
         io::middleman &client_side_mm;
 
         fixture() :

@@ -18,7 +18,7 @@ namespace nil {
     namespace mtl {
         namespace openssl {
 
-            io::middleman_actor make_middleman_actor(actor_system &sys, actor db);
+            io::middleman_actor make_middleman_actor(spawner &sys, actor db);
 
         }    // namespace openssl
     }        // namespace mtl

@@ -52,7 +52,7 @@ namespace nil {
                         nullptr);
         }
 
-        void actor_ostream::redirect_all(actor_system &sys, std::string fn, int flags) {
+        void actor_ostream::redirect_all(spawner &sys, std::string fn, int flags) {
             auto pr = sys.scheduler().printer();
             pr->enqueue(
                 make_mailbox_element(nullptr, make_message_id(), {}, redirect_atom::value, std::move(fn), flags),

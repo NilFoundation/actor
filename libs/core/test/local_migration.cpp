@@ -72,7 +72,7 @@ behavior pseudo_mm(event_based_actor* self, const actor& dest) {
 } // namespace <anonymous>
 
 BOOST_AUTO_TEST_CASE(migrate_locally_test) {
-  actor_system system;
+  spawner system;
   auto a = system.spawn<migratable_actor>();
   auto b = system.spawn<migratable_actor>();
   auto mm1 = system.spawn(pseudo_mm, b);

@@ -17,7 +17,7 @@
 
 #include <nil/mtl/serialization/binary_deserializer.hpp>
 
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/callback.hpp>
 #include <nil/mtl/error.hpp>
 #include <nil/mtl/byte_buffer.hpp>
@@ -52,7 +52,7 @@ namespace nil {
 
                         // -- constructors, destructors, and assignment operators ------------------
 
-                        explicit callee(actor_system &sys, proxy_registry::backend &backend);
+                        explicit callee(spawner &sys, proxy_registry::backend &backend);
 
                         virtual ~callee();
 
@@ -210,11 +210,11 @@ namespace nil {
                         return queue_;
                     }
 
-                    actor_system &system() {
+                    spawner &system() {
                         return callee_.proxies().system();
                     }
 
-                    const actor_system_config &config() {
+                    const spawner_config &config() {
                         return system().config();
                     }
 

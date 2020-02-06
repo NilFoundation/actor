@@ -15,8 +15,8 @@
 #include <nil/mtl/actor_addr.hpp>
 #include <nil/mtl/actor_cast.hpp>
 #include <nil/mtl/actor_control_block.hpp>
-#include <nil/mtl/actor_system.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/error.hpp>
 #include <nil/mtl/expected.hpp>
 #include <nil/mtl/inbound_path.hpp>

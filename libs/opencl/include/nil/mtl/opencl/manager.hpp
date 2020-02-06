@@ -7,7 +7,7 @@
 
 #include <nil/mtl/optional.hpp>
 #include <nil/mtl/config.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 
 #include <nil/mtl/detail/raw_ptr.hpp>
 #include <nil/mtl/detail/spawn_helper.hpp>
@@ -22,7 +22,7 @@ namespace nil {
     namespace mtl {
         namespace opencl {
 
-            class manager : public actor_system::module {
+            class manager : public spawner::module {
             public:
                 friend class program;
 
@@ -55,13 +55,13 @@ namespace nil {
 
                 void stop() override;
 
-                void init(actor_system_config &) override;
+                void init(spawner_config &) override;
 
                 id_t id() const override;
 
                 void *subtype_ptr() override;
 
-                static actor_system::module *make(actor_system &sys, detail::type_list<>);
+                static spawner::module *make(spawner &sys, detail::type_list<>);
 
                 // OpenCL functionality
 
@@ -226,12 +226,12 @@ namespace nil {
                 }
 
             protected:
-                manager(actor_system &sys);
+                manager(spawner &sys);
 
                 ~manager() override;
 
             private:
-                actor_system &system_;
+                spawner &system_;
                 std::vector<platform_ptr> platforms_;
             };
 

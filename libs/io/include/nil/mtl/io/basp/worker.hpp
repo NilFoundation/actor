@@ -70,7 +70,7 @@ namespace nil {
 
                     /// Stores how many bytes the "first half" of this object requires.
                     static constexpr size_t pointer_members_size = sizeof(hub_type *) + sizeof(message_queue *) +
-                                                                   sizeof(proxy_registry *) + sizeof(actor_system *);
+                                                                   sizeof(proxy_registry *) + sizeof(spawner *);
 
                     static_assert(MTL_CACHE_LINE_SIZE > pointer_members_size, "invalid cache line size");
 
@@ -86,7 +86,7 @@ namespace nil {
                     proxy_registry *proxies_;
 
                     /// Points to the parent system.
-                    actor_system *system_;
+                    spawner *system_;
 
                     /// Prevents false sharing when writing to `next`.
                     char pad_[MTL_CACHE_LINE_SIZE - pointer_members_size];

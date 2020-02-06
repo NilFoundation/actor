@@ -31,7 +31,7 @@ namespace nil {
         public:
             // -- friends ----------------------------------------------------------------
 
-            friend class actor_system;
+            friend class spawner;
 
             // -- member types -----------------------------------------------------------
 
@@ -70,11 +70,11 @@ namespace nil {
         private:
             // -- constructors, destructors, and assignment operators --------------------
 
-            group_manager(actor_system &sys);
+            group_manager(spawner &sys);
 
-            // -- member functions required by actor_system ------------------------------
+            // -- member functions required by spawner ------------------------------
 
-            void init(actor_system_config &cfg);
+            void init(spawner_config &cfg);
 
             void start();
 
@@ -83,7 +83,7 @@ namespace nil {
             // -- data members -----------------------------------------------------------
 
             modules_map mmap_;
-            actor_system &system_;
+            spawner &system_;
         };
 
     }    // namespace mtl

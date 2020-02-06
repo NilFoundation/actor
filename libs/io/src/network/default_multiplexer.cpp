@@ -17,7 +17,7 @@
 #include <nil/mtl/defaults.hpp>
 #include <nil/mtl/optional.hpp>
 #include <nil/mtl/make_counted.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 
 #include <nil/mtl/io/broker.hpp>
 #include <nil/mtl/io/middleman.hpp>
@@ -141,7 +141,7 @@ namespace nil {
                 // In this implementation, shadow_ is the number of sockets we have
                 // registered to epoll.
 
-                default_multiplexer::default_multiplexer(actor_system *sys) :
+                default_multiplexer::default_multiplexer(spawner *sys) :
                     multiplexer(sys), epollfd_(invalid_native_socket), shadow_(1), pipe_reader_(*this), servant_ids_(0),
                     max_throughput_(0) {
                     init();
@@ -286,7 +286,7 @@ namespace nil {
                 // are sorted by the file descriptor. This allows us to quickly,
                 // i.e., O(1), access the actual object when handling socket events.
 
-                default_multiplexer::default_multiplexer(actor_system *sys) :
+                default_multiplexer::default_multiplexer(spawner *sys) :
                     multiplexer(sys), epollfd_(-1), pipe_reader_(*this), servant_ids_(0) {
                     init();
                     // initial setup

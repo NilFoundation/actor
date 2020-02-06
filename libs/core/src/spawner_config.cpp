@@ -10,7 +10,7 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 
 #include <limits>
 #include <thread>
@@ -31,7 +31,7 @@ namespace nil {
         // in this config class, we have (1) hard-coded defaults that are overridden
         // by (2) INI-file contents that are in turn overridden by (3) CLI arguments
 
-        actor_system_config::actor_system_config() : slave_mode(false), slave_mode_fun(nullptr) {
+        spawner_config::spawner_config() : slave_mode(false), slave_mode_fun(nullptr) {
             // add `vector<T>` and `stream<T>` for each statically known type
             add_message_type_impl<stream<actor>>("stream<@actor>");
             add_message_type_impl<stream<actor_addr>>("stream<@addr>");
@@ -53,21 +53,21 @@ namespace nil {
             error_renderers.emplace(atom("exit"), render_exit_reason);
         }
 
-        actor_system_config &actor_system_config::add_actor_factory(std::string name, actor_factory fun) {
+        spawner_config &spawner_config::add_actor_factory(std::string name, actor_factory fun) {
             actor_factories.emplace(std::move(name), std::move(fun));
             return *this;
         }
 
-        actor_system_config &actor_system_config::add_error_category(atom_value x, error_renderer y) {
+        spawner_config &spawner_config::add_error_category(atom_value x, error_renderer y) {
             error_renderers[x] = std::move(y);
             return *this;
         }
 
-        timespan actor_system_config::stream_tick_duration() const noexcept {
+        timespan spawner_config::stream_tick_duration() const noexcept {
             auto ns_count = boost::math::gcd(stream_credit_round_interval.count(), stream_max_batch_delay.count());
             return timespan {ns_count};
         }
-        std::string actor_system_config::render(const error &err) {
+        std::string spawner_config::render(const error &err) {
             switch (static_cast<uint64_t>(err.category())) {
                 case atom_uint("system"):
                     return render_sec(err.code(), err.category(), err.context());
@@ -79,22 +79,22 @@ namespace nil {
             return "unknown-error";
         }
 
-        std::string actor_system_config::render_sec(uint8_t x, atom_value, const message &xs) {
+        std::string spawner_config::render_sec(uint8_t x, atom_value, const message &xs) {
             auto tmp = static_cast<sec>(x);
             return deep_to_string(meta::type_name("system_error"), tmp, meta::omittable_if_empty(), xs);
         }
 
-        std::string actor_system_config::render_exit_reason(uint8_t x, atom_value, const message &xs) {
+        std::string spawner_config::render_exit_reason(uint8_t x, atom_value, const message &xs) {
             auto tmp = static_cast<exit_reason>(x);
             return deep_to_string(meta::type_name("exit_reason"), tmp, meta::omittable_if_empty(), xs);
         }
 
-        std::string actor_system_config::render_pec(uint8_t x, atom_value, const message &xs) {
+        std::string spawner_config::render_pec(uint8_t x, atom_value, const message &xs) {
             auto tmp = static_cast<pec>(x);
             return deep_to_string(meta::type_name("parser_error"), tmp, meta::omittable_if_empty(), xs);
         }
 
-        const settings &content(const actor_system_config &cfg) {
+        const settings &content(const spawner_config &cfg) {
             return cfg.content;
         }
 

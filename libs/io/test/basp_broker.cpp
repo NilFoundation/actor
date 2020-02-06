@@ -103,7 +103,7 @@ namespace {
     };
 
     class fixture {
-        static inline actor_system_config &config(actor_system_config &cfg, bool autoconn = false) {
+        static inline spawner_config &config(spawner_config &cfg, bool autoconn = false) {
             cfg.middleman_enable_automatic_connections = autoconn;
             cfg.middleman_workers = 0;
             cfg.scheduler_policy = autoconn ? nil::mtl::atom("testing") : nil::mtl::atom("stealing");
@@ -392,8 +392,8 @@ namespace {
             return {this};
         }
 
-        actor_system_config cfg;
-        actor_system sys;
+        spawner_config cfg;
+        spawner sys;
 
     private:
         basp_broker *aut_;

@@ -521,7 +521,7 @@ struct test_coordinator_fixture_fetch_helper<T> {
 };
 
 /// A fixture with a deterministic scheduler setup.
-template<class Config = nil::mtl::actor_system_config>
+template<class Config = nil::mtl::spawner_config>
 class test_coordinator_fixture {
     static inline Config &config(Config &cfg) {
         cfg.scheduler_policy = nil::mtl::atom("testing");
@@ -690,7 +690,7 @@ public:
     Config cfg;
 
     /// Host system for (scheduled) actors.
-    nil::mtl::actor_system sys;
+    nil::mtl::spawner sys;
 
     /// A scoped actor for conveniently sending and receiving messages.
     nil::mtl::scoped_actor self;

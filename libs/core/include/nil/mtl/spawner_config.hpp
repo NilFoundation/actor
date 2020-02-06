@@ -37,18 +37,18 @@
 namespace nil {
     namespace mtl {
 
-        /// Configures an `actor_system` on startup.
-        class actor_system_config {
+        /// Configures an `spawner` on startup.
+        class spawner_config {
         public:
             // -- member types -----------------------------------------------------------
 
-            using hook_factory = std::function<io::hook *(actor_system &)>;
+            using hook_factory = std::function<io::hook *(spawner &)>;
 
             using hook_factory_vector = std::vector<hook_factory>;
 
             using thread_hooks = std::vector<std::unique_ptr<thread_hook>>;
 
-            using module_factory = std::function<actor_system::module *(actor_system &)>;
+            using module_factory = std::function<spawner::module *(spawner &)>;
 
             using module_factory_vector = std::vector<module_factory>;
 
@@ -76,12 +76,12 @@ namespace nil {
 
             // -- constructors, destructors, and assignment operators --------------------
 
-            actor_system_config();
+            spawner_config();
 
-            actor_system_config(actor_system_config &&) = default;
+            spawner_config(spawner_config &&) = default;
 
-            actor_system_config(const actor_system_config &) = delete;
-            actor_system_config &operator=(const actor_system_config &) = delete;
+            spawner_config(const spawner_config &) = delete;
+            spawner_config &operator=(const spawner_config &) = delete;
 
             // -- properties -------------------------------------------------------------
 
@@ -93,13 +93,13 @@ namespace nil {
             /// Allows other nodes to spawn actors created by `fun`
             /// dynamically by using `name` as identifier.
             /// @experimental
-            actor_system_config &add_actor_factory(std::string name, actor_factory fun);
+            spawner_config &add_actor_factory(std::string name, actor_factory fun);
 
             /// Allows other nodes to spawn actors of type `T`
             /// dynamically by using `name` as identifier.
             /// @experimental
             template<class T, class... Ts>
-            actor_system_config &add_actor_type(std::string name) {
+            spawner_config &add_actor_type(std::string name) {
                 using handle = typename infer_handle_from_class<T>::type;
                 if (!std::is_same<handle, actor>::value)
                     add_message_type<handle>(name);
@@ -110,7 +110,7 @@ namespace nil {
             /// dynamically by using `name` as identifier.
             /// @experimental
             template<class F>
-            actor_system_config &add_actor_type(std::string name, F f) {
+            spawner_config &add_actor_type(std::string name, F f) {
                 using handle = typename infer_handle_from_fun<F>::type;
                 if (!std::is_same<handle, actor>::value)
                     add_message_type<handle>(name);
@@ -119,7 +119,7 @@ namespace nil {
 
             /// Adds message type `T` with runtime type info `name`.
             template<class T>
-            actor_system_config &add_message_type(std::string name) {
+            spawner_config &add_message_type(std::string name) {
                 static_assert(std::is_empty<T>::value || std::is_same<T, actor>::value    // silence add_actor_type err
                                   || is_typed_actor<T>::value ||
                                   (std::is_default_constructible<T>::value && std::is_copy_constructible<T>::value),
@@ -138,12 +138,12 @@ namespace nil {
 
             /// Enables the actor system to convert errors of this error category
             /// to human-readable strings via `renderer`.
-            actor_system_config &add_error_category(atom_value x, error_renderer y);
+            spawner_config &add_error_category(atom_value x, error_renderer y);
 
             /// Enables the actor system to convert errors of this error category
             /// to human-readable strings via `to_string(T)`.
             template<class T>
-            actor_system_config &add_error_category(atom_value category) {
+            spawner_config &add_error_category(atom_value category) {
                 auto f = [=](uint8_t val, const std::string &ctx) -> std::string {
                     std::string result;
                     result = to_string(category);
@@ -161,8 +161,8 @@ namespace nil {
 
             /// Loads module `T` with optional template parameters `Ts...`.
             template<class T, class... Ts>
-            actor_system_config &load() {
-                module_factories.push_back([](actor_system &sys) -> actor_system::module * {
+            spawner_config &load() {
+                module_factories.push_back([](spawner &sys) -> spawner::module * {
                     return T::make(sys, detail::type_list<Ts...> {});
                 });
                 return *this;
@@ -170,20 +170,20 @@ namespace nil {
 
             /// Adds a factory for a new hook type to the middleman (if loaded).
             template<class Factory>
-            actor_system_config &add_hook_factory(Factory f) {
+            spawner_config &add_hook_factory(Factory f) {
                 hook_factories.push_back(f);
                 return *this;
             }
 
             /// Adds a hook type to the middleman (if loaded).
             template<class Hook>
-            actor_system_config &add_hook_type() {
-                return add_hook_factory([](actor_system &sys) -> Hook * { return new Hook(sys); });
+            spawner_config &add_hook_type() {
+                return add_hook_factory([](spawner &sys) -> Hook * { return new Hook(sys); });
             }
 
             /// Adds a hook type to the scheduler.
             template<class Hook, class... Ts>
-            actor_system_config &add_thread_hook(Ts &&... ts) {
+            spawner_config &add_thread_hook(Ts &&... ts) {
                 std::unique_ptr<thread_hook> hook {new Hook(std::forward<Ts>(ts)...)};
                 thread_hooks_.emplace_back(std::move(hook));
                 return *this;
@@ -357,7 +357,7 @@ namespace nil {
             // Config parameter for individual actor types.
             named_actor_config_map named_actor_configs;
 
-            int (*slave_mode_fun)(actor_system &, const actor_system_config &);
+            int (*slave_mode_fun)(spawner &, const spawner_config &);
 
             // -- default error rendering functions --------------------------------------
 
@@ -381,6 +381,6 @@ namespace nil {
         };
 
         /// Returns all user-provided configuration parameters.
-        const settings &content(const actor_system_config &cfg);
+        const settings &content(const spawner_config &cfg);
     }    // namespace mtl
 }    // namespace nil

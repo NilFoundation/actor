@@ -21,7 +21,7 @@
 #include <random>
 #include <thread>
 
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/detail/double_ended_queue.hpp>
 #include <nil/mtl/policy/unprofiled.hpp>
 #include <nil/mtl/resumable.hpp>

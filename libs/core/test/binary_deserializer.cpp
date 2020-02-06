@@ -19,8 +19,8 @@
 #include <cstring>
 #include <vector>
 
-#include <nil/mtl/actor_system.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/byte.hpp>
 #include <nil/mtl/byte_buffer.hpp>
 #include <nil/mtl/duration.hpp>
@@ -71,7 +71,7 @@ namespace {
             auto result = T {};
             binary_deserializer source {nullptr, buf};
             if (auto err = source(result))
-                BOOST_FAIL("binary_deserializer failed to load: " << actor_system_config::render(err));
+                BOOST_FAIL("binary_deserializer failed to load: " << spawner_config::render(err));
             return result;
         }
 
@@ -79,7 +79,7 @@ namespace {
         void load(const std::vector<byte> &buf, Ts &... xs) {
             binary_deserializer source {nullptr, buf};
             if (auto err = source(xs...))
-                BOOST_FAIL("binary_deserializer failed to load: " << actor_system_config::render(err));
+                BOOST_FAIL("binary_deserializer failed to load: " << spawner_config::render(err));
         }
     };
 

@@ -12,7 +12,7 @@
 
 #include <nil/mtl/abstract_channel.hpp>
 
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/mailbox_element.hpp>
 
 namespace nil {

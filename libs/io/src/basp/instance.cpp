@@ -14,7 +14,7 @@
 #include <nil/mtl/serialization/binary_deserializer.hpp>
 #include <nil/mtl/serialization/binary_serializer.hpp>
 
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/defaults.hpp>
 
 #include <nil/mtl/io/basp/remote_message_handler.hpp>
@@ -26,7 +26,7 @@ namespace nil {
         namespace io {
             namespace basp {
 
-                instance::callee::callee(actor_system &sys, proxy_registry::backend &backend) :
+                instance::callee::callee(spawner &sys, proxy_registry::backend &backend) :
                     namespace_(sys, backend) {
                     // nop
                 }
@@ -374,7 +374,7 @@ namespace nil {
                                 // If no worker is available then we have no other choice than to take
                                 // the performance hit and deserialize in this thread.
                                 struct handler : remote_message_handler<handler> {
-                                    handler(message_queue *queue, proxy_registry *proxies, actor_system *system,
+                                    handler(message_queue *queue, proxy_registry *proxies, spawner *system,
                                             node_id last_hop, basp::header &hdr, buffer_type &payload) :
                                         queue_(queue),
                                         proxies_(proxies), system_(system), last_hop_(std::move(last_hop)), hdr_(hdr),
@@ -383,7 +383,7 @@ namespace nil {
                                     }
                                     message_queue *queue_;
                                     proxy_registry *proxies_;
-                                    actor_system *system_;
+                                    spawner *system_;
                                     node_id last_hop_;
                                     basp::header &hdr_;
                                     buffer_type &payload_;

@@ -43,10 +43,10 @@ namespace {
     };
 
     struct fixture {
-        // allows us to check s_dtors after dtor of actor_system
-        actor_system_config cfg;
+        // allows us to check s_dtors after dtor of spawner
+        spawner_config cfg;
         union {
-            actor_system system;
+            spawner system;
         };
         union {
             scoped_execution_unit context;
@@ -55,7 +55,7 @@ namespace {
         std::function<actor()> spawn_worker;
 
         fixture() {
-            new (&system) actor_system(cfg);
+            new (&system) spawner(cfg);
             new (&context) scoped_execution_unit(&system);
             spawn_worker = [&] { return system.spawn<worker>(); };
         }
@@ -63,7 +63,7 @@ namespace {
         ~fixture() {
             system.await_all_actors_done();
             context.~scoped_execution_unit();
-            system.~actor_system();
+            system.~spawner();
             BOOST_CHECK_EQUAL(s_dtors.load(), s_ctors.load());
         }
     };

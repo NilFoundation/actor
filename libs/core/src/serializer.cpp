@@ -12,12 +12,12 @@
 
 #include <nil/mtl/serialization/serializer.hpp>
 
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 
 namespace nil {
     namespace mtl {
 
-        serializer::serializer(actor_system &sys) noexcept : context_(sys.dummy_execution_unit()) {
+        serializer::serializer(spawner &sys) noexcept : context_(sys.dummy_execution_unit()) {
             // nop
         }
 

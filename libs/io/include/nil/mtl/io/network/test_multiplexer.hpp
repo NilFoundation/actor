@@ -29,7 +29,7 @@ namespace nil {
                     struct datagram_data;
 
                 public:
-                    explicit test_multiplexer(actor_system *sys);
+                    explicit test_multiplexer(spawner *sys);
 
                     ~test_multiplexer() override;
 

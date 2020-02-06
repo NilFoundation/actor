@@ -117,8 +117,8 @@ namespace nil {
         class actor_pool;
         class actor_proxy;
         class actor_registry;
-        class actor_system;
-        class actor_system_config;
+        class spawner;
+        class spawner_config;
         class behavior;
         class binary_deserializer;
         class binary_serializer;
@@ -209,8 +209,8 @@ namespace nil {
 
         // -- functions ----------------------------------------------------------------
 
-        /// @relates actor_system_config
-        const settings &content(const actor_system_config &);
+        /// @relates spawner_config
+        const settings &content(const spawner_config &);
 
         template<class T, class... Ts>
         message make_message(T &&x, Ts &&... xs);

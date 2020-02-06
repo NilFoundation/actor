@@ -204,8 +204,8 @@ namespace {
             return {this};
         }
 
-        actor_system_config cfg;
-        actor_system system;
+        spawner_config cfg;
+        spawner system;
         actor aut_;
         abstract_broker *aut_ptr_;
         network::test_multiplexer *mpx_;

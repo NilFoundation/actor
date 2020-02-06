@@ -44,7 +44,7 @@ namespace nil {
 
             // -- constructors, destructors, and assignment operators --------------------
 
-            binary_serializer(actor_system &sys, byte_buffer &buf) noexcept;
+            binary_serializer(spawner &sys, byte_buffer &buf) noexcept;
 
             binary_serializer(execution_unit *ctx, byte_buffer &buf) noexcept :
                 buf_(buf), write_pos_(buf.size()), context_(ctx) {
@@ -139,7 +139,7 @@ namespace nil {
             /// Stores the current offset for writing.
             size_t write_pos_;
 
-            /// Provides access to the ::proxy_registry and to the ::actor_system.
+            /// Provides access to the ::proxy_registry and to the ::spawner.
             execution_unit *context_;
         };
     }    // namespace mtl

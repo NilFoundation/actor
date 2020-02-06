@@ -14,7 +14,7 @@
 
 #include <limits>
 
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/monitorable_actor.hpp>
 #include <nil/mtl/raise_error.hpp>
 #include <nil/mtl/resumable.hpp>
@@ -55,7 +55,7 @@ namespace nil {
 
             }    // namespace
 
-            test_coordinator::test_coordinator(actor_system &sys) : super(sys) {
+            test_coordinator::test_coordinator(spawner &sys) : super(sys) {
                 // nop
             }
 

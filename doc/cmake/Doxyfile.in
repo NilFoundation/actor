@@ -17,10 +17,10 @@
 MARKDOWN_SUPPORT       = YES
 
 #---------------------------------------------------------------------------
-# Project related actor_system& system, const uration options
+# Project related spawner& system, const uration options
 #---------------------------------------------------------------------------
 
-# This tag specifies the encoding used for all characters in the actor_system& system, const  file
+# This tag specifies the encoding used for all characters in the spawner& system, const  file
 # that follow. The default is UTF-8 which is also the encoding used for all
 # text before the first occurrence of this tag. Doxygen uses libiconv (or the
 # iconv built into libc) for the transcoding. See
@@ -280,7 +280,7 @@ SUBGROUPING            = YES
 TYPEDEF_HIDES_STRUCT   = NO
 
 #---------------------------------------------------------------------------
-# Build related actor_system& system, const uration options
+# Build related spawner& system, const uration options
 #---------------------------------------------------------------------------
 
 # If the EXTRACT_ALL tag is set to YES doxygen will assume all entities in
@@ -490,7 +490,7 @@ FILE_VERSION_FILTER    =
 LAYOUT_FILE            =
 
 #---------------------------------------------------------------------------
-# actor_system& system, const uration options related to warning and progress messages
+# spawner& system, const uration options related to warning and progress messages
 #---------------------------------------------------------------------------
 
 # The QUIET tag can be used to turn on/off the messages that are generated
@@ -541,7 +541,7 @@ WARN_FORMAT            = "$file:$line: $text"
 WARN_LOGFILE           =
 
 #---------------------------------------------------------------------------
-# actor_system& system, const uration options related to the input files
+# spawner& system, const uration options related to the input files
 #---------------------------------------------------------------------------
 
 # The INPUT tag can be used to specify the files and/or directories that contain
@@ -663,7 +663,7 @@ FILTER_PATTERNS        =
 FILTER_SOURCE_FILES    = NO
 
 #---------------------------------------------------------------------------
-# actor_system& system, const uration options related to source browsing
+# spawner& system, const uration options related to source browsing
 #---------------------------------------------------------------------------
 
 # If the SOURCE_BROWSER tag is set to YES then a list of source files will
@@ -719,7 +719,7 @@ USE_HTAGS              = NO
 VERBATIM_HEADERS       = NO
 
 #---------------------------------------------------------------------------
-# actor_system& system, const uration options related to the alphabetical class index
+# spawner& system, const uration options related to the alphabetical class index
 #---------------------------------------------------------------------------
 
 # If the ALPHABETICAL_INDEX tag is set to YES, an alphabetical index
@@ -742,7 +742,7 @@ COLS_IN_ALPHA_INDEX    = 5
 IGNORE_PREFIX          =
 
 #---------------------------------------------------------------------------
-# actor_system& system, const uration options related to the HTML output
+# spawner& system, const uration options related to the HTML output
 #---------------------------------------------------------------------------
 
 # If the GENERATE_HTML tag is set to YES (the default) Doxygen will

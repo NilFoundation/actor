@@ -22,8 +22,8 @@ using namespace nil::mtl;
 namespace {
 
     struct fixture {
-        actor_system_config cfg;
-        actor_system system;
+        spawner_config cfg;
+        spawner system;
         scoped_actor self;
 
         fixture() : system(cfg), self(system) {
@@ -86,8 +86,8 @@ behavior check_order_behavior_factory(local_actor *, sequence_t::const_iterator 
 }
 
 void check_order_event_based_actor(const check_order_t &corder) {
-    actor_system_config cfg;
-    actor_system system {cfg};
+    spawner_config cfg;
+    spawner system {cfg};
     auto &send_order = corder.first;
     auto &sequence = corder.second;
     auto seq_it = sequence.cbegin();
@@ -104,8 +104,8 @@ void check_order_event_based_actor(const check_order_t &corder) {
 }
 
 void check_order_scoped_actor(const check_order_t &corder) {
-    actor_system_config cfg;
-    actor_system system {cfg};
+    spawner_config cfg;
+    spawner system {cfg};
     auto &send_order = corder.first;
     auto &sequence = corder.second;
     auto seq_it = begin(sequence);

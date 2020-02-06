@@ -14,7 +14,7 @@
 
 #include <nil/mtl/message.hpp>
 #include <nil/mtl/actor_cast.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/group_manager.hpp>
 
 namespace nil {

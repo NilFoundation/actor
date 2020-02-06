@@ -12,7 +12,7 @@
 
 #include <nil/mtl/serialization/binary_serializer.hpp>
 
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/detail/ieee_754.hpp>
 #include <nil/mtl/detail/network_order.hpp>
 
@@ -28,7 +28,7 @@ namespace nil {
 
         }    // namespace
 
-        binary_serializer::binary_serializer(actor_system &sys, byte_buffer &buf) noexcept :
+        binary_serializer::binary_serializer(spawner &sys, byte_buffer &buf) noexcept :
             binary_serializer(sys.dummy_execution_unit(), buf) {
             // nop
         }

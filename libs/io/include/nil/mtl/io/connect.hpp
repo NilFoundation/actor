@@ -15,7 +15,7 @@
 #include <cstdint>
 
 #include <nil/mtl/node_id.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 
 #include <nil/mtl/io/middleman.hpp>
 
@@ -25,7 +25,7 @@ namespace nil {
 
             /// Tries to connect to given node.
             /// @experimental
-            inline expected<node_id> connect(actor_system &sys, std::string host, uint16_t port) {
+            inline expected<node_id> connect(spawner &sys, std::string host, uint16_t port) {
                 return sys.middleman().connect(std::move(host), port);
             }
 

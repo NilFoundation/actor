@@ -55,8 +55,8 @@ namespace {
     }
 
     struct fixture {
-        actor_system_config cfg;
-        actor_system sys {cfg};
+        spawner_config cfg;
+        spawner sys {cfg};
 
         template<class T>
         T roundtrip(T x) {

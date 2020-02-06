@@ -17,9 +17,9 @@
 #include <cstdint>
 #include <memory>
 
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/actor_control_block.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/broadcast_downstream_manager.hpp>
 #include <nil/mtl/scheduled_actor.hpp>
 
@@ -155,9 +155,9 @@ namespace {
 
     // Provides the setup with alice, bob, and carl.
     struct fixture {
-        actor_system_config cfg;
+        spawner_config cfg;
 
-        actor_system sys;
+        spawner sys;
 
         strong_actor_ptr alice_hdl;
 
@@ -171,7 +171,7 @@ namespace {
 
         entity &carl;
 
-        static strong_actor_ptr spawn(actor_system &sys, actor_id id, const char *name) {
+        static strong_actor_ptr spawn(spawner &sys, actor_id id, const char *name) {
             actor_config conf;
             auto hdl = make_actor<entity>(id, node_id {}, &sys, conf, name);
             return actor_cast<strong_actor_ptr>(std::move(hdl));

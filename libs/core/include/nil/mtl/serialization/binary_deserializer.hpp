@@ -39,7 +39,7 @@ namespace nil {
             // -- constructors, destructors, and assignment operators --------------------
 
             template<class Container>
-            binary_deserializer(actor_system &sys, const Container &input) noexcept : binary_deserializer(sys) {
+            binary_deserializer(spawner &sys, const Container &input) noexcept : binary_deserializer(sys) {
                 reset(as_bytes(make_span(input)));
             }
 
@@ -53,7 +53,7 @@ namespace nil {
                 // nop
             }
 
-            binary_deserializer(actor_system &sys, const void *buf, size_t size) noexcept :
+            binary_deserializer(spawner &sys, const void *buf, size_t size) noexcept :
                 binary_deserializer(sys, make_span(reinterpret_cast<const byte *>(buf), size)) {
                 // nop
             }
@@ -142,7 +142,7 @@ namespace nil {
             result_type apply(std::vector<bool> &xs);
 
         private:
-            explicit binary_deserializer(actor_system &sys) noexcept;
+            explicit binary_deserializer(spawner &sys) noexcept;
 
             /// Checks whether we can read `read_size` more bytes.
             bool range_check(size_t read_size) const noexcept {
@@ -155,7 +155,7 @@ namespace nil {
             /// Points to the end of the assigned memory block.
             const byte *end_;
 
-            /// Provides access to the ::proxy_registry and to the ::actor_system.
+            /// Provides access to the ::proxy_registry and to the ::spawner.
             execution_unit *context_;
         };
     }    // namespace mtl

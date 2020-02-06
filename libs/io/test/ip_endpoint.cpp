@@ -6,8 +6,8 @@
 
 #include <nil/mtl/test/dsl.hpp>
 #include <nil/mtl/config.hpp>
-#include <nil/mtl/actor_system.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/serialization/binary_serializer.hpp>
 #include <nil/mtl/serialization/binary_deserializer.hpp>
 
@@ -20,7 +20,7 @@ using namespace nil::mtl::io;
 
 namespace {
 
-    class config : public actor_system_config {
+    class config : public spawner_config {
     public:
         config() {
             // this will call WSAStartup for network initialization on Windows

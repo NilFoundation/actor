@@ -11,7 +11,7 @@
 
 #include <nil/mtl/io/basp/worker.hpp>
 
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/io/basp/message_queue.hpp>
 #include <nil/mtl/proxy_registry.hpp>
 #include <nil/mtl/scheduler/abstract_coordinator.hpp>

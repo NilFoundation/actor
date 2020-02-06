@@ -62,7 +62,7 @@ namespace nil {
             }
 
             /// Returns the hosting system.
-            inline actor_system &system() const {
+            inline spawner &system() const {
                 return system_;
             }
 
@@ -75,7 +75,7 @@ namespace nil {
         protected:
             abstract_group(group_module &mod, std::string id, node_id nid);
 
-            actor_system &system_;
+            spawner &system_;
             group_module &parent_;
             std::string identifier_;
             node_id origin_;

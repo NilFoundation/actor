@@ -66,11 +66,11 @@ namespace nil {
                 return self_->context();
             }
 
-            actor_system &system() const {
+            spawner &system() const {
                 return self_->system();
             }
 
-            actor_system &home_system() const {
+            spawner &home_system() const {
                 return self_->home_system();
             }
 

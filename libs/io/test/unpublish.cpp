@@ -36,14 +36,14 @@ namespace {
 
     struct fixture {
         fixture() {
-            new (&system) actor_system(cfg.load<io::middleman>());
+            new (&system) spawner(cfg.load<io::middleman>());
             testee = system.spawn<dummy>();
         }
 
         ~fixture() {
             anon_send_exit(testee, exit_reason::user_shutdown);
             destroy(testee);
-            system.~actor_system();
+            system.~spawner();
             BOOST_CHECK_EQUAL(s_dtor_called.load(), 2);
         }
 
@@ -69,9 +69,9 @@ namespace {
             return result;
         }
 
-        actor_system_config cfg;
+        spawner_config cfg;
         union {
-            actor_system system;
+            spawner system;
         };    // manually control ctor/dtor
         actor testee;
     };

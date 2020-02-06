@@ -43,7 +43,7 @@ namespace nil {
                 virtual void set_last_hop(node_id *ptr) = 0;
             };
 
-            proxy_registry(actor_system &sys, backend &be);
+            proxy_registry(spawner &sys, backend &be);
 
             proxy_registry(const proxy_registry &) = delete;
             proxy_registry &operator=(const proxy_registry &) = delete;
@@ -91,12 +91,12 @@ namespace nil {
             void clear();
 
             /// Returns the hosting actor system.
-            actor_system &system() {
+            spawner &system() {
                 return system_;
             }
 
             /// Returns the hosting actor system.
-            const actor_system &system() const {
+            const spawner &system() const {
                 return system_;
             }
 
@@ -109,7 +109,7 @@ namespace nil {
             /// @pre mtx_ is locked
             void kill_proxy(strong_actor_ptr &, error);
 
-            actor_system &system_;
+            spawner &system_;
             backend &backend_;
             mutable std::mutex mtx_;
             std::unordered_map<node_id, proxy_map> proxies_;

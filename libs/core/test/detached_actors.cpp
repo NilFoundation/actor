@@ -25,8 +25,8 @@ using std::endl;
 namespace {
 
     struct fixture {
-        actor_system_config cfg;
-        actor_system sys;
+        spawner_config cfg;
+        spawner sys;
         scoped_actor self;
 
         fixture() : sys(cfg), self(sys, true) {

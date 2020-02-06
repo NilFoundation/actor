@@ -60,8 +60,8 @@ namespace {
             // nop
         }
 
-        actor_system_config cfg;
-        actor_system sys;
+        spawner_config cfg;
+        spawner sys;
         scoped_actor self;
         handle_set a0;
         handle_set a1 {sys.spawn(dt_testee)};

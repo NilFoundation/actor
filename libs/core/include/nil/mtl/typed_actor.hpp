@@ -18,7 +18,7 @@
 #include <nil/mtl/make_actor.hpp>
 #include <nil/mtl/actor_cast.hpp>
 #include <nil/mtl/replies_to.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/intrusive_ptr.hpp>
 #include <nil/mtl/composed_type.hpp>
 #include <nil/mtl/abstract_actor.hpp>
@@ -175,7 +175,7 @@ namespace nil {
             }
 
             /// Returns the hosting actor system.
-            inline actor_system &home_system() const noexcept {
+            inline spawner &home_system() const noexcept {
                 return *ptr_->home_system;
             }
 

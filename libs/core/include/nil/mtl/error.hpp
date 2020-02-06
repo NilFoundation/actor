@@ -83,7 +83,7 @@ namespace nil {
         /// a poor choice when it comes to serialization. MTL uses atoms for
         /// categories instead and requires users to register custom error categories
         /// to the actor system. This makes the actor system the natural instance for
-        /// rendering error messages via `actor_system::render(const error&)`.
+        /// rendering error messages via `spawner::render(const error&)`.
         class error : detail::comparable<error> {
         public:
             // -- member types -----------------------------------------------------------

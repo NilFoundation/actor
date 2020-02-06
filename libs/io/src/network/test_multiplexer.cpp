@@ -47,7 +47,7 @@ namespace nil {
                     // nop
                 }
 
-                test_multiplexer::test_multiplexer(actor_system *sys) :
+                test_multiplexer::test_multiplexer(spawner *sys) :
                     multiplexer(sys), inline_runnables_(0), servant_ids_(0) {
                     MTL_ASSERT(sys != nullptr);
                 }

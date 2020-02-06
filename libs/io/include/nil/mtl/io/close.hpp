@@ -13,7 +13,7 @@
 
 #include <cstdint>
 
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 
 #include <nil/mtl/io/middleman.hpp>
 
@@ -22,7 +22,7 @@ namespace nil {
         namespace io {
 
             /// Closes port `port` regardless of whether an actor is published to it.
-            inline expected<void> close(actor_system &sys, uint16_t port) {
+            inline expected<void> close(spawner &sys, uint16_t port) {
                 return sys.middleman().close(port);
             }
 
