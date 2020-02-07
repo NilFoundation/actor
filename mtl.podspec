@@ -6,7 +6,7 @@
   "homepage": "http://mtl.nil.foundation/",
   "license": "Boost Software License",
   "authors": {
-    "Dominik Charousset": "dominik.charousset@haw-hamburg.de"
+    "Dominik Charousset": "dominik.charousset@haw-hamburg.de",
     "Mikhail Komarov": "nemo@nil.foundation"
   },
   "platforms": {
