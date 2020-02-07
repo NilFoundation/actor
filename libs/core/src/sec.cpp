@@ -11,6 +11,9 @@
 //---------------------------------------------------------------------------//
 
 #include <nil/mtl/sec.hpp>
+#include <nil/mtl/error.hpp>
+#include <nil/mtl/make_message.hpp>
+#include <nil/mtl/message.hpp>
 
 #include <nil/mtl/detail/enum_to_string.hpp>
 
@@ -80,5 +83,12 @@ namespace nil {
             return {static_cast<uint8_t>(x), atom("system")};
         }
 
+        error make_error(sec x, message msg) {
+            return {static_cast<uint8_t>(x), atom("system"), std::move(msg)};
+        }
+
+        error make_error(sec x, std::string msg) {
+            return make_error(x, make_message(std::move(msg)));
+        }
     }    // namespace mtl
 }    // namespace nil

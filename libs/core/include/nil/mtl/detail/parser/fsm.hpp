@@ -219,7 +219,8 @@
     BOOST_PP_CAT(BOOST_PP_OVERLOAD(MTL_FSM_TRANSITION_IMPL, __VA_ARGS__)(__VA_ARGS__), BOOST_PP_EMPTY())
 
 /// Makes an epsilon transition into another FSM, resuming at state `target`.
-#define fsm_epsilon(...) BOOST_PP_CAT(BOOST_PP_OVERLOAD(MTL_FSM_EPSILON_IMPL, __VA_ARGS__)(__VA_ARGS__), BOOST_PP_EMPTY())
+#define fsm_epsilon(...) \
+    BOOST_PP_CAT(BOOST_PP_OVERLOAD(MTL_FSM_EPSILON_IMPL, __VA_ARGS__)(__VA_ARGS__), BOOST_PP_EMPTY())
 
 #else    // MTL_MSVC
 

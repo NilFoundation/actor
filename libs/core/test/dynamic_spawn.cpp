@@ -235,19 +235,19 @@ namespace {
     };
 
     struct fixture {
-        actor_system_config cfg;
+        spawner_config cfg;
         // put inside a union to control ctor/dtor timing
         union {
-            actor_system system;
+            spawner system;
         };
 
         fixture() {
-            new (&system) actor_system(cfg);
+            new (&system) spawner(cfg);
         }
 
         ~fixture() {
-            system.~actor_system();
-            // destructor of actor_system must make sure all
+            system.~spawner();
+            // destructor of spawner must make sure all
             // destructors of all actors have been run
             BOOST_CHECK_EQUAL(s_actor_instances.load(), 0);
             BOOST_TEST_MESSAGE("max. # of actor instances: " << s_max_actor_instances.load());

@@ -51,8 +51,8 @@ namespace {
             return dptr->getf(abstract_actor::is_terminated_flag);
         }
 
-        actor_system_config cfg;
-        actor_system system;
+        spawner_config cfg;
+        spawner system;
         scoped_actor self;
     };
 
@@ -61,10 +61,10 @@ namespace {
 BOOST_FIXTURE_TEST_SUITE(sequencer_tests, fixture)
 
 BOOST_AUTO_TEST_CASE(identity_test) {
-    actor_system_config cfg_g;
-    actor_system system_of_g {cfg_g};
-    actor_system_config cfg_f;
-    actor_system system_of_f {cfg_f};
+    spawner_config cfg_g;
+    spawner system_of_g {cfg_g};
+    spawner_config cfg_f;
+    spawner system_of_f {cfg_f};
     auto g = system_of_g.spawn(typed_first_stage);
     auto f = system_of_f.spawn(typed_second_stage);
     BOOST_CHECK_EQUAL(system_of_g.registry().running(), 1u);

@@ -15,7 +15,7 @@
 #include <nil/mtl/to_string.hpp>
 
 #include <nil/mtl/message.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/proxy_registry.hpp>
 #include <nil/mtl/abstract_actor.hpp>
 #include <nil/mtl/mailbox_element.hpp>
@@ -69,7 +69,7 @@ namespace nil {
             return actor_control_block::from(x) == y.get();
         }
 
-        error load_actor(strong_actor_ptr &storage, execution_unit *ctx, actor_id aid, const node_id &nid) {
+        error_code<sec> load_actor(strong_actor_ptr &storage, execution_unit *ctx, actor_id aid, const node_id &nid) {
             if (ctx == nullptr)
                 return sec::no_context;
             auto &sys = ctx->system();
@@ -86,7 +86,7 @@ namespace nil {
             return none;
         }
 
-        error save_actor(strong_actor_ptr &storage, execution_unit *ctx, actor_id aid, const node_id &nid) {
+        error_code<sec> save_actor(strong_actor_ptr &storage, execution_unit *ctx, actor_id aid, const node_id &nid) {
             if (ctx == nullptr)
                 return sec::no_context;
             auto &sys = ctx->system();

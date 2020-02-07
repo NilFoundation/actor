@@ -14,7 +14,7 @@
 
 #include <nil/mtl/none.hpp>
 #include <nil/mtl/actor_cast.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/actor_storage.hpp>
 #include <nil/mtl/intrusive_ptr.hpp>
 #include <nil/mtl/blocking_actor.hpp>
@@ -32,7 +32,7 @@ namespace nil {
 
             using signatures = none_t;
 
-            scoped_actor(actor_system &sys, bool hide = false);
+            scoped_actor(spawner &sys, bool hide = false);
 
             scoped_actor(const scoped_actor &) = delete;
             scoped_actor &operator=(const scoped_actor &) = delete;
@@ -46,7 +46,7 @@ namespace nil {
                 return static_cast<bool>(self_);
             }
 
-            inline actor_system &home_system() const {
+            inline spawner &home_system() const {
                 return *self_->home_system;
             }
 

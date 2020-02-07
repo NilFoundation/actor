@@ -105,7 +105,7 @@ namespace {
         }};
     }
 
-    struct config : actor_system_config {
+    struct config : spawner_config {
         config() {
             scheduler_policy = atom("testing");
         }
@@ -115,7 +115,7 @@ namespace {
         using sched_t = scheduler::test_coordinator;
 
         config cfg;
-        actor_system system;
+        spawner system;
         sched_t &sched;
 
         fixture() : system(cfg), sched(dynamic_cast<sched_t &>(system.scheduler())) {
@@ -174,8 +174,8 @@ namespace {
 
 BOOST_AUTO_TEST_CASE(destructor_call_test) {
     {    // lifetime scope of actor systme
-        actor_system_config cfg;
-        actor_system system {cfg};
+        spawner_config cfg;
+        spawner system {cfg};
         system.spawn<testee>();
     }
     BOOST_CHECK_EQUAL(s_testees.load(), 0);

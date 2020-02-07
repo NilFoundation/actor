@@ -157,7 +157,7 @@ namespace {
 
     // -- config and fixture -------------------------------------------------------
 
-    struct config : actor_system_config {
+    struct config : spawner_config {
         config() {
             load<io::middleman>();
         }
@@ -165,9 +165,9 @@ namespace {
 
     struct fixture {
         config client_cfg;
-        actor_system client_system;
+        spawner client_system;
         config server_cfg;
-        actor_system server_system;
+        spawner server_system;
 
         fixture() : client_system(client_cfg), server_system(server_cfg) {
             // nop

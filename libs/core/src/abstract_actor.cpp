@@ -23,7 +23,7 @@
 #include <nil/mtl/message.hpp>
 #include <nil/mtl/actor_addr.hpp>
 #include <nil/mtl/actor_cast.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/abstract_actor.hpp>
 #include <nil/mtl/actor_registry.hpp>
 #include <nil/mtl/execution_unit.hpp>
@@ -79,7 +79,7 @@ namespace nil {
             return actor_control_block::from(this)->node();
         }
 
-        actor_system &abstract_actor::home_system() const noexcept {
+        spawner &abstract_actor::home_system() const noexcept {
             return *(actor_control_block::from(this)->home_system);
         }
 

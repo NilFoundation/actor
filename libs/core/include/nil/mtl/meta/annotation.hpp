@@ -39,6 +39,9 @@ namespace nil {
             template<class T>
             struct is_annotation<T &&> : is_annotation<T> {};
 
+            template<class T>
+            constexpr bool is_annotation_v = is_annotation<T>::value;
+
         }    // namespace meta
     }        // namespace mtl
 }    // namespace nil

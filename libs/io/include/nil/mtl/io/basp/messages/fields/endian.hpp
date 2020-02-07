@@ -22,7 +22,7 @@ namespace nil {
                 /// Protocol endianness
                 typedef marshalling::option::little_endian protocol_endian;
                 /// @}
-            }
-        }    // namespace io
-    }        // namespace mtl
-}
+            }    // namespace basp
+        }        // namespace io
+    }            // namespace mtl
+}    // namespace nil

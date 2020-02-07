@@ -28,7 +28,7 @@ namespace nil {
             /// @param port TCP port.
             /// @returns An `actor` to the proxy instance representing
             ///          a remote actor or an `error`.
-            expected<strong_actor_ptr> remote_actor(actor_system &sys, const std::set<std::string> &mpi,
+            expected<strong_actor_ptr> remote_actor(spawner &sys, const std::set<std::string> &mpi,
                                                     std::string host, uint16_t port) {
                 MTL_LOG_TRACE(MTL_ARG(mpi) << MTL_ARG(host) << MTL_ARG(port));
                 expected<strong_actor_ptr> res {strong_actor_ptr {nullptr}};

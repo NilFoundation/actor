@@ -90,7 +90,6 @@ namespace nil {
                 vector_type mapping_;
                 uint32_t type_token_;
             };
-
         }    // namespace detail
     }        // namespace mtl
 }    // namespace nil

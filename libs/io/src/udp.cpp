@@ -73,6 +73,6 @@ namespace nil {
                 return true;
             }
 
-        }    // namespace scheduler_policy
+        }    // namespace policy
     }        // namespace mtl
 }    // namespace nil

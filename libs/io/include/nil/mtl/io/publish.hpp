@@ -15,7 +15,7 @@
 #include <string>
 #include <cstdint>
 
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 
 #include <nil/mtl/io/middleman.hpp>
 

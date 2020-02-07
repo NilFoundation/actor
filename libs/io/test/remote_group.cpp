@@ -14,7 +14,7 @@ using namespace nil::mtl;
 
 namespace {
 
-    class config : public nil::mtl::actor_system_config {
+    class config : public nil::mtl::spawner_config {
     public:
         config() {
             load<nil::mtl::io::middleman>();

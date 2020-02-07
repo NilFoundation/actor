@@ -13,12 +13,15 @@
 
 #include <limits>
 
-#include <nil/mtl/actor_system_config.hpp>
-#include <nil/mtl/serialization/binary_deserializer.hpp>
-#include <nil/mtl/callback.hpp>
 #include <nil/mtl/detail/worker_hub.hpp>
+
+#include <nil/mtl/serialization/binary_deserializer.hpp>
+
+#include <nil/mtl/spawner_config.hpp>
+#include <nil/mtl/callback.hpp>
 #include <nil/mtl/error.hpp>
-#include <nil/mtl/io/basp/buffer_type.hpp>
+#include <nil/mtl/byte_buffer.hpp>
+
 #include <nil/mtl/io/basp/connection_state.hpp>
 #include <nil/mtl/io/basp/header.hpp>
 #include <nil/mtl/io/basp/message_queue.hpp>
@@ -38,16 +41,18 @@ namespace nil {
                 /// Describes a protocol instance managing multiple connections.
                 class instance {
                 public:
+                    typedef byte_buffer buffer_type;
+
                     /// Provides a callback-based interface for certain BASP events.
                     class callee {
                     public:
                         // -- member types ---------------------------------------------------------
 
-                        using buffer_type = std::vector<char>;
+                        typedef byte_buffer buffer_type;
 
                         // -- constructors, destructors, and assignment operators ------------------
 
-                        explicit callee(actor_system &sys, proxy_registry::backend &backend);
+                        explicit callee(spawner &sys, proxy_registry::backend &backend);
 
                         virtual ~callee();
 
@@ -103,10 +108,10 @@ namespace nil {
 
                     /// Describes a function object responsible for writing
                     /// the payload for a BASP message.
-                    using payload_writer = callback<serializer &>;
+                    using payload_writer = callback<error_code<sec>(binary_serializer &)>;
 
                     /// Describes a callback function object for `remove_published_actor`.
-                    using removed_published_actor = callback<const strong_actor_ptr &, uint16_t>;
+                    using removed_published_actor = callback<error_code<sec>(const strong_actor_ptr &, uint16_t)>;
 
                     instance(abstract_broker *parent, callee &lstnr);
 
@@ -205,19 +210,19 @@ namespace nil {
                         return queue_;
                     }
 
-                    actor_system &system() {
+                    spawner &system() {
                         return callee_.proxies().system();
                     }
 
-                    const actor_system_config &config() {
+                    const spawner_config &config() {
                         return system().config();
                     }
 
-                    bool handle(execution_unit *ctx, connection_handle hdl, header &hdr, std::vector<char> *payload);
+                    bool handle(execution_unit *ctx, connection_handle hdl, header &hdr, buffer_type *payload);
 
                 private:
                     void forward(execution_unit *ctx, const node_id &dest_node, const header &hdr,
-                                 std::vector<char> &payload);
+                                 buffer_type &payload);
 
                     routing_table tbl_;
                     published_actor_map published_actors_;
@@ -232,4 +237,4 @@ namespace nil {
             }    // namespace basp
         }        // namespace io
     }            // namespace mtl
-}
+}    // namespace nil

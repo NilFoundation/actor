@@ -62,7 +62,7 @@ namespace nil {
             }
 
             /// Returns the hosting actor system.
-            inline actor_system &home_system() const noexcept {
+            inline spawner &home_system() const noexcept {
                 return *ptr_->home_system;
             }
 

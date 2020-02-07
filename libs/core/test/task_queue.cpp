@@ -78,7 +78,6 @@ BOOST_AUTO_TEST_CASE(default_constructed_test) {
     BOOST_REQUIRE_EQUAL(queue.total_task_size(), 0);
     BOOST_REQUIRE_EQUAL(queue.peek(), nullptr);
     BOOST_REQUIRE(queue.begin() == queue.end());
-    BOOST_REQUIRE(queue.before_begin()->next == queue.end().ptr);
 }
 
 BOOST_AUTO_TEST_CASE(push_back_test) {

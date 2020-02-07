@@ -69,7 +69,7 @@ namespace {
 }    // namespace
 
 BOOST_AUTO_TEST_CASE(constructor_attach_test) {
-    actor_system_config cfg;
-    actor_system system {cfg};
+    spawner_config cfg;
+    spawner system {cfg};
     anon_send(system.spawn<spawner>(), die_atom::value);
 }

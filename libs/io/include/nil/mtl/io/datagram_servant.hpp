@@ -40,10 +40,10 @@ namespace nil {
                 virtual void ack_writes(bool enable) = 0;
 
                 /// Returns a new output buffer.
-                virtual std::vector<char> &wr_buf(datagram_handle) = 0;
+                virtual byte_buffer &wr_buf(datagram_handle) = 0;
 
                 /// Enqueue a buffer to be sent as a datagram.
-                virtual void enqueue_datagram(datagram_handle, std::vector<char>) = 0;
+                virtual void enqueue_datagram(datagram_handle, byte_buffer) = 0;
 
                 /// Returns the current input buffer.
                 virtual network::receive_buffer &rd_buf() = 0;
@@ -66,7 +66,8 @@ namespace nil {
 
                 bool consume(execution_unit *, datagram_handle hdl, network::receive_buffer &buf) override;
 
-                void datagram_sent(execution_unit *, datagram_handle hdl, size_t, std::vector<char> buffer) override;
+                void datagram_sent(execution_unit *ctx, datagram_handle hdl, size_t written,
+                                   byte_buffer buffer) override;
 
                 virtual void detach_handles() = 0;
 

@@ -24,7 +24,6 @@
 namespace nil {
     namespace mtl {
 
-        /// A multicast group.
         class abstract_group : public ref_counted, public abstract_channel {
         public:
             // -- member types -----------------------------------------------------------
@@ -41,6 +40,9 @@ namespace nil {
 
             /// Serialize this group to `sink`.
             virtual error save(serializer &sink) const = 0;
+
+            /// Serialize this group to `sink`.
+            virtual error_code<sec> save(binary_serializer &sink) const = 0;
 
             /// Subscribes `who` to this group and returns `true` on success
             /// or `false` if `who` is already subscribed.
@@ -60,7 +62,7 @@ namespace nil {
             }
 
             /// Returns the hosting system.
-            inline actor_system &system() const {
+            inline spawner &system() const {
                 return system_;
             }
 
@@ -73,7 +75,7 @@ namespace nil {
         protected:
             abstract_group(group_module &mod, std::string id, node_id nid);
 
-            actor_system &system_;
+            spawner &system_;
             group_module &parent_;
             std::string identifier_;
             node_id origin_;

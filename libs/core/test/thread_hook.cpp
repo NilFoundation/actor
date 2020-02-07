@@ -28,7 +28,7 @@ namespace {
     size_t assumed_init_calls;
 
     struct dummy_thread_hook : thread_hook {
-        void init(actor_system &) override {
+        void init(spawner &) override {
             // nop
         }
 
@@ -53,7 +53,7 @@ namespace {
             BOOST_CHECK_EQUAL(count_thread_terminates_, assumed_thread_count);
         }
 
-        void init(actor_system &) override {
+        void init(spawner &) override {
             ++count_init_;
         }
 
@@ -72,7 +72,7 @@ namespace {
     };
 
     template<class Hook>
-    struct config : actor_system_config {
+    struct config : spawner_config {
         config() {
             add_thread_hook<Hook>();
             this->logger_verbosity = atom("quiet");
@@ -82,7 +82,7 @@ namespace {
     template<class Hook>
     struct fixture {
         config<Hook> cfg;
-        actor_system sys;
+        spawner sys;
 
         fixture() : sys(cfg) {
             // nop
@@ -93,7 +93,7 @@ namespace {
 
 BOOST_AUTO_TEST_CASE(counting_no_system_test) {
     assumed_init_calls = 0;
-    actor_system_config cfg;
+    spawner_config cfg;
     cfg.add_thread_hook<counting_thread_hook>();
 }
 

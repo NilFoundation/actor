@@ -25,8 +25,8 @@ using std::endl;
 namespace {
 
     struct fixture {
-        actor_system_config cfg;
-        actor_system sys;
+        spawner_config cfg;
+        spawner sys;
         scoped_actor self;
 
         fixture() : sys(cfg), self(sys, true) {
@@ -77,8 +77,8 @@ BOOST_AUTO_TEST_CASE(shutdown_delayed_send_loop_test) {
         "does sys shut down after spawning a detached actor that used "
         "a delayed send loop and was interrupted via exit message?");
     auto f = [](event_based_actor *self) -> behavior {
-        self->send(self, std::chrono::milliseconds(1), ok_atom::value);
-        return {[=](ok_atom) { self->send(self, std::chrono::milliseconds(1), ok_atom::value); }};
+        self->delayed_send(self, std::chrono::milliseconds(1), ok_atom::value);
+        return {[=](ok_atom) { self->delayed_send(self, std::chrono::milliseconds(1), ok_atom::value); }};
     };
     auto a = sys.spawn<detached>(f);
     auto g = detail::make_scope_guard([&] { self->send_exit(a, exit_reason::user_shutdown); });

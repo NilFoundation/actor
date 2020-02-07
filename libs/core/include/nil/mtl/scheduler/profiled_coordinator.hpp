@@ -31,7 +31,7 @@
 #include <iomanip>
 #include <unordered_map>
 
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/defaults.hpp>
 #include <nil/mtl/logger.hpp>
 #include <nil/mtl/policy/profiled.hpp>
@@ -162,11 +162,11 @@ namespace nil {
                     clock_type::duration last_flush = clock_type::duration::zero();
                 };
 
-                profiled_coordinator(actor_system &sys) : super {sys} {
+                profiled_coordinator(spawner &sys) : super {sys} {
                     // nop
                 }
 
-                void init(actor_system_config &cfg) override {
+                void init(spawner_config &cfg) override {
                     namespace sr = defaults::scheduler;
                     super::init(cfg);
                     auto fname = cfg.scheduler_profiling_output_file;

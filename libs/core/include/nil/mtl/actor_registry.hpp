@@ -38,7 +38,7 @@ namespace nil {
         /// The middleman registers actors as needed.
         class actor_registry {
         public:
-            friend class actor_system;
+            friend class spawner;
 
             ~actor_registry();
 
@@ -112,7 +112,7 @@ namespace nil {
 
             using entries = std::unordered_map<actor_id, strong_actor_ptr>;
 
-            actor_registry(actor_system &sys);
+            actor_registry(spawner &sys);
 
             std::atomic<size_t> running_;
             mutable std::mutex running_mtx_;
@@ -124,7 +124,7 @@ namespace nil {
             name_map named_entries_;
             mutable detail::shared_spinlock named_entries_mtx_;
 
-            actor_system &system_;
+            spawner &system_;
         };
 
     }    // namespace mtl

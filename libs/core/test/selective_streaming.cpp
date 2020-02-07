@@ -17,8 +17,8 @@
 #include <memory>
 #include <numeric>
 
-#include <nil/mtl/actor_system.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/atom.hpp>
 #include <nil/mtl/broadcast_downstream_manager.hpp>
 #include <nil/mtl/event_based_actor.hpp>

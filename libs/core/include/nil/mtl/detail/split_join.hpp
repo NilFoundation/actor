@@ -16,7 +16,7 @@
 
 #include <nil/mtl/actor.hpp>
 #include <nil/mtl/locks.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/event_based_actor.hpp>
 
 #include <nil/mtl/detail/shared_spinlock.hpp>
@@ -85,7 +85,7 @@ namespace nil {
                     // nop
                 }
 
-                void operator()(actor_system &sys,
+                void operator()(spawner &sys,
                                 upgrade_lock<detail::shared_spinlock> &ulock,
                                 const std::vector<actor> &workers,
                                 mailbox_element_ptr &ptr,

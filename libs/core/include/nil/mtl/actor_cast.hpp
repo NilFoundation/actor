@@ -165,6 +165,5 @@ namespace nil {
             actor_cast_access<T, from_type, x * y> f;
             return f(std::forward<U>(what));
         }
-
     }    // namespace mtl
 }    // namespace nil

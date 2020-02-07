@@ -26,7 +26,7 @@ namespace nil {
     namespace mtl {
 
         template<class T, class R = infer_handle_from_class_t<T>, class... Ts>
-        R make_actor(actor_id aid, node_id nid, actor_system *sys, Ts &&... xs) {
+        R make_actor(actor_id aid, node_id nid, spawner *sys, Ts &&... xs) {
 #if MTL_LOG_LEVEL >= MTL_LOG_LEVEL_DEBUG
             actor_storage<T> *ptr = nullptr;
             if (logger::current_logger()->accepts(MTL_LOG_LEVEL_DEBUG, nil::mtl::atom(MTL_LOG_FLOW_COMPONENT))) {

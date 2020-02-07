@@ -15,7 +15,7 @@
 #include <nil/mtl/replies_to.hpp>
 #include <nil/mtl/local_actor.hpp>
 #include <nil/mtl/typed_actor.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/typed_behavior.hpp>
 #include <nil/mtl/scheduled_actor.hpp>
 

@@ -96,7 +96,7 @@ namespace nil {
                 replies_to<get_atom, node_id>::with<node_id, std::string, uint16_t>>;
 
             /// @relates middleman_actor
-            middleman_actor make_middleman_actor(actor_system &sys, actor db);
+            middleman_actor make_middleman_actor(spawner &sys, actor db);
 
         }    // namespace io
     }        // namespace mtl

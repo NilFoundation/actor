@@ -49,11 +49,18 @@ namespace nil {
                     // Computes the result on success.
                     auto g = nil::mtl::detail::make_scope_guard([&] {
                         if (ps.code <= pec::trailing_character)
-                            consumer.value(std::move(res));
+                            consumer.value(res);
                     });
+                    // clang-format off
                     start();
-                    state(init) {transition(read, decimal_chars, rd_decimal(ch), pec::integer_overflow)} term_state(
-                        read) {transition(read, decimal_chars, rd_decimal(ch), pec::integer_overflow)} fin();
+                    state(init) {
+                        transition(read, decimal_chars, rd_decimal(ch), pec::integer_overflow)
+                    }
+                    term_state(read) {
+                        transition(read, decimal_chars, rd_decimal(ch), pec::integer_overflow)
+                    }
+                    fin();
+                    // clang-format on
                 }
 
                 /// Reads a number, i.e., on success produces either an `int64_t` or a
@@ -64,25 +71,25 @@ namespace nil {
                     auto g = make_scope_guard([&] {
                         if (ps.code <= pec::trailing_character) {
                             ipv4_address result {f.bytes};
-                            consumer.value(std::move(result));
+                            consumer.value(result);
                         }
                     });
                     // clang-format off
-  start();
-  state(init) {
-    fsm_epsilon(read_ipv4_octet(ps, f), rd_dot, decimal_chars)
-  }
-  state(rd_dot) {
-    transition(rd_oct, '.')
-  }
-  state(rd_oct) {
-    fsm_epsilon_if(f.octets < 3, read_ipv4_octet(ps, f), rd_dot, decimal_chars)
-    fsm_epsilon_if(f.octets == 3, read_ipv4_octet(ps, f), done, decimal_chars)
-  }
-  term_state(done) {
-    // nop
-  }
-  fin();
+                    start();
+                    state(init) {
+                      fsm_epsilon(read_ipv4_octet(ps, f), rd_dot, decimal_chars)
+                    }
+                    state(rd_dot) {
+                      transition(rd_oct, '.')
+                    }
+                    state(rd_oct) {
+                      fsm_epsilon_if(f.octets < 3, read_ipv4_octet(ps, f), rd_dot, decimal_chars)
+                      fsm_epsilon_if(f.octets == 3, read_ipv4_octet(ps, f), done, decimal_chars)
+                    }
+                    term_state(done) {
+                      // nop
+                    }
+                    fin();
                     // clang-format on
                 }
 

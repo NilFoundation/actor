@@ -55,9 +55,9 @@ server_type::behavior_type server() {
 }
 
 void run_client(uint16_t port) {
-    actor_system_config cfg;
+    spawner_config cfg;
     cfg.load<io::middleman>().add_message_type<ping>("ping").add_message_type<pong>("pong");
-    actor_system sys {cfg};
+    spawner sys {cfg};
     // check whether invalid_argument is thrown
     // when trying to connect to get an untyped
     // handle to the server
@@ -72,9 +72,9 @@ void run_client(uint16_t port) {
 }
 
 void run_server() {
-    actor_system_config cfg;
+    spawner_config cfg;
     cfg.load<io::middleman>().add_message_type<ping>("ping").add_message_type<pong>("pong");
-    actor_system sys {cfg};
+    spawner sys {cfg};
     auto port = unbox(sys.middleman().publish(sys.spawn(server), 0, "127.0.0.1"));
     BOOST_REQUIRE(port != 0);
     BOOST_TEST_MESSAGE("running on port " << port << ", start client");

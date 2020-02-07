@@ -141,7 +141,7 @@ namespace nil {
         /// Applies the values of any number of sum types to the visitor.
         /// @relates SumType
         template<class Visitor, class T, class... Ts, class Result = sum_type_visit_result_t<Visitor, T, Ts...>>
-        detail::enable_if_t<SumTypes<T, Ts...>(), Result> visit(Visitor &&f, T &&x, Ts &&... xs) {
+        typename std::enable_if<SumTypes<T, Ts...>(), Result>::type visit(Visitor &&f, T &&x, Ts &&... xs) {
             return visit_impl<Result, sizeof...(Ts) + 1>::apply(std::forward<Visitor>(f), std::forward<T>(x),
                                                                 std::forward<Ts>(xs)...);
         }

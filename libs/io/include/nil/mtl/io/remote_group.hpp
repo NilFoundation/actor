@@ -14,7 +14,7 @@
 #include <string>
 #include <cstdint>
 
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 
 #include <nil/mtl/io/middleman.hpp>
 
@@ -22,11 +22,11 @@ namespace nil {
     namespace mtl {
         namespace io {
 
-            inline expected<group> remote_group(actor_system &sys, const std::string &group_uri) {
+            inline expected<group> remote_group(spawner &sys, const std::string &group_uri) {
                 return sys.middleman().remote_group(group_uri);
             }
 
-            inline expected<group> remote_group(actor_system &sys, const std::string &group_identifier,
+            inline expected<group> remote_group(spawner &sys, const std::string &group_identifier,
                                                 const std::string &host, uint16_t port) {
                 return sys.middleman().remote_group(group_identifier, host, port);
             }

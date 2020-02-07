@@ -36,6 +36,7 @@ namespace nil {
                                                        actor_addr,                            // @addr
                                                        std::vector<actor_addr>,               // @addrvec
                                                        atom_value,                            // @atom
+                                                       std::vector<byte>,                     // @bytebuf
                                                        std::vector<char>,                     // @charbuf
                                                        config_value,                          // @config_value
                                                        down_msg,                              // @down

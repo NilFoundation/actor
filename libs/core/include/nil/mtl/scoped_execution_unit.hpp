@@ -21,12 +21,18 @@ namespace nil {
         /// querying its execution unit, an actor can access other context information.
         class scoped_execution_unit : public execution_unit {
         public:
-            /// @pre `sys != nullptr`
-            explicit scoped_execution_unit(actor_system *sys = nullptr);
+            using super = execution_unit;
+
+            using super::super;
+
+            ~scoped_execution_unit() override;
 
             /// Delegates the resumable to the scheduler of `system()`.
             void exec_later(resumable *ptr) override;
-        };
 
+            void system_ptr(spawner *ptr) noexcept {
+                system_ = ptr;
+            }
+        };
     }    // namespace mtl
 }    // namespace nil

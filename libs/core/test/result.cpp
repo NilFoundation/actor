@@ -18,6 +18,7 @@
 #include <nil/mtl/config.hpp>
 #include <nil/mtl/sec.hpp>
 #include <nil/mtl/result.hpp>
+#include <nil/mtl/make_message.hpp>
 
 using namespace std;
 using namespace nil::mtl;

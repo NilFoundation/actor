@@ -20,8 +20,10 @@
 #include <nil/mtl/atom.hpp>
 #include <nil/mtl/none.hpp>
 #include <nil/mtl/atom.hpp>
+#include <nil/mtl/error_code.hpp>
 
 #include <nil/mtl/meta/type_name.hpp>
+#include <nil/mtl/meta/load_callback.hpp>
 #include <nil/mtl/meta/omittable_if_empty.hpp>
 
 #include <nil/mtl/detail/comparable.hpp>
@@ -81,7 +83,7 @@ namespace nil {
         /// a poor choice when it comes to serialization. MTL uses atoms for
         /// categories instead and requires users to register custom error categories
         /// to the actor system. This makes the actor system the natural instance for
-        /// rendering error messages via `actor_system::render(const error&)`.
+        /// rendering error messages via `spawner::render(const error&)`.
         class error : detail::comparable<error> {
         public:
             // -- member types -----------------------------------------------------------
@@ -108,9 +110,21 @@ namespace nil {
                 // nop
             }
 
+            template<class E>
+            error(error_code<E> code) : error(code.value()) {
+                // nop
+            }
+
             template<class E, class = enable_if_has_make_error_t<E>>
             error &operator=(E error_value) {
                 auto tmp = make_error(error_value);
+                std::swap(data_, tmp.data_);
+                return *this;
+            }
+
+            template<class E>
+            error &operator=(error_code<E> code) {
+                auto tmp = make_error(code.value());
                 std::swap(data_, tmp.data_);
                 return *this;
             }
@@ -173,16 +187,40 @@ namespace nil {
             // -- friend functions -------------------------------------------------------
 
             template<class Inspector>
-            friend typename Inspector::result_type inspect(Inspector &f, error &x) {
-                auto fun = [&](meta::type_name_t x0, uint8_t &x1, atom_value &x2, meta::omittable_if_empty_t x3,
-                               message &x4) -> error { return f(x0, x1, x2, x3, x4); };
-                return x.apply(fun);
+            friend auto inspect(Inspector &f, error &x) {
+                using result_type = typename Inspector::result_type;
+                if constexpr (Inspector::reads_state) {
+                    if (!x) {
+                        uint8_t code = 0;
+                        return f(code);
+                    }
+                    return f(x.code(), x.category(), x.context());
+                } else {
+                    uint8_t code = 0;
+                    auto cb = meta::load_callback([&] {
+                        if (code == 0) {
+                            x.clear();
+                            if constexpr (std::is_same<result_type, void>::value)
+                                return;
+                            else
+                                return result_type {};
+                        }
+                        x.init();
+                        x.code_ref() = code;
+                        return f(x.category_ref(), x.context());
+                    });
+                    return f(code, cb);
+                }
             }
 
         private:
             // -- inspection support -----------------------------------------------------
 
-            error apply(const inspect_fun &f);
+            uint8_t &code_ref() noexcept;
+
+            atom_value &category_ref() noexcept;
+
+            void init();
 
             // -- nested classes ---------------------------------------------------------
 

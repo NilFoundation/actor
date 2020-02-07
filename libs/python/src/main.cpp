@@ -390,7 +390,7 @@ namespace nil {
 
                 struct py_context {
                     const py_config &cfg;
-                    actor_system &system;
+                    spawner &system;
                     scoped_actor &self;
                 };
 
@@ -561,7 +561,7 @@ namespace {
         }
     };
 
-    void caf_main(actor_system &system, const config &cfg) {
+    void mtl_main(spawner &system, const config &cfg) {
         // register system and scoped actor in global variables
         scoped_actor self{system};
         py_context ctx{cfg, system, self};

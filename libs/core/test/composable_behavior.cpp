@@ -196,7 +196,7 @@ namespace {
     public:
         result<void> operator()(int x) override {
             BOOST_CHECK_EQUAL(x, 42);
-            self->delayed_anon_send(self, std::chrono::milliseconds(10), true);
+            delayed_anon_send(self, std::chrono::milliseconds(10), true);
             return unit;
         }
 
@@ -217,8 +217,8 @@ namespace {
             // nop
         }
 
-        actor_system_config cfg;
-        actor_system system;
+        spawner_config cfg;
+        spawner system;
     };
 
 }    // namespace
@@ -340,9 +340,9 @@ BOOST_AUTO_TEST_SUITE_END()
 
 BOOST_AUTO_TEST_CASE(dynamic_spawning_test) {
     using impl = composable_behavior_based_actor<foo_actor_state>;
-    actor_system_config cfg;
+    spawner_config cfg;
     cfg.add_actor_type<impl>("foo_actor");
-    actor_system sys {cfg};
+    spawner sys {cfg};
     auto sr = sys.spawn<foo_actor>("foo_actor", make_message());
     BOOST_REQUIRE(sr);
     auto f1 = make_function_view(std::move(*sr));

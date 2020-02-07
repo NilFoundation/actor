@@ -66,8 +66,12 @@ namespace nil {
                 return self_->context();
             }
 
-            actor_system &system() const {
+            spawner &system() const {
                 return self_->system();
+            }
+
+            spawner &home_system() const {
+                return self_->home_system();
             }
 
             void quit(exit_reason reason = exit_reason::normal) {

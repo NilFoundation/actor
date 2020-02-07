@@ -14,7 +14,7 @@
 
 #include <nil/mtl/message.hpp>
 #include <nil/mtl/actor_cast.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/group_manager.hpp>
 
 namespace nil {
@@ -49,30 +49,58 @@ namespace nil {
             return compare(ptr_.get(), other.ptr_.get());
         }
 
-        error inspect(serializer &f, group &x) {
-            std::string mod_name;
-            auto ptr = x.get();
-            if (ptr == nullptr)
-                return f(mod_name);
-            mod_name = ptr->module().name();
-            auto e = f(mod_name);
-            return e ? e : ptr->save(f);
+        namespace {
+
+            template<class Serializer>
+            auto save_group(Serializer &sink, group &x) {
+                std::string mod_name;
+                auto ptr = x.get();
+                if (ptr == nullptr)
+                    return sink(mod_name);
+                mod_name = ptr->module().name();
+                if (auto err = sink(mod_name))
+                    return err;
+                return ptr->save(sink);
+            }
+
+        }    // namespace
+
+        error inspect(serializer &sink, group &x) {
+            return save_group(sink, x);
         }
 
-        error inspect(deserializer &f, group &x) {
-            std::string module_name;
-            f(module_name);
-            if (module_name.empty()) {
-                x = invalid_group;
-                return none;
+        error_code<sec> inspect(binary_serializer &sink, group &x) {
+            return save_group(sink, x);
+        }
+
+        namespace {
+
+            template<class Deserializer>
+            typename Deserializer::result_type load_group(Deserializer &source, group &x) {
+                std::string module_name;
+                if (auto err = source(module_name))
+                    return err;
+                if (module_name.empty()) {
+                    x = invalid_group;
+                    return none;
+                }
+                if (source.context() == nullptr)
+                    return sec::no_context;
+                auto &sys = source.context()->system();
+                auto mod = sys.groups().get_module(module_name);
+                if (!mod)
+                    return sec::no_such_group_module;
+                return mod->load(source, x);
             }
-            if (f.context() == nullptr)
-                return sec::no_context;
-            auto &sys = f.context()->system();
-            auto mod = sys.groups().get_module(module_name);
-            if (!mod)
-                return sec::no_such_group_module;
-            return mod->load(f, x);
+
+        }    // namespace
+
+        error inspect(deserializer &source, group &x) {
+            return load_group(source, x);
+        }
+
+        error_code<sec> inspect(binary_deserializer &source, group &x) {
+            return load_group(source, x);
         }
 
         std::string to_string(const group &x) {

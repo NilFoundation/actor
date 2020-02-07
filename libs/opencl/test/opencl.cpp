@@ -321,7 +321,7 @@ void check_mref_results(const std::string &description, const std::vector<T> &ex
     }
 }
 
-void test_opencl(actor_system &sys) {
+void test_opencl(spawner &sys) {
     auto &mngr = sys.opencl_manager();
     auto opt = mngr.find_device_if([](const device_ptr) { return true; });
     BOOST_REQUIRE(opt);
@@ -435,7 +435,7 @@ void test_opencl(actor_system &sys) {
                   others >> wrong_msg);
 }
 
-void test_arguments(actor_system &sys) {
+void test_arguments(spawner &sys) {
     auto &mngr = sys.opencl_manager();
     auto opt = mngr.find_device_if([](const device_ptr) { return true; });
     BOOST_REQUIRE(opt);
@@ -504,25 +504,25 @@ void test_arguments(actor_system &sys) {
 }
 
 BOOST_AUTO_TEST_CASE(opencl_basics_test) {
-    actor_system_config cfg;
+    spawner_config cfg;
     cfg.load<opencl::manager>().add_message_type<ivec>("int_vector").add_message_type<matrix_type>("square_matrix");
-    actor_system system {cfg};
+    spawner system {cfg};
     test_opencl(system);
     system.await_all_actors_done();
 }
 
 BOOST_AUTO_TEST_CASE(opencl_arguments_test) {
-    actor_system_config cfg;
+    spawner_config cfg;
     cfg.load<opencl::manager>().add_message_type<ivec>("int_vector").add_message_type<matrix_type>("square_matrix");
-    actor_system system {cfg};
+    spawner system {cfg};
     test_arguments(system);
     system.await_all_actors_done();
 }
 
 BOOST_AUTO_TEST_CASE(opencl_mem_refs_test) {
-    actor_system_config cfg;
+    spawner_config cfg;
     cfg.load<opencl::manager>();
-    actor_system system {cfg};
+    spawner system {cfg};
     auto &mngr = system.opencl_manager();
     auto opt = mngr.find_device(0);
     BOOST_REQUIRE(opt);
@@ -596,7 +596,7 @@ BOOST_AUTO_TEST_CASE(opencl_argument_info_test) {
     BOOST_CHECK_EQUAL(true, true);
 }
 
-void test_in_val_out_val(actor_system &sys) {
+void test_in_val_out_val(spawner &sys) {
     BOOST_TEST_MESSAGE("Testing in: val  -> out: val ");
     auto &mngr = sys.opencl_manager();
     auto opt = mngr.find_device(0);
@@ -687,7 +687,7 @@ void test_in_val_out_val(actor_system &sys) {
                   others >> wrong_msg);
 }
 
-void test_in_val_out_mref(actor_system &sys) {
+void test_in_val_out_mref(spawner &sys) {
     BOOST_TEST_MESSAGE("Testing in: val  -> out: mref");
     // setup
     auto &mngr = sys.opencl_manager();
@@ -745,7 +745,7 @@ void test_in_val_out_mref(actor_system &sys) {
                   others >> wrong_msg);
 }
 
-void test_in_mref_out_val(actor_system &sys) {
+void test_in_mref_out_val(spawner &sys) {
     BOOST_TEST_MESSAGE("Testing in: mref -> out: val ");
     // setup
     auto &mngr = sys.opencl_manager();
@@ -806,7 +806,7 @@ void test_in_mref_out_val(actor_system &sys) {
                   others >> wrong_msg);
 }
 
-void test_in_mref_out_mref(actor_system &sys) {
+void test_in_mref_out_mref(spawner &sys) {
     BOOST_TEST_MESSAGE("Testing in: mref -> out: mref");
     // setup
     auto &mngr = sys.opencl_manager();
@@ -867,7 +867,7 @@ void test_in_mref_out_mref(actor_system &sys) {
                   others >> wrong_msg);
 }
 
-void test_varying_arguments(actor_system &sys) {
+void test_varying_arguments(spawner &sys) {
     BOOST_TEST_MESSAGE(
         "Testing varying argument order "
         "(Might fail on some integrated GPUs)");
@@ -905,7 +905,7 @@ void test_varying_arguments(actor_system &sys) {
         others >> wrong_msg);
 }
 
-void test_inout(actor_system &sys) {
+void test_inout(spawner &sys) {
     BOOST_TEST_MESSAGE("Testing in_out arguments");
     // setup
     auto &mngr = sys.opencl_manager();
@@ -943,7 +943,7 @@ void test_inout(actor_system &sys) {
                   others >> wrong_msg);
 }
 
-void test_priv(actor_system &sys) {
+void test_priv(spawner &sys) {
     BOOST_TEST_MESSAGE("Testing priv argument");
     // setup
     auto &mngr = sys.opencl_manager();
@@ -972,7 +972,7 @@ void test_priv(actor_system &sys) {
                   others >> wrong_msg);
 }
 
-void test_local(actor_system &sys) {
+void test_local(spawner &sys) {
     BOOST_TEST_MESSAGE("Testing local argument");
     // setup
     auto &mngr = sys.opencl_manager();
@@ -1011,9 +1011,9 @@ void test_local(actor_system &sys) {
 }
 
 BOOST_AUTO_TEST_CASE(actor_facade_test) {
-    actor_system_config cfg;
+    spawner_config cfg;
     cfg.load<opencl::manager>().add_message_type<ivec>("int_vector").add_message_type<matrix_type>("square_matrix");
-    actor_system system {cfg};
+    spawner system {cfg};
     test_in_val_out_val(system);
     test_in_val_out_mref(system);
     test_in_mref_out_val(system);

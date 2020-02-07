@@ -29,7 +29,7 @@ namespace nil {
                     struct datagram_data;
 
                 public:
-                    explicit test_multiplexer(actor_system *sys);
+                    explicit test_multiplexer(spawner *sys);
 
                     ~test_multiplexer() override;
 
@@ -91,7 +91,7 @@ namespace nil {
                     int64_t next_endpoint_id();
 
                     /// A buffer storing bytes used for TCP related components.
-                    using buffer_type = std::vector<char>;
+                    using buffer_type = byte_buffer;
 
                     /// Buffers storing bytes for UDP related components.
                     using read_buffer_type = network::receive_buffer;

@@ -12,7 +12,7 @@
 
 #include <nil/mtl/decorator/splitter.hpp>
 
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/stateful_actor.hpp>
 #include <nil/mtl/response_promise.hpp>
 #include <nil/mtl/event_based_actor.hpp>
@@ -103,7 +103,6 @@ namespace nil {
             splitter::message_types_set splitter::message_types() const {
                 return msg_types_;
             }
-
         }    // namespace decorator
     }        // namespace mtl
 }    // namespace nil

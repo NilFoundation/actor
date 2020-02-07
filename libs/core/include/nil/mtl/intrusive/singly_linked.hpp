@@ -38,19 +38,6 @@ namespace nil {
                 /// Intrusive pointer to the next element.
                 node_pointer next;
             };
-
-            /// Casts a node type to its value type.
-            template<class T>
-            T *promote(singly_linked<T> *ptr) {
-                return static_cast<T *>(ptr);
-            }
-
-            /// Casts a node type to its value type.
-            template<class T>
-            const T *promote(const singly_linked<T> *ptr) {
-                return static_cast<const T *>(ptr);
-            }
-
         }    // namespace intrusive
     }        // namespace mtl
 }    // namespace nil

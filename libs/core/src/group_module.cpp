@@ -15,7 +15,7 @@
 namespace nil {
     namespace mtl {
 
-        group_module::group_module(actor_system &sys, std::string mname) : system_(sys), name_(std::move(mname)) {
+        group_module::group_module(spawner &sys, std::string mname) : system_(sys), name_(std::move(mname)) {
             // nop
         }
 

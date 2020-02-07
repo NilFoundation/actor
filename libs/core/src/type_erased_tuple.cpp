@@ -26,11 +26,16 @@ namespace nil {
         }
 
         error type_erased_tuple::load(deserializer &source) {
-            for (size_t i = 0; i < size(); ++i) {
-                auto e = load(i, source);
-                if (e)
-                    return e;
-            }
+            for (size_t i = 0; i < size(); ++i)
+                if (auto err = load(i, source))
+                    return err;
+            return none;
+        }
+
+        error_code<sec> type_erased_tuple::load(binary_deserializer &source) {
+            for (size_t i = 0; i < size(); ++i)
+                if (auto err = load(i, source))
+                    return err;
             return none;
         }
 
@@ -64,13 +69,19 @@ namespace nil {
             return none;
         }
 
+        error_code<sec> type_erased_tuple::save(binary_serializer &sink) const {
+            for (size_t i = 0; i < size(); ++i)
+                save(i, sink);
+            return none;
+        }
+
         bool type_erased_tuple::matches(size_t pos, uint16_t nr, const std::type_info *ptr) const noexcept {
             MTL_ASSERT(pos < size());
             auto tp = type(pos);
             if (tp.first != nr)
                 return false;
             if (nr == 0)
-                return ptr != nullptr ? *tp.second == *ptr : false;
+                return ptr != nullptr ? strcmp(tp.second->name(), ptr->name()) == 0 : false;
             return true;
         }
 
@@ -84,6 +95,10 @@ namespace nil {
 
         error empty_type_erased_tuple::load(size_t, deserializer &) {
             MTL_RAISE_ERROR("empty_type_erased_tuple::get_mutable");
+        }
+
+        error_code<sec> empty_type_erased_tuple::load(size_t, binary_deserializer &) {
+            MTL_RAISE_ERROR("empty_type_erased_tuple::load");
         }
 
         size_t empty_type_erased_tuple::size() const noexcept {
@@ -111,8 +126,11 @@ namespace nil {
         }
 
         error empty_type_erased_tuple::save(size_t, serializer &) const {
-            MTL_RAISE_ERROR("empty_type_erased_tuple::copy");
+            MTL_RAISE_ERROR("empty_type_erased_tuple::save");
         }
 
+        error_code<sec> empty_type_erased_tuple::save(size_t, binary_serializer &) const {
+            MTL_RAISE_ERROR("empty_type_erased_tuple::save");
+        }
     }    // namespace mtl
 }    // namespace nil

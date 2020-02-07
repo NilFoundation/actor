@@ -48,10 +48,16 @@ namespace nil {
             /// Load the content for the element at position `pos` from `source`.
             virtual error load(size_t pos, deserializer &source) = 0;
 
+            /// Load the content for the element at position `pos` from `source`.
+            virtual error_code<sec> load(size_t pos, binary_deserializer &source) = 0;
+
             // -- modifiers --------------------------------------------------------------
 
             /// Load the content for the tuple from `source`.
             virtual error load(deserializer &source);
+
+            /// Load the content for the tuple from `source`.
+            virtual error_code<sec> load(binary_deserializer &source);
 
             // -- pure virtual observers -------------------------------------------------
 
@@ -77,6 +83,9 @@ namespace nil {
             /// Saves the element at position `pos` to `sink`.
             virtual error save(size_t pos, serializer &sink) const = 0;
 
+            /// Saves the element at position `pos` to `sink`.
+            virtual error_code<sec> save(size_t pos, binary_serializer &sink) const = 0;
+
             // -- observers --------------------------------------------------------------
 
             /// Returns whether multiple references to this tuple exist.
@@ -91,6 +100,9 @@ namespace nil {
 
             /// Saves the content of the tuple to `sink`.
             virtual error save(serializer &sink) const;
+
+            /// Saves the content of the tuple to `sink`.
+            virtual error_code<sec> save(binary_serializer &sink) const;
 
             /// Checks whether the type of the stored value at position `pos`
             /// matches type number `n` and run-time type information `p`.
@@ -208,15 +220,23 @@ namespace nil {
         };
 
         /// @relates type_erased_tuple
-        template<class Processor>
-        typename std::enable_if<Processor::reads_state>::type serialize(Processor &proc, type_erased_tuple &x) {
-            x.save(proc);
+        inline auto inspect(serializer &sink, const type_erased_tuple &x) {
+            return x.save(sink);
         }
 
         /// @relates type_erased_tuple
-        template<class Processor>
-        typename std::enable_if<Processor::writes_state>::type serialize(Processor &proc, type_erased_tuple &x) {
-            x.load(proc);
+        inline auto inspect(binary_serializer &sink, const type_erased_tuple &x) {
+            return x.save(sink);
+        }
+
+        /// @relates type_erased_tuple
+        inline auto inspect(deserializer &source, type_erased_tuple &x) {
+            return x.load(source);
+        }
+
+        /// @relates type_erased_tuple
+        inline auto inspect(binary_deserializer &source, type_erased_tuple &x) {
+            return x.load(source);
         }
 
         /// @relates type_erased_tuple
@@ -236,6 +256,8 @@ namespace nil {
 
             error load(size_t pos, deserializer &source) override;
 
+            error_code<sec> load(size_t pos, binary_deserializer &source) override;
+
             size_t size() const noexcept override;
 
             uint32_t type_token() const noexcept override;
@@ -249,7 +271,8 @@ namespace nil {
             type_erased_value_ptr copy(size_t pos) const override;
 
             error save(size_t pos, serializer &sink) const override;
-        };
 
+            error_code<sec> save(size_t pos, binary_serializer &sink) const override;
+        };
     }    // namespace mtl
 }    // namespace nil

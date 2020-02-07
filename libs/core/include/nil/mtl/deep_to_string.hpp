@@ -34,8 +34,14 @@ namespace nil {
         }
 
         struct deep_to_string_t {
+            using result_type = std::string;
+
+            static constexpr bool reads_state = true;
+
+            static constexpr bool writes_state = false;
+
             template<class... Ts>
-            std::string operator()(const Ts &... xs) const {
+            result_type operator()(const Ts &... xs) const {
                 return deep_to_string(xs...);
             }
         };

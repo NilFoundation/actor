@@ -53,7 +53,7 @@ namespace nil {
             }
 
             void datagram_servant::datagram_sent(execution_unit *ctx, datagram_handle hdl, size_t written,
-                                                 std::vector<char> buffer) {
+                                                 byte_buffer buffer) {
                 MTL_LOG_TRACE(MTL_ARG(written));
                 if (detached())
                     return;

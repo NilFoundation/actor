@@ -41,6 +41,6 @@ namespace nil {
                 }
             };
 
-        }    // namespace scheduler_policy
+        }    // namespace policy
     }        // namespace mtl
 }    // namespace nil

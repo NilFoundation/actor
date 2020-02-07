@@ -1,10 +1,22 @@
+//---------------------------------------------------------------------------//
+// Copyright (c) 2011-2018 Dominik Charousset
+// Copyright (c) 2011-2018 Raphael Hiesgen
+// Copyright (c) 2018-2019 Nil Foundation AG
+// Copyright (c) 2018-2019 Mikhail Komarov <nemo@nil.foundation>
+//
+// Distributed under the terms and conditions of the BSD 3-Clause License or
+// (at your option) under the terms and conditions of the Boost Software
+// License 1.0. See accompanying files LICENSE_1_0.txt or copy at
+// http://www.boost.org/LICENSE_1_0.txt.
+//---------------------------------------------------------------------------//
+
 #ifndef MTL_IO_NETWORK_ASIO_MULTIPLEXER_HPP
 #define MTL_IO_NETWORK_ASIO_MULTIPLEXER_HPP
 
 #include <nil/mtl/config.hpp>
 
 MTL_PUSH_WARNINGS
-#include <boost/asio/asio.hpp>
+#include <boost/asio.hpp>
 MTL_POP_WARNINGS
 
 #include <nil/mtl/logger.hpp>
@@ -38,26 +50,27 @@ namespace nil {
                     friend class io::middleman;
                     friend class supervisor;
 
-                    connection_handle new_tcp_scribe(const std::string&, uint16_t) override;
+                    connection_handle new_tcp_scribe(const std::string &, uint16_t) override;
 
-                    void assign_tcp_scribe(abstract_broker*, connection_handle hdl) override;
+                    void assign_tcp_scribe(abstract_broker *, connection_handle hdl) override;
 
                     template<class Socket>
-                    connection_handle add_tcp_scribe(abstract_broker*, Socket&& sock);
+                    connection_handle add_tcp_scribe(abstract_broker *, Socket &&sock);
 
-                    connection_handle add_tcp_scribe(abstract_broker*, native_socket fd) override;
+                    connection_handle add_tcp_scribe(abstract_broker *, native_socket fd) override;
 
-                    connection_handle add_tcp_scribe(abstract_broker*, const std::string& host, uint16_t port) override;
+                    connection_handle add_tcp_scribe(abstract_broker *, const std::string &host,
+                                                     uint16_t port) override;
 
-                    std::pair<accept_handle, uint16_t> new_tcp_doorman(uint16_t p, const char* in, bool rflag) override;
+                    std::pair<accept_handle, uint16_t> new_tcp_doorman(uint16_t p, const char *in, bool rflag) override;
 
-                    void assign_tcp_doorman(abstract_broker*, accept_handle hdl) override;
+                    void assign_tcp_doorman(abstract_broker *, accept_handle hdl) override;
 
-                    accept_handle add_tcp_doorman(abstract_broker*, default_socket_acceptor&& sock);
+                    accept_handle add_tcp_doorman(abstract_broker *, default_socket_acceptor &&sock);
 
-                    accept_handle add_tcp_doorman(abstract_broker*, native_socket fd) override;
+                    accept_handle add_tcp_doorman(abstract_broker *, native_socket fd) override;
 
-                    std::pair<accept_handle, uint16_t> add_tcp_doorman(abstract_broker*, uint16_t port, const char* in,
+                    std::pair<accept_handle, uint16_t> add_tcp_doorman(abstract_broker *, uint16_t port, const char *in,
                                                                        bool rflag) override;
 
                     void dispatch_runnable(runnable_ptr ptr) override;
@@ -70,10 +83,10 @@ namespace nil {
 
                     void run() override;
 
-                    boost::asio::io_service* pimpl() override;
+                    boost::asio::io_service *pimpl() override;
 
                 private:
-                    inline boost::asio::io_service& backend() {
+                    inline boost::asio::io_service &backend() {
                         return backend_;
                     }
 
@@ -84,15 +97,15 @@ namespace nil {
                     std::map<int64_t, default_socket_acceptor> unassigned_acceptors_;
                 };
 
-                asio_multiplexer& get_multiplexer_singleton();
+                asio_multiplexer &get_multiplexer_singleton();
 
                 template<class T>
-                connection_handle conn_hdl_from_socket(T& sock) {
+                connection_handle conn_hdl_from_socket(T &sock) {
                     return connection_handle::from_int(int64_from_native_socket(sock.native_handle()));
                 }
 
                 template<class T>
-                accept_handle accept_hdl_from_socket(T& sock) {
+                accept_handle accept_hdl_from_socket(T &sock) {
                     return accept_handle::from_int(int64_from_native_socket(sock.native_handle()));
                 }
 
@@ -108,14 +121,14 @@ namespace nil {
                     using manager_ptr = intrusive_ptr<stream_manager>;
 
                     /// A buffer class providing a compatible interface to `std::vector`.
-                    using buffer_type = std::vector<char>;
+                    using buffer_type = byte_buffer;
 
-                    stream(io_backend& backend) : writing_(false), fd_(backend) {
+                    stream(io_backend &backend) : writing_(false), fd_(backend) {
                         configure_read(receive_policy::at_most(1024));
                     }
 
                     /// Returns the IO socket.
-                    Socket& socket_handle() {
+                    Socket &socket_handle() {
                         return fd_;
                     }
 
@@ -125,7 +138,7 @@ namespace nil {
                     }
 
                     /// Starts reading data from the socket, forwarding incoming data to `mgr`.
-                    void start(const manager_ptr& mgr) {
+                    void start(const manager_ptr &mgr) {
                         MTL_ASSERT(mgr != nullptr);
                         read_loop(mgr);
                     }
@@ -140,9 +153,9 @@ namespace nil {
 
                     /// Copies data to the write buffer.
                     /// @note Not thread safe.
-                    void write(const void* buf, size_t num_bytes) {
-                        BOOST_ACTOR_LOG_TRACE("num_bytes: " << num_bytes);
-                        auto first = reinterpret_cast<const char*>(buf);
+                    void write(const void *buf, size_t num_bytes) {
+                        MTL_LOG_TRACE("num_bytes: " << num_bytes);
+                        auto first = reinterpret_cast<const char *>(buf);
                         auto last = first + num_bytes;
                         wr_offline_buf_.insert(wr_offline_buf_.end(), first, last);
                     }
@@ -150,11 +163,11 @@ namespace nil {
                     /// Returns the write buffer of this stream.
                     /// @warning Must not be modified outside the IO multiplexers event loop
                     ///          once the stream has been started.
-                    buffer_type& wr_buf() {
+                    buffer_type &wr_buf() {
                         return wr_offline_buf_;
                     }
 
-                    buffer_type& rd_buf() {
+                    buffer_type &rd_buf() {
                         return rd_buf_;
                     }
 
@@ -162,7 +175,7 @@ namespace nil {
                     /// member function of `mgr` in case of an error.
                     /// @warning Must not be called outside the IO multiplexers event loop
                     ///          once the stream has been started.
-                    void flush(const manager_ptr& mgr) {
+                    void flush(const manager_ptr &mgr) {
                         MTL_ASSERT(mgr != nullptr);
                         if (!wr_offline_buf_.empty() && !writing_) {
                             writing_ = true;
@@ -172,19 +185,19 @@ namespace nil {
 
                     /// Closes the network connection, thus stopping this stream.
                     void stop() {
-                        BOOST_ACTOR_LOGMF(BOOST_ACTOR_TRACE, "");
+                        MTL_LOGMF(MTL_TRACE, "");
                         fd_.close();
                     }
 
                     void stop_reading() {
-                        BOOST_ACTOR_LOGMF(BOOST_ACTOR_TRACE, "");
+                        MTL_LOGMF(MTL_TRACE, "");
                         boost::system::error_code ec;    // ignored
                         fd_.shutdown(boost::asio::ip::tcp::socket::shutdown_receive, ec);
                     }
 
                 private:
-                    void read_loop(const manager_ptr& mgr) {
-                        auto cb = [=](const boost::system::error_code& ec, size_t read_bytes) {
+                    void read_loop(const manager_ptr &mgr) {
+                        auto cb = [=](const boost::system::error_code &ec, size_t read_bytes) {
                             MTL_LOG_TRACE("nil::mtl::io::network::stream", "read_loop$cb" << MTL_ARG(this));
                             if (!ec) {
                                 mgr->consume(rd_buf_.data(), read_bytes);
@@ -218,7 +231,7 @@ namespace nil {
                         }
                     }
 
-                    void write_loop(const manager_ptr& mgr) {
+                    void write_loop(const manager_ptr &mgr) {
                         if (wr_offline_buf_.empty()) {
                             writing_ = false;
                             return;
@@ -226,26 +239,26 @@ namespace nil {
                         wr_buf_.clear();
                         wr_buf_.swap(wr_offline_buf_);
                         boost::asio::async_write(
-                            fd_, boost::asio::buffer(wr_buf_), [=](const boost::system::error_code& ec, size_t nb) {
+                            fd_, boost::asio::buffer(wr_buf_), [=](const boost::system::error_code &ec, size_t nb) {
                                 MTL_LOG_TRACE("nil::mtl::io::network::stream", "write_loop$lambda", MTL_ARG(this));
                                 static_cast<void>(nb);    // silence compiler warning
                                 if (!ec) {
-                                    BOOST_ACTOR_LOGC(BOOST_ACTOR_DEBUG, "nil::mtl::io::network::stream",
-                                                     "write_loop$lambda", nb << " bytes sent");
+                                    MTL_LOGC(MTL_DEBUG, "nil::mtl::io::network::stream", "write_loop$lambda",
+                                             nb << " bytes sent");
                                     write_loop(mgr);
                                 } else {
-                                    BOOST_ACTOR_LOGC(BOOST_ACTOR_DEBUG, "nil::mtl::io::network::stream",
-                                                     "write_loop$lambda", "error during send: " << ec.message());
+                                    MTL_LOGC(MTL_DEBUG, "nil::mtl::io::network::stream", "write_loop$lambda",
+                                             "error during send: " << ec.message());
                                     mgr->io_failure(operation::read);
                                     writing_ = false;
                                 }
                             });
                     }
 
-                    void collect_data(const manager_ptr& mgr, size_t collected_bytes) {
+                    void collect_data(const manager_ptr &mgr, size_t collected_bytes) {
                         fd_.async_read_some(
                             boost::asio::buffer(rd_buf_.data() + collected_bytes, rd_buf_.size() - collected_bytes),
-                            [=](const boost::system::error_code& ec, size_t nb) {
+                            [=](const boost::system::error_code &ec, size_t nb) {
                                 MTL_LOG_TRACE("nil::mtl::io::network::stream", "collect_data$lambda" << MTL_ARG(this));
                                 if (!ec) {
                                     auto sum = collected_bytes + nb;
@@ -283,22 +296,22 @@ namespace nil {
                     /// A smart pointer to an acceptor manager.
                     using manager_ptr = intrusive_ptr<manager_type>;
 
-                    acceptor(asio_multiplexer& am, io_backend& io) : backend_(am), accept_fd_(io), fd_(io) {
+                    acceptor(asio_multiplexer &am, io_backend &io) : backend_(am), accept_fd_(io), fd_(io) {
                     }
 
                     /// Returns the `multiplexer` this acceptor belongs to.
-                    inline asio_multiplexer& backend() {
+                    inline asio_multiplexer &backend() {
                         return backend_;
                     }
 
                     /// Returns the IO socket.
-                    inline SocketAcceptor& socket_handle() {
+                    inline SocketAcceptor &socket_handle() {
                         return accept_fd_;
                     }
 
                     /// Returns the accepted socket. This member function should
                     ///        be called only from the `new_connection` callback.
-                    inline socket_type& accepted_socket() {
+                    inline socket_type &accepted_socket() {
                         return fd_;
                     }
 
@@ -310,7 +323,7 @@ namespace nil {
                     /// Starts this acceptor, forwarding all incoming connections to
                     /// `manager`. The intrusive pointer will be released after the
                     /// acceptor has been closed or an IO error occured.
-                    void start(const manager_ptr& mgr) {
+                    void start(const manager_ptr &mgr) {
                         accept_loop(mgr);
                     }
 
@@ -320,9 +333,9 @@ namespace nil {
                     }
 
                 private:
-                    void accept_loop(const manager_ptr& mgr) {
-                        accept_fd_.async_accept(fd_, [=](const boost::system::error_code& ec) {
-                            BOOST_ACTOR_LOGMF(BOOST_ACTOR_TRACE, "");
+                    void accept_loop(const manager_ptr &mgr) {
+                        accept_fd_.async_accept(fd_, [=](const boost::system::error_code &ec) {
+                            MTL_LOGMF(MTL_TRACE, "");
                             if (!ec) {
                                 mgr->new_connection();    // probably moves fd_
                                 // reset fd_ for next accept operation
@@ -334,7 +347,7 @@ namespace nil {
                         });
                     }
 
-                    asio_multiplexer& backend_;
+                    asio_multiplexer &backend_;
                     SocketAcceptor accept_fd_;
                     socket_type fd_;
                 };

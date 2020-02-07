@@ -75,7 +75,7 @@ namespace nil {
             virtual void attach(attachable_ptr ptr) = 0;
 
             /// Convenience function that attaches the functor `f` to this actor. The
-            /// actor executes `f()` on exit or immediatley if it is not running.
+            /// actor executes `f()` on exit or immediately if it is not running.
             template<class F>
             void attach_functor(F f) {
                 attach(attachable_ptr {new detail::functor_attachable<F>(std::move(f))});
@@ -98,7 +98,7 @@ namespace nil {
             node_id node() const noexcept;
 
             /// Returns the system that created this actor (or proxy).
-            actor_system &home_system() const noexcept;
+            spawner &home_system() const noexcept;
 
             /****************************************************************************
              *                 here be dragons: end of public interface                 *
@@ -189,7 +189,7 @@ namespace nil {
                 -> decltype(fun()) {
                 // Make sure to allocate locks always in the same order by starting on the
                 // actor with the lowest address.
-                BOOST_ASSERT(p1 != p2 && p1 != nullptr && p2 != nullptr);
+                MTL_ASSERT(p1 != p2 && p1 != nullptr && p2 != nullptr);
                 if (p1 < p2) {
                     std::unique_lock<std::mutex> guard1 {p1->mtx_};
                     std::unique_lock<std::mutex> guard2 {p2->mtx_};
@@ -211,7 +211,7 @@ namespace nil {
             mutable std::mutex mtx_;
 
         private:
-            // prohibit copies, assigments, and heap allocations
+            // prohibit copies, assignments, and heap allocations
             void *operator new(size_t);
             void *operator new[](size_t);
             abstract_actor(const abstract_actor &) = delete;

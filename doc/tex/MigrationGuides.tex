@@ -164,14 +164,14 @@ factory functions using the same name.
 \subsection{0.14 to 0.15}
 
 Version 0.15 replaces the singleton-based architecture with
-\lstinline^actor_system^. Most of the free functions in namespace
-\lstinline^caf^ are now member functions of \lstinline^actor_system^
+\lstinline^spawner^. Most of the free functions in namespace
+\lstinline^caf^ are now member functions of \lstinline^spawner^
 \see{actor-system}. Likewise, most functions in namespace \lstinline^nil::mtl::io^
 are now member functions of \lstinline^middleman^ \see{middleman}. The
 structure of MTL applications has changed fundamentally with a focus on
 configurability. Setting and fine-tuning the scheduler, changing parameters of
 the middleman, etc. is now bundled in the class
-\lstinline^actor_system_config^. The new configuration mechanism is also easily
+\lstinline^spawner_config^. The new configuration mechanism is also easily
 extensible.
 
 Patterns are now limited to the simple notation, because the advanced features

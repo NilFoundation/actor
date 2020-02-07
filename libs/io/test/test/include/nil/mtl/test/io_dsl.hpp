@@ -28,8 +28,7 @@ public:
 };
 
 /// A fixture containing all required state to simulate a single MTL node.
-template<class BaseFixture =
-test_coordinator_fixture <nil::mtl::actor_system_config>>
+template<class BaseFixture = test_coordinator_fixture<nil::mtl::spawner_config>>
 class test_node_fixture : public BaseFixture, test_node_fixture_base<BaseFixture> {
 public:
     // -- member types -----------------------------------------------------------
@@ -41,14 +40,13 @@ public:
     using run_all_nodes_fun = std::function<void()>;
 
     /// @param fun A function object for delegating to the parent's `exec_all`.
-    test_node_fixture(run_all_nodes_fun fun) : mm(this->sys.middleman()),
-            mpx(dynamic_cast<nil::mtl::io::network::test_multiplexer &>(mm.backend())), run_all_nodes(std::move(fun)) {
+    test_node_fixture(run_all_nodes_fun fun) :
+        mm(this->sys.middleman()), mpx(dynamic_cast<nil::mtl::io::network::test_multiplexer &>(mm.backend())),
+        run_all_nodes(std::move(fun)) {
         // nop
     }
 
-    test_node_fixture() : test_node_fixture([=] {
-        this->run();
-    }) {
+    test_node_fixture() : test_node_fixture([=] { this->run(); }) {
         // nop
     }
 
@@ -107,17 +105,16 @@ void exec_all_fixtures(Iterator first, Iterator last) {
         return x->sched.try_run_once() || x->mpx.read_data() || x->mpx.try_exec_runnable() ||
                x->mpx.try_accept_connection();
     };
-    auto trigger_timeouts = [](fixture_ptr x) {
-        x->sched.trigger_timeouts();
-    };
+    auto trigger_timeouts = [](fixture_ptr x) { x->sched.trigger_timeouts(); };
     for (;;) {
         // Exhaust all messages in the system.
-        while (std::any_of(first, last, advance)); // repeat
+        while (std::any_of(first, last, advance))
+            ;    // repeat
         // Try to "revive" the system by dispatching timeouts.
         std::for_each(first, last, trigger_timeouts);
         // Stop if the timeouts didn't cause new activity.
         if (std::none_of(first, last, advance))
-        return;
+            return;
     }
 }
 
@@ -168,10 +165,9 @@ public:
     // Convenience function for transmitting all "network" traffic (no new
     // connections are accepted).
     void network_traffic() {
-        auto f = [](PlanetType *x) {
-            return x->mpx.try_exec_runnable() || x->mpx.read_data();
-        };
-        while (std::any_of(std::begin(planets_), std::end(planets_), f)); // repeat
+        auto f = [](PlanetType *x) { return x->mpx.try_exec_runnable() || x->mpx.read_data(); };
+        while (std::any_of(std::begin(planets_), std::end(planets_), f))
+            ;    // repeat
     }
 
     // Convenience function for transmitting all "network" traffic, trying to
@@ -184,9 +180,7 @@ public:
 
     /// Type-erased callback for calling `exec_all`.
     std::function<void()> exec_all_callback() {
-        return [&] {
-            exec_all();
-        };
+        return [&] { exec_all(); };
     }
 
     void loop_after_next_enqueue(PlanetType &planet) {
@@ -200,8 +194,7 @@ private:
 
 /// A simple fixture that includes two nodes (`earth` and `mars`) that can
 /// connect to each other.
-template<class BaseFixture =
-test_coordinator_fixture <nil::mtl::actor_system_config>>
+template<class BaseFixture = test_coordinator_fixture<nil::mtl::spawner_config>>
 class point_to_point_fixture : public test_network_fixture_base<test_node_fixture<BaseFixture>> {
 public:
     using planet_type = test_node_fixture<BaseFixture>;
@@ -211,8 +204,8 @@ public:
     planet_type earth;
     planet_type mars;
 
-    point_to_point_fixture() : super({&earth, &mars}), earth(this->exec_all_callback()),
-            mars(this->exec_all_callback()) {
+    point_to_point_fixture() :
+        super({&earth, &mars}), earth(this->exec_all_callback()), mars(this->exec_all_callback()) {
         // Run initialization code.
         this->exec_all();
     }
@@ -220,8 +213,7 @@ public:
 
 /// A simple fixture that includes three nodes (`earth`, `mars`, and `jupiter`)
 /// that can connect to each other.
-template<class BaseFixture =
-test_coordinator_fixture <nil::mtl::actor_system_config>>
+template<class BaseFixture = test_coordinator_fixture<nil::mtl::spawner_config>>
 class belt_fixture : public test_network_fixture_base<test_node_fixture<BaseFixture>> {
 public:
     using planet_type = test_node_fixture<BaseFixture>;
@@ -232,16 +224,17 @@ public:
     planet_type mars;
     planet_type jupiter;
 
-    belt_fixture() : super({&earth, &mars, &jupiter}), earth(this->exec_all_callback()),
-            mars(this->exec_all_callback()), jupiter(this->exec_all_callback()) {
+    belt_fixture() :
+        super({&earth, &mars, &jupiter}), earth(this->exec_all_callback()), mars(this->exec_all_callback()),
+        jupiter(this->exec_all_callback()) {
         // nop
     }
 };
 
-#define expect_on(where, types, fields)                                        \
-  BOOST_TEST_MESSAGE(#where << ": expect" << #types << "." << #fields);               \
-  expect_clause< MTL_EXPAND(MTL_DSL_LIST types) >{where . sched} . fields
+#define expect_on(where, types, fields)                                   \
+    BOOST_TEST_MESSAGE(#where << ": expect" << #types << "." << #fields); \
+    expect_clause<MTL_EXPAND(MTL_DSL_LIST types)> {where.sched}.fields
 
-#define disallow_on(where, types, fields)                                      \
-  BOOST_TEST_MESSAGE(#where << ": disallow" << #types << "." << #fields);             \
-  disallow_clause< MTL_EXPAND(MTL_DSL_LIST types) >{where . sched} . fields
+#define disallow_on(where, types, fields)                                   \
+    BOOST_TEST_MESSAGE(#where << ": disallow" << #types << "." << #fields); \
+    disallow_clause<MTL_EXPAND(MTL_DSL_LIST types)> {where.sched}.fields

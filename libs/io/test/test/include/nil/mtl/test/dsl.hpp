@@ -155,7 +155,7 @@ public:
         return *this;
     }
 
-    template<class T, class E = nil::mtl::detail::enable_if_t<!std::is_pointer<T>::value>>
+    template<class T, class E = typename std::enable_if<!std::is_pointer<T>::value>::type>
     mtl_handle &operator=(const T &x) {
         ptr_ = nil::mtl::actor_cast<pointer>(x);
         return *this;
@@ -521,13 +521,13 @@ struct test_coordinator_fixture_fetch_helper<T> {
 };
 
 /// A fixture with a deterministic scheduler setup.
-template<class Config = nil::mtl::actor_system_config>
+template<class Config = nil::mtl::spawner_config>
 class test_coordinator_fixture {
     static inline Config &config(Config &cfg) {
         cfg.scheduler_policy = nil::mtl::atom("testing");
         cfg.middleman_network_backend = nil::mtl::atom("testing");
         cfg.logger_file_verbosity = nil::mtl::atom("quiet");
-        cfg.middleman_workers = size_t{0};
+        cfg.middleman_workers = size_t {0};
         return cfg;
     }
 
@@ -690,7 +690,7 @@ public:
     Config cfg;
 
     /// Host system for (scheduled) actors.
-    nil::mtl::actor_system sys;
+    nil::mtl::spawner sys;
 
     /// A scoped actor for conveniently sending and receiving messages.
     nil::mtl::scoped_actor self;

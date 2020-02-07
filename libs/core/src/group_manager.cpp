@@ -40,7 +40,7 @@ namespace nil {
             class local_broker;
             class local_group_module;
 
-            void await_all_locals_down(actor_system &sys, std::initializer_list<actor> xs) {
+            void await_all_locals_down(spawner &sys, std::initializer_list<actor> xs) {
                 MTL_LOG_TRACE("");
                 scoped_actor self {sys, true};
                 std::vector<actor> ys;
@@ -101,6 +101,8 @@ namespace nil {
                 }
 
                 error save(serializer &sink) const override;
+
+                error_code<sec> save(binary_serializer &sink) const override;
 
                 void stop() override {
                     MTL_LOG_TRACE("");
@@ -222,7 +224,7 @@ namespace nil {
 
             class local_group_proxy : public local_group {
             public:
-                local_group_proxy(actor_system &sys, actor remote_broker, local_group_module &mod, std::string id,
+                local_group_proxy(spawner &sys, actor remote_broker, local_group_module &mod, std::string id,
                                   node_id nid) :
                     local_group(mod, std::move(id), std::move(nid), std::move(remote_broker)),
                     proxy_broker_ {sys.spawn<proxy_broker, hidden>(this)}, monitor_ {sys.spawn<hidden>(
@@ -300,7 +302,7 @@ namespace nil {
 
             class local_group_module : public group_module {
             public:
-                local_group_module(actor_system &sys) : group_module(sys, "local") {
+                local_group_module(spawner &sys) : group_module(sys, "local") {
                     MTL_LOG_TRACE("");
                 }
 
@@ -321,7 +323,8 @@ namespace nil {
                     return group {result};
                 }
 
-                error load(deserializer &source, group &storage) override {
+                template<class Deserializer>
+                typename Deserializer::result_type load_impl(Deserializer &source, group &storage) {
                     MTL_LOG_TRACE("");
                     // deserialize identifier and broker
                     std::string identifier;
@@ -353,13 +356,29 @@ namespace nil {
                     storage = group {p.first->second};
                     return none;
                 }
+                error load(deserializer &source, group &storage) override {
+                    return load_impl(source, storage);
+                }
 
-                error save(const local_group *ptr, serializer &sink) const {
+                error_code<sec> load(binary_deserializer &source, group &storage) override {
+                    return load_impl(source, storage);
+                }
+
+                template<class Serializer>
+                auto save_impl(const local_group *ptr, Serializer &sink) const {
                     MTL_ASSERT(ptr != nullptr);
                     MTL_LOG_TRACE("");
                     auto bro = actor_cast<strong_actor_ptr>(ptr->broker());
                     auto &id = const_cast<std::string &>(ptr->identifier());
                     return sink(id, bro);
+                }
+
+                error save(const local_group *ptr, serializer &sink) const {
+                    return save_impl(ptr, sink);
+                }
+
+                error_code<sec> save(const local_group *ptr, binary_serializer &sink) const {
+                    return save_impl(ptr, sink);
                 }
 
                 void stop() override {
@@ -402,11 +421,16 @@ namespace nil {
                 return static_cast<local_group_module &>(parent_).save(this, sink);
             }
 
+            error_code<sec> local_group::save(binary_serializer &sink) const {
+                MTL_LOG_TRACE("");
+                return static_cast<local_group_module &>(parent_).save(this, sink);
+            }
+
             std::atomic<size_t> s_ad_hoc_id;
 
         }    // namespace
 
-        void group_manager::init(actor_system_config &cfg) {
+        void group_manager::init(spawner_config &cfg) {
             MTL_LOG_TRACE("");
             using ptr_type = std::unique_ptr<group_module>;
             mmap_.emplace("local", ptr_type {new local_group_module(system_)});
@@ -431,7 +455,7 @@ namespace nil {
             // nop
         }
 
-        group_manager::group_manager(actor_system &sys) : system_(sys) {
+        group_manager::group_manager(spawner &sys) : system_(sys) {
             // nop
         }
 

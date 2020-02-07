@@ -36,7 +36,7 @@ namespace nil {
                 /// A type-erased boolean predicate.
                 using bool_predicate = std::function<bool()>;
 
-                test_coordinator(actor_system &sys);
+                test_coordinator(spawner &sys);
 
                 /// A double-ended queue representing our current job queue.
                 std::deque<resumable *> jobs;

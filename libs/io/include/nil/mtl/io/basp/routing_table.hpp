@@ -17,7 +17,8 @@
 #include <vector>
 
 #include <nil/mtl/io/abstract_broker.hpp>
-#include <nil/mtl/io/basp/buffer_type.hpp>
+
+#include <nil/mtl/byte_buffer.hpp>
 #include <nil/mtl/node_id.hpp>
 
 namespace nil {

@@ -71,7 +71,7 @@ namespace {
             while (ptr != nullptr) {
                 auto next = ptr->next;
                 result += to_string(*ptr);
-                ptr.reset(promote(next));
+                ptr.reset(inbox_type::promote(next));
             }
             return result;
         }

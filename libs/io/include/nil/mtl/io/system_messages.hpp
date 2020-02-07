@@ -47,7 +47,7 @@ namespace nil {
                 /// Handle to the related connection.
                 connection_handle handle;
                 /// Buffer containing the received data.
-                std::vector<char> buf;
+                byte_buffer buf;
             };
 
             /// @relates new_data_msg
@@ -139,7 +139,7 @@ namespace nil {
                 // Number of bytes written.
                 uint64_t written;
                 // Buffer of the sent datagram, for reuse.
-                std::vector<char> buf;
+                byte_buffer buf;
             };
 
             /// @relates datagram_sent_msg

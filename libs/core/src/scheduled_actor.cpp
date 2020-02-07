@@ -13,7 +13,7 @@
 #include <nil/mtl/scheduled_actor.hpp>
 
 #include <nil/mtl/actor_ostream.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/config.hpp>
 #include <nil/mtl/inbound_path.hpp>
 #include <nil/mtl/to_string.hpp>

@@ -110,11 +110,11 @@ namespace nil {
 
                 // -- disambiguation for functions found in multiple base classes ------------
 
-                actor_system &system() {
+                spawner &system() {
                     return super::system();
                 }
 
-                const actor_system_config &config() {
+                const spawner_config &config() {
                     return system().config();
                 }
 

@@ -19,7 +19,7 @@
 
 #include <nil/mtl/after.hpp>
 #include <nil/mtl/event_based_actor.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 
 #include <nil/mtl/io/broker.hpp>
 #include <nil/mtl/io/middleman.hpp>

@@ -15,7 +15,7 @@
 #include <string>
 #include <cstdint>
 
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 
 #include <nil/mtl/io/middleman.hpp>
 
@@ -29,7 +29,7 @@ namespace nil {
             /// @returns An `actor` to the proxy instance representing
             ///          a remote actor or an `error`.
             template<class ActorHandle = actor>
-            expected<ActorHandle> remote_actor(actor_system &sys, std::string host, uint16_t port) {
+            expected<ActorHandle> remote_actor(spawner &sys, std::string host, uint16_t port) {
                 return sys.middleman().remote_actor<ActorHandle>(std::move(host), port);
             }
 

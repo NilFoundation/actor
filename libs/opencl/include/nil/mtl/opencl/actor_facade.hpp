@@ -353,7 +353,7 @@ namespace nil {
 
                 // Map function requires only the message as argument
                 template<bool Q = PassConfig>
-                detail::enable_if_t<!Q, bool> map_arguments(message &content) {
+                typename std::enable_if<!Q, bool>::type map_arguments(message &content) {
                     if (map_args_) {
                         auto mapped = map_args_(content);
                         if (!mapped) {
@@ -367,7 +367,7 @@ namespace nil {
 
                 // Map function requires reference to config as well as the message
                 template<bool Q = PassConfig>
-                detail::enable_if_t<Q, bool> map_arguments(message &content) {
+                typename std::enable_if<Q, bool>::type map_arguments(message &content) {
                     if (map_args_) {
                         auto mapped = map_args_(range_, content);
                         if (!mapped) {

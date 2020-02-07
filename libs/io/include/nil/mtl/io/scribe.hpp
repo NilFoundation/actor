@@ -30,6 +30,8 @@ namespace nil {
             /// @ingroup Broker
             class scribe : public scribe_base {
             public:
+                typedef byte_buffer buffer_type;
+
                 scribe(connection_handle conn_hdl);
 
                 ~scribe() override;
@@ -41,10 +43,10 @@ namespace nil {
                 virtual void ack_writes(bool enable) = 0;
 
                 /// Returns the current output buffer.
-                virtual std::vector<char> &wr_buf() = 0;
+                virtual byte_buffer &wr_buf() = 0;
 
                 /// Returns the current input buffer.
-                virtual std::vector<char> &rd_buf() = 0;
+                virtual byte_buffer &rd_buf() = 0;
 
                 /// Flushes the output buffer, i.e., sends the
                 /// content of the buffer via the network.

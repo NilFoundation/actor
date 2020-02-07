@@ -23,10 +23,13 @@ namespace nil {
         /// querying its execution unit, an actor can access other context information.
         class execution_unit {
         public:
-            explicit execution_unit(actor_system *sys);
+            explicit execution_unit(spawner *sys);
 
-            execution_unit(execution_unit &&) = delete;
-            execution_unit(const execution_unit &) = delete;
+            execution_unit() = default;
+            execution_unit(execution_unit &&) = default;
+            execution_unit &operator=(execution_unit &&) = default;
+            execution_unit(const execution_unit &) = default;
+            execution_unit &operator=(const execution_unit &) = default;
 
             virtual ~execution_unit();
 
@@ -37,7 +40,7 @@ namespace nil {
 
             /// Returns the enclosing actor system.
             /// @warning Must be set before the execution unit calls `resume` on an actor.
-            actor_system &system() const {
+            spawner &system() const {
                 MTL_ASSERT(system_ != nullptr);
                 return *system_;
             }
@@ -53,8 +56,8 @@ namespace nil {
             }
 
         protected:
-            actor_system *system_;
-            proxy_registry *proxies_;
+            spawner *system_ = nullptr;
+            proxy_registry *proxies_ = nullptr;
         };
 
     }    // namespace mtl

@@ -221,7 +221,7 @@ void run_jupiter(uint16_t port_to_mars) {
 
 BOOST_AUTO_TEST_CASE(triangle_setup_test) {
     // this unit test is temporarily disabled until problems
-    // with OBS are sorted out or new actor_system API is in place
+    // with OBS are sorted out or new spawner API is in place
 }
 
 /*

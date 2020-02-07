@@ -43,10 +43,10 @@ namespace {
     };
 
     struct fixture {
-        // allows us to check s_dtors after dtor of actor_system
-        actor_system_config cfg;
+        // allows us to check s_dtors after dtor of spawner
+        spawner_config cfg;
         union {
-            actor_system system;
+            spawner system;
         };
         union {
             scoped_execution_unit context;
@@ -55,7 +55,7 @@ namespace {
         std::function<actor()> spawn_worker;
 
         fixture() {
-            new (&system) actor_system(cfg);
+            new (&system) spawner(cfg);
             new (&context) scoped_execution_unit(&system);
             spawn_worker = [&] { return system.spawn<worker>(); };
         }
@@ -63,7 +63,7 @@ namespace {
         ~fixture() {
             system.await_all_actors_done();
             context.~scoped_execution_unit();
-            system.~actor_system();
+            system.~spawner();
             BOOST_CHECK_EQUAL(s_dtors.load(), s_ctors.load());
         }
     };
@@ -155,27 +155,6 @@ BOOST_AUTO_TEST_CASE(random_actor_pool_test) {
         self->request(pool, std::chrono::milliseconds(250), 1, 2)
             .receive([&](int res) { BOOST_CHECK_EQUAL(res, 3); }, handle_err);
     }
-    self->send_exit(pool, exit_reason::user_shutdown);
-}
-
-BOOST_AUTO_TEST_CASE(split_join_actor_pool_test) {
-    auto spawn_split_worker = [&] {
-        return system.spawn<lazy_init>(
-            []() -> behavior { return {[](size_t pos, const std::vector<int> &xs) { return xs[pos]; }}; });
-    };
-    auto split_fun = [](std::vector<std::pair<actor, message>> &xs, message &y) {
-        for (size_t i = 0; i < xs.size(); ++i) {
-            xs[i].second = make_message(i) + y;
-        }
-    };
-    auto join_fun = [](int &res, message &msg) { msg.apply([&](int x) { res += x; }); };
-    scoped_actor self {system};
-    BOOST_TEST_MESSAGE("create actor pool");
-    auto pool = actor_pool::make(&context, 5, spawn_split_worker, actor_pool::split_join<int>(join_fun, split_fun));
-    self->request(pool, infinite, std::vector<int> {1, 2, 3, 4, 5})
-        .receive([&](int res) { BOOST_CHECK_EQUAL(res, 15); }, handle_err);
-    self->request(pool, infinite, std::vector<int> {6, 7, 8, 9, 10})
-        .receive([&](int res) { BOOST_CHECK_EQUAL(res, 40); }, handle_err);
     self->send_exit(pool, exit_reason::user_shutdown);
 }
 

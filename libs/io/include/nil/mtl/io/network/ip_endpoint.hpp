@@ -98,9 +98,9 @@ namespace nil {
 
                 uint32_t family(const ip_endpoint &ep);
 
-                error load_endpoint(ip_endpoint &ep, uint32_t &f, std::string &h, uint16_t &p, size_t &l);
+                error_code<sec> load_endpoint(ip_endpoint &ep, uint32_t &f, std::string &h, uint16_t &p, size_t &l);
 
-                error save_endpoint(ip_endpoint &ep, uint32_t &f, std::string &h, uint16_t &p, size_t &l);
+                error_code<sec> save_endpoint(ip_endpoint &ep, uint32_t &f, std::string &h, uint16_t &p, size_t &l);
 
                 template<class Inspector>
                 typename Inspector::result_type inspect(Inspector &fun, ip_endpoint &ep) {
@@ -126,7 +126,6 @@ namespace nil {
 }    // namespace nil
 
 namespace std {
-
     template<>
     struct hash<nil::mtl::io::network::ip_endpoint> {
         using argument_type = nil::mtl::io::network::ip_endpoint;
@@ -136,5 +135,4 @@ namespace std {
             return nil::mtl::io::network::ep_hash {}(*ptr);
         }
     };
-
 }    // namespace std

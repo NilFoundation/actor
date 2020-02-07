@@ -15,13 +15,16 @@
 #include <cstdint>
 #include <vector>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/detail/abstract_worker.hpp>
-#include <nil/mtl/detail/worker_hub.hpp>
-#include <nil/mtl/fwd.hpp>
 #include <nil/mtl/io/basp/fwd.hpp>
 #include <nil/mtl/io/basp/header.hpp>
 #include <nil/mtl/io/basp/remote_message_handler.hpp>
+
+#include <nil/mtl/detail/abstract_worker.hpp>
+#include <nil/mtl/detail/worker_hub.hpp>
+
+#include <nil/mtl/config.hpp>
+#include <nil/mtl/fwd.hpp>
+#include <nil/mtl/byte_buffer.hpp>
 #include <nil/mtl/node_id.hpp>
 #include <nil/mtl/resumable.hpp>
 
@@ -43,7 +46,7 @@ namespace nil {
 
                     using scheduler_type = scheduler::abstract_coordinator;
 
-                    using buffer_type = std::vector<char>;
+                    using buffer_type = byte_buffer;
 
                     using hub_type = detail::worker_hub<worker>;
 
@@ -67,7 +70,7 @@ namespace nil {
 
                     /// Stores how many bytes the "first half" of this object requires.
                     static constexpr size_t pointer_members_size = sizeof(hub_type *) + sizeof(message_queue *) +
-                                                                   sizeof(proxy_registry *) + sizeof(actor_system *);
+                                                                   sizeof(proxy_registry *) + sizeof(spawner *);
 
                     static_assert(MTL_CACHE_LINE_SIZE > pointer_members_size, "invalid cache line size");
 
@@ -83,7 +86,7 @@ namespace nil {
                     proxy_registry *proxies_;
 
                     /// Points to the parent system.
-                    actor_system *system_;
+                    spawner *system_;
 
                     /// Prevents false sharing when writing to `next`.
                     char pad_[MTL_CACHE_LINE_SIZE - pointer_members_size];
@@ -105,4 +108,4 @@ namespace nil {
             }    // namespace basp
         }        // namespace io
     }            // namespace mtl
-}
+}    // namespace nil

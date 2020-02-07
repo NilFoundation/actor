@@ -15,54 +15,48 @@
 #include <cstddef>
 #include <cstdint>
 #include <vector>
+#include <string>
+#include <string_view>
+#include <tuple>
+#include <utility>
 
-#include <nil/mtl/byte.hpp>
-#include <nil/mtl/serialization/deserializer.hpp>
+#include <nil/mtl/error_code.hpp>
+#include <nil/mtl/fwd.hpp>
+#include <nil/mtl/sec.hpp>
 #include <nil/mtl/span.hpp>
+#include <nil/mtl/write_inspector.hpp>
 
 namespace nil {
     namespace mtl {
 
         /// Implements the deserializer interface with a binary serialization protocol.
-        class binary_deserializer final : public deserializer {
+        class binary_deserializer : public write_inspector<binary_deserializer> {
         public:
             // -- member types -----------------------------------------------------------
 
-            using super = deserializer;
+            using result_type = error_code<sec>;
 
             // -- constructors, destructors, and assignment operators --------------------
 
-            binary_deserializer(actor_system &sys, span<const byte> bytes);
+            template<class Container>
+            binary_deserializer(spawner &sys, const Container &input) noexcept : binary_deserializer(sys) {
+                reset(as_bytes(make_span(input)));
+            }
 
-            binary_deserializer(execution_unit *ctx, span<const byte> bytes);
+            template<class Container>
+            binary_deserializer(execution_unit *ctx, const Container &input) noexcept : context_(ctx) {
+                reset(as_bytes(make_span(input)));
+            }
 
-            template<class T>
-            binary_deserializer(actor_system &sys, const std::vector<T> &buf) :
-                binary_deserializer(sys, as_bytes(make_span(buf))) {
+            binary_deserializer(execution_unit *ctx, const void *buf, size_t size) noexcept :
+                binary_deserializer(ctx, make_span(reinterpret_cast<const byte *>(buf), size)) {
                 // nop
             }
 
-            template<class T>
-            binary_deserializer(execution_unit *ctx, const std::vector<T> &buf) :
-                binary_deserializer(ctx, as_bytes(make_span(buf))) {
+            binary_deserializer(spawner &sys, const void *buf, size_t size) noexcept :
+                binary_deserializer(sys, make_span(reinterpret_cast<const byte *>(buf), size)) {
                 // nop
             }
-
-            binary_deserializer(actor_system &sys, const char *buf, size_t buf_size);
-
-            binary_deserializer(execution_unit *ctx, const char *buf, size_t buf_size);
-
-            // -- overridden member functions --------------------------------------------
-
-            error begin_object(uint16_t &typenr, std::string &name) override;
-
-            error end_object() override;
-
-            error begin_sequence(size_t &list_size) override;
-
-            error end_sequence() override;
-
-            error apply_raw(size_t num_bytes, void *data) override;
 
             // -- properties -------------------------------------------------------------
 
@@ -76,49 +70,93 @@ namespace nil {
                 return make_span(current_, end_);
             }
 
+            /// Returns the current execution unit.
+            execution_unit *context() const noexcept {
+                return context_;
+            }
+
             /// Jumps `num_bytes` forward.
             /// @pre `num_bytes <= remaining()`
-            void skip(size_t num_bytes);
+            void skip(size_t num_bytes) noexcept;
 
-            /// Assings a new input.
-            void reset(span<const byte> bytes);
+            /// Assigns a new input.
+            void reset(span<const byte> bytes) noexcept;
 
-        protected:
-            error apply_impl(int8_t &) override;
+            /// Returns the current read position.
+            const byte *current() const noexcept {
+                return current_;
+            }
 
-            error apply_impl(uint8_t &) override;
+            /// Returns the end of the assigned memory block.
+            const byte *end() const noexcept {
+                return end_;
+            }
 
-            error apply_impl(int16_t &) override;
+            // -- overridden member functions --------------------------------------------
 
-            error apply_impl(uint16_t &) override;
+            result_type begin_object(uint16_t &typenr, std::string &name);
 
-            error apply_impl(int32_t &) override;
+            result_type end_object() noexcept;
 
-            error apply_impl(uint32_t &) override;
+            result_type begin_sequence(size_t &list_size) noexcept;
 
-            error apply_impl(int64_t &) override;
+            result_type end_sequence() noexcept;
 
-            error apply_impl(uint64_t &) override;
+            result_type apply(bool &) noexcept;
 
-            error apply_impl(float &) override;
+            result_type apply(int8_t &) noexcept;
 
-            error apply_impl(double &) override;
+            result_type apply(uint8_t &) noexcept;
 
-            error apply_impl(long double &) override;
+            result_type apply(int16_t &) noexcept;
 
-            error apply_impl(std::string &) override;
+            result_type apply(uint16_t &) noexcept;
 
-            error apply_impl(std::u16string &) override;
+            result_type apply(int32_t &) noexcept;
 
-            error apply_impl(std::u32string &) override;
+            result_type apply(uint32_t &) noexcept;
+
+            result_type apply(int64_t &) noexcept;
+
+            result_type apply(uint64_t &) noexcept;
+
+            result_type apply(float &) noexcept;
+
+            result_type apply(double &) noexcept;
+
+            result_type apply(long double &);
+
+            result_type apply(span<byte>) noexcept;
+
+            result_type apply(std::string &);
+
+            result_type apply(std::u16string &);
+
+            result_type apply(std::u32string &);
+
+            template<typename Enum, typename = typename std::enable_if<std::is_enum<Enum>::value>::type>
+            auto apply(Enum &x) noexcept {
+                return apply(reinterpret_cast<std::underlying_type_t<Enum> &>(x));
+            }
+
+            result_type apply(std::vector<bool> &xs);
 
         private:
-            bool range_check(size_t read_size) {
+            explicit binary_deserializer(spawner &sys) noexcept;
+
+            /// Checks whether we can read `read_size` more bytes.
+            bool range_check(size_t read_size) const noexcept {
                 return current_ + read_size <= end_;
             }
 
+            /// Points to the current read position.
             const byte *current_;
+
+            /// Points to the end of the assigned memory block.
             const byte *end_;
+
+            /// Provides access to the ::proxy_registry and to the ::spawner.
+            execution_unit *context_;
         };
     }    // namespace mtl
 }    // namespace nil

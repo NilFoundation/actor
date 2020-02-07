@@ -16,7 +16,7 @@
 
 #include <nil/mtl/atom.hpp>
 #include <nil/mtl/expected.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/function_view.hpp>
 #include <nil/mtl/actor_control_block.hpp>
 
@@ -26,7 +26,7 @@ namespace nil {
     namespace mtl {
         namespace openssl {
 
-            expected<uint16_t> publish(actor_system &sys, const strong_actor_ptr &whom, std::set<std::string> &&sigs,
+            expected<uint16_t> publish(spawner &sys, const strong_actor_ptr &whom, std::set<std::string> &&sigs,
                                        uint16_t port, const char *cstr, bool ru) {
                 MTL_LOG_TRACE(MTL_ARG(whom) << MTL_ARG(sigs) << MTL_ARG(port));
                 MTL_ASSERT(whom != nullptr);

@@ -68,6 +68,8 @@ namespace nil {
 
             error load(size_t pos, deserializer &source) override;
 
+            error_code<sec> load(size_t pos, binary_deserializer &source) override;
+
             size_t size() const noexcept override;
 
             uint32_t type_token() const noexcept override;
@@ -82,27 +84,24 @@ namespace nil {
 
             error save(size_t pos, serializer &sink) const override;
 
+            error_code<sec> save(size_t pos, binary_serializer &sink) const override;
+
             bool shared() const noexcept override;
 
             error load(deserializer &source) override;
 
+            error_code<sec> load(binary_deserializer &source) override;
+
             error save(serializer &sink) const override;
 
-            // -- factories --------------------------------------------------------------
+            error_code<sec> save(binary_serializer &sink) const override;
 
-            /// Creates a new message by concatenating `xs...`.
-            template<class... Ts>
-            static message concat(const Ts &... xs) {
-                return concat_impl({xs.vals()...});
-            }
+            // -- factories --------------------------------------------------------------
 
             /// Creates a new message by copying all elements in a type-erased tuple.
             static message copy(const type_erased_tuple &xs);
 
             // -- modifiers --------------------------------------------------------------
-
-            /// Concatenates `*this` and `x`.
-            message &operator+=(const message &x);
 
             /// Returns `handler(*this)`.
             optional<message> apply(message_handler handler);
@@ -125,49 +124,6 @@ namespace nil {
             /// Assigns new content.
             void reset(raw_ptr new_ptr = nullptr, bool add_ref = true) noexcept;
 
-            // -- observers --------------------------------------------------------------
-
-            /// Creates a new message with all but the first n values.
-            message drop(size_t n) const;
-
-            /// Creates a new message with all but the last n values.
-            message drop_right(size_t n) const;
-
-            /// Creates a new message of size `n` starting at the element at position `p`.
-            message slice(size_t pos, size_t n) const;
-
-            /// Filters this message by applying slices of it to `handler` and  returns
-            /// the remaining elements of this operation. Slices are generated in the
-            /// sequence `[0, size)`, `[0, size-1)`, `...` , `[1, size-1)`, `...`,
-            /// `[size-1, size)`. Whenever a slice matches, it is removed from the message
-            /// and the next slice starts at the *same* index on the reduced message.
-            ///
-            /// For example:
-            ///
-            /// ~~~
-            /// auto msg = make_message(1, 2.f, 3.f, 4);
-            /// // extract float and integer pairs
-            /// auto msg2 = msg.extract({
-            ///   [](float, float) { },
-            ///   [](int, int) { }
-            /// });
-            /// assert(msg2 == make_message(1, 4));
-            /// ~~~
-            ///
-            /// Step-by-step explanation:
-            /// - Slice 1: `(1, 2.f, 3.f, 4)`, no match
-            /// - Slice 2: `(1, 2.f, 3.f)`, no match
-            /// - Slice 3: `(1, 2.f)`, no match
-            /// - Slice 4: `(1)`, no match
-            /// - Slice 5: `(2.f, 3.f, 4)`, no match
-            /// - Slice 6: `(2.f, 3.f)`, *match*; new message is `(1, 4)`
-            /// - Slice 7: `(4)`, no match
-            ///
-            /// Slice 7 is `(4)`, i.e., does not contain the first element, because the
-            /// match on slice 6 occurred at index position 1. The function `extract`
-            /// iterates a message only once, from left to right.
-            message extract(message_handler handler) const;
-
             // -- inline observers -------------------------------------------------------
 
             /// Returns a const pointer to the element at position `p`.
@@ -184,17 +140,6 @@ namespace nil {
             /// Returns a reference to the content.
             inline const data_ptr &cvals() const noexcept {
                 return vals_;
-            }
-
-            /// Returns the size of this message.
-            /// Creates a new message from the first n values.
-            inline message take(size_t n) const {
-                return n >= size() ? *this : drop_right(size() - n);
-            }
-
-            /// Creates a new message from the last n values.
-            inline message take_right(size_t n) const {
-                return n >= size() ? *this : drop(size() - n);
             }
 
             /// @cond PRIVATE
@@ -215,6 +160,8 @@ namespace nil {
             /// even if the serialized object had a different type.
             static error save(serializer &sink, const type_erased_tuple &x);
 
+            static error_code<sec> save(binary_serializer &sink, const type_erased_tuple &x);
+
             /// @endcond
 
         private:
@@ -232,10 +179,6 @@ namespace nil {
                 return match_element<T>(P) && match_elements_impl(next_p, next_list);
             }
 
-            message extract_impl(size_t start, message_handler handler) const;
-
-            static message concat_impl(std::initializer_list<data_ptr> xs);
-
             // -- member functions -------------------------------------------------------
 
             data_ptr vals_;
@@ -247,15 +190,15 @@ namespace nil {
         error inspect(serializer &sink, message &msg);
 
         /// @relates message
+        error_code<sec> inspect(binary_serializer &sink, message &msg);
+
+        /// @relates message
         error inspect(deserializer &source, message &msg);
 
         /// @relates message
-        std::string to_string(const message &msg);
+        error_code<sec> inspect(binary_deserializer &source, message &msg);
 
         /// @relates message
-        inline message operator+(const message &lhs, const message &rhs) {
-            return message::concat(lhs, rhs);
-        }
-
+        std::string to_string(const message &msg);
     }    // namespace mtl
 }    // namespace nil

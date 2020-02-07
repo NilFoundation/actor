@@ -20,6 +20,7 @@
 
 #include <nil/mtl/detail/is_one_of.hpp>
 #include <nil/mtl/detail/is_primitive_config_value.hpp>
+
 #include <nil/mtl/timespan.hpp>
 
 namespace boost {
@@ -30,54 +31,78 @@ namespace boost {
 namespace nil {
     namespace mtl {
 
-        // clang-format off
+        // -- 1 param templates --------------------------------------------------------
 
-// -- 1 param templates --------------------------------------------------------
+        template<class>
+        class behavior_type_of;
+        template<class>
+        class dictionary;
+        template<class>
+        class downstream;
+        template<class>
+        class expected;
+        template<class>
+        class intrusive_cow_ptr;
+        template<typename T>
+        using intrusive_ptr = boost::intrusive_ptr<T>;
+        template<class>
+        class optional;
+        template<class>
+        class param;
+        template<class>
+        class error_code;
+        template<class>
+        class span;
+        template<class>
+        class stream;
+        template<class>
+        class stream_sink;
+        template<class>
+        class stream_source;
+        template<class>
+        class trivial_match_case;
+        template<class>
+        class weak_intrusive_ptr;
 
-template <class> class behavior_type_of;
-template <class> class dictionary;
-template <class> class downstream;
-template <class> class expected;
-template <class> class intrusive_cow_ptr;
-template <typename T> using intrusive_ptr = boost::intrusive_ptr<T>;
-template <class> class optional;
-template <class> class param;
-template <class> class serializer_impl;
-template <class> class span;
-template <class> class stream;
-template <class> class stream_sink;
-template <class> class stream_source;
-template <class> class trivial_match_case;
-template <class> class weak_intrusive_ptr;
+        template<class>
+        struct timeout_definition;
 
-template <class> struct timeout_definition;
+        // -- 2 param templates --------------------------------------------------------
 
-// -- 2 param templates --------------------------------------------------------
+        template<class, class>
+        class stream_stage;
 
-template <class, class> class stream_stage;
+        // -- 3 param templates --------------------------------------------------------
 
-// -- 3 param templates --------------------------------------------------------
+        template<class, class, int>
+        class actor_cast_access;
 
-template <class, class, int> class actor_cast_access;
+        template<class, class, class>
+        class broadcast_downstream_manager;
 
-template <class, class, class> class broadcast_downstream_manager;
+        // -- variadic templates -------------------------------------------------------
 
-// -- variadic templates -------------------------------------------------------
+        template<class...>
+        class cow_tuple;
+        template<class...>
+        class delegated;
+        template<class...>
+        class result;
+        template<class...>
+        class typed_actor;
+        template<class...>
+        class typed_actor_pointer;
+        template<class...>
+        class typed_event_based_actor;
+        template<class...>
+        class typed_response_promise;
+        template<class...>
+        class variant;
 
-template <class...> class cow_tuple;
-template <class...> class delegated;
-template <class...> class result;
-template <class...> class typed_actor;
-template <class...> class typed_actor_pointer;
-template <class...> class typed_event_based_actor;
-template <class...> class typed_response_promise;
-template <class...> class variant;
-
-// -- variadic templates with fixed arguments ----------------------------------
-//
-template <class, class...> class output_stream;
-
-        // clang-format on
+        // -- variadic templates with fixed arguments ----------------------------------
+        //
+        template<class, class...>
+        class output_stream;
 
         // -- classes ------------------------------------------------------------------
 
@@ -92,10 +117,11 @@ template <class, class...> class output_stream;
         class actor_pool;
         class actor_proxy;
         class actor_registry;
-        class actor_system;
-        class actor_system_config;
+        class spawner;
+        class spawner_config;
         class behavior;
         class binary_deserializer;
+        class binary_serializer;
         class blocking_actor;
         class config_option;
         class config_option_adder;
@@ -168,14 +194,13 @@ template <class, class...> class output_stream;
         // -- enums --------------------------------------------------------------------
 
         enum class atom_value : uint64_t;
-        enum class byte : uint8_t;
+        typedef std::uint8_t byte;
         enum class sec : uint8_t;
         enum class stream_priority;
 
         // -- aliases ------------------------------------------------------------------
 
         using actor_id = uint64_t;
-        using binary_serializer = serializer_impl<std::vector<char>>;
         using ip_address = ipv6_address;
         using ip_endpoint = ipv6_endpoint;
         using ip_subnet = ipv6_subnet;
@@ -184,8 +209,11 @@ template <class, class...> class output_stream;
 
         // -- functions ----------------------------------------------------------------
 
-        /// @relates actor_system_config
-        const settings &content(const actor_system_config &);
+        /// @relates spawner_config
+        const settings &content(const spawner_config &);
+
+        template<class T, class... Ts>
+        message make_message(T &&x, Ts &&... xs);
 
         // -- intrusive containers -----------------------------------------------------
 
@@ -289,4 +317,4 @@ template <class, class...> class output_stream;
         using mailbox_element_ptr = std::unique_ptr<mailbox_element, detail::disposer>;
 
     }    // namespace mtl
-}
+}    // namespace nil

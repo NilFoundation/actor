@@ -39,7 +39,7 @@ namespace nil {
                 /// Low-level backend for IO multiplexing.
                 class multiplexer : public execution_unit {
                 public:
-                    explicit multiplexer(actor_system *sys);
+                    explicit multiplexer(spawner *sys);
 
                     /// Creates a new `scribe` from a native socket handle.
                     /// @threadsafe
@@ -100,7 +100,7 @@ namespace nil {
                     virtual supervisor_ptr make_supervisor() = 0;
 
                     /// Creates an instance using the networking backend compiled with MTL.
-                    static std::unique_ptr<multiplexer> make(actor_system &sys);
+                    static std::unique_ptr<multiplexer> make(spawner &sys);
 
                     /// Exectutes all pending events without blocking.
                     /// @returns `true` if at least one event was called, `false` otherwise.

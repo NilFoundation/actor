@@ -4,9 +4,10 @@
 
 #include <vector>
 
+#include <nil/mtl/test/dsl.hpp>
 #include <nil/mtl/config.hpp>
-#include <nil/mtl/actor_system.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/serialization/binary_serializer.hpp>
 #include <nil/mtl/serialization/binary_deserializer.hpp>
 
@@ -19,7 +20,7 @@ using namespace nil::mtl::io;
 
 namespace {
 
-    class config : public actor_system_config {
+    class config : public spawner_config {
     public:
         config() {
             // this will call WSAStartup for network initialization on Windows
@@ -27,30 +28,23 @@ namespace {
         }
     };
 
-    struct fixture {
-
+    struct fixture : test_coordinator_fixture<> {
         template<class T, class... Ts>
-        std::vector<char> serialize(T &x, Ts &... xs) {
-            std::vector<char> buf;
-            binary_serializer bs {&context, buf};
-            bs(x, xs...);
+        auto serialize(T &x, Ts &... xs) {
+            byte_buffer buf;
+            binary_serializer sink {sys, buf};
+            if (auto err = sink(x, xs...))
+                BOOST_FAIL("serialization failed: " << sys.render(err));
             return buf;
         }
 
-        template<class T, class... Ts>
-        void deserialize(const std::vector<char> &buf, T &x, Ts &... xs) {
-            binary_deserializer bd {&context, buf};
-            bd(x, xs...);
+        template<class Buffer, class T, class... Ts>
+        void deserialize(const Buffer &buf, T &x, Ts &... xs) {
+            binary_deserializer source {sys, buf};
+            if (auto err = source(x, xs...))
+                BOOST_FAIL("serialization failed: " << sys.render(err));
         }
-
-        fixture() : cfg(), system(cfg), context(&system) {
-        }
-
-        config cfg;
-        actor_system system;
-        scoped_execution_unit context;
     };
-
 }    // namespace
 
 BOOST_FIXTURE_TEST_SUITE(ep_endpoint_tests, fixture)
@@ -72,7 +66,7 @@ BOOST_AUTO_TEST_CASE(ip_endpoint_test) {
     BOOST_CHECK_EQUAL(12345, p);
     BOOST_CHECK(0 < l);
     // serialize the endpoint and clear it
-    std::vector<char> buf = serialize(ep);
+    byte_buffer buf = serialize(ep);
     auto save = ep;
     ep.clear();
     BOOST_CHECK_EQUAL("", network::host(ep));

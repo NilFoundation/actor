@@ -45,8 +45,8 @@ namespace {
             // nop
         }
 
-        actor_system_config cfg;
-        actor_system system;
+        spawner_config cfg;
+        spawner system;
 
         void run_testee(const actor &testee) {
             scoped_actor self {system};

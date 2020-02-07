@@ -16,7 +16,7 @@ MTL_PUSH_WARNINGS
 #include <openssl/err.h>
 MTL_POP_WARNINGS
 
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 
 #include <nil/mtl/io/network/default_multiplexer.hpp>
 
@@ -68,7 +68,7 @@ namespace nil {
 
             }    // namespace
 
-            session::session(actor_system &sys) :
+            session::session(spawner &sys) :
                 sys_(sys), ctx_(nullptr), ssl_(nullptr), connecting_(false), accepting_(false) {
                 // nop
             }
@@ -278,7 +278,7 @@ namespace nil {
                 }
             }
 
-            session_ptr make_session(actor_system &sys, native_socket fd, bool from_accepted_socket) {
+            session_ptr make_session(spawner &sys, native_socket fd, bool from_accepted_socket) {
                 session_ptr ptr {new session(sys)};
                 if (!ptr->init())
                     return nullptr;

@@ -16,7 +16,7 @@
 #include <string>
 
 #include <nil/mtl/actor_addr.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/infer_handle.hpp>
 #include <nil/mtl/execution_unit.hpp>
 

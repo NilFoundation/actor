@@ -10,16 +10,22 @@
 // http://opensource.org/licenses/BSD-3-Clause
 //---------------------------------------------------------------------------//
 
-#include <initializer_list>
-
-#include <nil/mtl/config.hpp>
-
 #define BOOST_TEST_MODULE ipv6_address_test
 
+#include <initializer_list>
+
+#include <boost/test/unit_test.hpp>
+#include <boost/test/data/test_case.hpp>
+
+#include <nil/mtl/config.hpp>
 #include <nil/mtl/test/dsl.hpp>
 
+#include <nil/mtl/detail/parse.hpp>
+
 #include <nil/mtl/ipv4_address.hpp>
+#include <nil/mtl/ipv4_endpoint.hpp>
 #include <nil/mtl/ipv6_address.hpp>
+#include <nil/mtl/ipv6_endpoint.hpp>
 
 using namespace nil::mtl;
 
@@ -33,8 +39,20 @@ namespace boost {
             };
 
             template<>
+            struct print_log_value<ipv4_endpoint> {
+                void operator()(std::ostream &, ipv4_endpoint const &) {
+                }
+            };
+
+            template<>
             struct print_log_value<ipv6_address> {
                 void operator()(std::ostream &, ipv6_address const &) {
+                }
+            };
+
+            template<>
+            struct print_log_value<ipv6_endpoint> {
+                void operator()(std::ostream &, ipv6_endpoint const &) {
                 }
             };
         }    // namespace tt_detail
@@ -43,63 +61,116 @@ namespace boost {
 
 namespace {
 
-    using array_type = ipv6_address::array_type;
-
-    ipv6_address addr(std::initializer_list<uint16_t> prefix, std::initializer_list<uint16_t> suffix = {}) {
-        return ipv6_address {prefix, suffix};
+    ipv6_endpoint operator"" _ep(const char *str, size_t size) {
+        ipv6_endpoint result;
+        if (auto err = detail::parse(string_view {str, size}, result))
+            BOOST_FAIL("unable to parse input: " << to_string(err));
+        return result;
     }
+
+    struct fixture {
+        spawner_config cfg;
+        spawner sys {cfg};
+
+        template<class T>
+        T roundtrip(T x) {
+            byte_buffer buf;
+            binary_serializer sink(sys, buf);
+            if (auto err = sink(x))
+                BOOST_FAIL("serialization failed: " << sys.render(err));
+            binary_deserializer source(sys, make_span(buf));
+            T y;
+            if (auto err = source(y))
+                BOOST_FAIL("deserialization failed: " << sys.render(err));
+            return y;
+        }
+    };
+
+#define CHECK_TO_STRING(addr) BOOST_CHECK_EQUAL(addr, nil::mtl::to_string(addr##_ep))
+
+#define CHECK_COMPARISON(addr1, addr2)         \
+    BOOST_CHECK_GT(addr2##_ep, addr1##_ep);    \
+    BOOST_CHECK_GE(addr2##_ep, addr1##_ep);    \
+    BOOST_CHECK_GE(addr1##_ep, addr1##_ep);    \
+    BOOST_CHECK_GE(addr2##_ep, addr2##_ep);    \
+    BOOST_CHECK_EQUAL(addr1##_ep, addr1##_ep); \
+    BOOST_CHECK_EQUAL(addr2##_ep, addr2##_ep); \
+    BOOST_CHECK_LE(addr1##_ep, addr2##_ep);    \
+    BOOST_CHECK_LE(addr1##_ep, addr1##_ep);    \
+    BOOST_CHECK_LE(addr2##_ep, addr2##_ep);    \
+    BOOST_CHECK_NE(addr1##_ep, addr2##_ep);    \
+    BOOST_CHECK_NE(addr2##_ep, addr1##_ep);
+
+#define CHECK_SERIALIZATION(addr) BOOST_CHECK_EQUAL(addr##_ep, roundtrip(addr##_ep))
 
 }    // namespace
 
-BOOST_AUTO_TEST_CASE(constructing_test) {
-    ipv6_address::array_type localhost_bytes {{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1}};
-    ipv6_address localhost {localhost_bytes};
-    BOOST_CHECK(localhost.data() == localhost_bytes);
-    BOOST_CHECK_EQUAL(localhost, addr({}, {0x01}));
+BOOST_FIXTURE_TEST_SUITE(comparison_scope, fixture)
+
+BOOST_AUTO_TEST_CASE(constructing_assigning_and_hash_code) {
+    const uint16_t port = 8888;
+    ipv6_address::array_type bytes {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1};
+    auto addr = ipv6_address {bytes};
+    ipv6_endpoint ep1(addr, port);
+    BOOST_CHECK_EQUAL(ep1.address(), addr);
+    BOOST_CHECK_EQUAL(ep1.port(), port);
+    ipv6_endpoint ep2;
+    ep2.address(addr);
+    ep2.port(port);
+    BOOST_CHECK_EQUAL(ep2.address(), addr);
+    BOOST_CHECK_EQUAL(ep2.port(), port);
+    BOOST_CHECK_EQUAL(ep1, ep2);
+    BOOST_CHECK_EQUAL(ep1.hash_code(), ep2.hash_code());
 }
 
-BOOST_AUTO_TEST_CASE(comparison_test) {
-    BOOST_CHECK_EQUAL(addr({1, 2, 3}), addr({1, 2, 3}));
-    BOOST_CHECK_NE(addr({3, 2, 1}), addr({1, 2, 3}));
-    BOOST_CHECK_EQUAL(addr({}, {0xFFFF, 0x7F00, 0x0001}), make_ipv4_address(127, 0, 0, 1));
+BOOST_AUTO_TEST_CASE(comparison_to_IPv4) {
+    ipv4_endpoint v4 {ipv4_address({127, 0, 0, 1}), 8080};
+    ipv6_endpoint v6 {v4.address(), v4.port()};
+    BOOST_CHECK_EQUAL(v4, v6);
+    BOOST_CHECK_EQUAL(v6, v4);
 }
 
-BOOST_AUTO_TEST_CASE(from_string_test) {
-    auto from_string = [](string_view str) {
-        ipv6_address result;
-        auto err = parse(str, result);
-        if (err) {
-            BOOST_FAIL("error while parsing " << str << ": " << to_string(err));
-        }
-        return result;
-    };
-    BOOST_CHECK_EQUAL(from_string("::1"), addr({}, {0x01}));
-    BOOST_CHECK_EQUAL(from_string("::11"), addr({}, {0x11}));
-    BOOST_CHECK_EQUAL(from_string("::112"), addr({}, {0x0112}));
-    BOOST_CHECK_EQUAL(from_string("::1122"), addr({}, {0x1122}));
-    BOOST_CHECK_EQUAL(from_string("::1:2"), addr({}, {0x01, 0x02}));
-    BOOST_CHECK_EQUAL(from_string("::1:2"), addr({}, {0x01, 0x02}));
-    BOOST_CHECK_EQUAL(from_string("1::1"), addr({0x01}, {0x01}));
-    BOOST_CHECK_EQUAL(from_string("2a00:bdc0:e003::"), addr({0x2a00, 0xbdc0, 0xe003}, {}));
-    BOOST_CHECK_EQUAL(from_string("1::"), addr({0x01}, {}));
-    BOOST_CHECK_EQUAL(from_string("0.1.0.1"), addr({}, {0xFFFF, 0x01, 0x01}));
-    BOOST_CHECK_EQUAL(from_string("::ffff:127.0.0.1"), addr({}, {0xFFFF, 0x7F00, 0x0001}));
-    BOOST_CHECK_EQUAL(from_string("1:2:3:4:5:6:7:8"), addr({1, 2, 3, 4, 5, 6, 7, 8}));
-    BOOST_CHECK_EQUAL(from_string("1:2:3:4::5:6:7:8"), addr({1, 2, 3, 4, 5, 6, 7, 8}));
-    BOOST_CHECK_EQUAL(from_string("1:2:3:4:5:6:0.7.0.8"), addr({1, 2, 3, 4, 5, 6, 7, 8}));
-    auto invalid = [](string_view str) {
-        ipv6_address result;
-        auto err = parse(str, result);
-        return err != none;
-    };
-    BOOST_CHECK(invalid("1:2:3:4:5:6:7:8:9"));
-    BOOST_CHECK(invalid("1:2:3:4::5:6:7:8:9"));
-    BOOST_CHECK(invalid("1:2:3::4:5:6::7:8:9"));
+BOOST_AUTO_TEST_CASE(to_string) {
+    CHECK_TO_STRING("[::1]:8888");
+    CHECK_TO_STRING("[4e::d00:0:ed00:0:1]:1234");
+    CHECK_TO_STRING("[::1]:1111");
+    CHECK_TO_STRING("[4432::33:1]:8732");
+    CHECK_TO_STRING("[::2]:8888");
+    CHECK_TO_STRING("[4f::d00:12:ed00:0:1]:1234");
+    CHECK_TO_STRING("[4f::1]:2222");
+    CHECK_TO_STRING("[4432:8d::33:1]:8732");
+    CHECK_TO_STRING("[4e::d00:0:ed00:0:1]:5678");
+    CHECK_TO_STRING("[::1]:2221");
+    CHECK_TO_STRING("[::1]:2222");
+    CHECK_TO_STRING("[4432::33:1]:872");
+    CHECK_TO_STRING("[4432::33:1]:999");
 }
 
-BOOST_AUTO_TEST_CASE(to_string_test) {
-    BOOST_CHECK_EQUAL(to_string(addr({}, {0x01})), "::1");
-    BOOST_CHECK_EQUAL(to_string(addr({0x01}, {0x01})), "1::1");
-    BOOST_CHECK_EQUAL(to_string(addr({0x01})), "1::");
-    BOOST_CHECK_EQUAL(to_string(addr({}, {0xFFFF, 0x01, 0x01})), "0.1.0.1");
+BOOST_AUTO_TEST_CASE(comparison) {
+    CHECK_COMPARISON("[::1]:8888", "[::2]:8888");
+    CHECK_COMPARISON("[4e::d00:0:ed00:0:1]:1234", "[4f::d00:12:ed00:0:1]:1234");
+    CHECK_COMPARISON("[::1]:1111", "[4f::1]:2222");
+    CHECK_COMPARISON("[4432::33:1]:8732", "[4432:8d::33:1]:8732");
+    CHECK_COMPARISON("[::1]:1111", "[::1]:8888");
+    CHECK_COMPARISON("[4e::d00:0:ed00:0:1]:1234", "[4e::d00:0:ed00:0:1]:5678");
+    CHECK_COMPARISON("[::1]:2221", "[::1]:2222");
+    CHECK_COMPARISON("[4432::33:1]:872", "[4432::33:1]:999");
 }
+
+BOOST_AUTO_TEST_CASE(serialization) {
+    CHECK_SERIALIZATION("[::1]:8888");
+    CHECK_SERIALIZATION("[4e::d00:0:ed00:0:1]:1234");
+    CHECK_SERIALIZATION("[::1]:1111");
+    CHECK_SERIALIZATION("[4432::33:1]:8732");
+    CHECK_SERIALIZATION("[::2]:8888");
+    CHECK_SERIALIZATION("[4f::d00:12:ed00:0:1]:1234");
+    CHECK_SERIALIZATION("[4f::1]:2222");
+    CHECK_SERIALIZATION("[4432:8d::33:1]:8732");
+    CHECK_SERIALIZATION("[4e::d00:0:ed00:0:1]:5678");
+    CHECK_SERIALIZATION("[::1]:2221");
+    CHECK_SERIALIZATION("[::1]:2222");
+    CHECK_SERIALIZATION("[4432::33:1]:872");
+    CHECK_SERIALIZATION("[4432::33:1]:999");
+}
+
+BOOST_AUTO_TEST_SUITE_END()

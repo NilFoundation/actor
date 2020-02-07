@@ -22,7 +22,7 @@
 #include <nil/mtl/logger.hpp>
 #include <nil/mtl/node_id.hpp>
 #include <nil/mtl/actor_proxy.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/typed_event_based_actor.hpp>
 
 #include <nil/mtl/io/basp_broker.hpp>
@@ -118,11 +118,11 @@ namespace nil {
                         stream_.ack_writes(enable);
                     }
 
-                    std::vector<char> &wr_buf() override {
+                    byte_buffer &wr_buf() override {
                         return stream_.wr_buf();
                     }
 
-                    std::vector<char> &rd_buf() override {
+                    byte_buffer &rd_buf() override {
                         return stream_.rd_buf();
                     }
 
@@ -249,7 +249,7 @@ namespace nil {
 
             }    // namespace
 
-            io::middleman_actor make_middleman_actor(actor_system &sys, actor db) {
+            io::middleman_actor make_middleman_actor(spawner &sys, actor db) {
                 return !sys.config().middleman_attach_utility_actors ?
                            sys.spawn<middleman_actor_impl, detached + hidden>(std::move(db)) :
                            sys.spawn<middleman_actor_impl, hidden>(std::move(db));

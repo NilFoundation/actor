@@ -64,7 +64,7 @@ namespace nil {
         public:
             // -- friends ----------------------------------------------------------------
 
-            friend class actor_system;
+            friend class spawner;
 
             // -- constants --------------------------------------------------------------
 
@@ -179,7 +179,7 @@ namespace nil {
                 line_builder();
 
                 template<class T>
-                detail::enable_if_t<!std::is_pointer<T>::value, line_builder &> operator<<(const T &x) {
+                typename std::enable_if<!std::is_pointer<T>::value, line_builder &>::type operator<<(const T &x) {
                     if (!str_.empty())
                         str_ += " ";
                     str_ += deep_to_string(x);
@@ -292,7 +292,7 @@ namespace nil {
             // -- thread-local properties ------------------------------------------------
 
             /// Stores the actor system for the current thread.
-            static void set_current_actor_system(actor_system *);
+            static void set_current_actor_system(spawner *);
 
             /// Returns the logger for the current thread or `nullptr` if none is
             /// registered.
@@ -301,11 +301,11 @@ namespace nil {
         private:
             // -- constructors, destructors, and assignment operators --------------------
 
-            logger(actor_system &sys);
+            logger(spawner &sys);
 
             // -- initialization ---------------------------------------------------------
 
-            void init(actor_system_config &cfg);
+            void init(spawner_config &cfg);
 
             bool open_file();
 
@@ -338,7 +338,7 @@ namespace nil {
             std::vector<atom_value> component_blacklist;
 
             // References the parent system.
-            actor_system &system_;
+            spawner &system_;
 
             // Guards aids_.
             detail::shared_spinlock aids_lock_;

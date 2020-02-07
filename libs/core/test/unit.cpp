@@ -15,8 +15,8 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
 
-#include <nil/mtl/actor_system.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/atom.hpp>
 #include <nil/mtl/event_based_actor.hpp>
 #include <nil/mtl/scoped_actor.hpp>
@@ -41,8 +41,8 @@ behavior testee(event_based_actor *self) {
 }
 
 BOOST_AUTO_TEST_CASE(unit_results_test) {
-    actor_system_config cfg;
-    actor_system sys {cfg};
+    spawner_config cfg;
+    spawner sys {cfg};
     scoped_actor self {sys};
     auto aut = sys.spawn(testee);
     atom_value as[] = {unit_res_atom::value, void_res_atom::value, unit_raw_atom::value, void_raw_atom::value,

@@ -17,7 +17,7 @@
 #include <cstdint>
 
 #include <nil/mtl/fwd.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/actor_control_block.hpp>
 
 namespace nil {
@@ -25,7 +25,7 @@ namespace nil {
         namespace openssl {
 
             /// @private
-            expected<strong_actor_ptr> remote_actor(actor_system &sys, const std::set<std::string> &mpi,
+            expected<strong_actor_ptr> remote_actor(spawner &sys, const std::set<std::string> &mpi,
                                                     std::string host, uint16_t port);
 
             /// Establish a new connection to the actor at `host` on given `port`.
@@ -34,7 +34,7 @@ namespace nil {
             /// @returns An `actor` to the proxy instance representing
             ///          a remote actor or an `error`.
             template<class ActorHandle = actor>
-            expected<ActorHandle> remote_actor(actor_system &sys, std::string host, uint16_t port) {
+            expected<ActorHandle> remote_actor(spawner &sys, std::string host, uint16_t port) {
                 detail::type_list<ActorHandle> tk;
                 auto res = remote_actor(sys, sys.message_types(tk), std::move(host), port);
                 if (res)

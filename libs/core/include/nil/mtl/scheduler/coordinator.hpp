@@ -36,7 +36,7 @@ namespace nil {
 
                 using policy_data = typename Policy::coordinator_data;
 
-                coordinator(actor_system &sys) : super(sys), data_(this) {
+                coordinator(spawner &sys) : super(sys), data_(this) {
                     // nop
                 }
 
@@ -50,7 +50,7 @@ namespace nil {
                     return data_;
                 }
 
-                static actor_system::module *make(actor_system &sys, detail::type_list<>) {
+                static spawner::module *make(spawner &sys, detail::type_list<>) {
                     return new coordinator(sys);
                 }
 

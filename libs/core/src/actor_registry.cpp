@@ -23,7 +23,7 @@
 #include <nil/mtl/logger.hpp>
 #include <nil/mtl/attachable.hpp>
 #include <nil/mtl/exit_reason.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/scoped_actor.hpp>
 #include <nil/mtl/stateful_actor.hpp>
 #include <nil/mtl/event_based_actor.hpp>
@@ -45,7 +45,7 @@ namespace nil {
             // nop
         }
 
-        actor_registry::actor_registry(actor_system &sys) : running_(0), system_(sys) {
+        actor_registry::actor_registry(spawner &sys) : running_(0), system_(sys) {
             // nop
         }
 

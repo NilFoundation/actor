@@ -27,7 +27,7 @@ namespace nil {
                 return none;
             }
 
-            void manager::init(actor_system_config &) {
+            void manager::init(spawner_config &) {
                 // get number of available platforms
                 auto num_platforms = v1get<cl_uint>(MTL_CLF(clGetPlatformIDs));
                 // get platform ids
@@ -51,15 +51,15 @@ namespace nil {
                 // nop
             }
 
-            actor_system::module::id_t manager::id() const {
-                return actor_system::module::opencl_manager;
+            spawner::module::id_t manager::id() const {
+                return spawner::module::opencl_manager;
             }
 
             void *manager::subtype_ptr() {
                 return this;
             }
 
-            actor_system::module *manager::make(actor_system &sys, nil::mtl::detail::type_list<>) {
+            spawner::module *manager::make(spawner &sys, nil::mtl::detail::type_list<>) {
                 return new manager {sys};
             }
 
@@ -163,7 +163,7 @@ namespace nil {
                 return make_counted<program>(dev->context_, dev->queue_, pptr, std::move(available_kernels));
             }
 
-            manager::manager(actor_system &sys) : system_(sys) {
+            manager::manager(spawner &sys) : system_(sys) {
                 // nop
             }
 

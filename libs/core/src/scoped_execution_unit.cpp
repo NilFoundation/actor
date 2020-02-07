@@ -12,13 +12,13 @@
 
 #include <nil/mtl/scoped_execution_unit.hpp>
 
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/scheduler/abstract_coordinator.hpp>
 
 namespace nil {
     namespace mtl {
 
-        scoped_execution_unit::scoped_execution_unit(actor_system *sys) : execution_unit(sys) {
+        scoped_execution_unit::~scoped_execution_unit() {
             // nop
         }
 

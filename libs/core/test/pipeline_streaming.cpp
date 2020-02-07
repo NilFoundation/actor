@@ -20,8 +20,8 @@
 #include <memory>
 #include <numeric>
 
-#include <nil/mtl/actor_system.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner.hpp>
+#include <nil/mtl/spawner_config.hpp>
 #include <nil/mtl/event_based_actor.hpp>
 #include <nil/mtl/stateful_actor.hpp>
 

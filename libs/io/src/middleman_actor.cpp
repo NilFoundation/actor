@@ -15,9 +15,9 @@
 #include <stdexcept>
 #include <utility>
 
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/spawn_options.hpp>
-#include <nil/mtl/actor_system_config.hpp>
+#include <nil/mtl/spawner_config.hpp>
 
 #include <nil/mtl/io/middleman_actor_impl.hpp>
 
@@ -25,7 +25,7 @@ namespace nil {
     namespace mtl {
         namespace io {
 
-            middleman_actor make_middleman_actor(actor_system &sys, actor db) {
+            middleman_actor make_middleman_actor(spawner &sys, actor db) {
                 return sys.config().middleman_attach_utility_actors ?
                            sys.spawn<middleman_actor_impl, hidden>(std::move(db)) :
                            sys.spawn<middleman_actor_impl, detached + hidden>(std::move(db));

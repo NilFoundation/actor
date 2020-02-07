@@ -29,7 +29,6 @@ namespace {
 
     struct inode : singly_linked<inode> {
         int value;
-
         inode(int x = 0) : value(x) {
             // nop
         }
@@ -89,9 +88,8 @@ namespace {
 
         template<size_t I, class Queue>
         task_result operator()(std::integral_constant<size_t, I>, const Queue &, inode &x) {
-            if (!result.empty()) {
+            if (!result.empty())
                 result += ',';
-            }
             result += std::to_string(I);
             result += ':';
             result += to_string(x);
@@ -116,9 +114,8 @@ namespace {
         std::string fetch(int quantum) {
             std::string result;
             auto f = [&](size_t id, drr_queue<inode_policy> &, inode &x) {
-                if (!result.empty()) {
+                if (!result.empty())
                     result += ',';
-                }
                 result += std::to_string(id);
                 result += ':';
                 result += to_string(x);
@@ -177,9 +174,8 @@ BOOST_AUTO_TEST_CASE(peek_all_test) {
     auto queue_to_string = [&] {
         std::string str;
         auto peek_fun = [&](const inode &x) {
-            if (!str.empty()) {
+            if (!str.empty())
                 str += ", ";
-            }
             str += std::to_string(x.value);
         };
         queue.peek_all(peek_fun);

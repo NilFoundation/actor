@@ -135,12 +135,14 @@ namespace nil {
                 //       to revisite this code once we switch to C++14.
 
                 template<size_t I>
-                detail::enable_if_t<I == num_queues, bool> push_back_recursion(size_t, value_type *) noexcept {
+                typename std::enable_if<I == num_queues, bool>::type push_back_recursion(size_t,
+                                                                                         value_type *) noexcept {
                     return false;
                 }
 
                 template<size_t I>
-                detail::enable_if_t<I != num_queues, bool> push_back_recursion(size_t pos, value_type *ptr) noexcept {
+                typename std::enable_if<I != num_queues, bool>::type push_back_recursion(size_t pos,
+                                                                                         value_type *ptr) noexcept {
                     if (pos == I) {
                         auto &q = std::get<I>(qs_);
                         return q.push_back(ptr);
@@ -162,24 +164,26 @@ namespace nil {
                 };
 
                 template<size_t I>
-                detail::enable_if_t<I == num_queues> inc_deficit_recursion(deficit_type) noexcept {
+                typename std::enable_if<I == num_queues>::type inc_deficit_recursion(deficit_type) noexcept {
                     // end of recursion
                 }
 
                 template<size_t I>
-                detail::enable_if_t<I != num_queues> inc_deficit_recursion(deficit_type quantum) noexcept {
+                typename std::enable_if<I != num_queues>::type inc_deficit_recursion(deficit_type quantum) noexcept {
                     auto &q = std::get<I>(qs_);
                     q.inc_deficit(policy_.quantum(q, quantum));
                     inc_deficit_recursion<I + 1>(quantum);
                 }
 
                 template<size_t I, class F>
-                detail::enable_if_t<I == num_queues, new_round_result> new_round_recursion(deficit_type, F &) noexcept {
+                typename std::enable_if<I == num_queues, new_round_result>::type new_round_recursion(deficit_type,
+                                                                                                     F &) noexcept {
                     return {false, false};
                 }
 
                 template<size_t I, class F>
-                detail::enable_if_t<I != num_queues, new_round_result> new_round_recursion(deficit_type quantum, F &f) {
+                typename std::enable_if<I != num_queues, new_round_result>::type
+                    new_round_recursion(deficit_type quantum, F &f) {
                     auto &q = std::get<I>(qs_);
                     using q_type = typename std::decay<decltype(q)>::type;
                     new_round_recursion_helper<I, q_type, F> g {q, f};
@@ -194,12 +198,12 @@ namespace nil {
                 }
 
                 template<size_t I>
-                detail::enable_if_t<I == num_queues, pointer> peek_recursion() noexcept {
+                typename std::enable_if<I == num_queues, pointer>::type peek_recursion() noexcept {
                     return nullptr;
                 }
 
                 template<size_t I>
-                detail::enable_if_t<I != num_queues, pointer> peek_recursion() noexcept {
+                typename std::enable_if<I != num_queues, pointer>::type peek_recursion() noexcept {
                     auto ptr = std::get<I>(qs_).peek();
                     if (ptr != nullptr)
                         return ptr;
@@ -207,43 +211,45 @@ namespace nil {
                 }
 
                 template<size_t I, class F>
-                detail::enable_if_t<I == num_queues> peek_all_recursion(F &) const {
+                typename std::enable_if<I == num_queues>::type peek_all_recursion(F &) const {
                     // nop
                 }
 
                 template<size_t I, class F>
-                detail::enable_if_t<I != num_queues> peek_all_recursion(F &f) const {
+                typename std::enable_if<I != num_queues>::type peek_all_recursion(F &f) const {
                     std::get<I>(qs_).peek_all(f);
                     peek_all_recursion<I + 1>(f);
                 }
 
                 template<size_t I>
-                detail::enable_if_t<I == num_queues> flush_cache_recursion() noexcept {
+                typename std::enable_if<I == num_queues>::type flush_cache_recursion() noexcept {
                     // nop
                 }
 
                 template<size_t I>
-                detail::enable_if_t<I != num_queues> flush_cache_recursion() noexcept {
+                typename std::enable_if<I != num_queues>::type flush_cache_recursion() noexcept {
                     std::get<I>(qs_).flush_cache();
                     flush_cache_recursion<I + 1>();
                 }
                 template<size_t I>
-                detail::enable_if_t<I == num_queues, task_size_type> total_task_size_recursion() const noexcept {
+                typename std::enable_if<I == num_queues, task_size_type>::type total_task_size_recursion() const
+                    noexcept {
                     return 0;
                 }
 
                 template<size_t I>
-                detail::enable_if_t<I != num_queues, task_size_type> total_task_size_recursion() const noexcept {
+                typename std::enable_if<I != num_queues, task_size_type>::type total_task_size_recursion() const
+                    noexcept {
                     return std::get<I>(qs_).total_task_size() + total_task_size_recursion<I + 1>();
                 }
 
                 template<size_t I>
-                detail::enable_if_t<I == num_queues> lifo_append_recursion(size_t, pointer) noexcept {
+                typename std::enable_if<I == num_queues>::type lifo_append_recursion(size_t, pointer) noexcept {
                     // nop
                 }
 
                 template<size_t I>
-                detail::enable_if_t<I != num_queues> lifo_append_recursion(size_t i, pointer ptr) noexcept {
+                typename std::enable_if<I != num_queues>::type lifo_append_recursion(size_t i, pointer ptr) noexcept {
                     if (i == I)
                         std::get<I>(qs_).lifo_append(ptr);
                     else
@@ -251,12 +257,12 @@ namespace nil {
                 }
 
                 template<size_t I>
-                detail::enable_if_t<I == num_queues> stop_lifo_append_recursion() noexcept {
+                typename std::enable_if<I == num_queues>::type stop_lifo_append_recursion() noexcept {
                     // nop
                 }
 
                 template<size_t I>
-                detail::enable_if_t<I != num_queues> stop_lifo_append_recursion() noexcept {
+                typename std::enable_if<I != num_queues>::type stop_lifo_append_recursion() noexcept {
                     std::get<I>(qs_).stop_lifo_append();
                     stop_lifo_append_recursion<I + 1>();
                 }

@@ -15,7 +15,7 @@
 #include <nil/mtl/sec.hpp>
 #include <nil/mtl/logger.hpp>
 #include <nil/mtl/actor_cast.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/message_handler.hpp>
 #include <nil/mtl/system_messages.hpp>
 #include <nil/mtl/default_attachable.hpp>

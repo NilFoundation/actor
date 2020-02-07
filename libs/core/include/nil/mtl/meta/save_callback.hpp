@@ -31,13 +31,21 @@ namespace nil {
                 F fun;
             };
 
+            template<class T>
+            struct is_save_callback : std::false_type {};
+
+            template<class F>
+            struct is_save_callback<save_callback_t<F>> : std::true_type {};
+
+            template<class F>
+            constexpr bool is_save_callback_v = is_save_callback<F>::value;
+
             /// Returns an annotation that allows inspectors to call
             /// user-defined code after performing save operations.
             template<class F>
             save_callback_t<F> save_callback(F fun) {
                 return {std::move(fun)};
             }
-
         }    // namespace meta
     }        // namespace mtl
 }    // namespace nil

@@ -18,7 +18,7 @@
 #include <nil/mtl/make_actor.hpp>
 #include <nil/mtl/actor_cast.hpp>
 #include <nil/mtl/replies_to.hpp>
-#include <nil/mtl/actor_system.hpp>
+#include <nil/mtl/spawner.hpp>
 #include <nil/mtl/intrusive_ptr.hpp>
 #include <nil/mtl/composed_type.hpp>
 #include <nil/mtl/abstract_actor.hpp>
@@ -175,7 +175,7 @@ namespace nil {
             }
 
             /// Returns the hosting actor system.
-            inline actor_system &home_system() const noexcept {
+            inline spawner &home_system() const noexcept {
                 return *ptr_->home_system;
             }
 
@@ -295,8 +295,8 @@ namespace nil {
         /// Returns a new actor that implements the composition `f.g(x) = f(g(x))`.
         /// @relates typed_actor
         template<class... Xs, class... Ys>
-        composed_type_t<detail::type_list<Xs...>, detail::type_list<Ys...>>
-            operator*(typed_actor<Xs...> f, typed_actor<Ys...> g) {
+        composed_type_t<detail::type_list<Xs...>, detail::type_list<Ys...>> operator*(typed_actor<Xs...> f,
+                                                                                      typed_actor<Ys...> g) {
             using result = composed_type_t<detail::type_list<Xs...>, detail::type_list<Ys...>>;
             auto &sys = g->home_system();
             auto mts = sys.message_types(detail::type_list<result> {});
@@ -304,19 +304,6 @@ namespace nil {
                                                             actor_cast<strong_actor_ptr>(std::move(f)),
                                                             actor_cast<strong_actor_ptr>(std::move(g)), std::move(mts));
         }
-
-        template<class... Xs, class... Ts>
-        typename detail::mpi_splice<typed_actor, detail::type_list<Xs...>, typename Ts::signatures...>::type
-            splice(const typed_actor<Xs...> &x, const Ts &... xs) {
-            using result =
-                typename detail::mpi_splice<typed_actor, detail::type_list<Xs...>, typename Ts::signatures...>::type;
-            std::vector<strong_actor_ptr> tmp {actor_cast<strong_actor_ptr>(x), actor_cast<strong_actor_ptr>(xs)...};
-            auto &sys = x->home_system();
-            auto mts = sys.message_types(detail::type_list<result> {});
-            return make_actor<decorator::splitter, result>(sys.next_actor_id(), sys.node(), &sys, std::move(tmp),
-                                                           std::move(mts));
-        }
-
     }    // namespace mtl
 }    // namespace nil
 

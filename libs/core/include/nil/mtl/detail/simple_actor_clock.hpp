@@ -299,14 +299,14 @@ namespace nil {
                 void ship(delayed_event &x);
 
                 template<class T>
-                detail::enable_if_t<T::cancellable> add_schedule_entry(time_point t, std::unique_ptr<T> x) {
+                typename std::enable_if<T::cancellable>::type add_schedule_entry(time_point t, std::unique_ptr<T> x) {
                     auto id = x->self->id();
                     auto i = schedule_.emplace(t, std::move(x));
                     i->second->backlink = actor_lookup_.emplace(id, i);
                 }
 
                 template<class T>
-                detail::enable_if_t<!T::cancellable> add_schedule_entry(time_point t, std::unique_ptr<T> x) {
+                typename std::enable_if<!T::cancellable>::type add_schedule_entry(time_point t, std::unique_ptr<T> x) {
                     auto i = schedule_.emplace(t, std::move(x));
                     i->second->backlink = actor_lookup_.end();
                 }
