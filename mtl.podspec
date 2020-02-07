@@ -15,7 +15,7 @@
   },
   "source": {
     "git": "https://github.com/nilfoundation/mtl.git",
-    "tag": "0.14.1"
+    "branch": "master"
   },
   "xcconfig": {
     "CLANG_CXX_LANGUAGE_STANDARD": "c++17",
