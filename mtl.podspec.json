@@ -36,7 +36,6 @@
       "name": "io",
       "dependencies": {
         "mtl/core": [
-
         ]
       },
       "source_files": "libs/io/src/*.cpp",
