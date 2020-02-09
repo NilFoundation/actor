@@ -95,7 +95,7 @@ namespace nil {
                 static_assert(detail::tl_forall<stored_types, is_serializable_or_whitelisted>::value,
                               "at least one type is not inspectable via inspect(Inspector&, T&). If "
                               "you are not sending this type over the network, you can whitelist "
-                              "individual types by specializing caf::allowed_unsafe_message_type<T> "
+                              "individual types by specializing nil::mtl::allowed_unsafe_message_type<T> "
                               "or by using the macro CAF_ALLOW_UNSAFE_MESSAGE_TYPE");
                 using storage = typename detail::tl_apply<stored_types, detail::tuple_vals>::type;
                 auto ptr = make_counted<storage>(std::forward<T>(x), std::forward<Ts>(xs)...);

@@ -13,20 +13,20 @@
 
 #include <stdexcept>
 
-#include <nil/mtl/detail/net_export.hpp>
+
 #include <nil/mtl/error.hpp>
 #include <nil/mtl/network/host.hpp>
 
 namespace {
 
-    struct MTL_NET_EXPORT host_fixture {
+    struct host_fixture {
         host_fixture() {
-            if (auto err = caf::net::this_host::startup())
+            if (auto err = nil::mtl::network::this_host::startup())
                 throw std::logic_error("this_host::startup failed");
         }
 
         ~host_fixture() {
-            caf::net::this_host::cleanup();
+            nil::mtl::network::this_host::cleanup();
         }
     };
 

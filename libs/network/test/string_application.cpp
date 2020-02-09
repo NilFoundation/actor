@@ -32,7 +32,7 @@
 
 using namespace nil::mtl;
 using namespace nil::mtl::network;
-using namespace caf::policy;
+using namespace nil::mtl::policy;
 
 namespace {
 
@@ -127,7 +127,7 @@ namespace {
 
         template<class Parent>
         error init(Parent &parent) {
-            parent.transport().configure_read(net::receive_policy::exactly(sizeof(header_type)));
+            parent.transport().configure_read(network::receive_policy::exactly(sizeof(header_type)));
             return Base::init(parent);
         }
 
@@ -145,7 +145,7 @@ namespace {
                 if (header_.payload == 0)
                     Base::handle_packet(parent, header_, span<const byte> {});
                 else
-                    parent.transport().configure_read(net::receive_policy::exactly(header_.payload));
+                    parent.transport().configure_read(network::receive_policy::exactly(header_.payload));
                 await_payload_ = true;
             }
             return none;
@@ -159,7 +159,7 @@ namespace {
             actor_config cfg;
             auto sys = &parent.system();
             auto mgr = &parent.manager();
-            auto p = make_actor<net::actor_proxy_impl, strong_actor_ptr>(aid, nid, sys, cfg, mgr);
+            auto p = make_actor<network::actor_proxy_impl, strong_actor_ptr>(aid, nid, sys, cfg, mgr);
             anon_send(listener, resolve_atom_v, std::string {path.begin(), path.end()}, p);
         }
 

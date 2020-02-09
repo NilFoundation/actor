@@ -17,7 +17,7 @@
 #include <type_traits>
 
 #include <nil/mtl/config.hpp>
-#include <nil/mtl/detail/net_export.hpp>
+
 #include <nil/mtl/fwd.hpp>
 #include <nil/mtl/network/socket.hpp>
 #include <nil/mtl/network/socket_id.hpp>
@@ -27,7 +27,7 @@ namespace nil {
         namespace network {
 
             /// A bidirectional network communication endpoint.
-            struct MTL_NET_EXPORT network_socket : socket {
+            struct network_socket : socket {
                 using super = socket;
 
                 using super::super;
@@ -35,48 +35,48 @@ namespace nil {
 
             /// Enables or disables `SIGPIPE` events from `x`.
             /// @relates network_socket
-            error MTL_NET_EXPORT allow_sigpipe(network_socket x, bool new_value);
+            error allow_sigpipe(network_socket x, bool new_value);
 
             /// Enables or disables `SIO_UDP_CONNRESET`error on `x`.
             /// @relates network_socket
-            error MTL_NET_EXPORT allow_udp_connreset(network_socket x, bool new_value);
+            error allow_udp_connreset(network_socket x, bool new_value);
 
             /// Get the socket buffer size for `x`.
             /// @pre `x != invalid_socket`
             /// @relates network_socket
-            expected<size_t> MTL_NET_EXPORT send_buffer_size(network_socket x);
+            expected<size_t> send_buffer_size(network_socket x);
 
             /// Set the socket buffer size for `x`.
             /// @relates network_socket
-            error MTL_NET_EXPORT send_buffer_size(network_socket x, size_t capacity);
+            error send_buffer_size(network_socket x, size_t capacity);
 
             /// Returns the locally assigned port of `x`.
             /// @relates network_socket
-            expected<uint16_t> MTL_NET_EXPORT local_port(network_socket x);
+            expected<uint16_t> local_port(network_socket x);
 
             /// Returns the locally assigned address of `x`.
             /// @relates network_socket
-            expected<std::string> MTL_NET_EXPORT local_addr(network_socket x);
+            expected<std::string> local_addr(network_socket x);
 
             /// Returns the port used by the remote host of `x`.
             /// @relates network_socket
-            expected<uint16_t> MTL_NET_EXPORT remote_port(network_socket x);
+            expected<uint16_t> remote_port(network_socket x);
 
             /// Returns the remote host address of `x`.
             /// @relates network_socket
-            expected<std::string> MTL_NET_EXPORT remote_addr(network_socket x);
+            expected<std::string> remote_addr(network_socket x);
 
             /// Closes the read channel for a socket.
             /// @relates network_socket
-            void MTL_NET_EXPORT shutdown_read(network_socket x);
+            void shutdown_read(network_socket x);
 
             /// Closes the write channel for a socket.
             /// @relates network_socket
-            void MTL_NET_EXPORT shutdown_write(network_socket x);
+            void shutdown_write(network_socket x);
 
             /// Closes the both read and write channel for a socket.
             /// @relates network_socket
-            void MTL_NET_EXPORT shutdown(network_socket x);
+            void shutdown(network_socket x);
 
         }    // namespace network
     }        // namespace mtl

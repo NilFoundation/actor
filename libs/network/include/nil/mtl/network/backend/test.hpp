@@ -13,7 +13,7 @@
 
 #include <map>
 
-#include <nil/mtl/detail/net_export.hpp>
+
 #include <nil/mtl/network/endpoint_manager.hpp>
 #include <nil/mtl/network/fwd.hpp>
 #include <nil/mtl/network/middleman_backend.hpp>
@@ -27,7 +27,7 @@ namespace nil {
 
                 /// Minimal backend for unit testing.
                 /// @warning this backend is *not* thread safe.
-                class MTL_NET_EXPORT test : public middleman_backend {
+                class test : public middleman_backend {
                 public:
                     // -- member types -----------------------------------------------------------
 

@@ -196,7 +196,7 @@ BOOST_AUTO_TEST_CASE(receive) {
     auto mgr_impl = mgr.downcast<endpoint_manager_impl<transport_type>>();
     BOOST_CHECK(mgr_impl != nullptr);
     auto &transport = mgr_impl->transport();
-    transport.configure_read(net::receive_policy::exactly(hello_manager.size()));
+    transport.configure_read(network::receive_policy::exactly(hello_manager.size()));
     BOOST_CHECK_EQUAL(mpx->num_socket_managers(), 2u);
     BOOST_CHECK_EQUAL(write(send_socket, as_bytes(make_span(hello_manager)), ep), hello_manager.size());
     BOOST_TEST_MESSAGE("wrote " << hello_manager.size() << " bytes.");

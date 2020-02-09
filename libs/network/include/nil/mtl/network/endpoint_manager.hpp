@@ -18,7 +18,7 @@
 #include <nil/mtl/actor.hpp>
 #include <nil/mtl/actor_clock.hpp>
 #include <nil/mtl/byte.hpp>
-#include <nil/mtl/detail/net_export.hpp>
+
 #include <nil/mtl/fwd.hpp>
 #include <nil/mtl/intrusive/drr_queue.hpp>
 #include <nil/mtl/intrusive/fifo_inbox.hpp>
@@ -33,7 +33,7 @@ namespace nil {
         namespace network {
 
             /// Manages a communication endpoint.
-            class MTL_NET_EXPORT endpoint_manager : public socket_manager {
+            class endpoint_manager : public socket_manager {
             public:
                 // -- member types -----------------------------------------------------------
 

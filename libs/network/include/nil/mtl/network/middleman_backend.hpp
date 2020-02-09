@@ -13,7 +13,7 @@
 
 #include <string>
 
-#include <nil/mtl/detail/net_export.hpp>
+
 #include <nil/mtl/fwd.hpp>
 #include <nil/mtl/network/fwd.hpp>
 #include <nil/mtl/proxy_registry.hpp>
@@ -25,7 +25,7 @@ namespace nil {
             /// Technology-specific backend for connecting to and managing peer
             /// connections.
             /// @relates middleman
-            class MTL_NET_EXPORT middleman_backend : public proxy_registry::backend {
+            class middleman_backend : public proxy_registry::backend {
             public:
                 // -- constructors, destructors, and assignment operators --------------------
 

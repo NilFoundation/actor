@@ -14,7 +14,7 @@
 #include <vector>
 
 #include <nil/mtl/byte.hpp>
-#include <nil/mtl/detail/net_export.hpp>
+
 #include <nil/mtl/network/fwd.hpp>
 #include <nil/mtl/span.hpp>
 
@@ -23,7 +23,7 @@ namespace nil {
         namespace network {
 
             /// Implements an interface for packet writing in application-layers.
-            class MTL_NET_EXPORT packet_writer {
+            class packet_writer {
             public:
                 using buffer_type = std::vector<byte>;
 

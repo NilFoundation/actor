@@ -96,7 +96,7 @@ namespace {
 BOOST_FIXTURE_TEST_SUITE(udp_datagram_socket_test, fixture)
 
 BOOST_AUTO_TEST_CASE(read / write using span<byte>) {
-    if (auto err = nonblocking(socket_cast<net::socket>(receive_socket), true))
+    if (auto err = nonblocking(socket_cast<network::socket>(receive_socket), true))
         BOOST_FAIL("setting socket to nonblocking failed: " << err);
     BOOST_CHECK_EQUAL(read(receive_socket, buf), sec::unavailable_or_would_block);
     BOOST_TEST_MESSAGE("sending data to " << to_string(ep));

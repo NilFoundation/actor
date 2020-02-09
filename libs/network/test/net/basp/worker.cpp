@@ -70,8 +70,8 @@ namespace {
     };
 
     struct fixture : test_coordinator_fixture<> {
-        detail::worker_hub<net::basp::worker> hub;
-        net::basp::message_queue queue;
+        detail::worker_hub<network::basp::worker> hub;
+        network::basp::message_queue queue;
         mock_proxy_registry_backend proxies_backend;
         proxy_registry proxies;
         node_id last_hop;
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(deliver serialized message) {
     binary_serializer sink {sys, payload};
     if (auto err = sink(node_id {}, self->id(), testee.id(), stages, make_message(ok_atom_v)))
         BOOST_FAIL("unable to serialize message: " << sys.render(err));
-    net::basp::header hdr {net::basp::message_type::actor_message, static_cast<uint32_t>(payload.size()),
+    network::basp::header hdr {network::basp::message_type::actor_message, static_cast<uint32_t>(payload.size()),
                            make_message_id().integer_value()};
     BOOST_TEST_MESSAGE("launch worker");
     w->launch(last_hop, hdr, payload);

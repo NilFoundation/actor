@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <nil/mtl/detail/net_export.hpp>
+
 #include <nil/mtl/make_counted.hpp>
 #include <nil/mtl/network/endpoint_manager.hpp>
 #include <nil/mtl/network/endpoint_manager_impl.hpp>
@@ -21,7 +21,7 @@ namespace nil {
         namespace network {
 
             template<class Transport>
-            endpoint_manager_ptr MTL_NET_EXPORT make_endpoint_manager(const multiplexer_ptr &mpx, spawner &sys,
+            endpoint_manager_ptr make_endpoint_manager(const multiplexer_ptr &mpx, spawner &sys,
                                                                       Transport trans) {
                 using impl = endpoint_manager_impl<Transport>;
                 return make_counted<impl>(mpx, sys, std::move(trans));

@@ -115,12 +115,12 @@ namespace nil {
 
             expected<tcp_stream_socket> accept(tcp_accept_socket x) {
                 auto sock = ::accept(x.id, nullptr, nullptr);
-                if (sock == net::invalid_socket_id) {
-                    auto err = net::last_socket_error();
+                if (sock == network::invalid_socket_id) {
+                    auto err = network::last_socket_error();
                     if (err != std::errc::operation_would_block && err != std::errc::resource_unavailable_try_again) {
-                        return caf::make_error(sec::unavailable_or_would_block);
+                        return nil::mtl::make_error(sec::unavailable_or_would_block);
                     }
-                    return caf::make_error(sec::socket_operation_failed, "tcp accept failed");
+                    return nil::mtl::make_error(sec::socket_operation_failed, "tcp accept failed");
                 }
                 return tcp_stream_socket {sock};
             }

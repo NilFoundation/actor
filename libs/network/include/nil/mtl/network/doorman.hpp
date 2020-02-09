@@ -39,14 +39,14 @@ namespace nil {
 
                 // -- constructors, destructors, and assignment operators --------------------
 
-                explicit doorman(net::tcp_accept_socket acceptor, factory_type factory) :
+                explicit doorman(network::tcp_accept_socket acceptor, factory_type factory) :
                     acceptor_(acceptor), factory_(std::move(factory)) {
                     // nop
                 }
 
                 // -- properties -------------------------------------------------------------
 
-                net::tcp_accept_socket handle() {
+                network::tcp_accept_socket handle() {
                     return acceptor_;
                 }
 
@@ -62,7 +62,7 @@ namespace nil {
 
                 template<class Parent>
                 bool handle_read_event(Parent &parent) {
-                    auto x = net::accept(acceptor_);
+                    auto x = network::accept(acceptor_);
                     if (!x) {
                         MTL_LOG_ERROR("accept failed:" << parent.system().render(x.error()));
                         return false;
@@ -115,7 +115,7 @@ namespace nil {
                 }
 
             private:
-                net::tcp_accept_socket acceptor_;
+                network::tcp_accept_socket acceptor_;
 
                 factory_type factory_;
             };

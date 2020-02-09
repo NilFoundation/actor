@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <nil/mtl/detail/net_export.hpp>
+
 #include <nil/mtl/fwd.hpp>
 #include <nil/mtl/network/network_socket.hpp>
 
@@ -21,7 +21,7 @@ namespace nil {
 
             /// A datagram-oriented network communication endpoint for bidirectional
             /// byte transmission.
-            struct MTL_NET_EXPORT udp_datagram_socket : network_socket {
+            struct udp_datagram_socket : network_socket {
                 using super = network_socket;
 
                 using super::super;
@@ -34,11 +34,11 @@ namespace nil {
             /// @returns The connected socket or an error.
             /// @relates udp_datagram_socket
             expected<std::pair<udp_datagram_socket, uint16_t>>
-                MTL_NET_EXPORT make_udp_datagram_socket(ip_endpoint ep, bool reuse_addr = false);
+                make_udp_datagram_socket(ip_endpoint ep, bool reuse_addr = false);
 
             /// Enables or disables `SIO_UDP_CONNRESET` error on `x`.
             /// @relates udp_datagram_socket
-            error MTL_NET_EXPORT allow_connreset(udp_datagram_socket x, bool new_value);
+            error allow_connreset(udp_datagram_socket x, bool new_value);
 
             /// Receives the next datagram on socket `x`.
             /// @param x The UDP socket for receiving datagrams.
@@ -48,7 +48,7 @@ namespace nil {
             /// @relates udp_datagram_socket
             /// @post buf was modified and the resulting integer represents the length of
             /// the received datagram, even if it did not fit into the given buffer.
-            variant<std::pair<size_t, ip_endpoint>, sec> MTL_NET_EXPORT read(udp_datagram_socket x, span<byte> buf);
+            variant<std::pair<size_t, ip_endpoint>, sec> read(udp_datagram_socket x, span<byte> buf);
 
             /// Sends the content of `bufs` as a datagram to the endpoint `ep` on socket
             /// `x`.
@@ -59,7 +59,7 @@ namespace nil {
             /// @returns The number of written bytes on success, otherwise an error code.
             /// @relates udp_datagram_socket
             /// @pre `bufs.size() < 10`
-            variant<size_t, sec> MTL_NET_EXPORT write(udp_datagram_socket x, span<std::vector<byte> *> bufs,
+            variant<size_t, sec> write(udp_datagram_socket x, span<std::vector<byte> *> bufs,
                                                       ip_endpoint ep);
 
             /// Sends the content of `buf` as a datagram to the endpoint `ep` on socket `x`.
@@ -68,12 +68,12 @@ namespace nil {
             /// @param ep The enpoint to send the datagram to.
             /// @returns The number of written bytes on success, otherwise an error code.
             /// @relates udp_datagram_socket
-            variant<size_t, sec> MTL_NET_EXPORT write(udp_datagram_socket x, span<const byte> buf, ip_endpoint ep);
+            variant<size_t, sec> write(udp_datagram_socket x, span<const byte> buf, ip_endpoint ep);
 
             /// Converts the result from I/O operation on a ::udp_datagram_socket to either
             /// an error code or a non-zero positive integer.
             /// @relates udp_datagram_socket
-            variant<size_t, sec> MTL_NET_EXPORT check_udp_datagram_socket_io_res(std::make_signed<size_t>::type res);
+            variant<size_t, sec> check_udp_datagram_socket_io_res(std::make_signed<size_t>::type res);
 
         }    // namespace network
     }        // namespace mtl

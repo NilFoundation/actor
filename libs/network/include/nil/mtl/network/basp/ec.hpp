@@ -14,7 +14,7 @@
 #include <cstdint>
 #include <string>
 
-#include <nil/mtl/detail/net_export.hpp>
+
 #include <nil/mtl/error_category.hpp>
 
 namespace nil {
@@ -41,13 +41,13 @@ namespace nil {
                 };
 
                 /// @relates ec
-                MTL_NET_EXPORT std::string to_string(ec x);
+                std::string to_string(ec x);
 
             }    // namespace basp
         }        // namespace network
 
         template<>
-        struct error_category<net::basp::ec> {
+        struct error_category<network::basp::ec> {
             static constexpr uint8_t value = 4;
         };
     }    // namespace mtl

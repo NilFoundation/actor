@@ -64,9 +64,9 @@ namespace {
             mpx.set_thread_id();
         }
 
-        net::backend::test &backend() {
+        network::backend::test &backend() {
             auto &mm = this->sys.network_manager();
-            return *dynamic_cast<net::backend::test *>(mm.backend("test"));
+            return *dynamic_cast<network::backend::test *>(mm.backend("test"));
         }
 
         node_id id() const {

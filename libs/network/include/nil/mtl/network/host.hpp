@@ -11,14 +11,14 @@
 
 #pragma once
 
-#include <nil/mtl/detail/net_export.hpp>
+
 #include <nil/mtl/fwd.hpp>
 
 namespace nil {
     namespace mtl {
         namespace network {
 
-            struct MTL_NET_EXPORT this_host {
+            struct this_host {
                 /// Initializes the network subsystem.
                 static error startup();
 

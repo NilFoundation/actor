@@ -17,7 +17,7 @@
 
 #include <nil/mtl/config.hpp>
 #include <nil/mtl/detail/comparable.hpp>
-#include <nil/mtl/detail/net_export.hpp>
+
 #include <nil/mtl/fwd.hpp>
 #include <nil/mtl/network/socket_id.hpp>
 
@@ -27,7 +27,7 @@ namespace nil {
 
             /// An internal endpoint for sending or receiving data. Can be either a
             /// ::network_socket, ::pipe_socket, ::stream_socket, or ::datagram_socket.
-            struct MTL_NET_EXPORT socket : detail::comparable<socket> {
+            struct socket : detail::comparable<socket> {
                 socket_id id;
 
                 constexpr socket() noexcept : id(invalid_socket_id) {
@@ -49,7 +49,7 @@ namespace nil {
 
             /// @relates socket
             template<class Inspector>
-            typename Inspector::result_type MTL_NET_EXPORT inspect(Inspector &f, socket &x) {
+            typename Inspector::result_type inspect(Inspector &f, socket &x) {
                 return f(x.id);
             }
 
@@ -58,30 +58,30 @@ namespace nil {
 
             /// Converts between different socket types.
             template<class To, class From>
-            To MTL_NET_EXPORT socket_cast(From x) {
+            To socket_cast(From x) {
                 return To {x.id};
             }
 
             /// Close socket `x`.
             /// @relates socket
-            void MTL_NET_EXPORT close(socket x);
+            void close(socket x);
 
             /// Returns the last socket error in this thread as an integer.
             /// @relates socket
-            std::errc MTL_NET_EXPORT last_socket_error();
+            std::errc last_socket_error();
 
             /// Returns the last socket error as human-readable string.
             /// @relates socket
-            std::string MTL_NET_EXPORT last_socket_error_as_string();
+            std::string last_socket_error_as_string();
 
             /// Sets x to be inherited by child processes if `new_value == true`
             /// or not if `new_value == false`.  Not implemented on Windows.
             /// @relates socket
-            error MTL_NET_EXPORT child_process_inherit(socket x, bool new_value);
+            error child_process_inherit(socket x, bool new_value);
 
             /// Enables or disables nonblocking I/O on `x`.
             /// @relates socket
-            error MTL_NET_EXPORT nonblocking(socket x, bool new_value);
+            error nonblocking(socket x, bool new_value);
 
         }    // namespace network
     }        // namespace mtl

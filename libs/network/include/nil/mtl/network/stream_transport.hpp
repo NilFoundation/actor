@@ -55,7 +55,7 @@ namespace nil {
 
                 stream_transport(stream_socket handle, application_type application) :
                     super(handle, std::move(application)), written_(0), read_threshold_(1024), collected_(0),
-                    max_(1024), rd_flag_(net::receive_policy_flag::exactly) {
+                    max_(1024), rd_flag_(network::receive_policy_flag::exactly) {
                     MTL_ASSERT(handle != invalid_socket);
                     nodelay(handle, true);
                 }
@@ -177,17 +177,17 @@ namespace nil {
                 void prepare_next_read() {
                     collected_ = 0;
                     switch (rd_flag_) {
-                        case net::receive_policy_flag::exactly:
+                        case network::receive_policy_flag::exactly:
                             if (this->read_buf_.size() != max_)
                                 this->read_buf_.resize(max_);
                             read_threshold_ = max_;
                             break;
-                        case net::receive_policy_flag::at_most:
+                        case network::receive_policy_flag::at_most:
                             if (this->read_buf_.size() != max_)
                                 this->read_buf_.resize(max_);
                             read_threshold_ = 1;
                             break;
-                        case net::receive_policy_flag::at_least: {
+                        case network::receive_policy_flag::at_least: {
                             // read up to 10% more, but at least allow 100 bytes more
                             auto max_size = max_ + std::max<size_t>(100, max_ / 10);
                             if (this->read_buf_.size() != max_size)

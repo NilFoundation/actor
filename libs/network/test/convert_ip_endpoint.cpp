@@ -23,7 +23,7 @@
 #include <nil/mtl/ipv6_endpoint.hpp>
 
 using namespace nil::mtl;
-using namespace caf::detail;
+using namespace nil::mtl::detail;
 
 namespace {
 

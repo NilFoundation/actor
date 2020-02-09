@@ -14,7 +14,7 @@
 #include <thread>
 
 #include <nil/mtl/spawner.hpp>
-#include <nil/mtl/detail/net_export.hpp>
+
 #include <nil/mtl/detail/type_list.hpp>
 #include <nil/mtl/fwd.hpp>
 #include <nil/mtl/network/fwd.hpp>
@@ -23,7 +23,7 @@ namespace nil {
     namespace mtl {
         namespace network {
 
-            class MTL_NET_EXPORT middleman : public spawner::module {
+            class middleman : public spawner::module {
             public:
                 // -- member types -----------------------------------------------------------
 

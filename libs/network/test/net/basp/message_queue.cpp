@@ -32,7 +32,7 @@ namespace {
     }
 
     struct fixture : test_coordinator_fixture<> {
-        net::basp::message_queue queue;
+        network::basp::message_queue queue;
         strong_actor_ptr testee;
 
         fixture() {

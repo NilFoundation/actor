@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <nil/mtl/detail/net_export.hpp>
+
 #include <nil/mtl/ip_endpoint.hpp>
 #include <nil/mtl/network/socket.hpp>
 #include <nil/mtl/network/stream_socket.hpp>
@@ -22,7 +22,7 @@ namespace nil {
         namespace network {
 
             /// Represents a TCP connection.
-            struct MTL_NET_EXPORT tcp_stream_socket : stream_socket {
+            struct tcp_stream_socket : stream_socket {
                 using super = stream_socket;
 
                 using super::super;
@@ -32,14 +32,14 @@ namespace nil {
             /// @param node Host and port of the remote node.
             /// @returns The connected socket or an error.
             /// @relates tcp_stream_socket
-            expected<tcp_stream_socket> MTL_NET_EXPORT make_connected_tcp_stream_socket(ip_endpoint node);
+            expected<tcp_stream_socket> make_connected_tcp_stream_socket(ip_endpoint node);
 
             /// Create a `tcp_stream_socket` connected to `auth`.
             /// @param node Host and port of the remote node.
             /// @returns The connected socket or an error.
             /// @relates tcp_stream_socket
             expected<tcp_stream_socket>
-                MTL_NET_EXPORT make_connected_tcp_stream_socket(const uri::authority_type &node);
+                make_connected_tcp_stream_socket(const uri::authority_type &node);
 
         }    // namespace network
     }        // namespace mtl

@@ -19,6 +19,6 @@ namespace nil {
                 // nop
             }
 
-        } // namespace caf::network
+        } // namespace nil::mtl::network
 }
 }

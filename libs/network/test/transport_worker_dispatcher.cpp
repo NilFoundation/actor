@@ -177,7 +177,7 @@ namespace {
             add_new_workers();
         }
 
-        std::unique_ptr<net::endpoint_manager_queue::message> make_dummy_message(node_id nid) {
+        std::unique_ptr<network::endpoint_manager_queue::message> make_dummy_message(node_id nid) {
             actor_id aid = 42;
             actor_config cfg;
             auto p = make_actor<dummy_actor, strong_actor_ptr>(aid, nid, &sys, cfg);

@@ -39,7 +39,7 @@ namespace nil {
 #else    // MTL_WINDOWS
 
             error allow_connreset(udp_datagram_socket x, bool) {
-                if (socket_cast<net::socket>(x) == invalid_socket)
+                if (socket_cast<network::socket>(x) == invalid_socket)
                     return sec::socket_invalid;
                 // nop; SIO_UDP_CONNRESET only exists on Windows
                 return none;

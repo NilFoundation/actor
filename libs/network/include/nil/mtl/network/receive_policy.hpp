@@ -21,14 +21,14 @@ namespace nil {
     namespace mtl {
         namespace network {
 
-            enum class MTL_NET_EXPORT receive_policy_flag : unsigned { at_least, at_most, exactly };
+            enum class receive_policy_flag : unsigned { at_least, at_most, exactly };
 
             inline std::string to_string(receive_policy_flag x) {
                 return x == receive_policy_flag::at_least ? "at_least" :
                                                             (x == receive_policy_flag::at_most ? "at_most" : "exactly");
             }
 
-            class MTL_NET_EXPORT receive_policy {
+            class receive_policy {
             public:
                 receive_policy() = delete;
 

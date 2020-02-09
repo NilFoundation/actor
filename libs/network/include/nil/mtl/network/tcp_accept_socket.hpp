@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include <nil/mtl/detail/net_export.hpp>
+
 #include <nil/mtl/fwd.hpp>
 #include <nil/mtl/network/fwd.hpp>
 #include <nil/mtl/network/network_socket.hpp>
@@ -22,7 +22,7 @@ namespace nil {
         namespace network {
 
             /// Represents a TCP acceptor in listening mode.
-            struct MTL_NET_EXPORT tcp_accept_socket : network_socket {
+            struct tcp_accept_socket : network_socket {
                 using super = network_socket;
 
                 using super::super;
@@ -33,7 +33,7 @@ namespace nil {
             /// Passing the address `0.0.0.0` will accept incoming connection from any host.
             /// Passing port 0 lets the OS choose the port.
             /// @relates tcp_accept_socket
-            expected<tcp_accept_socket> MTL_NET_EXPORT make_tcp_accept_socket(ip_endpoint node,
+            expected<tcp_accept_socket> make_tcp_accept_socket(ip_endpoint node,
                                                                               bool reuse_addr = false);
 
             /// Creates a new TCP socket to accept connections on a given port.
@@ -42,7 +42,7 @@ namespace nil {
             /// Passing port 0 lets the OS choose the port.
             /// @param reuse_addr Optionally sets the SO_REUSEADDR option on the socket.
             /// @relates tcp_accept_socket
-            expected<tcp_accept_socket> MTL_NET_EXPORT make_tcp_accept_socket(const uri::authority_type &node,
+            expected<tcp_accept_socket> make_tcp_accept_socket(const uri::authority_type &node,
                                                                               bool reuse_addr = false);
 
             /// Accepts a connection on `x`.
@@ -50,7 +50,7 @@ namespace nil {
             /// @returns The socket that handles the accepted connection on success, an
             /// error otherwise.
             /// @relates tcp_accept_socket
-            expected<tcp_stream_socket> MTL_NET_EXPORT accept(tcp_accept_socket x);
+            expected<tcp_stream_socket> accept(tcp_accept_socket x);
 
         }    // namespace network
     }        // namespace mtl

@@ -46,8 +46,8 @@ namespace {
     struct fixture : host_fixture {
         fixture() : rd_buf(124) {
             std::tie(first, second) = unbox(make_stream_socket_pair());
-            BOOST_REQUIRE_EQUAL(nonblocking(first, true), caf::none);
-            BOOST_REQUIRE_EQUAL(nonblocking(second, true), caf::none);
+            BOOST_REQUIRE_EQUAL(nonblocking(first, true), nil::mtl::none);
+            BOOST_REQUIRE_EQUAL(nonblocking(second, true), nil::mtl::none);
             MTL_REQUIRE_NOT_EQUAL(unbox(send_buffer_size(first)), 0u);
             MTL_REQUIRE_NOT_EQUAL(unbox(send_buffer_size(second)), 0u);
         }
