@@ -22,3 +22,6 @@
 [submodule "libs/marshalling"]
 	path = libs/marshalling
 	url = git@github.com:nemothenoone/marshalling.git
+[submodule "libs/actor"]
+	path = libs/actor
+	url = git@github.com:nilfoundation/actor.git
