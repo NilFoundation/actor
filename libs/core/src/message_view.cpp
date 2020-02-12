@@ -10,14 +10,14 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/message_view.hpp>
+#include <nil/actor/message_view.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         message_view::~message_view() {
             // nop
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

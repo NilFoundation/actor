@@ -9,16 +9,16 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/packet_writer.hpp>
+#include <nil/actor/network/packet_writer.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
 
             packet_writer::~packet_writer() {
                 // nop
             }
 
-        } // namespace nil::mtl::network
+        } // namespace nil::actor::network
 }
 }

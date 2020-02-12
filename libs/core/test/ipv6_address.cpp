@@ -17,17 +17,17 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-#include <nil/mtl/detail/parse.hpp>
+#include <nil/actor/detail/parse.hpp>
 
-#include <nil/mtl/ipv4_address.hpp>
-#include <nil/mtl/ipv4_endpoint.hpp>
-#include <nil/mtl/ipv6_address.hpp>
-#include <nil/mtl/ipv6_endpoint.hpp>
+#include <nil/actor/ipv4_address.hpp>
+#include <nil/actor/ipv4_endpoint.hpp>
+#include <nil/actor/ipv6_address.hpp>
+#include <nil/actor/ipv6_endpoint.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace boost {
     namespace test_tools {
@@ -86,7 +86,7 @@ namespace {
         }
     };
 
-#define CHECK_TO_STRING(addr) BOOST_CHECK_EQUAL(addr, nil::mtl::to_string(addr##_ep))
+#define CHECK_TO_STRING(addr) BOOST_CHECK_EQUAL(addr, nil::actor::to_string(addr##_ep))
 
 #define CHECK_COMPARISON(addr1, addr2)         \
     BOOST_CHECK_GT(addr2##_ep, addr1##_ep);    \

@@ -10,15 +10,15 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/thread_safe_actor_clock.hpp>
+#include <nil/actor/detail/thread_safe_actor_clock.hpp>
 
-#include <nil/mtl/actor_control_block.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/system_messages.hpp>
+#include <nil/actor/actor_control_block.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/system_messages.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             void thread_safe_actor_clock::set_ordinary_timeout(time_point t,
@@ -82,7 +82,7 @@ namespace nil {
                     auto e = queue_.get_all(i);
                     for (; i != e; ++i) {
                         auto &x = *i;
-                        MTL_ASSERT(x != nullptr);
+                        ACTOR_ASSERT(x != nullptr);
                         switch (x->subtype) {
                             case ordinary_timeout_cancellation_type: {
                                 handle(static_cast<ordinary_timeout_cancellation &>(*x));
@@ -133,7 +133,7 @@ namespace nil {
                                 break;
                             }
                             default: {
-                                MTL_LOG_ERROR("unexpected event type");
+                                ACTOR_LOG_ERROR("unexpected event type");
                                 break;
                             }
                         }
@@ -151,5 +151,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

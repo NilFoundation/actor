@@ -11,13 +11,13 @@
 
 #define BOOST_TEST_MODULE network_socket
 
-#include <nil/mtl/network/network_socket.hpp>
+#include <nil/actor/network/network_socket.hpp>
 
-#include <nil/mtl/test/host_fixture.hpp>
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/host_fixture.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::network;
+using namespace nil::actor;
+using namespace nil::actor::network;
 
 BOOST_FIXTURE_TEST_SUITE(network_socket_tests, host_fixture)
 

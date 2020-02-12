@@ -12,7 +12,7 @@
 
 // This test simulates a complex multiplexing over multiple layers of WDRR
 // scheduled queues. The goal is to reduce the complex mailbox management of
-// MTL to its bare bones in order to test whether the multiplexing of stream
+// ACTOR to its bare bones in order to test whether the multiplexing of stream
 // traffic and asynchronous messages works as intended.
 //
 // The setup is a fixed WDRR queue with three nestes queues. The first nested
@@ -25,20 +25,20 @@
 
 #include <memory>
 
-#include <nil/mtl/variant.hpp>
-#include <nil/mtl/stream_slot.hpp>
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/variant.hpp>
+#include <nil/actor/stream_slot.hpp>
+#include <nil/actor/logger.hpp>
 
-#include <nil/mtl/intrusive/drr_queue.hpp>
-#include <nil/mtl/intrusive/singly_linked.hpp>
-#include <nil/mtl/intrusive/task_result.hpp>
-#include <nil/mtl/intrusive/wdrr_dynamic_multiplexed_queue.hpp>
-#include <nil/mtl/intrusive/wdrr_fixed_multiplexed_queue.hpp>
+#include <nil/actor/intrusive/drr_queue.hpp>
+#include <nil/actor/intrusive/singly_linked.hpp>
+#include <nil/actor/intrusive/task_result.hpp>
+#include <nil/actor/intrusive/wdrr_dynamic_multiplexed_queue.hpp>
+#include <nil/actor/intrusive/wdrr_fixed_multiplexed_queue.hpp>
 
-#include <nil/mtl/detail/overload.hpp>
+#include <nil/actor/detail/overload.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::intrusive;
+using namespace nil::actor;
+using namespace nil::actor::intrusive;
 
 namespace {
 
@@ -310,7 +310,7 @@ namespace {
         }
 
         void operator()(entity *sender, handshake &hs) {
-            TRACE(name, handshake, MTL_ARG2("sender", sender->name));
+            TRACE(name, handshake, ACTOR_ARG2("sender", sender->name));
             auto slot = next_slot++;
             // stream_slots id{slot, hs.sender_slot};
             stream_slots id {hs.sender_slot, slot};
@@ -325,7 +325,7 @@ namespace {
         }
 
         void operator()(entity *sender, stream_slots slots, umsg::ack_handshake &x) {
-            TRACE(name, ack_handshake, MTL_ARG(slots), MTL_ARG2("sender", sender->name));
+            TRACE(name, ack_handshake, ACTOR_ARG(slots), ACTOR_ARG2("sender", sender->name));
             // Get the manager for that stream.
             auto i = pending_managers_.find(slots.receiver);
             BOOST_REQUIRE(i != pending_managers_.end());
@@ -337,7 +337,7 @@ namespace {
         }
 
         void operator()(entity *sender, stream_slots input_slots, umsg::ack_batch &x) {
-            TRACE(name, ack_batch, MTL_ARG(input_slots), MTL_ARG2("sender", sender->name));
+            TRACE(name, ack_batch, ACTOR_ARG(input_slots), ACTOR_ARG2("sender", sender->name));
             // Get the manager for that stream.
             auto slots = input_slots.invert();
             auto i = managers_.find(input_slots);
@@ -349,7 +349,7 @@ namespace {
         }
 
         void operator()(entity *sender, stream_slots slots, in *, dmsg::close &) {
-            TRACE(name, close, MTL_ARG(slots), MTL_ARG2("sender", sender->name));
+            TRACE(name, close, ACTOR_ARG(slots), ACTOR_ARG2("sender", sender->name));
             auto i = managers_.find(slots);
             BOOST_REQUIRE(i != managers_.end());
             i->second->input_paths -= 1;
@@ -399,7 +399,7 @@ namespace {
     }
 
     void manager::operator()(entity *sender, stream_slots slots, in *, dmsg::batch &batch) {
-        TRACE(self->name, batch, MTL_ARG(slots), MTL_ARG2("sender", sender->name), MTL_ARG(batch.xs));
+        TRACE(self->name, batch, ACTOR_ARG(slots), ACTOR_ARG2("sender", sender->name), ACTOR_ARG(batch.xs));
         sender->enqueue<umsg>(self, slots.invert(), umsg::ack_batch {10});
     }
 

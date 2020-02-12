@@ -13,13 +13,13 @@
 #include <utility>
 #include <algorithm>
 
-#include <nil/mtl/response_promise.hpp>
+#include <nil/actor/response_promise.hpp>
 
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/local_actor.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/local_actor.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         response_promise::response_promise() : self_(nullptr) {
             // nop
@@ -64,7 +64,7 @@ namespace nil {
         }
 
         void response_promise::deliver_impl(message msg) {
-            MTL_LOG_TRACE(MTL_ARG(msg));
+            ACTOR_LOG_TRACE(ACTOR_ARG(msg));
             if (!stages_.empty()) {
                 auto next = std::move(stages_.back());
                 stages_.pop_back();
@@ -77,9 +77,9 @@ namespace nil {
                 source_.reset();
                 return;
             }
-            MTL_LOG_INFO_IF(self_ != nullptr, "response promise already satisfied");
-            MTL_LOG_INFO_IF(self_ == nullptr, "invalid response promise");
+            ACTOR_LOG_INFO_IF(self_ != nullptr, "response promise already satisfied");
+            ACTOR_LOG_INFO_IF(self_ == nullptr, "invalid response promise");
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

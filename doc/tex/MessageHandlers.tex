@@ -66,7 +66,7 @@ introduced an approach to use non-numerical constants, so-called
 \textit{atoms}, which have an unambiguous, special-purpose type and do not have
 the runtime overhead of string constants.
 
-Atoms in MTL are mapped to integer values at compile time. This mapping is
+Atoms in ACTOR are mapped to integer values at compile time. This mapping is
 guaranteed to be collision-free and invertible, but limits atom literals to ten
 characters and prohibits special characters. Legal characters are
 \lstinline^_0-9A-Za-z^ and the whitespace character. Atoms are created using
@@ -85,7 +85,7 @@ character.
 
 While the \lstinline^atom_value^ is computed at compile time, it is not
 uniquely typed and thus cannot be used in the signature of a callback. To
-accomplish this, MTL offers compile-time \emph{atom constants}.
+accomplish this, ACTOR offers compile-time \emph{atom constants}.
 
 \begin{lstlisting}
 using add_atom = atom_constant<atom("add")>;

@@ -10,10 +10,10 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/actor_clock.hpp>
+#include <nil/actor/actor_clock.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         // -- constructors, destructors, and assignment operators ----------------------
 
@@ -32,5 +32,5 @@ namespace nil {
             return t1 - t0;
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

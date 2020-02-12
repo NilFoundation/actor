@@ -1,6 +1,6 @@
 \section{Introduction}
 
-Before diving into the API of MTL, we discuss the concepts behind it and
+Before diving into the API of ACTOR, we discuss the concepts behind it and
 explain the terminology used in this manual.
 
 \subsection{Actor Model}
@@ -24,19 +24,19 @@ adding more cores.
 The actor model has gained momentum over the last decade due to its high level
 of abstraction and its ability to scale dynamically from one core to many cores
 and from one node to many nodes. However, the actor model has not yet been
-widely adopted in the native programming domain. With MTL, we contribute a
+widely adopted in the native programming domain. With ACTOR, we contribute a
 library for actor programming in C++ as open-source software to ease native
-development of concurrent as well as distributed systems. In this regard, MTL
+development of concurrent as well as distributed systems. In this regard, ACTOR
 follows the C++ philosophy ``building the highest abstraction possible without
 sacrificing performance''.
 
 \subsection{Terminology}
 
-MTL is inspired by other implementations based on the actor model such as
+ACTOR is inspired by other implementations based on the actor model such as
 Erlang or Akka. It aims to provide a modern C++ API allowing for type-safe as
 well as dynamically typed messaging. While there are similarities to other
 implementations, we made many different design decisions that lead to slight
-differences when comparing MTL to other actor frameworks.
+differences when comparing ACTOR to other actor frameworks.
 
 \subsubsection{Dynamically Typed Actor}
 
@@ -48,8 +48,8 @@ requiring excessive testing.
 
 \subsubsection{Statically Typed Actor}
 
-MTL achieves static type-checking for actors by defining abstract messaging
-interfaces. Since interfaces define both input and output types, MTL is able to
+ACTOR achieves static type-checking for actors by defining abstract messaging
+interfaces. Since interfaces define both input and output types, ACTOR is able to
 verify messaging protocols statically. The upside of this approach is much
 higher robustness to code changes and fewer possible runtime errors. This comes
 at an increase in required source code, as developers have to define and use
@@ -58,7 +58,7 @@ messaging interfaces.
 \subsubsection{Actor References}
 \label{actor-reference}
 
-MTL uses reference counting for actors. The three ways to store a reference to
+ACTOR uses reference counting for actors. The three ways to store a reference to
 an actor are addresses, handles, and pointers. Note that \emph{address} does
 not refer to a \emph{memory region} in this context.
 
@@ -67,7 +67,7 @@ not refer to a \emph{memory region} in this context.
 
 Each actor has a (network-wide) unique logical address. This identifier is
 represented by \lstinline^actor_addr^, which allows to identify and monitor an
-actor. Unlike other actor frameworks, MTL does \emph{not} allow users to send
+actor. Unlike other actor frameworks, ACTOR does \emph{not} allow users to send
 messages to addresses. This limitation is due to the fact that the address does
 not contain any type information. Hence, it would not be safe to send it a
 message, because the receiving actor might use a statically typed interface
@@ -80,7 +80,7 @@ the role of an identifier, it has \emph{weak reference semantics}
 
 An actor handle contains the address of an actor along with its type
 information and is required for sending messages to actors. The distinction
-between handles and addresses---which is unique to MTL when comparing it to
+between handles and addresses---which is unique to ACTOR when comparing it to
 other actor systems---is a consequence of the design decision to enforce static
 type checking for all messages. Dynamically typed actors use \lstinline^actor^
 handles, while statically typed actors use \lstinline^typed_actor<...>^
@@ -90,7 +90,7 @@ handles. Both types have \emph{strong reference semantics}
 \paragraph{Pointer}
 \label{actor-pointer}
 
-In a few instances, MTL uses \lstinline^strong_actor_ptr^ to refer to an actor
+In a few instances, ACTOR uses \lstinline^strong_actor_ptr^ to refer to an actor
 using \emph{strong reference semantics} \see{reference-counting} without
 knowing the proper handle type. Pointers must be converted to a handle via
 \lstinline^actor_cast^ \see{actor-cast} prior to sending messages. A
@@ -122,7 +122,7 @@ recovery strategies.
 \subsection{Experimental Features}
 
 Sections that discuss experimental features are highlighted with \experimental.
-The API of such features is not stable. This means even minor updates to MTL
+The API of such features is not stable. This means even minor updates to ACTOR
 can come with breaking changes to the API or even remove a feature completely.
 However, we encourage developers to extensively test such features and to start
 discussions to uncover flaws, report bugs, or tweaking the API in order to

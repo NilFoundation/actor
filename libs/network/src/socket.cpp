@@ -9,22 +9,22 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/socket.hpp>
+#include <nil/actor/network/socket.hpp>
 
 #include <system_error>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/detail/net_syscall.hpp>
-#include <nil/mtl/detail/socket_sys_includes.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/variant.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/detail/net_syscall.hpp>
+#include <nil/actor/detail/socket_sys_includes.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/variant.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 
             void close(socket fd) {
                 closesocket(fd.id);
@@ -125,11 +125,11 @@ namespace nil {
 
             error nonblocking(socket x, bool new_value) {
                 u_long mode = new_value ? 1 : 0;
-                MTL_NET_SYSCALL("ioctlsocket", res, !=, 0, ioctlsocket(x.id, FIONBIO, &mode));
+                ACTOR_NET_SYSCALL("ioctlsocket", res, !=, 0, ioctlsocket(x.id, FIONBIO, &mode));
                 return none;
             }
 
-#else    // MTL_WINDOWS
+#else    // ACTOR_WINDOWS
 
             void close(socket fd) {
                 ::close(fd.id);
@@ -150,27 +150,27 @@ namespace nil {
             }
 
             error child_process_inherit(socket x, bool new_value) {
-                MTL_LOG_TRACE(MTL_ARG(x) << MTL_ARG(new_value));
+                ACTOR_LOG_TRACE(ACTOR_ARG(x) << ACTOR_ARG(new_value));
                 // read flags for x
-                MTL_NET_SYSCALL("fcntl", rf, ==, -1, fcntl(x.id, F_GETFD));
+                ACTOR_NET_SYSCALL("fcntl", rf, ==, -1, fcntl(x.id, F_GETFD));
                 // calculate and set new flags
                 auto wf = !new_value ? rf | FD_CLOEXEC : rf & ~(FD_CLOEXEC);
-                MTL_NET_SYSCALL("fcntl", set_res, ==, -1, fcntl(x.id, F_SETFD, wf));
+                ACTOR_NET_SYSCALL("fcntl", set_res, ==, -1, fcntl(x.id, F_SETFD, wf));
                 return none;
             }
 
             error nonblocking(socket x, bool new_value) {
-                MTL_LOG_TRACE(MTL_ARG(x) << MTL_ARG(new_value));
+                ACTOR_LOG_TRACE(ACTOR_ARG(x) << ACTOR_ARG(new_value));
                 // read flags for x
-                MTL_NET_SYSCALL("fcntl", rf, ==, -1, fcntl(x.id, F_GETFL, 0));
+                ACTOR_NET_SYSCALL("fcntl", rf, ==, -1, fcntl(x.id, F_GETFL, 0));
                 // calculate and set new flags
                 auto wf = new_value ? (rf | O_NONBLOCK) : (rf & (~(O_NONBLOCK)));
-                MTL_NET_SYSCALL("fcntl", set_res, ==, -1, fcntl(x.id, F_SETFL, wf));
+                ACTOR_NET_SYSCALL("fcntl", set_res, ==, -1, fcntl(x.id, F_SETFL, wf));
                 return none;
             }
 
-#endif    // MTL_WINDOWS
+#endif    // ACTOR_WINDOWS
 
         }    // namespace network
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

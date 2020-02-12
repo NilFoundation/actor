@@ -10,26 +10,26 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/stream_aborter.hpp>
+#include <nil/actor/stream_aborter.hpp>
 
-#include <nil/mtl/actor.hpp>
-#include <nil/mtl/actor_cast.hpp>
-#include <nil/mtl/downstream_msg.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/message.hpp>
-#include <nil/mtl/no_stages.hpp>
-#include <nil/mtl/system_messages.hpp>
-#include <nil/mtl/upstream_msg.hpp>
+#include <nil/actor/actor.hpp>
+#include <nil/actor/actor_cast.hpp>
+#include <nil/actor/downstream_msg.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/message.hpp>
+#include <nil/actor/no_stages.hpp>
+#include <nil/actor/system_messages.hpp>
+#include <nil/actor/upstream_msg.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         stream_aborter::~stream_aborter() {
             // nop
         }
 
         void stream_aborter::actor_exited(const error &rsn, execution_unit *host) {
-            MTL_ASSERT(observed_ != observer_);
+            ACTOR_ASSERT(observed_ != observer_);
             auto observer = actor_cast<strong_actor_ptr>(observer_);
             if (observer != nullptr) {
                 stream_slots slots {0, slot_};
@@ -37,11 +37,11 @@ namespace nil {
                 if (mode_ == source_aborter) {
                     using msg_type = downstream_msg::forced_close;
                     ptr = make_mailbox_element(nullptr, make_message_id(), no_stages,
-                                               nil::mtl::make<msg_type>(slots, observed_, rsn));
+                                               nil::actor::make<msg_type>(slots, observed_, rsn));
                 } else {
                     using msg_type = upstream_msg::forced_drop;
                     ptr = make_mailbox_element(nullptr, make_message_id(), no_stages,
-                                               nil::mtl::make<msg_type>(slots, observed_, rsn));
+                                               nil::actor::make<msg_type>(slots, observed_, rsn));
                 }
                 observer->enqueue(std::move(ptr), host);
             }
@@ -60,13 +60,13 @@ namespace nil {
         }
 
         void stream_aborter::add(strong_actor_ptr observed, actor_addr observer, stream_slot slot, mode m) {
-            MTL_LOG_TRACE(MTL_ARG(observed) << MTL_ARG(observer) << MTL_ARG(slot));
+            ACTOR_LOG_TRACE(ACTOR_ARG(observed) << ACTOR_ARG(observer) << ACTOR_ARG(slot));
             auto ptr = make_stream_aborter(observed->address(), std::move(observer), slot, m);
             observed->get()->attach(std::move(ptr));
         }
 
         void stream_aborter::del(strong_actor_ptr observed, const actor_addr &observer, stream_slot slot, mode m) {
-            MTL_LOG_TRACE(MTL_ARG(observed) << MTL_ARG(observer) << MTL_ARG(slot));
+            ACTOR_LOG_TRACE(ACTOR_ARG(observed) << ACTOR_ARG(observer) << ACTOR_ARG(slot));
             token tk {observer, slot, m};
             observed->get()->detach(tk);
         }
@@ -76,5 +76,5 @@ namespace nil {
             return attachable_ptr {new stream_aborter(std::move(observed), std::move(observer), slot, m)};
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

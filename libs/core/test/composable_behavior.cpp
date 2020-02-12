@@ -14,13 +14,13 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/config.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/config.hpp>
 
 #define ERROR_HANDLER [&](error &err) { BOOST_FAIL(system.render(err)); }
 
 using namespace std;
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 
@@ -64,7 +64,7 @@ namespace {
         }
     };
 
-    // checks whether MTL resolves "diamonds" properly by inheriting
+    // checks whether ACTOR resolves "diamonds" properly by inheriting
     // from two behaviors that both implement i3_actor
     struct foo_actor_state2 : composed_behavior<i3_actor_state2, i3_actor_state, d_actor_state> {
         result<int> operator()(int x, int y, int z) override {
@@ -258,8 +258,8 @@ BOOST_AUTO_TEST_CASE(param_detaching_test) {
                 },
                 [&](error &err) { BOOST_FAIL("error: " << system.render(err)); });
     };
-    // Using MTL is the key to success!
-    counting_string key = "MTL";
+    // Using ACTOR is the key to success!
+    counting_string key = "ACTOR";
     counting_string value = "success";
     BOOST_CHECK_EQUAL(counting_strings_created.load(), 2);
     BOOST_CHECK_EQUAL(counting_strings_moved.load(), 0);
@@ -295,7 +295,7 @@ BOOST_AUTO_TEST_CASE(param_detaching_test) {
             ERROR_HANDLER);
     // alter our initial put, this time moving it to the dictionary
     put_msg.get_mutable_as<counting_string>(1) = "neverlord";
-    put_msg.get_mutable_as<counting_string>(2) = "MTL";
+    put_msg.get_mutable_as<counting_string>(2) = "ACTOR";
     // send put message to dictionary
     self->request(dict, infinite, std::move(put_msg))
         .receive(

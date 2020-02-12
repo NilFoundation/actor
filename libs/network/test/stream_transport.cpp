@@ -11,27 +11,27 @@
 
 #define BOOST_TEST_MODULE stream_transport
 
-#include <nil/mtl/network/stream_transport.hpp>
+#include <nil/actor/network/stream_transport.hpp>
 
-#include <nil/mtl/test/host_fixture.hpp>
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/host_fixture.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-#include <nil/mtl/serialization/binary_deserializer.hpp>
-#include <nil/mtl/serialization/binary_serializer.hpp>
-#include <nil/mtl/byte.hpp>
-#include <nil/mtl/detail/scope_guard.hpp>
-#include <nil/mtl/make_actor.hpp>
-#include <nil/mtl/network/actor_proxy_impl.hpp>
-#include <nil/mtl/network/endpoint_manager.hpp>
-#include <nil/mtl/network/endpoint_manager_impl.hpp>
-#include <nil/mtl/network/make_endpoint_manager.hpp>
-#include <nil/mtl/network/multiplexer.hpp>
-#include <nil/mtl/network/socket_guard.hpp>
-#include <nil/mtl/network/stream_socket.hpp>
-#include <nil/mtl/span.hpp>
+#include <nil/actor/serialization/binary_deserializer.hpp>
+#include <nil/actor/serialization/binary_serializer.hpp>
+#include <nil/actor/byte.hpp>
+#include <nil/actor/detail/scope_guard.hpp>
+#include <nil/actor/make_actor.hpp>
+#include <nil/actor/network/actor_proxy_impl.hpp>
+#include <nil/actor/network/endpoint_manager.hpp>
+#include <nil/actor/network/endpoint_manager_impl.hpp>
+#include <nil/actor/network/make_endpoint_manager.hpp>
+#include <nil/actor/network/multiplexer.hpp>
+#include <nil/actor/network/socket_guard.hpp>
+#include <nil/actor/network/stream_socket.hpp>
+#include <nil/actor/span.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::network;
+using namespace nil::actor;
+using namespace nil::actor::network;
 
 namespace {
     constexpr string_view hello_manager = "hello manager!";
@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE(resolve and proxy communication) {
     if (msg.match_elements<std::string>())
         BOOST_CHECK_EQUAL(msg.get_as<std::string>(0), "hello proxy!");
     else
-        MTL_ERROR("expected a string, got: " << to_string(msg));
+        ACTOR_ERROR("expected a string, got: " << to_string(msg));
 }
 
 BOOST_AUTO_TEST_SUITE_END()

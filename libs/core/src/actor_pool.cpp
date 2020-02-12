@@ -10,18 +10,18 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/actor_pool.hpp>
+#include <nil/actor/actor_pool.hpp>
 
 #include <atomic>
 #include <random>
 
-#include <nil/mtl/send.hpp>
-#include <nil/mtl/default_attachable.hpp>
+#include <nil/actor/send.hpp>
+#include <nil/actor/default_attachable.hpp>
 
-#include <nil/mtl/detail/sync_request_bouncer.hpp>
+#include <nil/actor/detail/sync_request_bouncer.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         actor_pool::policy actor_pool::round_robin() {
             struct impl {
@@ -33,7 +33,7 @@ namespace nil {
                 }
                 void operator()(spawner &, uplock &guard, const actor_vec &vec, mailbox_element_ptr &ptr,
                                 execution_unit *host) {
-                    MTL_ASSERT(!vec.empty());
+                    ACTOR_ASSERT(!vec.empty());
                     actor selected = vec[pos_++ % vec.size()];
                     guard.unlock();
                     selected->enqueue(std::move(ptr), host);
@@ -47,7 +47,7 @@ namespace nil {
 
             void broadcast_dispatch(spawner &, actor_pool::uplock &, const actor_pool::actor_vec &vec,
                                     mailbox_element_ptr &ptr, execution_unit *host) {
-                MTL_ASSERT(!vec.empty());
+                ACTOR_ASSERT(!vec.empty());
                 auto msg = ptr->move_content_to_message();
                 for (auto &worker : vec)
                     worker->enqueue(ptr->sender, ptr->mid, msg, host);
@@ -85,7 +85,7 @@ namespace nil {
         }
 
         actor actor_pool::make(execution_unit *eu, policy pol) {
-            MTL_ASSERT(eu);
+            ACTOR_ASSERT(eu);
             auto &sys = eu->system();
             actor_config cfg {eu};
             auto res = make_actor<actor_pool, actor>(sys.next_actor_id(), sys.node(), &sys, cfg);
@@ -118,7 +118,7 @@ namespace nil {
         }
 
         void actor_pool::on_destroy() {
-            MTL_PUSH_AID_FROM_PTR(this);
+            ACTOR_PUSH_AID_FROM_PTR(this);
             if (!getf(is_cleaned_up_flag)) {
                 cleanup(exit_reason::unreachable, nullptr);
                 monitorable_actor::on_destroy();
@@ -127,15 +127,15 @@ namespace nil {
         }
 
         void actor_pool::on_cleanup(const error &reason) {
-            MTL_PUSH_AID_FROM_PTR(this);
-            MTL_IGNORE_UNUSED(reason);
-            MTL_LOG_TERMINATE_EVENT(this, reason);
+            ACTOR_PUSH_AID_FROM_PTR(this);
+            ACTOR_IGNORE_UNUSED(reason);
+            ACTOR_LOG_TERMINATE_EVENT(this, reason);
         }
 
         bool actor_pool::filter(upgrade_lock<detail::shared_spinlock> &guard, const strong_actor_ptr &sender,
                                 message_id mid, message_view &mv, execution_unit *eu) {
             auto &content = mv.content();
-            MTL_LOG_TRACE(MTL_ARG(mid) << MTL_ARG(content));
+            ACTOR_LOG_TRACE(ACTOR_ARG(mid) << ACTOR_ARG(content));
             if (content.match_elements<exit_msg>()) {
                 // acquire second mutex as well
                 std::vector<actor> workers;
@@ -159,7 +159,7 @@ namespace nil {
                 upgrade_to_unique_lock<detail::shared_spinlock> unique_guard {guard};
                 auto last = workers_.end();
                 auto i = std::find(workers_.begin(), workers_.end(), dm.source);
-                MTL_LOG_DEBUG_IF(i == last, "received down message for an unknown worker");
+                ACTOR_LOG_DEBUG_IF(i == last, "received down message for an unknown worker");
                 if (i != last)
                     workers_.erase(i);
                 if (workers_.empty()) {
@@ -222,5 +222,5 @@ namespace nil {
                 unregister_from_system();
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

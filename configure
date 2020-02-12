@@ -40,8 +40,8 @@ Usage: $0 [OPTION]... [VAR=VALUE]...
     --more-warnings             enables most warnings
     --no-compiler-check         disable compiler version check
     --no-auto-libc++            do not automatically enable libc++ for Clang
-    --no-exceptions             do not catch exceptions in MTL
-    --force-no-exceptions       build MTL with '-fno-exceptions'
+    --no-exceptions             do not catch exceptions in ACTOR
+    --force-no-exceptions       build ACTOR with '-fno-exceptions'
     --warnings-as-errors        build with '-Werror'
     --with-ccache               use ccache to improve build performance
 
@@ -61,7 +61,7 @@ Usage: $0 [OPTION]... [VAR=VALUE]...
     --no-opencl                 build without OpenCL module
     --no-openssl                build without OpenSSL module
     --no-benchmarks             build without benchmarks
-    --no-tools                  build without MTL tools such as mtl-run
+    --no-tools                  build without ACTOR tools such as actor-run
     --no-io                     build without I/O module
     --no-python                 build without python binding
     --no-summary                do not print configuration before building
@@ -209,7 +209,7 @@ configure ()
 builddir="$sourcedir/build"
 CMakeCacheEntries=""
 append_cache_entry CMAKE_INSTALL_PREFIX        PATH   /usr/local
-append_cache_entry MTL_ENABLE_RUNTIME_CHECKS   BOOL   false
+append_cache_entry ACTOR_ENABLE_RUNTIME_CHECKS   BOOL   false
 
 # parse custom environment variable to initialize CMakeGenerator
 if [ -n "$CMAKE_GENERATOR" ]; then
@@ -235,69 +235,69 @@ while [ $# -ne 0 ]; do
             append_cache_entry CMAKE_INSTALL_PREFIX PATH "$optarg"
             ;;
         --with-runtime-checks)
-            append_cache_entry MTL_ENABLE_RUNTIME_CHECKS BOOL yes
+            append_cache_entry ACTOR_ENABLE_RUNTIME_CHECKS BOOL yes
             ;;
         --with-address-sanitizer)
-            append_cache_entry MTL_ENABLE_ADDRESS_SANITIZER BOOL yes
+            append_cache_entry ACTOR_ENABLE_ADDRESS_SANITIZER BOOL yes
             ;;
         --with-asan)
-            append_cache_entry MTL_ENABLE_ADDRESS_SANITIZER BOOL yes
+            append_cache_entry ACTOR_ENABLE_ADDRESS_SANITIZER BOOL yes
             ;;
         --enable-asan)
-            append_cache_entry MTL_ENABLE_ADDRESS_SANITIZER BOOL yes
+            append_cache_entry ACTOR_ENABLE_ADDRESS_SANITIZER BOOL yes
             ;;
         --with-gcov)
-            append_cache_entry MTL_ENABLE_GCOV BOOL yes
+            append_cache_entry ACTOR_ENABLE_GCOV BOOL yes
             ;;
         --no-memory-management)
-            append_cache_entry MTL_NO_MEM_MANAGEMENT BOOL yes
+            append_cache_entry ACTOR_NO_MEM_MANAGEMENT BOOL yes
             ;;
         --more-warnings)
-            append_cache_entry MTL_MORE_WARNINGS BOOL yes
+            append_cache_entry ACTOR_MORE_WARNINGS BOOL yes
             ;;
         --no-compiler-check)
-            append_cache_entry MTL_NO_COMPILER_CHECK BOOL yes
+            append_cache_entry ACTOR_NO_COMPILER_CHECK BOOL yes
             ;;
         --no-auto-libc++)
-            append_cache_entry MTL_NO_AUTO_LIBCPP BOOL yes
+            append_cache_entry ACTOR_NO_AUTO_LIBCPP BOOL yes
             ;;
         --no-exceptions)
-            append_cache_entry MTL_NO_EXCEPTIONS BOOL yes
+            append_cache_entry ACTOR_NO_EXCEPTIONS BOOL yes
             ;;
         --force-no-exceptions)
-            append_cache_entry MTL_NO_EXCEPTIONS BOOL yes
-            append_cache_entry MTL_FORCE_NO_EXCEPTIONS BOOL yes
+            append_cache_entry ACTOR_NO_EXCEPTIONS BOOL yes
+            append_cache_entry ACTOR_FORCE_NO_EXCEPTIONS BOOL yes
             ;;
         --warnings-as-errors)
-            append_cache_entry MTL_CXX_WARNINGS_AS_ERRORS BOOL yes
+            append_cache_entry ACTOR_CXX_WARNINGS_AS_ERRORS BOOL yes
             ;;
         --with-ccache)
-            append_cache_entry MTL_USE_CCACHE BOOL yes
+            append_cache_entry ACTOR_USE_CCACHE BOOL yes
             ;;
         --sysroot=*)
-            append_cache_entry MTL_OSX_SYSROOT PATH "$optarg"
+            append_cache_entry ACTOR_OSX_SYSROOT PATH "$optarg"
             ;;
         --ios-min-ver=*)
             append_cache_entry CMAKE_OSX_ARCHITECTURES STRING "\$(ARCHS_STANDARD_32_64_BIT)"
-            append_cache_entry MTL_IOS_DEPLOYMENT_TARGET STRING "$optarg"
+            append_cache_entry ACTOR_IOS_DEPLOYMENT_TARGET STRING "$optarg"
             ;;
         --with-log-level=*)
             level=`echo "$optarg" | tr '[:lower:]' '[:upper:]'`
             case $level in
                 ERROR)
-                    append_cache_entry MTL_LOG_LEVEL STRING 0
+                    append_cache_entry ACTOR_LOG_LEVEL STRING 0
                     ;;
                 WARNING)
-                    append_cache_entry MTL_LOG_LEVEL STRING 1
+                    append_cache_entry ACTOR_LOG_LEVEL STRING 1
                     ;;
                 INFO)
-                    append_cache_entry MTL_LOG_LEVEL STRING 2
+                    append_cache_entry ACTOR_LOG_LEVEL STRING 2
                     ;;
                 DEBUG)
-                    append_cache_entry MTL_LOG_LEVEL STRING 3
+                    append_cache_entry ACTOR_LOG_LEVEL STRING 3
                     ;;
                 TRACE)
-                    append_cache_entry MTL_LOG_LEVEL STRING 4
+                    append_cache_entry ACTOR_LOG_LEVEL STRING 4
                     ;;
                 *)
                     echo "Invalid log level '$level'. Try '$0 --help' to see valid values."
@@ -312,7 +312,7 @@ while [ $# -ne 0 ]; do
             gcc="$optarg"
             ;;
         --with-qt-prefix=*)
-            append_cache_entry MTL_QT_PREFIX_PATH STRING "$optarg"
+            append_cache_entry ACTOR_QT_PREFIX_PATH STRING "$optarg"
             ;;
         --with-openssl=*)
             append_cache_entry OPENSSL_ROOT_DIR PATH "$optarg"
@@ -336,71 +336,71 @@ while [ $# -ne 0 ]; do
             dualbuild=1
             ;;
         --no-examples)
-            append_cache_entry MTL_NO_EXAMPLES BOOL yes
+            append_cache_entry ACTOR_NO_EXAMPLES BOOL yes
             ;;
         --with-qt-examples)
-            append_cache_entry MTL_BUILD_QT_EXAMPLES BOOL yes
+            append_cache_entry ACTOR_BUILD_QT_EXAMPLES BOOL yes
             ;;
         --with-protobuf-examples)
-            append_cache_entry MTL_BUILD_PROTOBUF_EXAMPLES BOOL yes
+            append_cache_entry ACTOR_BUILD_PROTOBUF_EXAMPLES BOOL yes
             ;;
         --with-tex-manual)
-            append_cache_entry MTL_BUILD_TEX_MANUAL BOOL yes
+            append_cache_entry ACTOR_BUILD_TEX_MANUAL BOOL yes
             ;;
         --no-curl-examples)
-            append_cache_entry MTL_NO_CURL_EXAMPLES BOOL yes
+            append_cache_entry ACTOR_NO_CURL_EXAMPLES BOOL yes
             ;;
         --no-unit-tests)
-            append_cache_entry MTL_NO_UNIT_TESTS BOOL yes
+            append_cache_entry ACTOR_NO_UNIT_TESTS BOOL yes
             ;;
         --no-opencl)
-            append_cache_entry MTL_NO_OPENCL BOOL yes
+            append_cache_entry ACTOR_NO_OPENCL BOOL yes
             ;;
         --no-openssl)
-            append_cache_entry MTL_NO_OPENSSL BOOL yes
+            append_cache_entry ACTOR_NO_OPENSSL BOOL yes
             ;;
         --build-static)
-            append_cache_entry MTL_BUILD_STATIC BOOL yes
+            append_cache_entry ACTOR_BUILD_STATIC BOOL yes
             ;;
         --build-static-only)
-            append_cache_entry MTL_BUILD_STATIC_ONLY BOOL yes
+            append_cache_entry ACTOR_BUILD_STATIC_ONLY BOOL yes
             ;;
         --static-runtime)
-            append_cache_entry MTL_BUILD_STATIC_RUNTIME BOOL yes
+            append_cache_entry ACTOR_BUILD_STATIC_RUNTIME BOOL yes
             ;;
         --with-python-config=*)
-            append_cache_entry MTL_PYTHON_CONFIG_BIN FILEPATH "$optarg"
+            append_cache_entry ACTOR_PYTHON_CONFIG_BIN FILEPATH "$optarg"
             ;;
         --no-benchmarks)
-            append_cache_entry MTL_NO_BENCHMARKS BOOL yes
+            append_cache_entry ACTOR_NO_BENCHMARKS BOOL yes
             ;;
         --no-tools)
-            append_cache_entry MTL_NO_TOOLS BOOL yes
+            append_cache_entry ACTOR_NO_TOOLS BOOL yes
             ;;
         --no-io)
-            append_cache_entry MTL_NO_IO BOOL yes
+            append_cache_entry ACTOR_NO_IO BOOL yes
             ;;
         --no-python)
-            append_cache_entry MTL_NO_PYTHON BOOL yes
+            append_cache_entry ACTOR_NO_PYTHON BOOL yes
             ;;
         --no-summary)
-            append_cache_entry MTL_NO_SUMMARY BOOL yes
+            append_cache_entry ACTOR_NO_SUMMARY BOOL yes
             ;;
         --core-only)
-            append_cache_entry MTL_NO_TOOLS BOOL yes
-            append_cache_entry MTL_NO_IO BOOL yes
-            append_cache_entry MTL_NO_PYTHON BOOL yes
-            append_cache_entry MTL_NO_EXAMPLES BOOL yes
-            append_cache_entry MTL_NO_OPENCL BOOL yes
-            append_cache_entry MTL_NO_OPENSSL BOOL yes
+            append_cache_entry ACTOR_NO_TOOLS BOOL yes
+            append_cache_entry ACTOR_NO_IO BOOL yes
+            append_cache_entry ACTOR_NO_PYTHON BOOL yes
+            append_cache_entry ACTOR_NO_EXAMPLES BOOL yes
+            append_cache_entry ACTOR_NO_OPENCL BOOL yes
+            append_cache_entry ACTOR_NO_OPENSSL BOOL yes
             ;;
         --dev-mode)
             append_cache_entry CMAKE_BUILD_TYPE STRING Debug
-            append_cache_entry MTL_NO_EXAMPLES BOOL yes
-            append_cache_entry MTL_NO_TOOLS BOOL yes
-            append_cache_entry MTL_LOG_LEVEL STRING 4
-            append_cache_entry MTL_ENABLE_RUNTIME_CHECKS BOOL yes
-            append_cache_entry MTL_ENABLE_ADDRESS_SANITIZER BOOL yes
+            append_cache_entry ACTOR_NO_EXAMPLES BOOL yes
+            append_cache_entry ACTOR_NO_TOOLS BOOL yes
+            append_cache_entry ACTOR_LOG_LEVEL STRING 4
+            append_cache_entry ACTOR_ENABLE_RUNTIME_CHECKS BOOL yes
+            append_cache_entry ACTOR_ENABLE_ADDRESS_SANITIZER BOOL yes
             ;;
         *)
             echo "Invalid option '$1'.  Try $0 --help to see available options."

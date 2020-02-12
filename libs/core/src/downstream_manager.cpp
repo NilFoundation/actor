@@ -10,19 +10,19 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/downstream_manager.hpp>
+#include <nil/actor/downstream_manager.hpp>
 
 #include <functional>
 #include <limits>
 
-#include <nil/mtl/actor_addr.hpp>
-#include <nil/mtl/actor_cast.hpp>
-#include <nil/mtl/scheduled_actor.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/outbound_path.hpp>
+#include <nil/actor/actor_addr.hpp>
+#include <nil/actor/actor_cast.hpp>
+#include <nil/actor/scheduled_actor.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/outbound_path.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         // -- constructors, destructors, and assignment operators ----------------------
 
@@ -80,7 +80,7 @@ namespace nil {
         }
 
         downstream_manager::path_ptr downstream_manager::add_path(stream_slot slot, strong_actor_ptr target) {
-            MTL_LOG_TRACE(MTL_ARG(slot) << MTL_ARG(target));
+            ACTOR_LOG_TRACE(ACTOR_ARG(slot) << ACTOR_ARG(target));
             unique_path_ptr ptr {new outbound_path(slot, std::move(target))};
             auto result = ptr.get();
             return insert_path(std::move(ptr)) ? result : nullptr;
@@ -110,30 +110,30 @@ namespace nil {
         }
 
         void downstream_manager::close() {
-            MTL_LOG_TRACE("");
+            ACTOR_LOG_TRACE("");
             auto open_slots = open_path_slots();
             for (auto slot : open_slots)
                 close(slot);
         }
 
         void downstream_manager::close(stream_slot slot) {
-            MTL_LOG_TRACE(MTL_ARG(slot));
+            ACTOR_LOG_TRACE(ACTOR_ARG(slot));
             auto ptr = path(slot);
             if (ptr == nullptr) {
-                MTL_LOG_DEBUG("cannot close unknown slot:" << slot);
+                ACTOR_LOG_DEBUG("cannot close unknown slot:" << slot);
                 return;
             }
             if (buffered(slot) == 0 && ptr->clean()) {
-                MTL_LOG_DEBUG("path clean, remove immediately;" << MTL_ARG(slot));
+                ACTOR_LOG_DEBUG("path clean, remove immediately;" << ACTOR_ARG(slot));
                 remove_path(slot, none, false);
                 return;
             }
-            MTL_LOG_DEBUG("path not clean, set to closing;" << MTL_ARG(slot));
+            ACTOR_LOG_DEBUG("path not clean, set to closing;" << ACTOR_ARG(slot));
             ptr->closing = true;
         }
 
         void downstream_manager::abort(error reason) {
-            MTL_LOG_TRACE(MTL_ARG(reason));
+            ACTOR_LOG_TRACE(ACTOR_ARG(reason));
             for_each_path([&](outbound_path &x) {
                 auto tmp = reason;
                 about_to_erase(&x, false, &tmp);
@@ -209,7 +209,7 @@ namespace nil {
             // Return the result for empty ranges as specified by the C++ standard.
             switch (algo) {
                 default:
-                    MTL_ASSERT(algo == path_algorithm::all_of);
+                    ACTOR_ASSERT(algo == path_algorithm::all_of);
                     return true;
                 case path_algorithm::any_of:
                     return false;
@@ -219,7 +219,7 @@ namespace nil {
         }
 
         void downstream_manager::about_to_erase(outbound_path *ptr, bool silent, error *reason) {
-            MTL_LOG_TRACE(MTL_ARG(ptr) << MTL_ARG(silent) << MTL_ARG(reason));
+            ACTOR_LOG_TRACE(ACTOR_ARG(ptr) << ACTOR_ARG(silent) << ACTOR_ARG(reason));
             if (!silent) {
                 if (reason == nullptr)
                     ptr->emit_regular_shutdown(self());
@@ -228,5 +228,5 @@ namespace nil {
             }
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

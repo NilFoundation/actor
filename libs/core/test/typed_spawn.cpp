@@ -10,24 +10,24 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
 // exclude this suite; seems to be too much to swallow for MSVC
-#ifndef MTL_WINDOWS
+#ifndef ACTOR_WINDOWS
 
 #define BOOST_TEST_MODULE typed_spawn_test
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
 
-#include <nil/mtl/string_algorithms.hpp>
-#include <nil/mtl/all.hpp>
+#include <nil/actor/string_algorithms.hpp>
+#include <nil/actor/all.hpp>
 
 #define ERROR_HANDLER [&](error &err) { BOOST_FAIL(system.render(err)); }
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
-using passed_atom = nil::mtl::atom_constant<nil::mtl::atom("passed")>;
+using passed_atom = nil::actor::atom_constant<nil::actor::atom("passed")>;
 
 namespace {
 
@@ -306,9 +306,9 @@ BOOST_AUTO_TEST_CASE(event_testee_series_test) {
     self->send(et, "hello again event testee!");
     self->send(et, "goodbye event testee!");
     typed_actor<replies_to<get_state_msg>::with<std::string>> sub_et = et;
-    std::set<std::string> iface {"nil::mtl::replies_to<get_state_msg>::with<@str>",
-                                 "nil::mtl::replies_to<@str>::with<void>", "nil::mtl::replies_to<float>::with<void>",
-                                 "nil::mtl::replies_to<@i32>::with<@i32>"};
+    std::set<std::string> iface {"nil::actor::replies_to<get_state_msg>::with<@str>",
+                                 "nil::actor::replies_to<@str>::with<void>", "nil::actor::replies_to<float>::with<void>",
+                                 "nil::actor::replies_to<@i32>::with<@i32>"};
     BOOST_CHECK_EQUAL(join(sub_et->message_types(), ","), join(iface, ","));
     self->send(sub_et, get_state_msg {});
     // we expect three 42s
@@ -322,14 +322,14 @@ BOOST_AUTO_TEST_CASE(event_testee_series_test) {
 BOOST_AUTO_TEST_CASE(string_delegator_chain_test) {
     // run test series with string reverter
     auto aut = self->spawn<monitored>(string_delegator, system.spawn(string_reverter), true);
-    std::set<std::string> iface {"nil::mtl::replies_to<@str>::with<@str>"};
+    std::set<std::string> iface {"nil::actor::replies_to<@str>::with<@str>"};
     BOOST_CHECK(aut->message_types() == iface);
     self->request(aut, infinite, "Hello World!")
         .receive([](const std::string &answer) { BOOST_CHECK_EQUAL(answer, "!dlroW olleH"); }, ERROR_HANDLER);
 }
 
 BOOST_AUTO_TEST_CASE(maybe_string_delegator_chain_test) {
-    MTL_LOG_TRACE(MTL_ARG(self));
+    ACTOR_LOG_TRACE(ACTOR_ARG(self));
     auto aut = system.spawn(maybe_string_delegator, system.spawn(maybe_string_reverter));
     BOOST_TEST_MESSAGE("send empty string, expect error");
     self->request(aut, infinite, "")
@@ -377,4 +377,4 @@ BOOST_AUTO_TEST_CASE(check_signature_test) {
 
 BOOST_AUTO_TEST_SUITE_END()
 
-#endif    // MTL_WINDOWS
+#endif    // ACTOR_WINDOWS

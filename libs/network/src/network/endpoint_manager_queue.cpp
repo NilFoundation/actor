@@ -9,10 +9,10 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/endpoint_manager_queue.hpp>
+#include <nil/actor/network/endpoint_manager_queue.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
 
             endpoint_manager_queue::element::~element() {
@@ -66,5 +66,5 @@ namespace nil {
             }
 
         }    // namespace network
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

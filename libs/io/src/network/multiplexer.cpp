@@ -9,11 +9,11 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/network/multiplexer.hpp>
-#include <nil/mtl/io/network/default_multiplexer.hpp>    // default singleton
+#include <nil/actor/io/network/multiplexer.hpp>
+#include <nil/actor/io/network/default_multiplexer.hpp>    // default singleton
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace network {
 
@@ -22,7 +22,7 @@ namespace nil {
                 }
 
                 multiplexer_ptr multiplexer::make(spawner &sys) {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     return multiplexer_ptr {new default_multiplexer(&sys)};
                 }
 
@@ -48,5 +48,5 @@ namespace nil {
 
             }    // namespace network
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

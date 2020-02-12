@@ -10,19 +10,19 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/serialization/binary_deserializer.hpp>
+#include <nil/actor/serialization/binary_deserializer.hpp>
 
 #include <iomanip>
 #include <sstream>
 #include <type_traits>
 
-#include <nil/mtl/detail/ieee_754.hpp>
-#include <nil/mtl/detail/network_order.hpp>
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/sec.hpp>
+#include <nil/actor/detail/ieee_754.hpp>
+#include <nil/actor/detail/network_order.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/sec.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         namespace {
 
@@ -95,7 +95,7 @@ namespace nil {
         }
 
         void binary_deserializer::skip(size_t num_bytes) noexcept {
-            MTL_ASSERT(num_bytes <= remaining());
+            ACTOR_ASSERT(num_bytes <= remaining());
             current_ += num_bytes;
         }
 
@@ -279,5 +279,5 @@ namespace nil {
             }
             return end_sequence();
         }
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

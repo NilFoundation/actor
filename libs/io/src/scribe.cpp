@@ -9,12 +9,12 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/scribe.hpp>
+#include <nil/actor/io/scribe.hpp>
 
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/logger.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
 
             scribe::scribe(connection_handle conn_hdl) : scribe_base(conn_hdl) {
@@ -22,7 +22,7 @@ namespace nil {
             }
 
             scribe::~scribe() {
-                MTL_LOG_TRACE("");
+                ACTOR_LOG_TRACE("");
             }
 
             message scribe::detach_message() {
@@ -30,8 +30,8 @@ namespace nil {
             }
 
             bool scribe::consume(execution_unit *ctx, const void *, size_t num_bytes) {
-                MTL_ASSERT(ctx != nullptr);
-                MTL_LOG_TRACE(MTL_ARG(num_bytes));
+                ACTOR_ASSERT(ctx != nullptr);
+                ACTOR_LOG_TRACE(ACTOR_ARG(num_bytes));
                 if (detached())
                     // we are already disconnected from the broker while the multiplexer
                     // did not yet remove the socket, this can happen if an I/O event causes
@@ -42,7 +42,7 @@ namespace nil {
                 // to avoid UB when becoming detached during invocation
                 auto guard = parent_;
                 auto &buf = rd_buf();
-                MTL_ASSERT(buf.size() >= num_bytes);
+                ACTOR_ASSERT(buf.size() >= num_bytes);
                 // make sure size is correct, swap into message, and then call client
                 buf.resize(num_bytes);
                 auto &msg_buf = msg().buf;
@@ -55,7 +55,7 @@ namespace nil {
             }
 
             void scribe::data_transferred(execution_unit *ctx, size_t written, size_t remaining) {
-                MTL_LOG_TRACE(MTL_ARG(written) << MTL_ARG(remaining));
+                ACTOR_LOG_TRACE(ACTOR_ARG(written) << ACTOR_ARG(remaining));
                 if (detached())
                     return;
                 using transferred_t = data_transferred_msg;
@@ -70,5 +70,5 @@ namespace nil {
             }
 
         }    // namespace io
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

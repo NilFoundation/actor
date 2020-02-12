@@ -12,16 +12,16 @@
 
 #define BOOST_TEST_MODULE typed_response_promise_test
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <boost/test/unit_test.hpp>
 
 #include <map>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/all.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/all.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 

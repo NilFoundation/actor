@@ -4,16 +4,16 @@
 #include <cassert>
 #include <iostream>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/detail/limited_vector.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/detail/limited_vector.hpp>
 
-#include <nil/mtl/opencl/all.hpp>
+#include <nil/actor/opencl/all.hpp>
 
 using namespace std;
-using namespace nil::mtl;
-using namespace nil::mtl::opencl;
+using namespace nil::actor;
+using namespace nil::actor::opencl;
 
-using nil::mtl::detail::limited_vector;
+using nil::actor::detail::limited_vector;
 
 namespace {
 
@@ -176,9 +176,9 @@ void multiplier(event_based_actor *self) {
 int main() {
     // matrix_type ist not a simple type,
     // it must be annouced to libcaf
-    actor_system_config cfg;
+    spawner_config cfg;
     cfg.load<opencl::manager>().add_message_type<fvec>("float_vector").add_message_type<matrix_type>("square_matrix");
-    actor_system system {cfg};
+    spawner system {cfg};
     system.spawn(multiplier);
     system.await_all_actors_done();
     return 0;

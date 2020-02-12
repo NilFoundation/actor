@@ -14,12 +14,12 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/make_type_erased_tuple_view.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/make_type_erased_tuple_view.hpp>
 
 using namespace std;
-using namespace nil::mtl;
+using namespace nil::actor;
 
 BOOST_AUTO_TEST_CASE(get_as_tuple_test) {
     int x = 1;

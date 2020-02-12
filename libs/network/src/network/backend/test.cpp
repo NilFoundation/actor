@@ -9,21 +9,21 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/backend/test.hpp>
+#include <nil/actor/network/backend/test.hpp>
 
-#include <nil/mtl/expected.hpp>
-#include <nil/mtl/network/actor_proxy_impl.hpp>
-#include <nil/mtl/network/basp/application.hpp>
-#include <nil/mtl/network/basp/ec.hpp>
-#include <nil/mtl/network/make_endpoint_manager.hpp>
-#include <nil/mtl/network/middleman.hpp>
-#include <nil/mtl/network/multiplexer.hpp>
-#include <nil/mtl/network/stream_transport.hpp>
-#include <nil/mtl/raise_error.hpp>
-#include <nil/mtl/send.hpp>
+#include <nil/actor/expected.hpp>
+#include <nil/actor/network/actor_proxy_impl.hpp>
+#include <nil/actor/network/basp/application.hpp>
+#include <nil/actor/network/basp/ec.hpp>
+#include <nil/actor/network/make_endpoint_manager.hpp>
+#include <nil/actor/network/middleman.hpp>
+#include <nil/actor/network/multiplexer.hpp>
+#include <nil/actor/network/stream_transport.hpp>
+#include <nil/actor/raise_error.hpp>
+#include <nil/actor/send.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
             namespace backend {
 
@@ -75,8 +75,8 @@ namespace nil {
                     basp::application app {proxies_};
                     auto mgr = make_endpoint_manager(mpx, mm_.system(), transport_type {second, std::move(app)});
                     if (auto err = mgr->init()) {
-                        MTL_LOG_ERROR("mgr->init() failed: " << mm_.system().render(err));
-                        MTL_RAISE_ERROR("mgr->init() failed");
+                        ACTOR_LOG_ERROR("mgr->init() failed: " << mm_.system().render(err));
+                        ACTOR_RAISE_ERROR("mgr->init() failed");
                     }
                     mpx->register_reading(mgr);
                     auto &result = peers_[peer_id];
@@ -90,13 +90,13 @@ namespace nil {
                         return i->second;
                     auto sockets = make_stream_socket_pair();
                     if (!sockets) {
-                        MTL_LOG_ERROR("make_stream_socket_pair failed: " << mm_.system().render(sockets.error()));
-                        MTL_RAISE_ERROR("make_stream_socket_pair failed");
+                        ACTOR_LOG_ERROR("make_stream_socket_pair failed: " << mm_.system().render(sockets.error()));
+                        ACTOR_RAISE_ERROR("make_stream_socket_pair failed");
                     }
                     return emplace(id, sockets->first, sockets->second);
                 }
 
             }    // namespace backend
         }        // namespace network
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

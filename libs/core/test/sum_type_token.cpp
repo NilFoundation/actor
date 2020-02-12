@@ -15,11 +15,11 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
 
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-#include <nil/mtl/sum_type_token.hpp>
+#include <nil/actor/sum_type_token.hpp>
 
 namespace {
 

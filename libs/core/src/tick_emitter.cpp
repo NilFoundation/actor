@@ -9,12 +9,12 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/tick_emitter.hpp>
+#include <nil/actor/detail/tick_emitter.hpp>
 
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/logger.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             tick_emitter::tick_emitter() : start_(duration_type {0}), interval_(0), last_tick_id_(0) {
@@ -30,23 +30,23 @@ namespace nil {
             }
 
             void tick_emitter::start(time_point now) {
-                MTL_LOG_TRACE(MTL_ARG(now));
+                ACTOR_LOG_TRACE(ACTOR_ARG(now));
                 start_ = std::move(now);
             }
 
             void tick_emitter::stop() {
-                MTL_LOG_TRACE("");
+                ACTOR_LOG_TRACE("");
                 start_ = time_point {duration_type {0}};
             }
 
             void tick_emitter::interval(duration_type x) {
-                MTL_LOG_TRACE(MTL_ARG(x));
+                ACTOR_LOG_TRACE(ACTOR_ARG(x));
                 interval_ = x;
             }
 
             size_t tick_emitter::timeouts(time_point now, std::initializer_list<size_t> periods) {
-                MTL_LOG_TRACE(MTL_ARG(now) << MTL_ARG(periods) << MTL_ARG(interval_) << MTL_ARG(start_));
-                MTL_ASSERT(now >= start_);
+                ACTOR_LOG_TRACE(ACTOR_ARG(now) << ACTOR_ARG(periods) << ACTOR_ARG(interval_) << ACTOR_ARG(start_));
+                ACTOR_ASSERT(now >= start_);
                 size_t result = 0;
                 auto f = [&](size_t tick) {
                     size_t n = 0;
@@ -61,7 +61,7 @@ namespace nil {
             }
 
             tick_emitter::time_point tick_emitter::next_timeout(time_point t, std::initializer_list<size_t> periods) {
-                MTL_ASSERT(interval_.count() != 0);
+                ACTOR_ASSERT(interval_.count() != 0);
                 auto is_trigger = [&](size_t tick_id) {
                     for (auto period : periods)
                         if (tick_id % period == 0)
@@ -77,5 +77,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

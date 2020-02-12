@@ -10,12 +10,12 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/ipv6_subnet.hpp>
+#include <nil/actor/ipv6_subnet.hpp>
 
-#include <nil/mtl/detail/mask_bits.hpp>
+#include <nil/actor/detail/mask_bits.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         // -- constructors, destructors, and assignment operators --------------------
 
@@ -84,5 +84,5 @@ namespace nil {
             return result;
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

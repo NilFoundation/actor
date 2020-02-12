@@ -10,14 +10,14 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
 #include <limits>
 #include <thread>
 
-#include <nil/mtl/detail/shared_spinlock.hpp>
+#include <nil/actor/detail/shared_spinlock.hpp>
 
-#include <nil/mtl/detail/cas_weak.hpp>
+#include <nil/actor/detail/cas_weak.hpp>
 
 namespace {
 
@@ -28,7 +28,7 @@ namespace {
 }    // namespace
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             shared_spinlock::shared_spinlock() : flag_(0) {
@@ -97,5 +97,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

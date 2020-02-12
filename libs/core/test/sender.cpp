@@ -12,13 +12,13 @@
 
 #define BOOST_TEST_MODULE sender_test
 
-#include <nil/mtl/mixin/sender.hpp>
+#include <nil/actor/mixin/sender.hpp>
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <chrono>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 using std::chrono::seconds;
 

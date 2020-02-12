@@ -10,7 +10,7 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
 #define BOOST_TEST_MODULE actor_lifetime_test
 
@@ -21,13 +21,13 @@
 #include <atomic>
 #include <condition_variable>
 
-#include <nil/mtl/all.hpp>
+#include <nil/actor/all.hpp>
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-using check_atom = nil::mtl::atom_constant<nil::mtl::atom("check")>;
+using check_atom = nil::actor::atom_constant<nil::actor::atom("check")>;
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 

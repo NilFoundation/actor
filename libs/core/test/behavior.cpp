@@ -17,17 +17,17 @@
 
 #include <functional>
 
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
-#include <nil/mtl/send.hpp>
-#include <nil/mtl/behavior.hpp>
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/message_handler.hpp>
-#include <nil/mtl/event_based_actor.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/make_type_erased_tuple_view.hpp>
+#include <nil/actor/send.hpp>
+#include <nil/actor/behavior.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/message_handler.hpp>
+#include <nil/actor/event_based_actor.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/make_type_erased_tuple_view.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 using namespace std;
 
 using hi_atom = atom_constant<atom("hi")>;

@@ -1,33 +1,33 @@
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
 #include <signal.h>
 
 #define BOOST_TEST_MODULE openssl_dynamic_remote_actor_test
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <vector>
 #include <sstream>
 #include <utility>
 #include <algorithm>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/io/all.hpp>
-#include <nil/mtl/openssl/all.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/io/all.hpp>
+#include <nil/actor/openssl/all.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 
     constexpr char local_host[] = "127.0.0.1";
 
-    class config : public actor_system_config {
+    class config : public spawner_config {
     public:
         config() {
             load<io::middleman>();
             load<openssl::manager>();
             add_message_type<std::vector<int>>("std::vector<int>");
-            actor_system_config::parse(test::engine::argc(), test::engine::argv());
+            spawner_config::parse(test::engine::argc(), test::engine::argv());
             // Setting the "max consecutive reads" to 1 is highly likely to cause
             // OpenSSL to buffer data internally and report "pending" data after a read
             // operation. This will trigger `must_read_more` in the SSL read policy
@@ -38,12 +38,12 @@ namespace {
 
     struct fixture {
         config server_side_config;
-        actor_system server_side {server_side_config};
+        spawner server_side {server_side_config};
         config client_side_config;
-        actor_system client_side {client_side_config};
+        spawner client_side {client_side_config};
 
         fixture() {
-#ifdef MTL_LINUX
+#ifdef ACTOR_LINUX
             signal(SIGPIPE, SIG_IGN);
 #endif
         }

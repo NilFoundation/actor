@@ -12,16 +12,16 @@
 
 #define BOOST_TEST_MODULE simple_timeout_test
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <boost/chrono/duration.hpp>
 
 #include <memory>
 
-#include <nil/mtl/after.hpp>
-#include <nil/mtl/all.hpp>
+#include <nil/actor/after.hpp>
+#include <nil/actor/all.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace boost {
     namespace test_tools {

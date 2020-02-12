@@ -10,11 +10,11 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/deep_to_string.hpp>
-#include <nil/mtl/timestamp.hpp>
+#include <nil/actor/deep_to_string.hpp>
+#include <nil/actor/timestamp.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         timestamp make_timestamp() {
             return std::chrono::system_clock::now();
@@ -28,5 +28,5 @@ namespace nil {
             x += timestamp_to_string(y);
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

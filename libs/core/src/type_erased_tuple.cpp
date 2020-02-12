@@ -10,16 +10,16 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/type_erased_tuple.hpp>
+#include <nil/actor/type_erased_tuple.hpp>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/error.hpp>
-#include <nil/mtl/raise_error.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/error.hpp>
+#include <nil/actor/raise_error.hpp>
 
-#include <nil/mtl/detail/try_match.hpp>
+#include <nil/actor/detail/try_match.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         type_erased_tuple::~type_erased_tuple() {
             // nop
@@ -76,7 +76,7 @@ namespace nil {
         }
 
         bool type_erased_tuple::matches(size_t pos, uint16_t nr, const std::type_info *ptr) const noexcept {
-            MTL_ASSERT(pos < size());
+            ACTOR_ASSERT(pos < size());
             auto tp = type(pos);
             if (tp.first != nr)
                 return false;
@@ -90,15 +90,15 @@ namespace nil {
         }
 
         void *empty_type_erased_tuple::get_mutable(size_t) {
-            MTL_RAISE_ERROR("empty_type_erased_tuple::get_mutable");
+            ACTOR_RAISE_ERROR("empty_type_erased_tuple::get_mutable");
         }
 
         error empty_type_erased_tuple::load(size_t, deserializer &) {
-            MTL_RAISE_ERROR("empty_type_erased_tuple::get_mutable");
+            ACTOR_RAISE_ERROR("empty_type_erased_tuple::get_mutable");
         }
 
         error_code<sec> empty_type_erased_tuple::load(size_t, binary_deserializer &) {
-            MTL_RAISE_ERROR("empty_type_erased_tuple::load");
+            ACTOR_RAISE_ERROR("empty_type_erased_tuple::load");
         }
 
         size_t empty_type_erased_tuple::size() const noexcept {
@@ -110,27 +110,27 @@ namespace nil {
         }
 
         auto empty_type_erased_tuple::type(size_t) const noexcept -> rtti_pair {
-            MTL_CRITICAL("empty_type_erased_tuple::type");
+            ACTOR_CRITICAL("empty_type_erased_tuple::type");
         }
 
         const void *empty_type_erased_tuple::get(size_t) const noexcept {
-            MTL_CRITICAL("empty_type_erased_tuple::get");
+            ACTOR_CRITICAL("empty_type_erased_tuple::get");
         }
 
         std::string empty_type_erased_tuple::stringify(size_t) const {
-            MTL_RAISE_ERROR("empty_type_erased_tuple::stringify");
+            ACTOR_RAISE_ERROR("empty_type_erased_tuple::stringify");
         }
 
         type_erased_value_ptr empty_type_erased_tuple::copy(size_t) const {
-            MTL_RAISE_ERROR("empty_type_erased_tuple::copy");
+            ACTOR_RAISE_ERROR("empty_type_erased_tuple::copy");
         }
 
         error empty_type_erased_tuple::save(size_t, serializer &) const {
-            MTL_RAISE_ERROR("empty_type_erased_tuple::save");
+            ACTOR_RAISE_ERROR("empty_type_erased_tuple::save");
         }
 
         error_code<sec> empty_type_erased_tuple::save(size_t, binary_serializer &) const {
-            MTL_RAISE_ERROR("empty_type_erased_tuple::save");
+            ACTOR_RAISE_ERROR("empty_type_erased_tuple::save");
         }
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

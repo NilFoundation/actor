@@ -1,7 +1,7 @@
 #include <string>
 #include <sstream>
 
-#include <nil/mtl/opencl/global.hpp>
+#include <nil/actor/opencl/global.hpp>
 
 cl_int clReleaseDeviceDummy(cl_device_id) {
     return 0;
@@ -12,7 +12,7 @@ cl_int clRetainDeviceDummy(cl_device_id) {
 }
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace opencl {
 
             std::ostream &operator<<(std::ostream &os, device_type dev) {
@@ -289,5 +289,5 @@ namespace nil {
             }
 
         }    // namespace opencl
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

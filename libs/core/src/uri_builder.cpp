@@ -10,13 +10,13 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/uri_builder.hpp>
+#include <nil/actor/uri_builder.hpp>
 
-#include <nil/mtl/detail/uri_impl.hpp>
-#include <nil/mtl/make_counted.hpp>
+#include <nil/actor/detail/uri_impl.hpp>
+#include <nil/actor/make_counted.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         uri_builder::uri_builder() : impl_(make_counted<detail::uri_impl>()) {
             // nop
@@ -67,5 +67,5 @@ namespace nil {
             return uri {std::move(impl_)};
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

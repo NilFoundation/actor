@@ -10,13 +10,13 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/mailbox_element.hpp>
+#include <nil/actor/mailbox_element.hpp>
 
-#include <nil/mtl/message_builder.hpp>
-#include <nil/mtl/type_nr.hpp>
+#include <nil/actor/message_builder.hpp>
+#include <nil/actor/type_nr.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         namespace {
 
@@ -84,5 +84,5 @@ namespace nil {
             return mailbox_element_ptr {ptr};
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

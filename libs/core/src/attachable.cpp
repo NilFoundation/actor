@@ -10,10 +10,10 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/attachable.hpp>
+#include <nil/actor/attachable.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         attachable::~attachable() {
             // Avoid recursive cleanup of next pointers because this can cause a stack
@@ -38,5 +38,5 @@ namespace nil {
             return false;
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

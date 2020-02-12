@@ -9,29 +9,29 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/multiplexer.hpp>
+#include <nil/actor/network/multiplexer.hpp>
 
 #include <algorithm>
 
-#include <nil/mtl/byte.hpp>
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/error.hpp>
-#include <nil/mtl/expected.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/network/operation.hpp>
-#include <nil/mtl/network/pollset_updater.hpp>
-#include <nil/mtl/network/socket_manager.hpp>
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/variant.hpp>
+#include <nil/actor/byte.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/error.hpp>
+#include <nil/actor/expected.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/network/operation.hpp>
+#include <nil/actor/network/pollset_updater.hpp>
+#include <nil/actor/network/socket_manager.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/variant.hpp>
 
-#ifndef MTL_WINDOWS
+#ifndef ACTOR_WINDOWS
 #include <poll.h>
 #else
 #include "caf/detail/socket_sys_includes.hpp"
-#endif    // MTL_WINDOWS
+#endif    // ACTOR_WINDOWS
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
 
 #ifndef POLLRDHUP
@@ -44,7 +44,7 @@ namespace nil {
 
             namespace {
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
                 // From the MSDN: If the POLLPRI flag is set on a socket for the Microsoft
                 //                Winsock provider, the WSAPoll function will fail.
                 const short input_mask = POLLIN;
@@ -104,7 +104,7 @@ namespace nil {
                     if (shutting_down_) {
                         // discard
                     } else if (mgr->mask() != operation::none) {
-                        MTL_ASSERT(index_of(mgr) != -1);
+                        ACTOR_ASSERT(index_of(mgr) != -1);
                         if (mgr->mask_add(operation::read)) {
                             auto &fd = pollset_[index_of(mgr)];
                             fd.events |= input_mask;
@@ -122,7 +122,7 @@ namespace nil {
                     if (shutting_down_) {
                         // discard
                     } else if (mgr->mask() != operation::none) {
-                        MTL_ASSERT(index_of(mgr) != -1);
+                        ACTOR_ASSERT(index_of(mgr) != -1);
                         if (mgr->mask_add(operation::write)) {
                             auto &fd = pollset_[index_of(mgr)];
                             fd.events |= output_mask;
@@ -149,7 +149,7 @@ namespace nil {
                 // We'll call poll() until poll() succeeds or fails.
                 for (;;) {
                     int presult;
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
                     presult = ::WSAPoll(pollset_.data(), static_cast<ULONG>(pollset_.size()), blocking ? -1 : 0);
 #else
                     presult = ::poll(pollset_.data(), static_cast<nfds_t>(pollset_.size()), blocking ? -1 : 0);
@@ -159,11 +159,11 @@ namespace nil {
                         switch (code) {
                             case std::errc::interrupted: {
                                 // A signal was caught. Simply try again.
-                                MTL_LOG_DEBUG("received errc::interrupted, try again");
+                                ACTOR_LOG_DEBUG("received errc::interrupted, try again");
                                 break;
                             }
                             case std::errc::not_enough_memory: {
-                                MTL_LOG_ERROR("poll() failed due to insufficient memory");
+                                ACTOR_LOG_ERROR("poll() failed due to insufficient memory");
                                 // There's not much we can do other than try again in hope someone
                                 // else releases memory.
                                 break;
@@ -174,18 +174,18 @@ namespace nil {
                                 auto msg = std::generic_category().message(int_code);
                                 string_view prefix = "poll() failed: ";
                                 msg.insert(msg.begin(), prefix.begin(), prefix.end());
-                                MTL_CRITICAL(msg.c_str());
+                                ACTOR_CRITICAL(msg.c_str());
                             }
                         }
                         // Rinse and repeat.
                         continue;
                     }
-                    MTL_LOG_DEBUG("poll() on" << pollset_.size() << "sockets reported" << presult << "event(s)");
+                    ACTOR_LOG_DEBUG("poll() on" << pollset_.size() << "sockets reported" << presult << "event(s)");
                     // No activity.
                     if (presult == 0)
                         return false;
                     // Scan pollset for events.
-                    MTL_LOG_DEBUG("scan pollset for socket events");
+                    ACTOR_LOG_DEBUG("scan pollset for socket events");
                     for (size_t i = 0; i < pollset_.size() && presult > 0;) {
                         auto revents = pollset_[i].revents;
                         if (revents != 0) {
@@ -211,7 +211,7 @@ namespace nil {
             }
 
             void multiplexer::run() {
-                MTL_LOG_TRACE("");
+                ACTOR_LOG_TRACE("");
                 while (!pollset_.empty())
                     poll_once(true);
             }
@@ -238,8 +238,8 @@ namespace nil {
             }
 
             short multiplexer::handle(const socket_manager_ptr &mgr, short events, short revents) {
-                MTL_LOG_TRACE(MTL_ARG2("socket", mgr->handle()));
-                MTL_ASSERT(mgr != nullptr);
+                ACTOR_LOG_TRACE(ACTOR_ARG2("socket", mgr->handle()));
+                ACTOR_ASSERT(mgr != nullptr);
                 bool checkerror = true;
                 if ((revents & input_mask) != 0) {
                     checkerror = false;
@@ -269,21 +269,21 @@ namespace nil {
             }
 
             void multiplexer::add(socket_manager_ptr mgr) {
-                MTL_ASSERT(index_of(mgr) == -1);
+                ACTOR_ASSERT(index_of(mgr) == -1);
                 pollfd new_entry {socket_cast<socket_id>(mgr->handle()), to_bitmask(mgr->mask()), 0};
                 pollset_.emplace_back(new_entry);
                 managers_.emplace_back(std::move(mgr));
             }
 
             void multiplexer::del(ptrdiff_t index) {
-                MTL_ASSERT(index != -1);
+                ACTOR_ASSERT(index != -1);
                 pollset_.erase(pollset_.begin() + index);
                 managers_.erase(managers_.begin() + index);
             }
 
             void multiplexer::write_to_pipe(uint8_t opcode, const socket_manager_ptr &mgr) {
-                MTL_ASSERT(opcode == 0 || opcode == 1 || opcode == 4);
-                MTL_ASSERT(mgr != nullptr || opcode == 4);
+                ACTOR_ASSERT(opcode == 0 || opcode == 1 || opcode == 4);
+                ACTOR_ASSERT(mgr != nullptr || opcode == 4);
                 pollset_updater::msg_buf buf;
                 if (opcode != 4)
                     mgr->ref();
@@ -303,5 +303,5 @@ namespace nil {
             }
 
         }    // namespace network
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

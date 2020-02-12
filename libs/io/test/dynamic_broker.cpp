@@ -1,27 +1,27 @@
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
 #define BOOST_TEST_MODULE io_dynamic_broker_test
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <memory>
 #include <iostream>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/io/all.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/io/all.hpp>
 
-#include <nil/mtl/string_algorithms.hpp>
+#include <nil/actor/string_algorithms.hpp>
 
 using namespace std;
-using namespace nil::mtl;
-using namespace nil::mtl::io;
+using namespace nil::actor;
+using namespace nil::actor::io;
 
 namespace {
 
-    using ping_atom = nil::mtl::atom_constant<nil::mtl::atom("ping")>;
-    using pong_atom = nil::mtl::atom_constant<nil::mtl::atom("pong")>;
-    using publish_atom = nil::mtl::atom_constant<nil::mtl::atom("publish")>;
-    using kickoff_atom = nil::mtl::atom_constant<nil::mtl::atom("kickoff")>;
+    using ping_atom = nil::actor::atom_constant<nil::actor::atom("ping")>;
+    using pong_atom = nil::actor::atom_constant<nil::actor::atom("pong")>;
+    using publish_atom = nil::actor::atom_constant<nil::actor::atom("publish")>;
+    using kickoff_atom = nil::actor::atom_constant<nil::actor::atom("kickoff")>;
 
     void ping(event_based_actor *self, size_t num_pings) {
         BOOST_TEST_MESSAGE("num_pings: " << num_pings);

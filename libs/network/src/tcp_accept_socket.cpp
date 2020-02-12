@@ -9,23 +9,23 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/tcp_accept_socket.hpp>
+#include <nil/actor/network/tcp_accept_socket.hpp>
 
-#include <nil/mtl/detail/net_syscall.hpp>
-#include <nil/mtl/detail/sockaddr_members.hpp>
-#include <nil/mtl/detail/socket_sys_aliases.hpp>
-#include <nil/mtl/detail/socket_sys_includes.hpp>
-#include <nil/mtl/expected.hpp>
-#include <nil/mtl/ip_address.hpp>
-#include <nil/mtl/ipv4_address.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/network/ip.hpp>
-#include <nil/mtl/network/socket_guard.hpp>
-#include <nil/mtl/network/tcp_stream_socket.hpp>
-#include <nil/mtl/sec.hpp>
+#include <nil/actor/detail/net_syscall.hpp>
+#include <nil/actor/detail/sockaddr_members.hpp>
+#include <nil/actor/detail/socket_sys_aliases.hpp>
+#include <nil/actor/detail/socket_sys_includes.hpp>
+#include <nil/actor/expected.hpp>
+#include <nil/actor/ip_address.hpp>
+#include <nil/actor/ipv4_address.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/network/ip.hpp>
+#include <nil/actor/network/socket_guard.hpp>
+#include <nil/actor/network/tcp_stream_socket.hpp>
+#include <nil/actor/sec.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
 
             namespace {
@@ -39,7 +39,7 @@ namespace nil {
                     sa.sin6_addr = in6addr_any;
                     // Also accept ipv4 connections on this socket.
                     int off = 0;
-                    MTL_NET_SYSCALL("setsockopt", res, !=, 0,
+                    ACTOR_NET_SYSCALL("setsockopt", res, !=, 0,
                                     setsockopt(x.id, IPPROTO_IPV6, IPV6_V6ONLY, reinterpret_cast<setsockopt_ptr>(&off),
                                                static_cast<socket_size_type>(sizeof(off))));
                     return none;
@@ -49,19 +49,19 @@ namespace nil {
                 expected<tcp_accept_socket> new_tcp_acceptor_impl(uint16_t port, const char *addr, bool reuse_addr,
                                                                   bool any) {
                     static_assert(Family == AF_INET || Family == AF_INET6, "invalid family");
-                    MTL_LOG_TRACE(MTL_ARG(port) << ", addr = " << (addr ? addr : "nullptr"));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(port) << ", addr = " << (addr ? addr : "nullptr"));
                     int socktype = SOCK_STREAM;
 #ifdef SOCK_CLOEXEC
                     socktype |= SOCK_CLOEXEC;
 #endif
-                    MTL_NET_SYSCALL("socket", fd, ==, -1, ::socket(Family, socktype, 0));
+                    ACTOR_NET_SYSCALL("socket", fd, ==, -1, ::socket(Family, socktype, 0));
                     tcp_accept_socket sock {fd};
                     // sguard closes the socket in case of exception
                     auto sguard = make_socket_guard(tcp_accept_socket {fd});
                     child_process_inherit(sock, false);
                     if (reuse_addr) {
                         int on = 1;
-                        MTL_NET_SYSCALL("setsockopt", tmp1, !=, 0,
+                        ACTOR_NET_SYSCALL("setsockopt", tmp1, !=, 0,
                                         setsockopt(fd, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<setsockopt_ptr>(&on),
                                                    static_cast<socket_size_type>(sizeof(on))));
                     }
@@ -72,9 +72,9 @@ namespace nil {
                     if (any)
                         if (auto err = set_inaddr_any(sock, sa))
                             return err;
-                    MTL_NET_SYSCALL("inet_pton", tmp, !=, 1, inet_pton(Family, addr, &detail::addr_of(sa)));
+                    ACTOR_NET_SYSCALL("inet_pton", tmp, !=, 1, inet_pton(Family, addr, &detail::addr_of(sa)));
                     detail::port_of(sa) = htons(port);
-                    MTL_NET_SYSCALL(
+                    ACTOR_NET_SYSCALL(
                         "bind", res, !=, 0,
                         bind(fd, reinterpret_cast<sockaddr *>(&sa), static_cast<socket_size_type>(sizeof(sa))));
                     return sguard.release();
@@ -83,19 +83,19 @@ namespace nil {
             }    // namespace
 
             expected<tcp_accept_socket> make_tcp_accept_socket(ip_endpoint node, bool reuse_addr) {
-                MTL_LOG_TRACE(MTL_ARG(node));
+                ACTOR_LOG_TRACE(ACTOR_ARG(node));
                 auto addr = to_string(node.address());
                 auto make_acceptor =
                     node.address().embeds_v4() ? new_tcp_acceptor_impl<AF_INET> : new_tcp_acceptor_impl<AF_INET6>;
                 auto p = make_acceptor(node.port(), addr.c_str(), reuse_addr, node.address().zero());
                 if (!p) {
-                    MTL_LOG_WARNING("could not create tcp socket for: " << to_string(node));
+                    ACTOR_LOG_WARNING("could not create tcp socket for: " << to_string(node));
                     return make_error(sec::cannot_open_port, "tcp socket creation failed", to_string(node));
                 }
                 auto sock = socket_cast<tcp_accept_socket>(*p);
                 auto sguard = make_socket_guard(sock);
-                MTL_NET_SYSCALL("listen", tmp, !=, 0, listen(sock.id, SOMAXCONN));
-                MTL_LOG_DEBUG(MTL_ARG(sock.id));
+                ACTOR_NET_SYSCALL("listen", tmp, !=, 0, listen(sock.id, SOMAXCONN));
+                ACTOR_LOG_DEBUG(ACTOR_ARG(sock.id));
                 return sguard.release();
             }
 
@@ -118,13 +118,13 @@ namespace nil {
                 if (sock == network::invalid_socket_id) {
                     auto err = network::last_socket_error();
                     if (err != std::errc::operation_would_block && err != std::errc::resource_unavailable_try_again) {
-                        return nil::mtl::make_error(sec::unavailable_or_would_block);
+                        return nil::actor::make_error(sec::unavailable_or_would_block);
                     }
-                    return nil::mtl::make_error(sec::socket_operation_failed, "tcp accept failed");
+                    return nil::actor::make_error(sec::socket_operation_failed, "tcp accept failed");
                 }
                 return tcp_stream_socket {sock};
             }
 
         }    // namespace network
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

@@ -10,11 +10,11 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/replies_to.hpp>
-#include <nil/mtl/string_algorithms.hpp>
+#include <nil/actor/replies_to.hpp>
+#include <nil/actor/string_algorithms.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         std::string replies_to_type_name(size_t input_size,
                                          const std::string *input,
@@ -25,7 +25,7 @@ namespace nil {
             // 'void' is not an announced type, hence we check whether uniform_typeid
             // did return a valid pointer to identify 'void' (this has the
             // possibility of false positives, but those will be catched anyways)
-            result = "nil::mtl::replies_to<";
+            result = "nil::actor::replies_to<";
             result += join(input, input + input_size, glue);
             result += ">::with<";
             result += join(output_opt1, output_opt1 + output_opt1_size, glue);
@@ -33,5 +33,5 @@ namespace nil {
             return result;
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

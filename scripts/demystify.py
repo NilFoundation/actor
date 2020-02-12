@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# This script demystifies C++ compiler output for MTL by
+# This script demystifies C++ compiler output for ACTOR by
 # replacing cryptic `typed_mpi<...>` templates with
 # `replies_to<...>::with<...>` and `atom_constant<...>`
 # with human-readable representation of the actual atom.
@@ -10,8 +10,8 @@ import sys
 # decodes 6bit characters to ASCII
 DECODING_TABLE = ' 0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz'
 
-# MTL type strings
-ATOM_CONSTANT_SUFFIX = "nil::mtl::atom_constant<"
+# ACTOR type strings
+ATOM_CONSTANT_SUFFIX = "nil::actor::atom_constant<"
 
 # `pos` points to first character after '<':
 #   template_name<...>
@@ -82,7 +82,7 @@ def stringify_list(xs):
   
 
 def decompose_typed_actor(x, first, last):
-  needle = "nil::mtl::detail::type_list<"
+  needle = "nil::actor::detail::type_list<"
   # first type list -> input types
   j = x.find(needle, first) + len(needle)
   k = end_of_template(x, j)
@@ -91,7 +91,7 @@ def decompose_typed_actor(x, first, last):
   j = x.find(needle, k) + len(needle)
   k = end_of_template(x, j)
   outputs = decompose_type_list(x, j, k)
-  # replace all 'nil::mtl::atom_constant<...>' entries in inputs
+  # replace all 'nil::actor::atom_constant<...>' entries in inputs
   res = "replies_to<"
   res += stringify_list(inputs)
   res += ">::with<"
@@ -103,7 +103,7 @@ def decompose_typed_actor(x, first, last):
 for line in sys.stdin:
   # replace "std::__1" with "std::" (Clang libc++)
   line = line.replace("std::__1", "std::")
-  needle = "nil::mtl::typed_mpi<"
+  needle = "nil::actor::typed_mpi<"
   idx = line.find(needle)
   while idx != -1:
     # find end of typed_actor<...>
@@ -114,5 +114,5 @@ for line in sys.stdin:
     suffix = line[last:]
     line = prefix + updated + suffix
     idx = line.find(needle, idx + len(updated))
-  sys.stdout.write(line.replace("nil::mtl::", ""))
+  sys.stdout.write(line.replace("nil::actor::", ""))
 

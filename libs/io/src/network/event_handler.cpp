@@ -9,20 +9,20 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/network/event_handler.hpp>
+#include <nil/actor/io/network/event_handler.hpp>
 
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/logger.hpp>
 
-#include <nil/mtl/io/network/default_multiplexer.hpp>
+#include <nil/actor/io/network/default_multiplexer.hpp>
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 #include <winsock2.h>
 #else
 #include <sys/socket.h>
 #endif
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace network {
 
@@ -34,7 +34,7 @@ namespace nil {
 
                 event_handler::~event_handler() {
                     if (fd_ != invalid_native_socket) {
-                        MTL_LOG_DEBUG("close socket" << MTL_ARG(fd_));
+                        ACTOR_LOG_DEBUG("close socket" << ACTOR_ARG(fd_));
                         close_socket(fd_);
                     }
                 }
@@ -58,5 +58,5 @@ namespace nil {
 
             }    // namespace network
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

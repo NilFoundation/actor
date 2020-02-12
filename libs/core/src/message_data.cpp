@@ -10,12 +10,12 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/message_data.hpp>
+#include <nil/actor/detail/message_data.hpp>
 
 #include <cstring>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             message_data::~message_data() {
@@ -27,5 +27,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

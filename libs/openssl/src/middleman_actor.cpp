@@ -10,33 +10,33 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/middleman_actor.hpp>
+#include <nil/actor/io/middleman_actor.hpp>
 
 #include <tuple>
 #include <stdexcept>
 #include <utility>
 
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/send.hpp>
-#include <nil/mtl/actor.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/node_id.hpp>
-#include <nil/mtl/actor_proxy.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/typed_event_based_actor.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/send.hpp>
+#include <nil/actor/actor.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/node_id.hpp>
+#include <nil/actor/actor_proxy.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/typed_event_based_actor.hpp>
 
-#include <nil/mtl/io/basp_broker.hpp>
-#include <nil/mtl/io/system_messages.hpp>
-#include <nil/mtl/io/middleman_actor_impl.hpp>
+#include <nil/actor/io/basp_broker.hpp>
+#include <nil/actor/io/system_messages.hpp>
+#include <nil/actor/io/middleman_actor_impl.hpp>
 
-#include <nil/mtl/io/network/interfaces.hpp>
-#include <nil/mtl/io/network/stream_impl.hpp>
-#include <nil/mtl/io/network/doorman_impl.hpp>
-#include <nil/mtl/io/network/default_multiplexer.hpp>
+#include <nil/actor/io/network/interfaces.hpp>
+#include <nil/actor/io/network/stream_impl.hpp>
+#include <nil/actor/io/network/doorman_impl.hpp>
+#include <nil/actor/io/network/default_multiplexer.hpp>
 
-#include <nil/mtl/openssl/session.hpp>
+#include <nil/actor/openssl/session.hpp>
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 #include <winsock2.h>
 #include <ws2tcpip.h>    // socket_size_type, etc. (MSVC20xx)
 #else
@@ -45,7 +45,7 @@
 #endif
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace openssl {
 
             namespace {
@@ -59,30 +59,30 @@ namespace nil {
                     }
 
                     rw_state read_some(size_t &result, native_socket fd, void *buf, size_t len) {
-                        MTL_LOG_TRACE(MTL_ARG(fd) << MTL_ARG(len));
+                        ACTOR_LOG_TRACE(ACTOR_ARG(fd) << ACTOR_ARG(len));
                         return session_->read_some(result, fd, buf, len);
                     }
 
                     rw_state write_some(size_t &result, native_socket fd, const void *buf, size_t len) {
-                        MTL_LOG_TRACE(MTL_ARG(fd) << MTL_ARG(len));
+                        ACTOR_LOG_TRACE(ACTOR_ARG(fd) << ACTOR_ARG(len));
                         return session_->write_some(result, fd, buf, len);
                     }
 
                     bool try_accept(native_socket &result, native_socket fd) {
-                        MTL_LOG_TRACE(MTL_ARG(fd));
+                        ACTOR_LOG_TRACE(ACTOR_ARG(fd));
                         sockaddr_storage addr;
                         memset(&addr, 0, sizeof(addr));
-                        mtl::io::network::socket_size_type addrlen = sizeof(addr);
+                        actor::io::network::socket_size_type addrlen = sizeof(addr);
                         result = accept(fd, reinterpret_cast<sockaddr *>(&addr), &addrlen);
                         // note accept4 is better to avoid races in setting CLOEXEC (but not posix)
                         if (result == io::network::invalid_native_socket) {
                             auto err = io::network::last_socket_error();
                             if (!io::network::would_block_or_temporarily_unavailable(err))
-                                MTL_LOG_ERROR("accept failed:" << io::network::socket_error_as_string(err));
+                                ACTOR_LOG_ERROR("accept failed:" << io::network::socket_error_as_string(err));
                             return false;
                         }
                         io::network::child_process_inherit(result, false);
-                        MTL_LOG_DEBUG(MTL_ARG(fd) << MTL_ARG(result));
+                        ACTOR_LOG_DEBUG(ACTOR_ARG(fd) << ACTOR_ARG(result));
                         return session_->try_accept(result);
                     }
 
@@ -103,18 +103,18 @@ namespace nil {
                     }
 
                     ~scribe_impl() override {
-                        MTL_LOG_TRACE("");
+                        ACTOR_LOG_TRACE("");
                     }
 
                     void configure_read(io::receive_policy::config config) override {
-                        MTL_LOG_TRACE(MTL_ARG(config));
+                        ACTOR_LOG_TRACE(ACTOR_ARG(config));
                         stream_.configure_read(config);
                         if (!launched_)
                             launch();
                     }
 
                     void ack_writes(bool enable) override {
-                        MTL_LOG_TRACE(MTL_ARG(enable));
+                        ACTOR_LOG_TRACE(ACTOR_ARG(enable));
                         stream_.ack_writes(enable);
                     }
 
@@ -127,13 +127,13 @@ namespace nil {
                     }
 
                     void graceful_shutdown() override {
-                        MTL_LOG_TRACE("");
+                        ACTOR_LOG_TRACE("");
                         stream_.graceful_shutdown();
                         detach(&stream_.backend(), false);
                     }
 
                     void flush() override {
-                        MTL_LOG_TRACE("");
+                        ACTOR_LOG_TRACE("");
                         stream_.flush(this);
                     }
 
@@ -152,8 +152,8 @@ namespace nil {
                     }
 
                     void launch() {
-                        MTL_LOG_TRACE("");
-                        MTL_ASSERT(!launched_);
+                        ACTOR_LOG_TRACE("");
+                        ACTOR_ASSERT(!launched_);
                         launched_ = true;
                         stream_.start(this);
                         // This schedules the scribe in case SSL still needs to call SSL_connect
@@ -163,12 +163,12 @@ namespace nil {
                     }
 
                     void add_to_loop() override {
-                        MTL_LOG_TRACE("");
+                        ACTOR_LOG_TRACE("");
                         stream_.activate(this);
                     }
 
                     void remove_from_loop() override {
-                        MTL_LOG_TRACE("");
+                        ACTOR_LOG_TRACE("");
                         stream_.passivate();
                     }
 
@@ -184,7 +184,7 @@ namespace nil {
                     }
 
                     bool new_connection() override {
-                        MTL_LOG_TRACE("");
+                        ACTOR_LOG_TRACE("");
                         if (detached())
                             // we are already disconnected from the broker while the multiplexer
                             // did not yet remove the socket, this can happen if an I/O event causes
@@ -196,7 +196,7 @@ namespace nil {
                         io::network::nonblocking(fd, true);
                         auto sssn = make_session(parent()->system(), fd, true);
                         if (sssn == nullptr) {
-                            MTL_LOG_ERROR("Unable to create SSL session for accepted socket");
+                            ACTOR_LOG_ERROR("Unable to create SSL session for accepted socket");
                             return false;
                         }
                         auto scrb = make_counted<scribe_impl>(dm, fd, std::move(sssn));
@@ -219,22 +219,22 @@ namespace nil {
 
                 protected:
                     expected<io::scribe_ptr> connect(const std::string &host, uint16_t port) override {
-                        MTL_LOG_TRACE(MTL_ARG(host) << MTL_ARG(port));
+                        ACTOR_LOG_TRACE(ACTOR_ARG(host) << ACTOR_ARG(port));
                         auto fd = io::network::new_tcp_connection(host, port);
                         if (!fd)
                             return std::move(fd.error());
                         io::network::nonblocking(*fd, true);
                         auto sssn = make_session(system(), *fd, false);
                         if (!sssn) {
-                            MTL_LOG_ERROR("Unable to create SSL session for connection");
+                            ACTOR_LOG_ERROR("Unable to create SSL session for connection");
                             return sec::cannot_connect_to_node;
                         }
-                        MTL_LOG_DEBUG("successfully created an SSL session for:" << MTL_ARG(host) << MTL_ARG(port));
+                        ACTOR_LOG_DEBUG("successfully created an SSL session for:" << ACTOR_ARG(host) << ACTOR_ARG(port));
                         return make_counted<scribe_impl>(mpx(), *fd, std::move(sssn));
                     }
 
                     expected<io::doorman_ptr> open(uint16_t port, const char *addr, bool reuse) override {
-                        MTL_LOG_TRACE(MTL_ARG(port) << MTL_ARG(reuse));
+                        ACTOR_LOG_TRACE(ACTOR_ARG(port) << ACTOR_ARG(reuse));
                         auto fd = io::network::new_tcp_acceptor_impl(port, addr, reuse);
                         if (!fd)
                             return std::move(fd.error());
@@ -256,5 +256,5 @@ namespace nil {
             }
 
         }    // namespace openssl
-    }        // namespace mtl
+    }        // namespace actor
 }

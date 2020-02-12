@@ -10,15 +10,15 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/merged_tuple.hpp>
+#include <nil/actor/detail/merged_tuple.hpp>
 
-#include <nil/mtl/index_mapping.hpp>
-#include <nil/mtl/system_messages.hpp>
+#include <nil/actor/index_mapping.hpp>
+#include <nil/actor/system_messages.hpp>
 
-#include <nil/mtl/detail/disposer.hpp>
+#include <nil/actor/detail/disposer.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             merged_tuple::cow_ptr merged_tuple::make(message x, message y) {
@@ -36,8 +36,8 @@ namespace nil {
 
             merged_tuple::merged_tuple(data_type xs, mapping_type ys) :
                 data_(std::move(xs)), type_token_(0xFFFFFFFF), mapping_(std::move(ys)) {
-                MTL_ASSERT(!data_.empty());
-                MTL_ASSERT(!mapping_.empty());
+                ACTOR_ASSERT(!data_.empty());
+                ACTOR_ASSERT(!mapping_.empty());
                 // calculate type token
                 for (auto &p : mapping_) {
                     type_token_ <<= 6;
@@ -50,13 +50,13 @@ namespace nil {
             }
 
             void *merged_tuple::get_mutable(size_t pos) {
-                MTL_ASSERT(pos < mapping_.size());
+                ACTOR_ASSERT(pos < mapping_.size());
                 auto &p = mapping_[pos];
                 return data_[p.first].unshared().get_mutable(p.second);
             }
 
             error merged_tuple::load(size_t pos, deserializer &source) {
-                MTL_ASSERT(pos < mapping_.size());
+                ACTOR_ASSERT(pos < mapping_.size());
                 auto &p = mapping_[pos];
                 return data_[p.first].unshared().load(p.second, source);
             }
@@ -70,31 +70,31 @@ namespace nil {
             }
 
             rtti_pair merged_tuple::type(size_t pos) const noexcept {
-                MTL_ASSERT(pos < mapping_.size());
+                ACTOR_ASSERT(pos < mapping_.size());
                 auto &p = mapping_[pos];
                 return data_[p.first]->type(p.second);
             }
 
             const void *merged_tuple::get(size_t pos) const noexcept {
-                MTL_ASSERT(pos < mapping_.size());
+                ACTOR_ASSERT(pos < mapping_.size());
                 auto &p = mapping_[pos];
                 return data_[p.first]->get(p.second);
             }
 
             std::string merged_tuple::stringify(size_t pos) const {
-                MTL_ASSERT(pos < mapping_.size());
+                ACTOR_ASSERT(pos < mapping_.size());
                 auto &p = mapping_[pos];
                 return data_[p.first]->stringify(p.second);
             }
 
             type_erased_value_ptr merged_tuple::copy(size_t pos) const {
-                MTL_ASSERT(pos < mapping_.size());
+                ACTOR_ASSERT(pos < mapping_.size());
                 auto &p = mapping_[pos];
                 return data_[p.first]->copy(p.second);
             }
 
             error merged_tuple::save(size_t pos, serializer &sink) const {
-                MTL_ASSERT(pos < mapping_.size());
+                ACTOR_ASSERT(pos < mapping_.size());
                 auto &p = mapping_[pos];
                 return data_[p.first]->save(p.second, sink);
             }
@@ -104,5 +104,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

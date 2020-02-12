@@ -10,14 +10,14 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/exit_reason.hpp>
+#include <nil/actor/exit_reason.hpp>
 
-#include <nil/mtl/message.hpp>
+#include <nil/actor/message.hpp>
 
-#include <nil/mtl/detail/enum_to_string.hpp>
+#include <nil/actor/detail/enum_to_string.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         namespace {
 
@@ -39,5 +39,5 @@ namespace nil {
             return {static_cast<uint8_t>(x), atom("exit"), std::move(context)};
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

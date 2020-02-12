@@ -10,23 +10,23 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/decorator/sequencer.hpp>
+#include <nil/actor/decorator/sequencer.hpp>
 
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/default_attachable.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/default_attachable.hpp>
 
-#include <nil/mtl/detail/disposer.hpp>
-#include <nil/mtl/detail/sync_request_bouncer.hpp>
+#include <nil/actor/detail/disposer.hpp>
+#include <nil/actor/detail/sync_request_bouncer.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace decorator {
 
             sequencer::sequencer(strong_actor_ptr f, strong_actor_ptr g, message_types_set msg_types) :
                 monitorable_actor(actor_config {}.add_flag(is_actor_dot_decorator_flag)), f_(std::move(f)),
                 g_(std::move(g)), msg_types_(std::move(msg_types)) {
-                MTL_ASSERT(f_);
-                MTL_ASSERT(g_);
+                ACTOR_ASSERT(f_);
+                ACTOR_ASSERT(g_);
                 // composed actor has dependency on constituent actors by default;
                 // if either constituent actor is already dead upon establishing
                 // the dependency, the actor is spawned dead
@@ -72,5 +72,5 @@ namespace nil {
             }
 
         }    // namespace decorator
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

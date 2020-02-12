@@ -11,16 +11,16 @@
 
 #define BOOST_TEST_MODULE tcp_sockets
 
-#include <nil/mtl/network/tcp_accept_socket.hpp>
-#include <nil/mtl/network/tcp_stream_socket.hpp>
+#include <nil/actor/network/tcp_accept_socket.hpp>
+#include <nil/actor/network/tcp_stream_socket.hpp>
 
-#include <nil/mtl/test/host_fixture.hpp>
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/host_fixture.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-#include <nil/mtl/network/socket_guard.hpp>
+#include <nil/actor/network/socket_guard.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::network;
+using namespace nil::actor;
+using namespace nil::actor::network;
 
 namespace {
 

@@ -23,20 +23,20 @@
 #include <unordered_set>
 #include <unordered_map>
 
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
-#include <nil/mtl/atom.hpp>
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/type_erased_value.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/make_type_erased_value.hpp>
+#include <nil/actor/atom.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/type_erased_value.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/make_type_erased_value.hpp>
 
-#include <nil/mtl/serialization/binary_serializer.hpp>
-#include <nil/mtl/serialization/binary_deserializer.hpp>
+#include <nil/actor/serialization/binary_serializer.hpp>
+#include <nil/actor/serialization/binary_deserializer.hpp>
 
-#include <nil/mtl/detail/stringification_inspector.hpp>
+#include <nil/actor/detail/stringification_inspector.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
     template<class T>

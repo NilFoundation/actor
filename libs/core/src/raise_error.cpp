@@ -10,19 +10,19 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/raise_error.hpp>
+#include <nil/actor/raise_error.hpp>
 
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/logger.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             void log_cstring_error(const char *cstring) {
-                MTL_IGNORE_UNUSED(cstring);
-                MTL_LOG_ERROR(cstring);
+                ACTOR_IGNORE_UNUSED(cstring);
+                ACTOR_LOG_ERROR(cstring);
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

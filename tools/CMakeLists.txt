@@ -10,13 +10,13 @@ cm_setup_version(VERSION 0.16.0)
 
 add_custom_target(all_tools)
 
-include_directories(${LIBMTL_INCLUDE_DIRS})
+include_directories(${LIBACTOR_INCLUDE_DIRS})
 
 macro(add name)
     add_executable(${name} ${name}.cpp ${ARGN})
     target_link_libraries(${name}
-                          ${MTL_EXTRA_LDFLAGS}
-                          ${MTL_LIBRARIES}
+                          ${ACTOR_EXTRA_LDFLAGS}
+                          ${ACTOR_LIBRARIES}
                           ${PTHREAD_LIBRARIES})
     install(FILES ${name}.cpp DESTINATION share/caf/tools/${folder})
     add_dependencies(${name} all_tools)
@@ -25,7 +25,7 @@ endmacro()
 if(WIN32)
     message(STATUS "skip caf-run (not supported on Windows)")
 else()
-    add(mtl-run)
+    add(actor-run)
 endif()
 
-add(mtl-vec)
+add(actor-vec)

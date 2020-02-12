@@ -11,23 +11,23 @@
 
 #define BOOST_TEST_MODULE basp.application
 
-#include <nil/mtl/network/basp/application.hpp>
+#include <nil/actor/network/basp/application.hpp>
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <vector>
 
-#include <nil/mtl/byte.hpp>
-#include <nil/mtl/forwarding_actor_proxy.hpp>
-#include <nil/mtl/network/basp/connection_state.hpp>
-#include <nil/mtl/network/basp/constants.hpp>
-#include <nil/mtl/network/basp/ec.hpp>
-#include <nil/mtl/network/packet_writer.hpp>
-#include <nil/mtl/none.hpp>
-#include <nil/mtl/uri.hpp>
+#include <nil/actor/byte.hpp>
+#include <nil/actor/forwarding_actor_proxy.hpp>
+#include <nil/actor/network/basp/connection_state.hpp>
+#include <nil/actor/network/basp/constants.hpp>
+#include <nil/actor/network/basp/ec.hpp>
+#include <nil/actor/network/packet_writer.hpp>
+#include <nil/actor/none.hpp>
+#include <nil/actor/uri.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::network;
+using namespace nil::actor;
+using namespace nil::actor::network;
 
 #define REQUIRE_OK(statement) \
     if (auto err = statement) \
@@ -301,7 +301,7 @@ BOOST_AUTO_TEST_CASE(resolve_response_with_valid_actor_handle) {
     std::set<std::string> ifs;
     MOCK(basp::message_type::resolve_response, 1u, aid, ifs);
     self->receive([&](strong_actor_ptr &hdl, std::set<std::string> &hdl_ifs) {
-        MTL_REQUIRE(hdl != nullptr);
+        ACTOR_REQUIRE(hdl != nullptr);
         BOOST_CHECK_EQUAL(ifs, hdl_ifs);
         BOOST_CHECK_EQUAL(hdl->id(), aid);
     });

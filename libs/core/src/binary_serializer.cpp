@@ -10,14 +10,14 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/serialization/binary_serializer.hpp>
+#include <nil/actor/serialization/binary_serializer.hpp>
 
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/detail/ieee_754.hpp>
-#include <nil/mtl/detail/network_order.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/detail/ieee_754.hpp>
+#include <nil/actor/detail/network_order.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace {
 
             template<class T>
@@ -72,7 +72,7 @@ namespace nil {
         }
 
         void binary_serializer::apply(span<const byte> x) {
-            MTL_ASSERT(write_pos_ <= buf_.size());
+            ACTOR_ASSERT(write_pos_ <= buf_.size());
             auto buf_size = buf_.size();
             if (write_pos_ == buf_size) {
                 buf_.insert(buf_.end(), x.begin(), x.end());
@@ -80,7 +80,7 @@ namespace nil {
                 memcpy(buf_.data() + write_pos_, x.data(), x.size());
             } else {
                 auto remaining = buf_size - write_pos_;
-                MTL_ASSERT(remaining < x.size());
+                ACTOR_ASSERT(remaining < x.size());
                 auto first = x.begin();
                 auto mid = first + remaining;
                 auto last = x.end();
@@ -88,7 +88,7 @@ namespace nil {
                 buf_.insert(buf_.end(), mid, last);
             }
             write_pos_ += x.size();
-            MTL_ASSERT(write_pos_ <= buf_.size());
+            ACTOR_ASSERT(write_pos_ <= buf_.size());
         }
 
         void binary_serializer::apply(uint8_t x) {
@@ -222,5 +222,5 @@ namespace nil {
             }
             end_sequence();
         }
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

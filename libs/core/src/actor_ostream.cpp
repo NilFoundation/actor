@@ -10,17 +10,17 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/actor_ostream.hpp>
+#include <nil/actor/actor_ostream.hpp>
 
-#include <nil/mtl/send.hpp>
-#include <nil/mtl/scoped_actor.hpp>
-#include <nil/mtl/abstract_actor.hpp>
-#include <nil/mtl/default_attachable.hpp>
+#include <nil/actor/send.hpp>
+#include <nil/actor/scoped_actor.hpp>
+#include <nil/actor/abstract_actor.hpp>
+#include <nil/actor/default_attachable.hpp>
 
-#include <nil/mtl/scheduler/abstract_coordinator.hpp>
+#include <nil/actor/scheduler/abstract_coordinator.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         actor_ostream::actor_ostream(local_actor *self) :
             self_(self->id()), printer_(self->home_system().scheduler().printer()) {
@@ -72,16 +72,16 @@ namespace nil {
             return actor_ostream {self};
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil
 
 namespace std {
 
-    nil::mtl::actor_ostream &endl(nil::mtl::actor_ostream &o) {
+    nil::actor::actor_ostream &endl(nil::actor::actor_ostream &o) {
         return o.write("\n");
     }
 
-    nil::mtl::actor_ostream &flush(nil::mtl::actor_ostream &o) {
+    nil::actor::actor_ostream &flush(nil::actor::actor_ostream &o) {
         return o.flush();
     }
 

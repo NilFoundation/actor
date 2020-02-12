@@ -9,14 +9,14 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/logger.hpp>
 
 #include <cstdint>
 
-#include <nil/mtl/io/network/pipe_reader.hpp>
-#include <nil/mtl/io/network/default_multiplexer.hpp>
+#include <nil/actor/io/network/pipe_reader.hpp>
+#include <nil/actor/io/network/default_multiplexer.hpp>
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 #include <winsock2.h>
 #else
 #include <unistd.h>
@@ -24,7 +24,7 @@
 #endif
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace network {
 
@@ -43,7 +43,7 @@ namespace nil {
                 resumable *pipe_reader::try_read_next() {
                     std::intptr_t ptrval;
                     // on windows, we actually have sockets, otherwise we have file handles
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
                     auto res = recv(fd(), reinterpret_cast<socket_recv_ptr>(&ptrval), sizeof(ptrval), 0);
 #else
                     auto res = read(fd(), &ptrval, sizeof(ptrval));
@@ -54,7 +54,7 @@ namespace nil {
                 }
 
                 void pipe_reader::handle_event(operation op) {
-                    MTL_LOG_TRACE(MTL_ARG(op));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(op));
                     if (op == operation::read) {
                         auto ptr = try_read_next();
                         if (ptr != nullptr)
@@ -69,5 +69,5 @@ namespace nil {
 
             }    // namespace network
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

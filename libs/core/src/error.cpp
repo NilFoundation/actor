@@ -10,16 +10,16 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/error.hpp>
+#include <nil/actor/error.hpp>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/message.hpp>
-#include <nil/mtl/serialization/serializer.hpp>
-#include <nil/mtl/serialization/deserializer.hpp>
-#include <nil/mtl/deep_to_string.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/message.hpp>
+#include <nil/actor/serialization/serializer.hpp>
+#include <nil/actor/serialization/deserializer.hpp>
+#include <nil/actor/deep_to_string.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         // -- nested classes -----------------------------------------------------------
 
@@ -83,17 +83,17 @@ namespace nil {
         // -- observers ----------------------------------------------------------------
 
         uint8_t error::code() const noexcept {
-            MTL_ASSERT(data_ != nullptr);
+            ACTOR_ASSERT(data_ != nullptr);
             return data_->code;
         }
 
         atom_value error::category() const noexcept {
-            MTL_ASSERT(data_ != nullptr);
+            ACTOR_ASSERT(data_ != nullptr);
             return data_->category;
         }
 
         const message &error::context() const noexcept {
-            MTL_ASSERT(data_ != nullptr);
+            ACTOR_ASSERT(data_ != nullptr);
             return data_->context;
         }
 
@@ -133,7 +133,7 @@ namespace nil {
         // -- modifiers --------------------------------------------------------------
 
         message &error::context() noexcept {
-            MTL_ASSERT(data_ != nullptr);
+            ACTOR_ASSERT(data_ != nullptr);
             return data_->context;
         }
 
@@ -147,12 +147,12 @@ namespace nil {
         // -- inspection support -----------------------------------------------------
 
         uint8_t &error::code_ref() noexcept {
-            MTL_ASSERT(data_ != nullptr);
+            ACTOR_ASSERT(data_ != nullptr);
             return data_->code;
         }
 
         atom_value &error::category_ref() noexcept {
-            MTL_ASSERT(data_ != nullptr);
+            ACTOR_ASSERT(data_ != nullptr);
             return data_->category;
         }
 
@@ -168,5 +168,5 @@ namespace nil {
                                   x.context());
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

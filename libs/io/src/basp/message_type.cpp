@@ -9,12 +9,12 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/basp/message_type.hpp>
+#include <nil/actor/io/basp/message_type.hpp>
 
-#include <nil/mtl/detail/enum_to_string.hpp>
+#include <nil/actor/detail/enum_to_string.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace basp {
 
@@ -32,5 +32,5 @@ namespace nil {
 
             }    // namespace basp
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

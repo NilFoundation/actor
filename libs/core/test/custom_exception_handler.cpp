@@ -14,12 +14,12 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/config.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/config.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
-#ifndef MTL_NO_EXCEPTIONS
+#ifndef ACTOR_NO_EXCEPTIONS
 
 class exception_testee : public event_based_actor {
 public:
@@ -66,10 +66,10 @@ BOOST_AUTO_TEST_CASE(test_custom_exception_handler_test) {
     self->wait_for(testee1, testee2, testee3);
 }
 
-#else    // MTL_NO_EXCEPTIONS
+#else    // ACTOR_NO_EXCEPTIONS
 
 BOOST_AUTO_TEST_CASE(no_exceptions_dummy_test) {
     BOOST_CHECK_EQUAL(true, true);
 }
 
-#endif    // MTL_NO_EXCEPTIONS
+#endif    // ACTOR_NO_EXCEPTIONS

@@ -11,19 +11,19 @@
 
 #define BOOST_TEST_MODULE transport_worker_dispatcher
 
-#include <nil/mtl/network/transport_worker_dispatcher.hpp>
+#include <nil/actor/network/transport_worker_dispatcher.hpp>
 
-#include <nil/mtl/test/host_fixture.hpp>
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/host_fixture.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-#include <nil/mtl/ip_endpoint.hpp>
-#include <nil/mtl/make_actor.hpp>
-#include <nil/mtl/monitorable_actor.hpp>
-#include <nil/mtl/node_id.hpp>
-#include <nil/mtl/uri.hpp>
+#include <nil/actor/ip_endpoint.hpp>
+#include <nil/actor/make_actor.hpp>
+#include <nil/actor/monitorable_actor.hpp>
+#include <nil/actor/node_id.hpp>
+#include <nil/actor/uri.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::network;
+using namespace nil::actor;
+using namespace nil::actor::network;
 
 namespace {
 

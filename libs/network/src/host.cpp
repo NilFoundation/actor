@@ -9,26 +9,26 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/host.hpp>
+#include <nil/actor/network/host.hpp>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/detail/net_syscall.hpp>
-#include <nil/mtl/detail/socket_sys_includes.hpp>
-#include <nil/mtl/error.hpp>
-#include <nil/mtl/make_message.hpp>
-#include <nil/mtl/message.hpp>
-#include <nil/mtl/network/socket.hpp>
-#include <nil/mtl/none.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/detail/net_syscall.hpp>
+#include <nil/actor/detail/socket_sys_includes.hpp>
+#include <nil/actor/error.hpp>
+#include <nil/actor/make_message.hpp>
+#include <nil/actor/message.hpp>
+#include <nil/actor/network/socket.hpp>
+#include <nil/actor/none.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 
             error this_host::startup() {
                 WSADATA WinsockData;
-                MTL_NET_SYSCALL("WSAStartup", result, !=, 0, WSAStartup(MAKEWORD(2, 2), &WinsockData));
+                ACTOR_NET_SYSCALL("WSAStartup", result, !=, 0, WSAStartup(MAKEWORD(2, 2), &WinsockData));
                 return none;
             }
 
@@ -36,7 +36,7 @@ namespace nil {
                 WSACleanup();
             }
 
-#else    // MTL_WINDOWS
+#else    // ACTOR_WINDOWS
 
             error this_host::startup() {
                 return none;
@@ -46,8 +46,8 @@ namespace nil {
                 // nop
             }
 
-#endif    // MTL_WINDOWS
+#endif    // ACTOR_WINDOWS
 
         }    // namespace network
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

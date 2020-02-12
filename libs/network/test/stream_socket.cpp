@@ -11,16 +11,16 @@
 
 #define BOOST_TEST_MODULE stream_socket
 
-#include <nil/mtl/network/stream_socket.hpp>
+#include <nil/actor/network/stream_socket.hpp>
 
-#include <nil/mtl/test/host_fixture.hpp>
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/host_fixture.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-#include <nil/mtl/byte.hpp>
-#include <nil/mtl/span.hpp>
+#include <nil/actor/byte.hpp>
+#include <nil/actor/span.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::network;
+using namespace nil::actor;
+using namespace nil::actor::network;
 
 namespace {
 
@@ -46,10 +46,10 @@ namespace {
     struct fixture : host_fixture {
         fixture() : rd_buf(124) {
             std::tie(first, second) = unbox(make_stream_socket_pair());
-            BOOST_REQUIRE_EQUAL(nonblocking(first, true), nil::mtl::none);
-            BOOST_REQUIRE_EQUAL(nonblocking(second, true), nil::mtl::none);
-            MTL_REQUIRE_NOT_EQUAL(unbox(send_buffer_size(first)), 0u);
-            MTL_REQUIRE_NOT_EQUAL(unbox(send_buffer_size(second)), 0u);
+            BOOST_REQUIRE_EQUAL(nonblocking(first, true), nil::actor::none);
+            BOOST_REQUIRE_EQUAL(nonblocking(second, true), nil::actor::none);
+            ACTOR_REQUIRE_NOT_EQUAL(unbox(send_buffer_size(first)), 0u);
+            ACTOR_REQUIRE_NOT_EQUAL(unbox(send_buffer_size(second)), 0u);
         }
 
         ~fixture() {

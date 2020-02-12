@@ -10,14 +10,14 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/dynamic_message_data.hpp>
+#include <nil/actor/detail/dynamic_message_data.hpp>
 
-#include <nil/mtl/error.hpp>
-#include <nil/mtl/intrusive_cow_ptr.hpp>
-#include <nil/mtl/make_counted.hpp>
+#include <nil/actor/error.hpp>
+#include <nil/actor/intrusive_cow_ptr.hpp>
+#include <nil/actor/make_counted.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             dynamic_message_data::dynamic_message_data() : type_token_(0xFFFFFFFF) {
@@ -47,17 +47,17 @@ namespace nil {
             }
 
             void *dynamic_message_data::get_mutable(size_t pos) {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 return elements_[pos]->get_mutable();
             }
 
             error dynamic_message_data::load(size_t pos, deserializer &source) {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 return elements_[pos]->load(source);
             }
 
             error_code<sec> dynamic_message_data::load(size_t pos, binary_deserializer &source) {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 return elements_[pos]->load(source);
             }
 
@@ -70,32 +70,32 @@ namespace nil {
             }
 
             auto dynamic_message_data::type(size_t pos) const noexcept -> rtti_pair {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 return elements_[pos]->type();
             }
 
             const void *dynamic_message_data::get(size_t pos) const noexcept {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 return elements_[pos]->get();
             }
 
             std::string dynamic_message_data::stringify(size_t pos) const {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 return elements_[pos]->stringify();
             }
 
             type_erased_value_ptr dynamic_message_data::copy(size_t pos) const {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 return elements_[pos]->copy();
             }
 
             error dynamic_message_data::save(size_t pos, serializer &sink) const {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 return elements_[pos]->save(sink);
             }
 
             error_code<sec> dynamic_message_data::save(size_t pos, binary_serializer &sink) const {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 return elements_[pos]->save(sink);
             }
 
@@ -126,5 +126,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

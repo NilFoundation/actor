@@ -9,19 +9,19 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/actor_proxy_impl.hpp>
+#include <nil/actor/network/actor_proxy_impl.hpp>
 
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/expected.hpp>
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/expected.hpp>
+#include <nil/actor/logger.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
 
             actor_proxy_impl::actor_proxy_impl(actor_config &cfg, endpoint_manager_ptr dst) :
                 super(cfg), sf_(dst->serialize_fun()), dst_(std::move(dst)) {
-                MTL_ASSERT(dst_ != nullptr);
+                ACTOR_ASSERT(dst_ != nullptr);
                 dst_->enqueue_event(node(), id());
             }
 
@@ -30,18 +30,18 @@ namespace nil {
             }
 
             void actor_proxy_impl::enqueue(mailbox_element_ptr what, execution_unit *) {
-                MTL_PUSH_AID(0);
-                MTL_ASSERT(what != nullptr);
-                MTL_LOG_SEND_EVENT(what);
+                ACTOR_PUSH_AID(0);
+                ACTOR_ASSERT(what != nullptr);
+                ACTOR_LOG_SEND_EVENT(what);
                 if (auto payload = sf_(home_system(), what->content()))
                     dst_->enqueue(std::move(what), ctrl(), std::move(*payload));
                 else
-                    MTL_LOG_ERROR("unable to serialize payload: " << home_system().render(payload.error()));
+                    ACTOR_LOG_ERROR("unable to serialize payload: " << home_system().render(payload.error()));
             }
 
             void actor_proxy_impl::kill_proxy(execution_unit *ctx, error rsn) {
                 cleanup(std::move(rsn), ctx);
             }
         }    // namespace network
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

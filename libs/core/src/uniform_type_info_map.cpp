@@ -10,7 +10,7 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/uniform_type_info_map.hpp>
+#include <nil/actor/uniform_type_info_map.hpp>
 
 #include <ios>    // std::ios_base::failure
 #include <array>
@@ -22,31 +22,31 @@
 #include <algorithm>
 #include <type_traits>
 
-#include <nil/mtl/abstract_group.hpp>
-#include <nil/mtl/actor_cast.hpp>
-#include <nil/mtl/actor_factory.hpp>
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/downstream_msg.hpp>
-#include <nil/mtl/duration.hpp>
-#include <nil/mtl/group.hpp>
-#include <nil/mtl/locks.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/message.hpp>
-#include <nil/mtl/message_builder.hpp>
-#include <nil/mtl/proxy_registry.hpp>
-#include <nil/mtl/string_algorithms.hpp>
-#include <nil/mtl/timespan.hpp>
-#include <nil/mtl/timestamp.hpp>
-#include <nil/mtl/type_nr.hpp>
-#include <nil/mtl/upstream_msg.hpp>
+#include <nil/actor/abstract_group.hpp>
+#include <nil/actor/actor_cast.hpp>
+#include <nil/actor/actor_factory.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/downstream_msg.hpp>
+#include <nil/actor/duration.hpp>
+#include <nil/actor/group.hpp>
+#include <nil/actor/locks.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/message.hpp>
+#include <nil/actor/message_builder.hpp>
+#include <nil/actor/proxy_registry.hpp>
+#include <nil/actor/string_algorithms.hpp>
+#include <nil/actor/timespan.hpp>
+#include <nil/actor/timestamp.hpp>
+#include <nil/actor/type_nr.hpp>
+#include <nil/actor/upstream_msg.hpp>
 
-#include <nil/mtl/detail/safe_equal.hpp>
-#include <nil/mtl/detail/scope_guard.hpp>
-#include <nil/mtl/detail/shared_spinlock.hpp>
+#include <nil/actor/detail/safe_equal.hpp>
+#include <nil/actor/detail/scope_guard.hpp>
+#include <nil/actor/detail/shared_spinlock.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         const char *numbered_type_names[] = {"@actor",
                                              "@actorvec",
@@ -156,5 +156,5 @@ namespace nil {
                 builtin_names_[i] = numbered_type_names[i];
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

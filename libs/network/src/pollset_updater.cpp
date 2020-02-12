@@ -9,18 +9,18 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/pollset_updater.hpp>
+#include <nil/actor/network/pollset_updater.hpp>
 
 #include <cstring>
 
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/network/multiplexer.hpp>
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/span.hpp>
-#include <nil/mtl/variant.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/network/multiplexer.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/span.hpp>
+#include <nil/actor/variant.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
 
             pollset_updater::pollset_updater(pipe_socket read_handle, const multiplexer_ptr &parent) :
@@ -56,7 +56,7 @@ namespace nil {
                                         ptr->shutdown();
                                         break;
                                     default:
-                                        MTL_LOG_DEBUG("opcode not recognized: " << MTL_ARG(opcode));
+                                        ACTOR_LOG_DEBUG("opcode not recognized: " << ACTOR_ARG(opcode));
                                         break;
                                 }
                             }
@@ -76,5 +76,5 @@ namespace nil {
             }
 
         }    // namespace network
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

@@ -9,14 +9,14 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/doorman.hpp>
+#include <nil/actor/io/doorman.hpp>
 
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/logger.hpp>
 
-#include <nil/mtl/io/abstract_broker.hpp>
+#include <nil/actor/io/abstract_broker.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
 
             doorman::doorman(accept_handle acc_hdl) : doorman_base(acc_hdl) {
@@ -37,5 +37,5 @@ namespace nil {
             }
 
         }    // namespace io
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

@@ -10,10 +10,10 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/policy/work_sharing.hpp>
+#include <nil/actor/policy/work_sharing.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace policy {
 
             work_sharing::~work_sharing() {
@@ -21,5 +21,5 @@ namespace nil {
             }
 
         }    // namespace policy
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

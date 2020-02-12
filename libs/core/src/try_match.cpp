@@ -10,23 +10,23 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/try_match.hpp>
+#include <nil/actor/detail/try_match.hpp>
 
-#include <nil/mtl/type_erased_tuple.hpp>
+#include <nil/actor/type_erased_tuple.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             using pattern_iterator = const meta_element *;
 
             bool match_element(const meta_element &me, const type_erased_tuple &xs, size_t pos) {
-                MTL_ASSERT(me.typenr != 0 || me.type != nullptr);
+                ACTOR_ASSERT(me.typenr != 0 || me.type != nullptr);
                 return xs.matches(pos, me.typenr, me.type);
             }
 
             bool match_atom_constant(const meta_element &me, const type_erased_tuple &xs, size_t pos) {
-                MTL_ASSERT(me.typenr == type_nr<atom_value>::value);
+                ACTOR_ASSERT(me.typenr == type_nr<atom_value>::value);
                 if (!xs.matches(pos, type_nr<atom_value>::value, nullptr))
                     return false;
                 auto ptr = xs.get(pos);
@@ -45,5 +45,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

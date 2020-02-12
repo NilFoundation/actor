@@ -10,12 +10,12 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/stringification_inspector.hpp>
+#include <nil/actor/detail/stringification_inspector.hpp>
 
 #include <algorithm>
 #include <ctime>
 
-#include <nil/mtl/atom.hpp>
+#include <nil/actor/atom.hpp>
 
 namespace {
 
@@ -42,7 +42,7 @@ namespace {
 }    // namespace
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             void stringification_inspector::sep() {
@@ -203,5 +203,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

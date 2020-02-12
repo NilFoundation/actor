@@ -8,10 +8,10 @@
 // License 1.0. See accompanying files LICENSE and LICENSE_ALTERNATIVE.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/rtti_pair.hpp>
+#include <nil/actor/rtti_pair.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         std::string to_string(rtti_pair x) {
             std::string result = "(";
@@ -22,5 +22,5 @@ namespace nil {
             return result;
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

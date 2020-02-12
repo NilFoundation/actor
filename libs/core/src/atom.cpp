@@ -10,15 +10,15 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/atom.hpp>
+#include <nil/actor/atom.hpp>
 
 #include <array>
 #include <cstring>
 
-#include <nil/mtl/string_view.hpp>
+#include <nil/actor/string_view.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         namespace {
 
@@ -70,5 +70,5 @@ namespace nil {
             return memcmp(&x, &y, sizeof(atom_value));
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

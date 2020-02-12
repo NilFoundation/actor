@@ -12,12 +12,12 @@
 // this suite tests whether actors terminate as expect in several use cases
 #define BOOST_TEST_MODULE actor_termination_test
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/config.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/config.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 

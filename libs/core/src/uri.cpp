@@ -10,34 +10,34 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/uri.hpp>
-#include <nil/mtl/optional.hpp>
+#include <nil/actor/uri.hpp>
+#include <nil/actor/optional.hpp>
 
-#include <nil/mtl/serialization/binary_serializer.hpp>
-#include <nil/mtl/serialization/binary_deserializer.hpp>
-#include <nil/mtl/serialization/deserializer.hpp>
-#include <nil/mtl/serialization/serializer.hpp>
+#include <nil/actor/serialization/binary_serializer.hpp>
+#include <nil/actor/serialization/binary_deserializer.hpp>
+#include <nil/actor/serialization/deserializer.hpp>
+#include <nil/actor/serialization/serializer.hpp>
 
-#include <nil/mtl/detail/append_percent_encoded.hpp>
-#include <nil/mtl/detail/fnv_hash.hpp>
-#include <nil/mtl/detail/overload.hpp>
-#include <nil/mtl/detail/parse.hpp>
-#include <nil/mtl/detail/parser/read_uri.hpp>
-#include <nil/mtl/detail/uri_impl.hpp>
+#include <nil/actor/detail/append_percent_encoded.hpp>
+#include <nil/actor/detail/fnv_hash.hpp>
+#include <nil/actor/detail/overload.hpp>
+#include <nil/actor/detail/parse.hpp>
+#include <nil/actor/detail/parser/read_uri.hpp>
+#include <nil/actor/detail/uri_impl.hpp>
 
-#include <nil/mtl/error.hpp>
-#include <nil/mtl/expected.hpp>
-#include <nil/mtl/make_counted.hpp>
+#include <nil/actor/error.hpp>
+#include <nil/actor/expected.hpp>
+#include <nil/actor/make_counted.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         uri::uri() : impl_(&detail::uri_impl::default_instance) {
             // nop
         }
 
         uri::uri(impl_ptr ptr) : impl_(std::move(ptr)) {
-            MTL_ASSERT(impl_ != nullptr);
+            ACTOR_ASSERT(impl_ != nullptr);
         }
 
         bool uri::empty() const noexcept {
@@ -97,11 +97,11 @@ namespace nil {
 
         // -- friend functions ---------------------------------------------------------
 
-        error inspect(nil::mtl::serializer &dst, uri &x) {
+        error inspect(nil::actor::serializer &dst, uri &x) {
             return inspect(dst, const_cast<detail::uri_impl &>(*x.impl_));
         }
 
-        error inspect(nil::mtl::deserializer &src, uri &x) {
+        error inspect(nil::actor::deserializer &src, uri &x) {
             auto impl = make_counted<detail::uri_impl>();
             auto err = inspect(src, *impl);
             if (err == none)
@@ -109,11 +109,11 @@ namespace nil {
             return err;
         }
 
-        error_code<sec> inspect(nil::mtl::binary_serializer &dst, uri &x) {
+        error_code<sec> inspect(nil::actor::binary_serializer &dst, uri &x) {
             return inspect(dst, const_cast<detail::uri_impl &>(*x.impl_));
         }
 
-        error_code<sec> inspect(nil::mtl::binary_deserializer &src, uri &x) {
+        error_code<sec> inspect(nil::actor::binary_deserializer &src, uri &x) {
             auto impl = make_counted<detail::uri_impl>();
             auto err = inspect(src, *impl);
             if (err == none)
@@ -135,7 +135,7 @@ namespace nil {
                 detail::append_percent_encoded(str, x.userinfo);
                 str += '@';
             }
-            auto f = nil::mtl::detail::make_overload(
+            auto f = nil::actor::detail::make_overload(
                 [&](const ip_address &addr) {
                     if (addr.embeds_v4()) {
                         str += to_string(addr);
@@ -168,5 +168,5 @@ namespace nil {
                 return err;
             return result;
         }
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

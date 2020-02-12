@@ -9,12 +9,12 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/basp/routing_table.hpp>
+#include <nil/actor/io/basp/routing_table.hpp>
 
-#include <nil/mtl/io/middleman.hpp>
+#include <nil/actor/io/middleman.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace basp {
 
@@ -100,9 +100,9 @@ namespace nil {
                     std::unique_lock<std::mutex> guard {mtx_};
                     auto hdl_added = direct_by_hdl_.emplace(hdl, nid).second;
                     auto nid_added = direct_by_nid_.emplace(nid, hdl).second;
-                    MTL_ASSERT(hdl_added && nid_added);
-                    MTL_IGNORE_UNUSED(hdl_added);
-                    MTL_IGNORE_UNUSED(nid_added);
+                    ACTOR_ASSERT(hdl_added && nid_added);
+                    ACTOR_IGNORE_UNUSED(hdl_added);
+                    ACTOR_IGNORE_UNUSED(nid_added);
                 }
 
                 bool routing_table::add_indirect(const node_id &hop, const node_id &dest) {
@@ -122,5 +122,5 @@ namespace nil {
 
             }    // namespace basp
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

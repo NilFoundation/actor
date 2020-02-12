@@ -11,17 +11,17 @@
 
 #define BOOST_TEST_MODULE pipe_socket
 
-#include <nil/mtl/network/pipe_socket.hpp>
+#include <nil/actor/network/pipe_socket.hpp>
 
-#include <nil/mtl/test/host_fixture.hpp>
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/host_fixture.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <vector>
 
-#include <nil/mtl/byte.hpp>
+#include <nil/actor/byte.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::network;
+using namespace nil::actor;
+using namespace nil::actor::network;
 
 BOOST_FIXTURE_TEST_SUITE(pipe_socket_tests, host_fixture)
 

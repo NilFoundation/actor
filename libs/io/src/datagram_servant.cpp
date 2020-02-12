@@ -9,12 +9,12 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/datagram_servant.hpp>
+#include <nil/actor/io/datagram_servant.hpp>
 
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/logger.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
 
             datagram_servant::datagram_servant(datagram_handle hdl) : datagram_servant_base(hdl) {
@@ -30,8 +30,8 @@ namespace nil {
             }
 
             bool datagram_servant::consume(execution_unit *ctx, datagram_handle hdl, network::receive_buffer &buf) {
-                MTL_ASSERT(ctx != nullptr);
-                MTL_LOG_TRACE(MTL_ARG(buf.size()));
+                ACTOR_ASSERT(ctx != nullptr);
+                ACTOR_LOG_TRACE(ACTOR_ARG(buf.size()));
                 if (detached()) {
                     // we are already disconnected from the broker while the multiplexer
                     // did not yet remove the socket, this can happen if an I/O event causes
@@ -54,7 +54,7 @@ namespace nil {
 
             void datagram_servant::datagram_sent(execution_unit *ctx, datagram_handle hdl, size_t written,
                                                  byte_buffer buffer) {
-                MTL_LOG_TRACE(MTL_ARG(written));
+                ACTOR_LOG_TRACE(ACTOR_ARG(written));
                 if (detached())
                     return;
                 using sent_t = datagram_sent_msg;
@@ -65,5 +65,5 @@ namespace nil {
             }
 
         }    // namespace io
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

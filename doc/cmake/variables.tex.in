@@ -1,2 +1,2 @@
-\newcommand{\cafrelease}{@MTL_RELEASE@}
-\newcommand{\cafsha}{@MTL_SHA@}
+\newcommand{\cafrelease}{@ACTOR_RELEASE@}
+\newcommand{\cafsha}{@ACTOR_SHA@}

@@ -1,9 +1,9 @@
-#include <nil/mtl/network/operation.hpp>
+#include <nil/actor/network/operation.hpp>
 
 #include <string>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace net {
 
             std::string to_string(operation x) {
@@ -23,6 +23,6 @@ namespace nil {
                 };
             }
 
-        }    // namespace net
-    }        // namespace mtl
+        }    // namespace network
+    }        // namespace actor
 }

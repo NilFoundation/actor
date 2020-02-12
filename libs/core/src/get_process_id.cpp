@@ -10,11 +10,11 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/get_process_id.hpp>
+#include <nil/actor/detail/get_process_id.hpp>
 
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 #include <windows.h>
 #else
 #include <sys/types.h>
@@ -22,11 +22,11 @@
 #endif
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             unsigned get_process_id() {
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
                 return GetCurrentProcessId();
 #else
                 return static_cast<unsigned>(getpid());
@@ -34,5 +34,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

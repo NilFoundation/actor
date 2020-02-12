@@ -4,12 +4,12 @@
 #include <cstring>
 #include <iostream>
 
-#include <nil/mtl/opencl/manager.hpp>
-#include <nil/mtl/opencl/program.hpp>
-#include <nil/mtl/opencl/opencl_err.hpp>
+#include <nil/actor/opencl/manager.hpp>
+#include <nil/actor/opencl/program.hpp>
+#include <nil/actor/opencl/opencl_err.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace opencl {
 
             program::program(detail::raw_context_ptr context, detail::raw_command_queue_ptr queue,
@@ -25,5 +25,5 @@ namespace nil {
             }
 
         }    // namespace opencl
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

@@ -9,23 +9,23 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/network/native_socket.hpp>
+#include <nil/actor/io/network/native_socket.hpp>
 
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/logger.hpp>
 
-#include <nil/mtl/detail/call_cfun.hpp>
+#include <nil/actor/detail/call_cfun.hpp>
 
-#include <nil/mtl/io/network/protocol.hpp>
+#include <nil/actor/io/network/protocol.hpp>
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
 #ifndef NOMINMAX
 #define NOMINMAX
 #endif
-#ifdef MTL_MINGW
+#ifdef ACTOR_MINGW
 #undef _WIN32_WINNT
 #undef WINVER
 #define _WIN32_WINNT WindowsVista
@@ -68,17 +68,17 @@ namespace {
             default:
                 break;
         }
-        MTL_CRITICAL("invalid protocol family");
+        ACTOR_CRITICAL("invalid protocol family");
     }
 
 }    // namespace
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace network {
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
                 const int ec_out_of_memory = WSAENOBUFS;
                 const int ec_interrupted_syscall = WSAEINTR;
 #else
@@ -87,11 +87,11 @@ namespace nil {
 #endif
 
 // platform-dependent SIGPIPE setup
-#if defined(MTL_MACOS) || defined(MTL_IOS) || defined(MTL_BSD)
+#if defined(ACTOR_MACOS) || defined(ACTOR_IOS) || defined(ACTOR_BSD)
                 // Use the socket option but no flags to recv/send on macOS/iOS/BSD.
                 const int no_sigpipe_socket_flag = SO_NOSIGPIPE;
                 const int no_sigpipe_io_flag = 0;
-#elif defined(MTL_WINDOWS)
+#elif defined(ACTOR_WINDOWS)
                 // Do nothing on Windows (SIGPIPE does not exist).
                 const int no_sigpipe_socket_flag = 0;
                 const int no_sigpipe_io_flag = 0;
@@ -101,7 +101,7 @@ namespace nil {
                 const int no_sigpipe_io_flag = MSG_NOSIGNAL;
 #endif
 
-#ifndef MTL_WINDOWS
+#ifndef ACTOR_WINDOWS
 
                 int last_socket_error() {
                     return errno;
@@ -124,7 +124,7 @@ namespace nil {
                 }
 
                 expected<void> child_process_inherit(native_socket fd, bool new_value) {
-                    MTL_LOG_TRACE(MTL_ARG(fd) << MTL_ARG(new_value));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(fd) << ACTOR_ARG(new_value));
                     // read flags for fd
                     CALL_CFUN(rf, detail::cc_not_minus1, "fcntl", fcntl(fd, F_GETFD));
                     // calculate and set new flags
@@ -134,7 +134,7 @@ namespace nil {
                 }
 
                 expected<void> keepalive(native_socket fd, bool new_value) {
-                    MTL_LOG_TRACE(MTL_ARG(fd) << MTL_ARG(new_value));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(fd) << ACTOR_ARG(new_value));
                     int value = new_value ? 1 : 0;
                     CALL_CFUN(res, detail::cc_zero, "setsockopt",
                               setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &value, static_cast<unsigned>(sizeof(value))));
@@ -142,7 +142,7 @@ namespace nil {
                 }
 
                 expected<void> nonblocking(native_socket fd, bool new_value) {
-                    MTL_LOG_TRACE(MTL_ARG(fd) << MTL_ARG(new_value));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(fd) << ACTOR_ARG(new_value));
                     // read flags for fd
                     CALL_CFUN(rf, detail::cc_not_minus1, "fcntl", fcntl(fd, F_GETFL, 0));
                     // calculate and set new flags
@@ -178,7 +178,7 @@ namespace nil {
                     return {pipefds[0], pipefds[1]};
                 }
 
-#else    // MTL_WINDOWS
+#else    // ACTOR_WINDOWS
 
                 int last_socket_error() {
                     return WSAGetLastError();
@@ -225,7 +225,7 @@ namespace nil {
                 }
 
                 expected<void> keepalive(native_socket fd, bool new_value) {
-                    MTL_LOG_TRACE(MTL_ARG(fd) << MTL_ARG(new_value));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(fd) << ACTOR_ARG(new_value));
                     char value = new_value ? 1 : 0;
                     CALL_CFUN(res, detail::cc_zero, "setsockopt",
                               setsockopt(fd, SOL_SOCKET, SO_KEEPALIVE, &value, static_cast<int>(sizeof(value))));
@@ -350,7 +350,7 @@ namespace nil {
                 }
 
                 expected<void> tcp_nodelay(native_socket fd, bool new_value) {
-                    MTL_LOG_TRACE(MTL_ARG(fd) << MTL_ARG(new_value));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(fd) << ACTOR_ARG(new_value));
                     int flag = new_value ? 1 : 0;
                     CALL_CFUN(res, detail::cc_zero, "setsockopt",
                               setsockopt(fd, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<setsockopt_ptr>(&flag),
@@ -428,15 +428,15 @@ namespace nil {
 
                 namespace {
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
                     static constexpr int read_channel = SD_RECEIVE;
                     static constexpr int write_channel = SD_SEND;
                     static constexpr int both_channels = SD_BOTH;
-#else     // MTL_WINDOWS
+#else     // ACTOR_WINDOWS
                     static constexpr int read_channel = SHUT_RD;
                     static constexpr int write_channel = SHUT_WR;
                     static constexpr int both_channels = SHUT_RDWR;
-#endif    // MTL_WINDOWS
+#endif    // ACTOR_WINDOWS
 
                 }    // namespace
 
@@ -454,5 +454,5 @@ namespace nil {
 
             }    // namespace network
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

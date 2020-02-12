@@ -10,15 +10,15 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/inbound_path.hpp>
+#include <nil/actor/inbound_path.hpp>
 
-#include <nil/mtl/send.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/no_stages.hpp>
-#include <nil/mtl/scheduled_actor.hpp>
+#include <nil/actor/send.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/no_stages.hpp>
+#include <nil/actor/scheduled_actor.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         inbound_path::stats_t::stats_t() : num_elements(0), processing_time(0) {
             // nop
@@ -63,9 +63,9 @@ namespace nil {
             mgr(std::move(mgr_ptr)),
             hdl(std::move(ptr)), slots(id), desired_batch_size(initial_credit), assigned_credit(0),
             prio(stream_priority::normal), last_acked_batch_id(0), last_batch_id(0) {
-            MTL_IGNORE_UNUSED(in_type);
+            ACTOR_IGNORE_UNUSED(in_type);
             mgr->register_input_path(this);
-            MTL_STREAM_LOG_DEBUG(mgr->self()->name() << "opens input stream with element type"
+            ACTOR_STREAM_LOG_DEBUG(mgr->self()->name() << "opens input stream with element type"
                                                      << mgr->self()->system().types().portable_name(in_type)
                                                      << "at slot" << id.receiver << "from" << hdl);
         }
@@ -75,25 +75,25 @@ namespace nil {
         }
 
         void inbound_path::handle(downstream_msg::batch &x) {
-            MTL_LOG_TRACE(MTL_ARG(slots) << MTL_ARG(x));
+            ACTOR_LOG_TRACE(ACTOR_ARG(slots) << ACTOR_ARG(x));
             auto &clk = clock();
             auto batch_size = x.xs_size;
             last_batch_id = x.id;
             auto t0 = clk.now();
-            MTL_STREAM_LOG_DEBUG(mgr->self()->name()
+            ACTOR_STREAM_LOG_DEBUG(mgr->self()->name()
                                  << "handles batch of size" << batch_size << "on slot" << slots.receiver << "with"
                                  << assigned_credit << "assigned credit");
             if (assigned_credit <= batch_size) {
                 assigned_credit = 0;
                 // Do not log a message when "running out of credit" for the first batch
                 // that can easily consume the initial credit in one shot.
-                MTL_STREAM_LOG_DEBUG_IF(next_credit_decision.time_since_epoch().count() > 0,
+                ACTOR_STREAM_LOG_DEBUG_IF(next_credit_decision.time_since_epoch().count() > 0,
                                         mgr->self()->name()
                                             << "ran out of credit at slot" << slots.receiver << "with approx."
                                             << (next_credit_decision - t0) << "until next cycle");
             } else {
                 assigned_credit -= batch_size;
-                MTL_ASSERT(assigned_credit >= 0);
+                ACTOR_ASSERT(assigned_credit >= 0);
             }
             mgr->handle(this, x);
             auto t1 = clk.now();
@@ -103,10 +103,10 @@ namespace nil {
         }
 
         void inbound_path::emit_ack_open(local_actor *self, actor_addr rebind_from) {
-            MTL_LOG_TRACE(MTL_ARG(slots) << MTL_ARG(rebind_from));
+            ACTOR_LOG_TRACE(ACTOR_ARG(slots) << ACTOR_ARG(rebind_from));
             // Update state.
             assigned_credit = mgr->acquire_credit(this, initial_credit);
-            MTL_ASSERT(assigned_credit >= 0);
+            ACTOR_ASSERT(assigned_credit >= 0);
             // Make sure we receive errors from this point on.
             stream_aborter::add(hdl, self->address(), slots.receiver, stream_aborter::source_aborter);
             // Send message.
@@ -118,9 +118,9 @@ namespace nil {
 
         void inbound_path::emit_ack_batch(local_actor *self, int32_t queued_items, int32_t max_downstream_capacity,
                                           actor_clock::time_point now, timespan cycle, timespan complexity) {
-            MTL_LOG_TRACE(MTL_ARG(slots) << MTL_ARG(queued_items) << MTL_ARG(max_downstream_capacity) << MTL_ARG(cycle)
-                                         << MTL_ARG(complexity));
-            MTL_IGNORE_UNUSED(queued_items);
+            ACTOR_LOG_TRACE(ACTOR_ARG(slots) << ACTOR_ARG(queued_items) << ACTOR_ARG(max_downstream_capacity) << ACTOR_ARG(cycle)
+                                         << ACTOR_ARG(complexity));
+            ACTOR_IGNORE_UNUSED(queued_items);
             // Update timestamps.
             last_credit_decision = now;
             next_credit_decision = now + cycle;
@@ -129,25 +129,25 @@ namespace nil {
             auto x = stats.calculate(cycle, complexity);
             auto stats_guard = detail::make_scope_guard([&] { stats.reset(); });
             auto max_capacity = std::min(x.max_throughput * 2, max_downstream_capacity);
-            MTL_ASSERT(max_capacity > 0);
+            ACTOR_ASSERT(max_capacity > 0);
             // Protect against overflow on `assigned_credit`.
             auto max_new_credit = std::numeric_limits<int32_t>::max() - assigned_credit;
             // Compute the amount of credit we grant in this round.
             auto credit = std::min(std::max(max_capacity - assigned_credit, 0), max_new_credit);
-            MTL_ASSERT(credit >= 0);
+            ACTOR_ASSERT(credit >= 0);
             // The manager can restrict or adjust the amount of credit.
             credit = std::min(mgr->acquire_credit(this, credit), max_new_credit);
-            MTL_STREAM_LOG_DEBUG(mgr->self()->name()
+            ACTOR_STREAM_LOG_DEBUG(mgr->self()->name()
                                  << "grants" << credit << "new credit at slot" << slots.receiver << "after receiving"
                                  << stats.num_elements << "elements that took" << stats.processing_time
-                                 << MTL_ARG2("scheduler_max_throughput", x.max_throughput)
-                                 << MTL_ARG(max_downstream_capacity) << MTL_ARG(assigned_credit));
+                                 << ACTOR_ARG2("scheduler_max_throughput", x.max_throughput)
+                                 << ACTOR_ARG(max_downstream_capacity) << ACTOR_ARG(assigned_credit));
             if (credit == 0 && up_to_date())
                 return;
-            MTL_LOG_DEBUG(MTL_ARG(assigned_credit) << MTL_ARG(max_capacity) << MTL_ARG(queued_items) << MTL_ARG(credit)
-                                                   << MTL_ARG(desired_batch_size));
+            ACTOR_LOG_DEBUG(ACTOR_ARG(assigned_credit) << ACTOR_ARG(max_capacity) << ACTOR_ARG(queued_items) << ACTOR_ARG(credit)
+                                                   << ACTOR_ARG(desired_batch_size));
             assigned_credit += credit;
-            MTL_ASSERT(assigned_credit >= 0);
+            ACTOR_ASSERT(assigned_credit >= 0);
             desired_batch_size = static_cast<int32_t>(x.items_per_batch);
             unsafe_send_as(self, hdl,
                            make<upstream_msg::ack_batch>(slots.invert(), self->address(), static_cast<int32_t>(credit),
@@ -160,12 +160,12 @@ namespace nil {
         }
 
         void inbound_path::emit_regular_shutdown(local_actor *self) {
-            MTL_LOG_TRACE(MTL_ARG(slots));
+            ACTOR_LOG_TRACE(ACTOR_ARG(slots));
             unsafe_send_as(self, hdl, make<upstream_msg::drop>(slots.invert(), self->address()));
         }
 
         void inbound_path::emit_irregular_shutdown(local_actor *self, error reason) {
-            MTL_LOG_TRACE(MTL_ARG(slots) << MTL_ARG(reason));
+            ACTOR_LOG_TRACE(ACTOR_ARG(slots) << ACTOR_ARG(reason));
             /// Note that we always send abort messages anonymous. They can get send
             /// after `self` already terminated and we must not form strong references
             /// after that point. Since upstream messages contain the sender address
@@ -188,5 +188,5 @@ namespace nil {
             return mgr->self()->clock();
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

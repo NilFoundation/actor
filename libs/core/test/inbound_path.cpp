@@ -10,7 +10,7 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
 #define BOOST_TEST_MODULE inbound_path_test
 
@@ -19,10 +19,10 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
 
-#include <nil/mtl/inbound_path.hpp>
+#include <nil/actor/inbound_path.hpp>
 
 using namespace std;
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 

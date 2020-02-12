@@ -10,15 +10,15 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/downstream_manager_base.hpp>
+#include <nil/actor/downstream_manager_base.hpp>
 
 #include <functional>
 
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/outbound_path.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/outbound_path.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         downstream_manager_base::downstream_manager_base(stream_manager *parent) : super(parent) {
             // nop
@@ -33,7 +33,7 @@ namespace nil {
         }
 
         bool downstream_manager_base::remove_path(stream_slot slot, error reason, bool silent) noexcept {
-            MTL_LOG_TRACE(MTL_ARG(slot) << MTL_ARG(reason) << MTL_ARG(silent));
+            ACTOR_LOG_TRACE(ACTOR_ARG(slot) << ACTOR_ARG(reason) << ACTOR_ARG(silent));
             auto i = paths_.find(slot);
             if (i != paths_.end()) {
                 about_to_erase(i->second.get(), silent, reason ? &reason : nullptr);
@@ -53,10 +53,10 @@ namespace nil {
         }
 
         bool downstream_manager_base::insert_path(unique_path_ptr ptr) {
-            MTL_LOG_TRACE(MTL_ARG(ptr));
-            MTL_ASSERT(ptr != nullptr);
+            ACTOR_LOG_TRACE(ACTOR_ARG(ptr));
+            ACTOR_ASSERT(ptr != nullptr);
             auto slot = ptr->slots.sender;
-            MTL_ASSERT(slot != invalid_stream_slot);
+            ACTOR_ASSERT(slot != invalid_stream_slot);
             return paths_.emplace(slot, std::move(ptr)).second;
         }
 
@@ -77,5 +77,5 @@ namespace nil {
             }
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

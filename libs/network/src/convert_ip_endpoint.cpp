@@ -9,17 +9,17 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/convert_ip_endpoint.hpp>
+#include <nil/actor/detail/convert_ip_endpoint.hpp>
 
 #include <cstring>
 
-#include <nil/mtl/error.hpp>
-#include <nil/mtl/ipv4_endpoint.hpp>
-#include <nil/mtl/ipv6_endpoint.hpp>
-#include <nil/mtl/sec.hpp>
+#include <nil/actor/error.hpp>
+#include <nil/actor/ipv4_endpoint.hpp>
+#include <nil/actor/ipv6_endpoint.hpp>
+#include <nil/actor/sec.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             void convert(const ip_endpoint &src, sockaddr_storage &dst) {
@@ -55,5 +55,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

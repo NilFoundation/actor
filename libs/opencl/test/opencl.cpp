@@ -8,17 +8,17 @@
 #include <iostream>
 #include <algorithm>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/system_messages.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/system_messages.hpp>
 
-#include <nil/mtl/opencl/all.hpp>
+#include <nil/actor/opencl/all.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::opencl;
+using namespace nil::actor;
+using namespace nil::actor::opencl;
 
-using nil::mtl::detail::tl_at;
-using nil::mtl::detail::tl_head;
-using nil::mtl::detail::type_list;
+using nil::actor::detail::tl_at;
+using nil::actor::detail::tl_head;
+using nil::actor::detail::type_list;
 
 namespace {
 
@@ -41,7 +41,7 @@ namespace {
     constexpr const char *kn_private = "use_private";
     constexpr const char *kn_varying = "varying";
 
-    constexpr const char *compiler_flag = "-D MTL_OPENCL_TEST_FLAG";
+    constexpr const char *compiler_flag = "-D ACTOR_OPENCL_TEST_FLAG";
 
     constexpr const char *kernel_source = R"__(
   kernel void matrix_square(global const int* restrict matrix,
@@ -160,19 +160,19 @@ namespace {
   }
 )__";
 
-#ifndef MTL_NO_EXCEPTIONS
+#ifndef ACTOR_NO_EXCEPTIONS
     constexpr const char *kernel_source_error = R"__(
   kernel void missing(global int*) {
     size_t semicolon_missing
   }
 )__";
-#endif    // MTL_NO_EXCEPTIONS
+#endif    // ACTOR_NO_EXCEPTIONS
 
     constexpr const char *kernel_source_compiler_flag = R"__(
   kernel void compiler_flag(global const int* restrict input,
                             global       int* restrict output) {
     size_t x = get_global_id(0);
-#   ifdef MTL_OPENCL_TEST_FLAG
+#   ifdef ACTOR_OPENCL_TEST_FLAG
     output[x] = input[x];
 #   else
     output[x] = 0;
@@ -382,7 +382,7 @@ void test_opencl(spawner &sys) {
             check_vector_results("Matrix multiplication with user defined type", expected2.data(), result.data());
         },
         others >> wrong_msg);
-#ifndef MTL_NO_EXCEPTIONS
+#ifndef ACTOR_NO_EXCEPTIONS
     BOOST_TEST_MESSAGE(
         "Expecting exception (compiling invalid kernel, "
         "semicolon is missing).");
@@ -391,7 +391,7 @@ void test_opencl(spawner &sys) {
     } catch (const std::exception &exc) {
         BOOST_TEST_MESSAGE("got: " << exc.what());
     }
-#endif    // MTL_NO_EXCEPTIONS
+#endif    // ACTOR_NO_EXCEPTIONS
     // create program with opencl compiler flags
     auto prog5 = mngr.create_program(kernel_source_compiler_flag, compiler_flag);
     opencl::nd_range range5 {dims {array_size}};

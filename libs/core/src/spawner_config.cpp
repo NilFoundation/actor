@@ -10,7 +10,7 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/spawner_config.hpp>
+#include <nil/actor/spawner_config.hpp>
 
 #include <limits>
 #include <thread>
@@ -19,14 +19,14 @@
 
 #include <boost/math/common_factor_rt.hpp>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/defaults.hpp>
-#include <nil/mtl/detail/parser/read_string.hpp>
-#include <nil/mtl/message_builder.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/defaults.hpp>
+#include <nil/actor/detail/parser/read_string.hpp>
+#include <nil/actor/message_builder.hpp>
 #include <utility>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         // in this config class, we have (1) hard-coded defaults that are overridden
         // by (2) INI-file contents that are in turn overridden by (3) CLI arguments
@@ -98,5 +98,5 @@ namespace nil {
             return cfg.content;
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

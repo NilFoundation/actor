@@ -20,14 +20,14 @@
 #include <typeinfo>
 #include <type_traits>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/config.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/config.hpp>
 
-#include <nil/mtl/detail/int_list.hpp>
-#include <nil/mtl/detail/type_list.hpp>
+#include <nil/actor/detail/int_list.hpp>
+#include <nil/actor/detail/type_list.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::detail;
+using namespace nil::actor;
+using namespace nil::actor::detail;
 
 namespace {
 

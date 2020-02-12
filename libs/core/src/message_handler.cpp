@@ -10,11 +10,11 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/message_handler.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/message_handler.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         message_handler::message_handler(impl_ptr ptr) : impl_(std::move(ptr)) {
             // nop
@@ -24,5 +24,5 @@ namespace nil {
             impl_.swap(what.impl_);
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

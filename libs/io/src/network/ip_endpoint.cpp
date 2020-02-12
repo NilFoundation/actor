@@ -9,14 +9,14 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/network/ip_endpoint.hpp>
+#include <nil/actor/io/network/ip_endpoint.hpp>
 
-#include <nil/mtl/detail/fnv_hash.hpp>
-#include <nil/mtl/io/network/native_socket.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/sec.hpp>
+#include <nil/actor/detail/fnv_hash.hpp>
+#include <nil/actor/io/network/native_socket.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/sec.hpp>
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 #include <winsock2.h>
 #include <windows.h>
 #include <ws2tcpip.h>
@@ -30,15 +30,15 @@
 #include <netinet/ip.h>
 #endif
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 using sa_family_t = short;
 #endif
 
-using nil::mtl::detail::fnv_hash;
-using nil::mtl::detail::fnv_hash_append;
+using nil::actor::detail::fnv_hash;
+using nil::actor::detail::fnv_hash_append;
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace network {
 
@@ -100,7 +100,7 @@ namespace nil {
                         case AF_INET6:
                             return hash(reinterpret_cast<const struct sockaddr_in6 *>(&sa));
                         default:
-                            MTL_LOG_ERROR("Only IPv4 and IPv6 are supported.");
+                            ACTOR_LOG_ERROR("Only IPv4 and IPv6 are supported.");
                             return 0;
                     }
                 }
@@ -238,5 +238,5 @@ namespace nil {
 
             }    // namespace network
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

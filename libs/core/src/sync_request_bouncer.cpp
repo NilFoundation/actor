@@ -10,20 +10,20 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/atom.hpp>
-#include <nil/mtl/actor.hpp>
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/actor_cast.hpp>
-#include <nil/mtl/message_id.hpp>
-#include <nil/mtl/exit_reason.hpp>
-#include <nil/mtl/mailbox_element.hpp>
-#include <nil/mtl/system_messages.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/atom.hpp>
+#include <nil/actor/actor.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/actor_cast.hpp>
+#include <nil/actor/message_id.hpp>
+#include <nil/actor/exit_reason.hpp>
+#include <nil/actor/mailbox_element.hpp>
+#include <nil/actor/system_messages.hpp>
 
-#include <nil/mtl/detail/sync_request_bouncer.hpp>
+#include <nil/actor/detail/sync_request_bouncer.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             sync_request_bouncer::sync_request_bouncer(error r) : rsn(std::move(r)) {
@@ -42,5 +42,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

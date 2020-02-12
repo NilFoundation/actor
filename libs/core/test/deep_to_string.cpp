@@ -12,11 +12,11 @@
 
 #define BOOST_TEST_MODULE deep_to_string_test
 
-#include <nil/mtl/deep_to_string.hpp>
+#include <nil/actor/deep_to_string.hpp>
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 

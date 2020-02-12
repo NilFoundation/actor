@@ -12,11 +12,11 @@
 
 #define BOOST_TEST_MODULE composition_test
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-#include <nil/mtl/all.hpp>
+#include <nil/actor/all.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 

@@ -10,30 +10,30 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/monitorable_actor.hpp>
+#include <nil/actor/monitorable_actor.hpp>
 
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/actor_cast.hpp>
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/message_handler.hpp>
-#include <nil/mtl/system_messages.hpp>
-#include <nil/mtl/default_attachable.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/actor_cast.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/message_handler.hpp>
+#include <nil/actor/system_messages.hpp>
+#include <nil/actor/default_attachable.hpp>
 
-#include <nil/mtl/detail/sync_request_bouncer.hpp>
+#include <nil/actor/detail/sync_request_bouncer.hpp>
 
-#include <nil/mtl/scheduler/abstract_coordinator.hpp>
+#include <nil/actor/scheduler/abstract_coordinator.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         const char *monitorable_actor::name() const {
             return "monitorable_actor";
         }
 
         void monitorable_actor::attach(attachable_ptr ptr) {
-            MTL_LOG_TRACE("");
-            MTL_ASSERT(ptr != nullptr);
+            ACTOR_LOG_TRACE("");
+            ACTOR_ASSERT(ptr != nullptr);
             error fail_state;
             auto attached = exclusive_critical_section([&] {
                 if (getf(is_terminated_flag)) {
@@ -44,13 +44,13 @@ namespace nil {
                 return true;
             });
             if (!attached) {
-                MTL_LOG_DEBUG("cannot attach functor to terminated actor: call immediately");
+                ACTOR_LOG_DEBUG("cannot attach functor to terminated actor: call immediately");
                 ptr->actor_exited(fail_state, nullptr);
             }
         }
 
         size_t monitorable_actor::detach(const attachable::token &what) {
-            MTL_LOG_TRACE("");
+            ACTOR_LOG_TRACE("");
             std::unique_lock<std::mutex> guard {mtx_};
             return detach_impl(what);
         }
@@ -67,7 +67,7 @@ namespace nil {
         }
 
         bool monitorable_actor::cleanup(error &&reason, execution_unit *host) {
-            MTL_LOG_TRACE(MTL_ARG(reason));
+            ACTOR_LOG_TRACE(ACTOR_ARG(reason));
             attachable_ptr head;
             bool set_fail_state = exclusive_critical_section([&]() -> bool {
                 if (!getf(is_cleaned_up_flag)) {
@@ -83,7 +83,7 @@ namespace nil {
             });
             if (!set_fail_state)
                 return false;
-            MTL_LOG_DEBUG("cleanup" << MTL_ARG(id()) << MTL_ARG(node()) << MTL_ARG(fail_state_));
+            ACTOR_LOG_DEBUG("cleanup" << ACTOR_ARG(id()) << ACTOR_ARG(node()) << ACTOR_ARG(fail_state_));
             // send exit messages
             for (attachable *i = head.get(); i != nullptr; i = i->next.get())
                 i->actor_exited(fail_state_, host);
@@ -119,8 +119,8 @@ namespace nil {
 
         void monitorable_actor::add_link(abstract_actor *x) {
             // Add backlink on `x` first and add the local attachable only on success.
-            MTL_LOG_TRACE(MTL_ARG(x));
-            MTL_ASSERT(x != nullptr);
+            ACTOR_LOG_TRACE(ACTOR_ARG(x));
+            ACTOR_ASSERT(x != nullptr);
             error fail_state;
             bool send_exit_immediately = false;
             auto tmp = default_attachable::make_link(address(), x->address());
@@ -137,7 +137,7 @@ namespace nil {
         }
 
         void monitorable_actor::remove_link(abstract_actor *x) {
-            MTL_LOG_TRACE(MTL_ARG(x));
+            ACTOR_LOG_TRACE(ACTOR_ARG(x));
             default_attachable::observe_token tk {x->address(), default_attachable::link};
             joined_exclusive_critical_section(this, x, [&] {
                 x->remove_backlink(this);
@@ -147,8 +147,8 @@ namespace nil {
 
         bool monitorable_actor::add_backlink(abstract_actor *x) {
             // Called in an exclusive critical section.
-            MTL_LOG_TRACE(MTL_ARG(x));
-            MTL_ASSERT(x);
+            ACTOR_LOG_TRACE(ACTOR_ARG(x));
+            ACTOR_ASSERT(x);
             error fail_state;
             bool send_exit_immediately = false;
             default_attachable::observe_token tk {x->address(), default_attachable::link};
@@ -168,7 +168,7 @@ namespace nil {
 
         bool monitorable_actor::remove_backlink(abstract_actor *x) {
             // Called in an exclusive critical section.
-            MTL_LOG_TRACE(MTL_ARG(x));
+            ACTOR_LOG_TRACE(ACTOR_ARG(x));
             default_attachable::observe_token tk {x->address(), default_attachable::link};
             return detach_impl(tk, true) > 0;
         }
@@ -179,14 +179,14 @@ namespace nil {
         }
 
         size_t monitorable_actor::detach_impl(const attachable::token &what, bool stop_on_hit, bool dry_run) {
-            MTL_LOG_TRACE(MTL_ARG(stop_on_hit) << MTL_ARG(dry_run));
+            ACTOR_LOG_TRACE(ACTOR_ARG(stop_on_hit) << ACTOR_ARG(dry_run));
             size_t count = 0;
             auto i = &attachables_head_;
             while (*i != nullptr) {
                 if ((*i)->matches(what)) {
                     ++count;
                     if (!dry_run) {
-                        MTL_LOG_DEBUG("removed element");
+                        ACTOR_LOG_DEBUG("removed element");
                         attachable_ptr next;
                         next.swap((*i)->next);
                         (*i).swap(next);
@@ -217,7 +217,7 @@ namespace nil {
                 error err;
                 mailbox_element_ptr res;
                 msg.apply([&](sys_atom, get_atom, std::string &what) {
-                    MTL_LOG_TRACE(MTL_ARG(what));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(what));
                     if (what != "info") {
                         err = sec::unsupported_sys_key;
                         return;
@@ -239,5 +239,5 @@ namespace nil {
             return false;
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

@@ -10,21 +10,21 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/raw_event_based_actor.hpp>
+#include <nil/actor/raw_event_based_actor.hpp>
 
-#include <nil/mtl/detail/default_invoke_result_visitor.hpp>
+#include <nil/actor/detail/default_invoke_result_visitor.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         raw_event_based_actor::raw_event_based_actor(actor_config &cfg) : event_based_actor(cfg) {
             // nop
         }
 
         invoke_message_result raw_event_based_actor::consume(mailbox_element &x) {
-            MTL_LOG_TRACE(MTL_ARG(x));
+            ACTOR_LOG_TRACE(ACTOR_ARG(x));
             current_element_ = &x;
-            MTL_LOG_RECEIVE_EVENT(current_element_);
+            ACTOR_LOG_RECEIVE_EVENT(current_element_);
             // short-circuit awaited responses
             if (!awaited_responses_.empty()) {
                 auto &pr = awaited_responses_.front();
@@ -58,15 +58,15 @@ namespace nil {
             if (x.content().type_token() == make_type_token<timeout_msg>()) {
                 auto &tm = content.get_as<timeout_msg>(0);
                 auto tid = tm.timeout_id;
-                MTL_ASSERT(x.mid.is_async());
+                ACTOR_ASSERT(x.mid.is_async());
                 if (is_active_receive_timeout(tid)) {
-                    MTL_LOG_DEBUG("handle timeout message");
+                    ACTOR_LOG_DEBUG("handle timeout message");
                     if (bhvr_stack_.empty())
                         return im_dropped;
                     bhvr_stack_.back().handle_timeout();
                     return im_success;
                 }
-                MTL_LOG_DEBUG("dropped expired timeout message");
+                ACTOR_LOG_DEBUG("dropped expired timeout message");
                 return im_dropped;
             }
             // handle everything else as ordinary message
@@ -109,8 +109,8 @@ namespace nil {
             }
             return !skipped ? im_success : im_skipped;
             // should be unreachable
-            MTL_CRITICAL("invalid message type");
+            ACTOR_CRITICAL("invalid message type");
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

@@ -10,10 +10,10 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/invoke_result_visitor.hpp>
+#include <nil/actor/detail/invoke_result_visitor.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             invoke_result_visitor::~invoke_result_visitor() {
@@ -21,5 +21,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

@@ -12,15 +12,15 @@
 
 #include <utility>
 
-#include <nil/mtl/forwarding_actor_proxy.hpp>
+#include <nil/actor/forwarding_actor_proxy.hpp>
 
-#include <nil/mtl/send.hpp>
-#include <nil/mtl/locks.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/mailbox_element.hpp>
+#include <nil/actor/send.hpp>
+#include <nil/actor/locks.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/mailbox_element.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         forwarding_actor_proxy::forwarding_actor_proxy(actor_config &cfg, actor dest) :
             actor_proxy(cfg), broker_(std::move(dest)) {
@@ -33,7 +33,7 @@ namespace nil {
 
         void forwarding_actor_proxy::forward_msg(strong_actor_ptr sender, message_id mid, message msg,
                                                  const forwarding_stack *fwd) {
-            MTL_LOG_TRACE(MTL_ARG(id()) << MTL_ARG(sender) << MTL_ARG(mid) << MTL_ARG(msg));
+            ACTOR_LOG_TRACE(ACTOR_ARG(id()) << ACTOR_ARG(sender) << ACTOR_ARG(mid) << ACTOR_ARG(msg));
             if (msg.match_elements<exit_msg>())
                 unlink_from(msg.get_as<exit_msg>(0).source);
             forwarding_stack tmp;
@@ -46,8 +46,8 @@ namespace nil {
         }
 
         void forwarding_actor_proxy::enqueue(mailbox_element_ptr what, execution_unit *) {
-            MTL_PUSH_AID(0);
-            MTL_ASSERT(what);
+            ACTOR_PUSH_AID(0);
+            ACTOR_ASSERT(what);
             forward_msg(std::move(what->sender), what->mid, what->move_content_to_message(), &what->stages);
         }
 
@@ -76,5 +76,5 @@ namespace nil {
             cleanup(std::move(rsn), ctx);
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

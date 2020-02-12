@@ -12,16 +12,16 @@
 
 #include <iterator>
 
-#include <nil/mtl/none.hpp>
-#include <nil/mtl/local_actor.hpp>
-#include <nil/mtl/detail/behavior_stack.hpp>
+#include <nil/actor/none.hpp>
+#include <nil/actor/local_actor.hpp>
+#include <nil/actor/detail/behavior_stack.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             void behavior_stack::pop_back() {
-                MTL_ASSERT(!elements_.empty());
+                ACTOR_ASSERT(!elements_.empty());
                 erased_elements_.push_back(std::move(elements_.back()));
                 elements_.pop_back();
             }
@@ -38,5 +38,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

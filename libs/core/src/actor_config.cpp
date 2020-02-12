@@ -10,12 +10,12 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/actor_config.hpp>
+#include <nil/actor/actor_config.hpp>
 
-#include <nil/mtl/abstract_actor.hpp>
+#include <nil/actor/abstract_actor.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         actor_config::actor_config(execution_unit *ptr) :
             host(ptr), flags(abstract_channel::is_abstract_actor_flag), groups(nullptr) {
@@ -45,5 +45,5 @@ namespace nil {
             return result;
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

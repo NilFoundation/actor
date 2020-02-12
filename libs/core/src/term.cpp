@@ -10,13 +10,13 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/term.hpp>
+#include <nil/actor/term.hpp>
 
 #include <iostream>
 
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 #include <io.h>
 #include <windows.h>
 #else
@@ -25,11 +25,11 @@
 #endif
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         namespace {
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 
             // windows terminals do no support bold fonts
 
@@ -133,5 +133,5 @@ namespace nil {
             return out;
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

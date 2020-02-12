@@ -10,13 +10,13 @@
 // http://opensource.org/licenses/BSD-3-Clause
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/skip.hpp>
+#include <nil/actor/skip.hpp>
 
-#include <nil/mtl/result.hpp>
-#include <nil/mtl/message.hpp>
+#include <nil/actor/result.hpp>
+#include <nil/actor/message.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         result<message> skip_t::skip_fun_impl(scheduled_actor *, message_view &) {
             return skip();
@@ -26,5 +26,5 @@ namespace nil {
             return skip_fun_impl;
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

@@ -10,16 +10,16 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/detail/get_root_uuid.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/detail/get_root_uuid.hpp>
 
-#ifndef MTL_MACOS    // not needed on Mac OS X
+#ifndef ACTOR_MACOS    // not needed on Mac OS X
 namespace {
     constexpr char uuid_format[] = "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF";
 }    // namespace
-#endif    // MTL_MACOS
+#endif    // ACTOR_MACOS
 
-#if defined(MTL_MACOS)
+#if defined(ACTOR_MACOS)
 
 namespace {
 
@@ -36,7 +36,7 @@ namespace {
 }    // namespace
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             std::string get_root_uuid() {
@@ -53,10 +53,10 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil
 
-#elif defined(MTL_LINUX) || defined(MTL_BSD) || defined(MTL_CYGWIN)
+#elif defined(ACTOR_LINUX) || defined(ACTOR_BSD) || defined(ACTOR_CYGWIN)
 
 #include <vector>
 #include <string>
@@ -67,14 +67,14 @@ namespace nil {
 #include <algorithm>
 #include <iostream>
 
-#include <nil/mtl/string_algorithms.hpp>
+#include <nil/actor/string_algorithms.hpp>
 
 using std::ifstream;
 using std::string;
 using std::vector;
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             namespace {
@@ -136,10 +136,10 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil
 
-#elif defined(MTL_WINDOWS)
+#elif defined(ACTOR_WINDOWS)
 
 #include <string>
 #include <iostream>
@@ -149,7 +149,7 @@ namespace nil {
 #include <tchar.h>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             namespace {
@@ -204,17 +204,17 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil
 
-#elif defined(MTL_IOS) || defined(MTL_ANDROID)
+#elif defined(ACTOR_IOS) || defined(ACTOR_ANDROID)
 
 // return a randomly-generated UUID on mobile devices
 
 #include <random>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             std::string get_root_uuid() {
@@ -231,7 +231,7 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil
 
-#endif    // MTL_WINDOWS
+#endif    // ACTOR_WINDOWS

@@ -1,11 +1,11 @@
 \section{Streaming\experimental}
 \label{streaming}
 
-Streams in MTL describe data flow between actors. We are not aiming to provide
+Streams in ACTOR describe data flow between actors. We are not aiming to provide
 functionality similar to Apache projects like Spark, Flink or Storm. Likewise,
 we have different goals than APIs such as RxJava, Reactive Streams, etc.
 Streams complement asynchronous messages, request/response communication and
-publish/subscribe in MTL. In a sense, actor streams in MTL are a building
+publish/subscribe in ACTOR. In a sense, actor streams in ACTOR are a building
 block that users could leverage for building feature-complete stream
 computation engines or reactive high-level Big Data APIs.
 
@@ -21,14 +21,14 @@ order to initialize required state and signal initial demand.
 
 \singlefig{stream-roles}{Streaming Roles}{stream-roles}
 
-MTL distinguishes between three roles in a stream: (1) a \emph{source} creates
+ACTOR distinguishes between three roles in a stream: (1) a \emph{source} creates
 streams and generates data, (2) a \emph{stage} transforms or filters data, and
 (3) a \emph{sink} terminates streams by consuming data.
 
 We usually draw streams as pipelines for simplicity. However, sources can have
 any number of outputs (downstream actors). Likewise, sinks can have any number
 of inputs (upstream actors) and stages can multiplex N inputs to M outputs.
-Hence, streaming topologies in MTL support arbitrary complexity with forks and
+Hence, streaming topologies in ACTOR support arbitrary complexity with forks and
 joins.
 
 \subsection{Stream Managers}
@@ -94,7 +94,7 @@ In our example, we always have a source \lstinline^int_source^ and a sink
 \lstinline^open_atom^ to the source initiates the stream and the source will
 respond with a stream handshake.
 
-Using the actor composition in MTL (\lstinline^snk * src^ reads \emph{sink
+Using the actor composition in ACTOR (\lstinline^snk * src^ reads \emph{sink
 after source}) allows us to redirect the stream handshake we send in
 \lstinline^caf_main^ to the sink (or to the stage and then from the stage to
 the sink).

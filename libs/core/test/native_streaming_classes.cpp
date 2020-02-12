@@ -12,7 +12,7 @@
 
 // This test simulates a complex multiplexing over multiple layers of WDRR
 // scheduled queues. The goal is to reduce the complex mailbox management of
-// MTL to its bare bones in order to test whether the multiplexing of stream
+// ACTOR to its bare bones in order to test whether the multiplexing of stream
 // traffic and asynchronous messages works as intended.
 //
 // The setup is a fixed WDRR queue with three nestes queues. The first nested
@@ -31,53 +31,53 @@
 
 #include <boost/integer/common_factor_rt.hpp>
 
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/broadcast_downstream_manager.hpp>
-#include <nil/mtl/buffered_downstream_manager.hpp>
-#include <nil/mtl/downstream_manager.hpp>
-#include <nil/mtl/downstream_msg.hpp>
-#include <nil/mtl/inbound_path.hpp>
-#include <nil/mtl/mailbox_element.hpp>
-#include <nil/mtl/no_stages.hpp>
-#include <nil/mtl/outbound_path.hpp>
-#include <nil/mtl/send.hpp>
-#include <nil/mtl/stream_manager.hpp>
-#include <nil/mtl/stream_sink_driver.hpp>
-#include <nil/mtl/stream_slot.hpp>
-#include <nil/mtl/stream_source_driver.hpp>
-#include <nil/mtl/stream_stage_driver.hpp>
-#include <nil/mtl/system_messages.hpp>
-#include <nil/mtl/upstream_msg.hpp>
-#include <nil/mtl/variant.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/broadcast_downstream_manager.hpp>
+#include <nil/actor/buffered_downstream_manager.hpp>
+#include <nil/actor/downstream_manager.hpp>
+#include <nil/actor/downstream_msg.hpp>
+#include <nil/actor/inbound_path.hpp>
+#include <nil/actor/mailbox_element.hpp>
+#include <nil/actor/no_stages.hpp>
+#include <nil/actor/outbound_path.hpp>
+#include <nil/actor/send.hpp>
+#include <nil/actor/stream_manager.hpp>
+#include <nil/actor/stream_sink_driver.hpp>
+#include <nil/actor/stream_slot.hpp>
+#include <nil/actor/stream_source_driver.hpp>
+#include <nil/actor/stream_stage_driver.hpp>
+#include <nil/actor/system_messages.hpp>
+#include <nil/actor/upstream_msg.hpp>
+#include <nil/actor/variant.hpp>
 
-#include <nil/mtl/scheduler/test_coordinator.hpp>
+#include <nil/actor/scheduler/test_coordinator.hpp>
 
-#include <nil/mtl/policy/arg.hpp>
-#include <nil/mtl/policy/categorized.hpp>
-#include <nil/mtl/policy/downstream_messages.hpp>
-#include <nil/mtl/policy/normal_messages.hpp>
-#include <nil/mtl/policy/upstream_messages.hpp>
-#include <nil/mtl/policy/urgent_messages.hpp>
+#include <nil/actor/policy/arg.hpp>
+#include <nil/actor/policy/categorized.hpp>
+#include <nil/actor/policy/downstream_messages.hpp>
+#include <nil/actor/policy/normal_messages.hpp>
+#include <nil/actor/policy/upstream_messages.hpp>
+#include <nil/actor/policy/urgent_messages.hpp>
 
-#include <nil/mtl/mixin/sender.hpp>
+#include <nil/actor/mixin/sender.hpp>
 
-#include <nil/mtl/intrusive/drr_queue.hpp>
-#include <nil/mtl/intrusive/singly_linked.hpp>
-#include <nil/mtl/intrusive/task_result.hpp>
-#include <nil/mtl/intrusive/wdrr_dynamic_multiplexed_queue.hpp>
-#include <nil/mtl/intrusive/wdrr_fixed_multiplexed_queue.hpp>
+#include <nil/actor/intrusive/drr_queue.hpp>
+#include <nil/actor/intrusive/singly_linked.hpp>
+#include <nil/actor/intrusive/task_result.hpp>
+#include <nil/actor/intrusive/wdrr_dynamic_multiplexed_queue.hpp>
+#include <nil/actor/intrusive/wdrr_fixed_multiplexed_queue.hpp>
 
-#include <nil/mtl/detail/overload.hpp>
-#include <nil/mtl/detail/stream_sink_impl.hpp>
-#include <nil/mtl/detail/stream_source_impl.hpp>
-#include <nil/mtl/detail/stream_stage_impl.hpp>
-#include <nil/mtl/detail/tick_emitter.hpp>
+#include <nil/actor/detail/overload.hpp>
+#include <nil/actor/detail/stream_sink_impl.hpp>
+#include <nil/actor/detail/stream_source_impl.hpp>
+#include <nil/actor/detail/stream_stage_impl.hpp>
+#include <nil/actor/detail/tick_emitter.hpp>
 
 using std::vector;
 
-using namespace nil::mtl;
-using namespace nil::mtl::intrusive;
+using namespace nil::actor;
+using namespace nil::actor::intrusive;
 
 namespace {
 
@@ -110,7 +110,7 @@ namespace {
     BOOST_TEST_MESSAGE(name << " received a " << #type << ": " << collapse_args(__VA_ARGS__));
 
     const char *name_of(const strong_actor_ptr &x) {
-        MTL_ASSERT(x != nullptr);
+        ACTOR_ASSERT(x != nullptr);
         auto ptr = actor_cast<abstract_actor *>(x);
         return static_cast<local_actor *>(ptr)->name();
     }
@@ -175,7 +175,7 @@ namespace {
         void enqueue(mailbox_element_ptr what, execution_unit *) override {
             auto push_back_result = mbox.push_back(std::move(what));
             BOOST_CHECK_EQUAL(push_back_result, true);
-            MTL_ASSERT(push_back_result);
+            ACTOR_ASSERT(push_back_result);
         }
 
         void attach(attachable_ptr) override {
@@ -271,7 +271,7 @@ namespace {
         }
 
         void operator()(open_stream_msg &hs) {
-            TRACE(name_, stream_handshake_msg, MTL_ARG2("sender", name_of(hs.prev_stage)));
+            TRACE(name_, stream_handshake_msg, ACTOR_ARG2("sender", name_of(hs.prev_stage)));
             // Create required state if no forwarder exists yet, otherwise `forward_to`
             // was called and we run as a stage.
             stream_sink_ptr<int> mgr = forwarder;
@@ -297,13 +297,13 @@ namespace {
         }
 
         void operator()(stream_slots slots, actor_addr &sender, upstream_msg::ack_open &x) {
-            TRACE(name_, ack_open, MTL_ARG(slots), MTL_ARG2("sender", name_of(x.rebind_to)), MTL_ARG(x));
+            TRACE(name_, ack_open, ACTOR_ARG(slots), ACTOR_ARG2("sender", name_of(x.rebind_to)), ACTOR_ARG(x));
             BOOST_REQUIRE(sender == x.rebind_to);
             scheduled_actor::handle_upstream_msg(slots, sender, x);
         }
 
         void operator()(stream_slots slots, actor_addr &sender, upstream_msg::ack_batch &x) {
-            TRACE(name_, ack_batch, MTL_ARG(slots), MTL_ARG2("sender", name_of(sender)), MTL_ARG(x));
+            TRACE(name_, ack_batch, ACTOR_ARG(slots), ACTOR_ARG2("sender", name_of(sender)), ACTOR_ARG(x));
             scheduled_actor::handle_upstream_msg(slots, sender, x);
         }
 
@@ -438,7 +438,7 @@ namespace {
                     return intrusive::task_result::resume;
                 },
                 [&](downstream_msg::close &y) {
-                    TRACE(self->name(), close, MTL_ARG(dm.slots));
+                    TRACE(self->name(), close, ACTOR_ARG(dm.slots));
                     auto slots = dm.slots;
                     auto i = self->stream_managers().find(slots.receiver);
                     BOOST_REQUIRE(i != self->stream_managers().end());
@@ -508,7 +508,7 @@ namespace {
         }
 
         static inline spawner_config &config(spawner_config &cfg) {
-            cfg.scheduler_policy = nil::mtl::atom("testing");
+            cfg.scheduler_policy = nil::actor::atom("testing");
             return cfg;
         }
 
@@ -577,7 +577,7 @@ namespace {
     };
 
     vector<int> make_iota(int first, int last) {
-        MTL_ASSERT(first < last);
+        ACTOR_ASSERT(first < last);
         vector<int> result;
         result.resize(static_cast<size_t>(last - first));
         std::iota(result.begin(), result.end(), first);

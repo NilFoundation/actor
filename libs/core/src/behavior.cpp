@@ -10,13 +10,13 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/none.hpp>
+#include <nil/actor/none.hpp>
 
-#include <nil/mtl/behavior.hpp>
-#include <nil/mtl/message_handler.hpp>
+#include <nil/actor/behavior.hpp>
+#include <nil/actor/message_handler.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         behavior::behavior(const message_handler &mh) : impl_(mh.as_behavior_impl()) {
             // nop
@@ -30,5 +30,5 @@ namespace nil {
             impl_.swap(other.impl_);
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

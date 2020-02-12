@@ -9,20 +9,20 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/basp/instance.hpp>
+#include <nil/actor/io/basp/instance.hpp>
 
-#include <nil/mtl/serialization/binary_deserializer.hpp>
-#include <nil/mtl/serialization/binary_serializer.hpp>
+#include <nil/actor/serialization/binary_deserializer.hpp>
+#include <nil/actor/serialization/binary_serializer.hpp>
 
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/defaults.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/defaults.hpp>
 
-#include <nil/mtl/io/basp/remote_message_handler.hpp>
-#include <nil/mtl/io/basp/version.hpp>
-#include <nil/mtl/io/basp/worker.hpp>
+#include <nil/actor/io/basp/remote_message_handler.hpp>
+#include <nil/actor/io/basp/version.hpp>
+#include <nil/actor/io/basp/worker.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace basp {
 
@@ -37,13 +37,13 @@ namespace nil {
 
                 instance::instance(abstract_broker *parent, callee &lstnr) :
                     tbl_(parent), this_node_(parent->system().node()), callee_(lstnr) {
-                    MTL_ASSERT(this_node_ != none);
+                    ACTOR_ASSERT(this_node_ != none);
                     for (size_t i = 0; i < config().middleman_workers; ++i)
                         hub_.add_new_worker(queue_, proxies());
                 }
 
                 connection_state instance::handle(execution_unit *ctx, new_data_msg &dm, header &hdr, bool is_payload) {
-                    MTL_LOG_TRACE(MTL_ARG(dm) << MTL_ARG(is_payload));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(dm) << ACTOR_ARG(is_payload));
                     // function object providing cleanup code on errors
                     auto err = [&]() -> connection_state {
                         if (auto nid = tbl_.erase_direct(dm.handle))
@@ -54,7 +54,7 @@ namespace nil {
                     if (is_payload) {
                         payload = &dm.buf;
                         if (payload->size() != hdr.payload_len) {
-                            MTL_LOG_WARNING("received invalid payload, expected" << hdr.payload_len << "bytes, got"
+                            ACTOR_LOG_WARNING("received invalid payload, expected" << hdr.payload_len << "bytes, got"
                                                                                  << payload->size());
                             return err();
                         }
@@ -62,24 +62,24 @@ namespace nil {
                         binary_deserializer bd {ctx, dm.buf};
                         auto e = bd(hdr);
                         if (e || !valid(hdr)) {
-                            MTL_LOG_WARNING("received invalid header:" << MTL_ARG(hdr));
+                            ACTOR_LOG_WARNING("received invalid header:" << ACTOR_ARG(hdr));
                             return err();
                         }
                         if (hdr.payload_len > 0) {
-                            MTL_LOG_DEBUG("await payload before processing further");
+                            ACTOR_LOG_DEBUG("await payload before processing further");
                             return await_payload;
                         }
                     }
-                    MTL_LOG_DEBUG(MTL_ARG(hdr));
+                    ACTOR_LOG_DEBUG(ACTOR_ARG(hdr));
                     if (!handle(ctx, dm.handle, hdr, payload))
                         return err();
                     return await_header;
                 }
 
                 void instance::handle_heartbeat(execution_unit *ctx) {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     for (auto &kvp : tbl_.direct_by_hdl_) {
-                        MTL_LOG_TRACE(MTL_ARG(kvp.first) << MTL_ARG(kvp.second));
+                        ACTOR_LOG_TRACE(ACTOR_ARG(kvp.first) << ACTOR_ARG(kvp.second));
                         write_heartbeat(ctx, callee_.get_buffer(kvp.first));
                         callee_.flush(kvp.first);
                     }
@@ -95,8 +95,8 @@ namespace nil {
 
                 void instance::write(execution_unit *ctx, const routing_table::route &r, header &hdr,
                                      payload_writer *writer) {
-                    MTL_LOG_TRACE(MTL_ARG(hdr));
-                    MTL_ASSERT(hdr.payload_len == 0 || writer != nullptr);
+                    ACTOR_LOG_TRACE(ACTOR_ARG(hdr));
+                    ACTOR_ASSERT(hdr.payload_len == 0 || writer != nullptr);
                     write(ctx, callee_.get_buffer(r.hdl), hdr, writer);
                     flush(r);
                 }
@@ -105,7 +105,7 @@ namespace nil {
                                                    strong_actor_ptr published_actor,
                                                    std::set<std::string>
                                                        published_interface) {
-                    MTL_LOG_TRACE(MTL_ARG(port) << MTL_ARG(published_actor) << MTL_ARG(published_interface));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(port) << ACTOR_ARG(published_actor) << ACTOR_ARG(published_interface));
                     using std::swap;
                     auto &entry = published_actors_[port];
                     swap(entry.first, published_actor);
@@ -113,7 +113,7 @@ namespace nil {
                 }
 
                 size_t instance::remove_published_actor(uint16_t port, removed_published_actor *cb) {
-                    MTL_LOG_TRACE(MTL_ARG(port));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(port));
                     auto i = published_actors_.find(port);
                     if (i == published_actors_.end())
                         return 0;
@@ -126,7 +126,7 @@ namespace nil {
                 size_t instance::remove_published_actor(const actor_addr &whom,
                                                         uint16_t port,
                                                         removed_published_actor *cb) {
-                    MTL_LOG_TRACE(MTL_ARG(whom) << MTL_ARG(port));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(whom) << ACTOR_ARG(port));
                     size_t result = 0;
                     if (port != 0) {
                         auto i = published_actors_.find(port);
@@ -155,8 +155,8 @@ namespace nil {
                 bool instance::dispatch(execution_unit *ctx, const strong_actor_ptr &sender,
                                         const std::vector<strong_actor_ptr> &forwarding_stack, const node_id &dest_node,
                                         uint64_t dest_actor, uint8_t flags, message_id mid, const message &msg) {
-                    MTL_LOG_TRACE(MTL_ARG(sender) << MTL_ARG(dest_node) << MTL_ARG(mid) << MTL_ARG(msg));
-                    MTL_ASSERT(dest_node && this_node_ != dest_node);
+                    ACTOR_LOG_TRACE(ACTOR_ARG(sender) << ACTOR_ARG(dest_node) << ACTOR_ARG(mid) << ACTOR_ARG(msg));
+                    ACTOR_ASSERT(dest_node && this_node_ != dest_node);
                     auto path = lookup(dest_node);
                     if (!path)
                         return false;
@@ -188,25 +188,25 @@ namespace nil {
                 }
 
                 void instance::write(execution_unit *ctx, buffer_type &buf, header &hdr, payload_writer *pw) {
-                    MTL_LOG_TRACE(MTL_ARG(hdr));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(hdr));
                     binary_serializer sink {ctx, buf};
                     if (pw != nullptr) {
                         // Write the BASP header after the payload.
                         auto header_offset = buf.size();
                         sink.skip(header_size);
                         if (auto err = (*pw)(sink))
-                            MTL_LOG_ERROR(MTL_ARG(err));
+                            ACTOR_LOG_ERROR(ACTOR_ARG(err));
                         sink.seek(header_offset);
                         auto payload_len = buf.size() - (header_offset + basp::header_size);
                         hdr.payload_len = static_cast<uint32_t>(payload_len);
                     }
                     if (auto err = sink(hdr))
-                        MTL_LOG_ERROR(MTL_ARG(err));
+                        ACTOR_LOG_ERROR(ACTOR_ARG(err));
                 }
 
                 void instance::write_server_handshake(execution_unit *ctx, buffer_type &out_buf,
                                                       optional<uint16_t> port) {
-                    MTL_LOG_TRACE(MTL_ARG(port));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(port));
                     using namespace detail;
                     published_actor *pa = nullptr;
                     if (port) {
@@ -214,7 +214,7 @@ namespace nil {
                         if (i != published_actors_.end())
                             pa = &i->second;
                     }
-                    MTL_LOG_DEBUG_IF(!pa && port, "no actor published");
+                    ACTOR_LOG_DEBUG_IF(!pa && port, "no actor published");
                     auto writer = make_callback([&](binary_serializer &sink) {
                         auto app_ids = config().middleman_app_identifiers;
                         auto aid = invalid_actor_id;
@@ -237,7 +237,7 @@ namespace nil {
 
                 void instance::write_monitor_message(execution_unit *ctx, buffer_type &buf, const node_id &dest_node,
                                                      actor_id aid) {
-                    MTL_LOG_TRACE(MTL_ARG(dest_node) << MTL_ARG(aid));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(dest_node) << ACTOR_ARG(aid));
                     auto writer = make_callback([&](binary_serializer &sink) { return sink(this_node_, dest_node); });
                     header hdr {message_type::monitor_message, 0, 0, 0, invalid_actor_id, aid};
                     write(ctx, buf, hdr, &writer);
@@ -245,7 +245,7 @@ namespace nil {
 
                 void instance::write_down_message(execution_unit *ctx, buffer_type &buf, const node_id &dest_node,
                                                   actor_id aid, const error &rsn) {
-                    MTL_LOG_TRACE(MTL_ARG(dest_node) << MTL_ARG(aid) << MTL_ARG(rsn));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(dest_node) << ACTOR_ARG(aid) << ACTOR_ARG(rsn));
                     auto writer =
                         make_callback([&](binary_serializer &sink) { return sink(this_node_, dest_node, rsn); });
                     header hdr {message_type::down_message, 0, 0, 0, aid, invalid_actor_id};
@@ -253,21 +253,21 @@ namespace nil {
                 }
 
                 void instance::write_heartbeat(execution_unit *ctx, buffer_type &buf) {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     header hdr {message_type::heartbeat, 0, 0, 0, invalid_actor_id, invalid_actor_id};
                     write(ctx, buf, hdr);
                 }
 
                 bool instance::handle(execution_unit *ctx, connection_handle hdl, header &hdr, buffer_type *payload) {
-                    MTL_LOG_TRACE(MTL_ARG(hdl) << MTL_ARG(hdr));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(hdl) << ACTOR_ARG(hdr));
                     // Check payload validity.
                     if (payload == nullptr) {
                         if (hdr.payload_len != 0) {
-                            MTL_LOG_WARNING("invalid payload");
+                            ACTOR_LOG_WARNING("invalid payload");
                             return false;
                         }
                     } else if (hdr.payload_len != payload->size()) {
-                        MTL_LOG_WARNING("invalid payload");
+                        ACTOR_LOG_WARNING("invalid payload");
                         return false;
                     }
                     // Dispatch by message type.
@@ -280,7 +280,7 @@ namespace nil {
                             actor_id aid = invalid_actor_id;
                             std::set<std::string> sigs;
                             if (auto err = bd(source_node, app_ids, aid, sigs)) {
-                                MTL_LOG_WARNING(
+                                ACTOR_LOG_WARNING(
                                     "unable to deserialize payload of server handshake:" << ctx->system().render(err));
                                 return false;
                             }
@@ -289,30 +289,30 @@ namespace nil {
                             auto i =
                                 std::find_first_of(app_ids.begin(), app_ids.end(), whitelist.begin(), whitelist.end());
                             if (i == app_ids.end()) {
-                                MTL_LOG_WARNING("refuse to connect to server due to app ID mismatch:"
-                                                << MTL_ARG(app_ids) << MTL_ARG(whitelist));
+                                ACTOR_LOG_WARNING("refuse to connect to server due to app ID mismatch:"
+                                                << ACTOR_ARG(app_ids) << ACTOR_ARG(whitelist));
                                 return false;
                             }
                             // Close connection to ourselves immediately after sending client HS.
                             if (source_node == this_node_) {
-                                MTL_LOG_DEBUG("close connection to self immediately");
+                                ACTOR_LOG_DEBUG("close connection to self immediately");
                                 callee_.finalize_handshake(source_node, aid, sigs);
                                 return false;
                             }
                             // Close this connection if we already have a direct connection.
                             if (tbl_.lookup_direct(source_node)) {
-                                MTL_LOG_DEBUG("close redundant direct connection:" << MTL_ARG(source_node));
+                                ACTOR_LOG_DEBUG("close redundant direct connection:" << ACTOR_ARG(source_node));
                                 callee_.finalize_handshake(source_node, aid, sigs);
                                 return false;
                             }
                             // Add direct route to this node and remove any indirect entry.
-                            MTL_LOG_DEBUG("new direct connection:" << MTL_ARG(source_node));
+                            ACTOR_LOG_DEBUG("new direct connection:" << ACTOR_ARG(source_node));
                             tbl_.add_direct(hdl, source_node);
                             auto was_indirect = tbl_.erase_indirect(source_node);
                             // write handshake as client in response
                             auto path = tbl_.lookup(source_node);
                             if (!path) {
-                                MTL_LOG_ERROR("no route to host after server handshake");
+                                ACTOR_LOG_ERROR("no route to host after server handshake");
                                 return false;
                             }
                             write_client_handshake(ctx, callee_.get_buffer(path->hdl));
@@ -326,17 +326,17 @@ namespace nil {
                             binary_deserializer bd {ctx, *payload};
                             node_id source_node;
                             if (auto err = bd(source_node)) {
-                                MTL_LOG_WARNING(
+                                ACTOR_LOG_WARNING(
                                     "unable to deserialize payload of client handshake:" << ctx->system().render(err));
                                 return false;
                             }
                             // Drop repeated handshakes.
                             if (tbl_.lookup_direct(source_node)) {
-                                MTL_LOG_DEBUG("received repeated client handshake:" << MTL_ARG(source_node));
+                                ACTOR_LOG_DEBUG("received repeated client handshake:" << ACTOR_ARG(source_node));
                                 break;
                             }
                             // Add direct route to this node and remove any indirect entry.
-                            MTL_LOG_DEBUG("new direct connection:" << MTL_ARG(source_node));
+                            ACTOR_LOG_DEBUG("new direct connection:" << ACTOR_ARG(source_node));
                             tbl_.add_direct(hdl, source_node);
                             auto was_indirect = tbl_.erase_indirect(source_node);
                             callee_.learned_new_node_directly(source_node, was_indirect);
@@ -348,7 +348,7 @@ namespace nil {
                             node_id source_node;
                             node_id dest_node;
                             if (auto err = bd(source_node, dest_node)) {
-                                MTL_LOG_WARNING("unable to deserialize source and destination for routed message:"
+                                ACTOR_LOG_WARNING("unable to deserialize source and destination for routed message:"
                                                 << ctx->system().render(err));
                                 return false;
                             }
@@ -366,10 +366,10 @@ namespace nil {
                             auto worker = hub_.pop();
                             auto last_hop = tbl_.lookup_direct(hdl);
                             if (worker != nullptr) {
-                                MTL_LOG_DEBUG("launch BASP worker for deserializing a" << hdr.operation);
+                                ACTOR_LOG_DEBUG("launch BASP worker for deserializing a" << hdr.operation);
                                 worker->launch(last_hop, hdr, *payload);
                             } else {
-                                MTL_LOG_DEBUG("out of BASP middleman_workers, continue deserializing a"
+                                ACTOR_LOG_DEBUG("out of BASP middleman_workers, continue deserializing a"
                                               << hdr.operation);
                                 // If no worker is available then we have no other choice than to take
                                 // the performance hit and deserialize in this thread.
@@ -400,7 +400,7 @@ namespace nil {
                             node_id source_node;
                             node_id dest_node;
                             if (auto err = bd(source_node, dest_node)) {
-                                MTL_LOG_WARNING(
+                                ACTOR_LOG_WARNING(
                                     "unable to deserialize payload of monitor message:" << ctx->system().render(err));
                                 return false;
                             }
@@ -417,7 +417,7 @@ namespace nil {
                             node_id dest_node;
                             error fail_state;
                             if (auto err = bd(source_node, dest_node, fail_state)) {
-                                MTL_LOG_WARNING(
+                                ACTOR_LOG_WARNING(
                                     "unable to deserialize payload of down message:" << ctx->system().render(err));
                                 return false;
                             }
@@ -434,12 +434,12 @@ namespace nil {
                             break;
                         }
                         case message_type::heartbeat: {
-                            MTL_LOG_TRACE("received heartbeat");
+                            ACTOR_LOG_TRACE("received heartbeat");
                             callee_.handle_heartbeat();
                             break;
                         }
                         default: {
-                            MTL_LOG_ERROR("invalid operation");
+                            ACTOR_LOG_ERROR("invalid operation");
                             return false;
                         }
                     }
@@ -448,22 +448,22 @@ namespace nil {
 
                 void instance::forward(execution_unit *ctx, const node_id &dest_node, const header &hdr,
                                        buffer_type &payload) {
-                    MTL_LOG_TRACE(MTL_ARG(dest_node) << MTL_ARG(hdr) << MTL_ARG(payload));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(dest_node) << ACTOR_ARG(hdr) << ACTOR_ARG(payload));
                     auto path = lookup(dest_node);
                     if (path) {
                         binary_serializer bs {ctx, callee_.get_buffer(path->hdl)};
                         if (auto err = bs(hdr)) {
-                            MTL_LOG_ERROR("unable to serialize BASP header");
+                            ACTOR_LOG_ERROR("unable to serialize BASP header");
                             return;
                         }
                         bs.apply(span<const byte> {payload.data(), payload.size()});
                         flush(*path);
                     } else {
-                        MTL_LOG_WARNING("cannot forward message, no route to destination");
+                        ACTOR_LOG_WARNING("cannot forward message, no route to destination");
                     }
                 }
 
             }    // namespace basp
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

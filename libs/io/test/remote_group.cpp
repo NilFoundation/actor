@@ -1,23 +1,23 @@
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
 #define BOOST_TEST_MODULE io_dynamic_remote_group_test
 
-#include <nil/mtl/test/io_dsl.hpp>
+#include <nil/actor/test/io_dsl.hpp>
 
 #include <vector>
 #include <algorithm>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/io/all.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/io/all.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 
-    class config : public nil::mtl::spawner_config {
+    class config : public nil::actor::spawner_config {
     public:
         config() {
-            load<nil::mtl::io::middleman>();
+            load<nil::actor::io::middleman>();
             add_message_type<std::vector<actor>>("std::vector<actor>");
         }
     };

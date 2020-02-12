@@ -10,12 +10,12 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/serialization/serializer.hpp>
+#include <nil/actor/serialization/serializer.hpp>
 
-#include <nil/mtl/spawner.hpp>
+#include <nil/actor/spawner.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         serializer::serializer(spawner &sys) noexcept : context_(sys.dummy_execution_unit()) {
             // nop
@@ -37,5 +37,5 @@ namespace nil {
                     return err;
             return end_sequence();
         }
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

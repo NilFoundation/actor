@@ -10,19 +10,19 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/decorator/splitter.hpp>
+#include <nil/actor/decorator/splitter.hpp>
 
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/stateful_actor.hpp>
-#include <nil/mtl/response_promise.hpp>
-#include <nil/mtl/event_based_actor.hpp>
-#include <nil/mtl/default_attachable.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/stateful_actor.hpp>
+#include <nil/actor/response_promise.hpp>
+#include <nil/actor/event_based_actor.hpp>
+#include <nil/actor/default_attachable.hpp>
 
-#include <nil/mtl/detail/disposer.hpp>
-#include <nil/mtl/detail/sync_request_bouncer.hpp>
+#include <nil/actor/detail/disposer.hpp>
+#include <nil/actor/detail/sync_request_bouncer.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace decorator {
 
             namespace {
@@ -104,5 +104,5 @@ namespace nil {
                 return msg_types_;
             }
         }    // namespace decorator
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

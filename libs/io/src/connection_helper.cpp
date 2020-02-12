@@ -9,15 +9,15 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/connection_helper.hpp>
+#include <nil/actor/io/connection_helper.hpp>
 
 #include <chrono>
 
-#include <nil/mtl/defaults.hpp>
-#include <nil/mtl/io/basp/instance.hpp>
+#include <nil/actor/defaults.hpp>
+#include <nil/actor/io/basp/instance.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
 
             namespace {
@@ -29,16 +29,16 @@ namespace nil {
             const char *connection_helper_state::name = "connection_helper";
 
             behavior connection_helper(stateful_actor<connection_helper_state> *self, actor b) {
-                MTL_LOG_TRACE(MTL_ARG(b));
+                ACTOR_LOG_TRACE(ACTOR_ARG(b));
                 self->monitor(b);
                 self->set_down_handler([=](down_msg &dm) {
-                    MTL_LOG_TRACE(MTL_ARG(dm));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(dm));
                     self->quit(std::move(dm.reason));
                 });
                 return {// this config is send from the remote `ConfigServ`
                         [=](const std::string &item, message &msg) {
-                            MTL_LOG_TRACE(MTL_ARG(item) << MTL_ARG(msg));
-                            MTL_LOG_DEBUG("received requested config:" << MTL_ARG(msg));
+                            ACTOR_LOG_TRACE(ACTOR_ARG(item) << ACTOR_ARG(msg));
+                            ACTOR_LOG_DEBUG("received requested config:" << ACTOR_ARG(msg));
                             // whatever happens, we are done afterwards
                             self->quit();
                             msg.apply({[&](uint16_t port, network::address_listing &addresses) {
@@ -50,27 +50,27 @@ namespace nil {
                                             if (hdl) {
                                                 // gotcha! send scribe to our BASP broker
                                                 // to initiate handshake etc.
-                                                MTL_LOG_INFO("connected directly:" << MTL_ARG(addr));
+                                                ACTOR_LOG_INFO("connected directly:" << ACTOR_ARG(addr));
                                                 self->send(b, connect_atom::value, *hdl, port);
                                                 return;
                                             }
                                         }
                                     }
-                                    MTL_LOG_INFO("could not connect to node directly");
+                                    ACTOR_LOG_INFO("could not connect to node directly");
                                 } else {
-                                    MTL_LOG_INFO("aborted direct connection attempt, unknown item: " << MTL_ARG(item));
+                                    ACTOR_LOG_INFO("aborted direct connection attempt, unknown item: " << ACTOR_ARG(item));
                                 }
                             }});
                         },
                         after(autoconnect_timeout) >>
                             [=] {
-                                MTL_LOG_TRACE(MTL_ARG(""));
+                                ACTOR_LOG_TRACE(ACTOR_ARG(""));
                                 // nothing heard in about 10 minutes... just a call it a day, then
-                                MTL_LOG_INFO("aborted direct connection attempt after 10min");
+                                ACTOR_LOG_INFO("aborted direct connection attempt after 10min");
                                 self->quit(exit_reason::user_shutdown);
                             }};
             }
 
         }    // namespace io
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

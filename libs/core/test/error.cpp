@@ -12,14 +12,14 @@
 
 #define BOOST_TEST_MODULE error_test
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
 
-#include <nil/mtl/error.hpp>
+#include <nil/actor/error.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 BOOST_AUTO_TEST_SUITE(error_test_suite)
 

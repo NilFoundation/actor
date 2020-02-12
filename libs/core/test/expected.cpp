@@ -10,17 +10,17 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
 #define BOOST_TEST_MODULE expected_test
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/expected.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/expected.hpp>
 
 using namespace std;
-using namespace nil::mtl;
+using namespace nil::actor;
 
 #define CHECK_EQ(x, y)   \
     BOOST_CHECK(x == y); \

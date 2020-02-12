@@ -15,10 +15,10 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/all.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/all.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 
@@ -109,7 +109,7 @@ BOOST_FIXTURE_TEST_SUITE(counting_hook, fixture<counting_thread_hook>)
 
 BOOST_AUTO_TEST_CASE(counting_system_without_actor_test) {
     assumed_init_calls = 1;
-    assumed_thread_count = cfg.scheduler_max_threads + 2;    // mtl.clock thread
+    assumed_thread_count = cfg.scheduler_max_threads + 2;    // actor.clock thread
     auto &sched = sys.scheduler();
     if (sched.detaches_utility_actors()) {
         assumed_thread_count += sched.num_utility_actors();
@@ -118,7 +118,7 @@ BOOST_AUTO_TEST_CASE(counting_system_without_actor_test) {
 
 BOOST_AUTO_TEST_CASE(counting_system_with_actor_test) {
     assumed_init_calls = 1;
-    assumed_thread_count = cfg.scheduler_max_threads + 3;    // mtl.clock thread plus
+    assumed_thread_count = cfg.scheduler_max_threads + 3;    // actor.clock thread plus
     // detached actor
     auto &sched = sys.scheduler();
     if (sched.detaches_utility_actors()) {

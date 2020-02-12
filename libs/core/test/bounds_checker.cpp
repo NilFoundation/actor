@@ -14,15 +14,15 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
-#include <nil/mtl/detail/bounds_checker.hpp>
+#include <nil/actor/detail/bounds_checker.hpp>
 
 namespace {
 
     template<class T>
     bool check(int64_t x) {
-        return nil::mtl::detail::bounds_checker<T>::check(x);
+        return nil::actor::detail::bounds_checker<T>::check(x);
     }
 
 }    // namespace

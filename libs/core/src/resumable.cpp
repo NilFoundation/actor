@@ -10,12 +10,12 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/resumable.hpp>
+#include <nil/actor/resumable.hpp>
 
-#include <nil/mtl/ref_counted.hpp>
+#include <nil/actor/ref_counted.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         resumable::~resumable() {
             // nop
@@ -25,5 +25,5 @@ namespace nil {
             return unspecified;
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

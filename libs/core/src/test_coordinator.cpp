@@ -10,17 +10,17 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/scheduler/test_coordinator.hpp>
+#include <nil/actor/scheduler/test_coordinator.hpp>
 
 #include <limits>
 
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/monitorable_actor.hpp>
-#include <nil/mtl/raise_error.hpp>
-#include <nil/mtl/resumable.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/monitorable_actor.hpp>
+#include <nil/actor/raise_error.hpp>
+#include <nil/actor/resumable.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace scheduler {
 
             namespace {
@@ -81,7 +81,7 @@ namespace nil {
             }
 
             void test_coordinator::enqueue(resumable *ptr) {
-                MTL_LOG_TRACE("");
+                ACTOR_LOG_TRACE("");
                 jobs.push_back(ptr);
                 if (after_next_enqueue_ != nullptr) {
                     std::function<void()> f;
@@ -120,13 +120,13 @@ namespace nil {
 
             void test_coordinator::run_once() {
                 if (jobs.empty())
-                    MTL_RAISE_ERROR("No job to run available.");
+                    ACTOR_RAISE_ERROR("No job to run available.");
                 try_run_once();
             }
 
             void test_coordinator::run_once_lifo() {
                 if (jobs.empty())
-                    MTL_RAISE_ERROR("No job to run available.");
+                    ACTOR_RAISE_ERROR("No job to run available.");
                 try_run_once_lifo();
             }
 
@@ -151,5 +151,5 @@ namespace nil {
             }
 
         }    // namespace scheduler
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

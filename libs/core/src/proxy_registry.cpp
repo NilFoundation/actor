@@ -13,18 +13,18 @@
 #include <algorithm>
 #include <utility>
 
-#include <nil/mtl/actor_addr.hpp>
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/serialization/deserializer.hpp>
-#include <nil/mtl/node_id.hpp>
-#include <nil/mtl/proxy_registry.hpp>
-#include <nil/mtl/serialization/serializer.hpp>
+#include <nil/actor/actor_addr.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/serialization/deserializer.hpp>
+#include <nil/actor/node_id.hpp>
+#include <nil/actor/proxy_registry.hpp>
+#include <nil/actor/serialization/serializer.hpp>
 
-#include <nil/mtl/actor_registry.hpp>
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/actor_registry.hpp>
+#include <nil/actor/logger.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         proxy_registry::backend::~backend() {
             // nop
@@ -54,7 +54,7 @@ namespace nil {
         }
 
         strong_actor_ptr proxy_registry::get_or_put(const node_id &nid, actor_id aid) {
-            MTL_LOG_TRACE(MTL_ARG(nid) << MTL_ARG(aid));
+            ACTOR_LOG_TRACE(ACTOR_ARG(nid) << ACTOR_ARG(aid));
             std::unique_lock<std::mutex> guard {mtx_};
             auto &result = proxies_[nid][aid];
             if (!result)
@@ -80,7 +80,7 @@ namespace nil {
         }
 
         void proxy_registry::erase(const node_id &nid) {
-            MTL_LOG_TRACE(MTL_ARG(nid));
+            ACTOR_LOG_TRACE(ACTOR_ARG(nid));
             // Move submap for `nid` to a local variable.
             proxy_map tmp;
             {
@@ -98,7 +98,7 @@ namespace nil {
         }
 
         void proxy_registry::erase(const node_id &nid, actor_id aid, error rsn) {
-            MTL_LOG_TRACE(MTL_ARG(nid) << MTL_ARG(aid));
+            ACTOR_LOG_TRACE(ACTOR_ARG(nid) << ACTOR_ARG(aid));
             // Try to find the actor handle in question.
             strong_actor_ptr erased_proxy;
             {
@@ -122,7 +122,7 @@ namespace nil {
         }
 
         void proxy_registry::clear() {
-            MTL_LOG_TRACE("");
+            ACTOR_LOG_TRACE("");
             // Move the content of proxies_ to a local variable.
             std::unordered_map<node_id, proxy_map> tmp;
             {
@@ -144,5 +144,5 @@ namespace nil {
             pptr->kill_proxy(nullptr, std::move(rsn));
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

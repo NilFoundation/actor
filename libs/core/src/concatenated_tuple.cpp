@@ -10,16 +10,16 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/concatenated_tuple.hpp>
+#include <nil/actor/detail/concatenated_tuple.hpp>
 
 #include <numeric>
 
-#include <nil/mtl/make_counted.hpp>
-#include <nil/mtl/message.hpp>
-#include <nil/mtl/raise_error.hpp>
+#include <nil/actor/make_counted.hpp>
+#include <nil/actor/message.hpp>
+#include <nil/actor/raise_error.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             concatenated_tuple::concatenated_tuple(std::initializer_list<cow_ptr> xs) {
@@ -51,13 +51,13 @@ namespace nil {
             }
 
             void *concatenated_tuple::get_mutable(size_t pos) {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 auto selected = select(pos);
                 return selected.first->get_mutable(selected.second);
             }
 
             error concatenated_tuple::load(size_t pos, deserializer &source) {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 auto selected = select(pos);
                 return selected.first->load(selected.second, source);
             }
@@ -71,31 +71,31 @@ namespace nil {
             }
 
             rtti_pair concatenated_tuple::type(size_t pos) const noexcept {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 auto selected = select(pos);
                 return selected.first->type(selected.second);
             }
 
             const void *concatenated_tuple::get(size_t pos) const noexcept {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 auto selected = select(pos);
                 return selected.first->get(selected.second);
             }
 
             std::string concatenated_tuple::stringify(size_t pos) const {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 auto selected = select(pos);
                 return selected.first->stringify(selected.second);
             }
 
             type_erased_value_ptr concatenated_tuple::copy(size_t pos) const {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 auto selected = select(pos);
                 return selected.first->copy(selected.second);
             }
 
             error concatenated_tuple::save(size_t pos, serializer &sink) const {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 auto selected = select(pos);
                 return selected.first->save(selected.second, sink);
             }
@@ -109,7 +109,7 @@ namespace nil {
                     else
                         return {m.unshared_ptr(), idx};
                 }
-                MTL_RAISE_ERROR(std::out_of_range, "concatenated_tuple::select out of range");
+                ACTOR_RAISE_ERROR(std::out_of_range, "concatenated_tuple::select out of range");
             }
 
             std::pair<const message_data *, size_t> concatenated_tuple::select(size_t pos) const {
@@ -121,9 +121,9 @@ namespace nil {
                     else
                         return {m.get(), idx};
                 }
-                MTL_RAISE_ERROR(std::out_of_range, "concatenated_tuple::select out of range");
+                ACTOR_RAISE_ERROR(std::out_of_range, "concatenated_tuple::select out of range");
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

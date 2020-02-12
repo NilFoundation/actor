@@ -1,10 +1,10 @@
 \section{Errors}
 \label{error}
 
-Errors in MTL have a code and a category, similar to
+Errors in ACTOR have a code and a category, similar to
 \lstinline^std::error_code^ and \lstinline^std::error_condition^. Unlike its
 counterparts from the C++ standard library, \lstinline^error^ is
-plattform-neutral and serializable. Instead of using category singletons, MTL
+plattform-neutral and serializable. Instead of using category singletons, ACTOR
 stores categories as atoms~\see{atom}. Errors can also include a message to
 provide additional context information.
 
@@ -76,10 +76,10 @@ follows.
 \subsection{Default Exit Reasons}
 \label{exit-reason}
 
-MTL uses the error category \lstinline^"exit"^ for default exit reasons. These
+ACTOR uses the error category \lstinline^"exit"^ for default exit reasons. These
 errors are usually fail states set by the actor system itself. The two
 exceptions are \lstinline^exit_reason::user_shutdown^ and
-\lstinline^exit_reason::kill^. The former is used in MTL to signalize orderly,
+\lstinline^exit_reason::kill^. The former is used in ACTOR to signalize orderly,
 user-requested shutdown and can be used by programmers in the same way. The
 latter terminates an actor unconditionally when used in \lstinline^send_exit^,
 even if the default handler for exit messages~\see{exit-message} is overridden.

@@ -10,7 +10,7 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/actor_registry.hpp>
+#include <nil/actor/actor_registry.hpp>
 
 #include <mutex>
 #include <limits>
@@ -18,21 +18,21 @@
 #include <unordered_map>
 #include <unordered_set>
 
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/locks.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/attachable.hpp>
-#include <nil/mtl/exit_reason.hpp>
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/scoped_actor.hpp>
-#include <nil/mtl/stateful_actor.hpp>
-#include <nil/mtl/event_based_actor.hpp>
-#include <nil/mtl/uniform_type_info_map.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/locks.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/attachable.hpp>
+#include <nil/actor/exit_reason.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/scoped_actor.hpp>
+#include <nil/actor/stateful_actor.hpp>
+#include <nil/actor/event_based_actor.hpp>
+#include <nil/actor/uniform_type_info_map.hpp>
 
-#include <nil/mtl/detail/shared_spinlock.hpp>
+#include <nil/actor/detail/shared_spinlock.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         namespace {
 
@@ -54,12 +54,12 @@ namespace nil {
             auto i = entries_.find(key);
             if (i != entries_.end())
                 return i->second;
-            MTL_LOG_DEBUG("key invalid, assume actor no longer exists:" << MTL_ARG(key));
+            ACTOR_LOG_DEBUG("key invalid, assume actor no longer exists:" << ACTOR_ARG(key));
             return nullptr;
         }
 
         void actor_registry::put_impl(actor_id key, strong_actor_ptr val) {
-            MTL_LOG_TRACE(MTL_ARG(key));
+            ACTOR_LOG_TRACE(ACTOR_ARG(key));
             if (!val)
                 return;
             {    // lifetime scope of guard
@@ -68,7 +68,7 @@ namespace nil {
                     return;
             }
             // attach functor without lock
-            MTL_LOG_DEBUG("added actor:" << MTL_ARG(key));
+            ACTOR_LOG_DEBUG("added actor:" << ACTOR_ARG(key));
             actor_registry *reg = this;
             val->get()->attach_functor([key, reg]() { reg->erase(key); });
         }
@@ -90,9 +90,9 @@ namespace nil {
         }
 
         void actor_registry::inc_running() {
-#if MTL_LOG_LEVEL >= MTL_LOG_LEVEL_DEBUG
+#if ACTOR_LOG_LEVEL >= ACTOR_LOG_LEVEL_DEBUG
             auto value = ++running_;
-            MTL_LOG_DEBUG(MTL_ARG(value));
+            ACTOR_LOG_DEBUG(ACTOR_ARG(value));
 #else
             ++running_;
 #endif
@@ -108,15 +108,15 @@ namespace nil {
                 std::unique_lock<std::mutex> guard(running_mtx_);
                 running_cv_.notify_all();
             }
-            MTL_LOG_DEBUG(MTL_ARG(new_val));
+            ACTOR_LOG_DEBUG(ACTOR_ARG(new_val));
         }
 
         void actor_registry::await_running_count_equal(size_t expected) const {
-            MTL_ASSERT(expected == 0 || expected == 1);
-            MTL_LOG_TRACE(MTL_ARG(expected));
+            ACTOR_ASSERT(expected == 0 || expected == 1);
+            ACTOR_LOG_TRACE(ACTOR_ARG(expected));
             std::unique_lock<std::mutex> guard {running_mtx_};
             while (running_ != expected) {
-                MTL_LOG_DEBUG(MTL_ARG(running_.load()));
+                ACTOR_LOG_DEBUG(ACTOR_ARG(running_.load()));
                 running_cv_.wait(guard);
             }
         }
@@ -165,5 +165,5 @@ namespace nil {
             // nop
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

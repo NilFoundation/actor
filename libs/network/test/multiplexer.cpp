@@ -11,22 +11,22 @@
 
 #define BOOST_TEST_MODULE multiplexer
 
-#include <nil/mtl/network/multiplexer.hpp>
+#include <nil/actor/network/multiplexer.hpp>
 
-#include <nil/mtl/test/host_fixture.hpp>
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/host_fixture.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <new>
 #include <tuple>
 #include <vector>
 
-#include <nil/mtl/byte.hpp>
-#include <nil/mtl/network/socket_manager.hpp>
-#include <nil/mtl/network/stream_socket.hpp>
-#include <nil/mtl/span.hpp>
+#include <nil/actor/byte.hpp>
+#include <nil/actor/network/socket_manager.hpp>
+#include <nil/actor/network/stream_socket.hpp>
+#include <nil/actor/span.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::network;
+using namespace nil::actor;
+using namespace nil::actor::network;
 
 namespace {
 
@@ -51,7 +51,7 @@ namespace {
                 rd_buf_.resize(rd_buf_.size() + 2048);
             auto res = read(handle(), make_span(read_position_begin(), read_capacity()));
             if (auto num_bytes = get_if<size_t>(&res)) {
-                MTL_ASSERT(*num_bytes > 0);
+                ACTOR_ASSERT(*num_bytes > 0);
                 rd_buf_pos_ += *num_bytes;
                 return true;
             }
@@ -63,7 +63,7 @@ namespace {
                 return false;
             auto res = write(handle(), wr_buf_);
             if (auto num_bytes = get_if<size_t>(&res)) {
-                MTL_ASSERT(*num_bytes > 0);
+                ACTOR_ASSERT(*num_bytes > 0);
                 wr_buf_.erase(wr_buf_.begin(), wr_buf_.begin() + *num_bytes);
                 return wr_buf_.size() > 0;
             }

@@ -12,15 +12,15 @@
 
 #include <utility>
 
-#include <nil/mtl/locks.hpp>
+#include <nil/actor/locks.hpp>
 
-#include <nil/mtl/atom.hpp>
-#include <nil/mtl/message.hpp>
-#include <nil/mtl/actor_proxy.hpp>
-#include <nil/mtl/exit_reason.hpp>
+#include <nil/actor/atom.hpp>
+#include <nil/actor/message.hpp>
+#include <nil/actor/actor_proxy.hpp>
+#include <nil/actor/exit_reason.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         actor_proxy::actor_proxy(actor_config &cfg) : monitorable_actor(cfg) {
             // nop
@@ -30,5 +30,5 @@ namespace nil {
             // nop
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

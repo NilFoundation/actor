@@ -16,12 +16,12 @@
 
 #include <functional>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/message_builder.hpp>
-#include <nil/mtl/message_handler.hpp>
-#include <nil/mtl/make_type_erased_tuple_view.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/message_builder.hpp>
+#include <nil/actor/message_handler.hpp>
+#include <nil/actor/make_type_erased_tuple_view.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 using hi_atom = atom_constant<atom("hi")>;
 using ho_atom = atom_constant<atom("ho")>;

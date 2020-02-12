@@ -17,13 +17,13 @@
 #include <cstdint>
 #include <memory>
 
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/actor_control_block.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/broadcast_downstream_manager.hpp>
-#include <nil/mtl/scheduled_actor.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/actor_control_block.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/broadcast_downstream_manager.hpp>
+#include <nil/actor/scheduled_actor.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 

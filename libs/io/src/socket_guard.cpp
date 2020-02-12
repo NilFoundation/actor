@@ -9,18 +9,18 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/socket_guard.hpp>
+#include <nil/actor/detail/socket_guard.hpp>
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 #include <winsock2.h>
 #else
 #include <unistd.h>
 #endif
 
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/logger.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             socket_guard::socket_guard(io::network::native_socket fd) : fd_(fd) {
@@ -39,12 +39,12 @@ namespace nil {
 
             void socket_guard::close() {
                 if (fd_ != io::network::invalid_native_socket) {
-                    MTL_LOG_DEBUG("close socket" << MTL_ARG(fd_));
+                    ACTOR_LOG_DEBUG("close socket" << ACTOR_ARG(fd_));
                     io::network::close_socket(fd_);
                     fd_ = io::network::invalid_native_socket;
                 }
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

@@ -10,15 +10,15 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/scoped_actor.hpp>
+#include <nil/actor/scoped_actor.hpp>
 
-#include <nil/mtl/to_string.hpp>
-#include <nil/mtl/spawn_options.hpp>
-#include <nil/mtl/actor_registry.hpp>
-#include <nil/mtl/scoped_execution_unit.hpp>
+#include <nil/actor/to_string.hpp>
+#include <nil/actor/spawn_options.hpp>
+#include <nil/actor/actor_registry.hpp>
+#include <nil/actor/scoped_execution_unit.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         namespace {
 
@@ -29,7 +29,7 @@ namespace nil {
                 }
 
                 void act() override {
-                    MTL_LOG_ERROR("act() of scoped_actor impl called");
+                    ACTOR_LOG_ERROR("act() of scoped_actor impl called");
                 }
 
                 const char *name() const override {
@@ -37,9 +37,9 @@ namespace nil {
                 }
 
                 void launch(execution_unit *, bool, bool hide) override {
-                    MTL_PUSH_AID_FROM_PTR(this);
-                    MTL_LOG_TRACE(MTL_ARG(hide));
-                    MTL_ASSERT(getf(is_blocking_flag));
+                    ACTOR_PUSH_AID_FROM_PTR(this);
+                    ACTOR_LOG_TRACE(ACTOR_ARG(hide));
+                    ACTOR_ASSERT(getf(is_blocking_flag));
                     if (!hide)
                         register_at_system();
                     initialize();
@@ -49,13 +49,13 @@ namespace nil {
         }    // namespace
 
         scoped_actor::scoped_actor(spawner &sys, bool hide) : context_(&sys) {
-            MTL_SET_LOGGER_SYS(&sys);
+            ACTOR_SET_LOGGER_SYS(&sys);
             actor_config cfg {&context_};
             if (hide)
                 cfg.flags |= abstract_actor::is_hidden_flag;
             auto hdl = sys.spawn_impl<impl, no_spawn_options>(cfg);
             self_ = actor_cast<strong_actor_ptr>(std::move(hdl));
-            prev_ = MTL_SET_AID(self_->id());
+            prev_ = ACTOR_SET_AID(self_->id());
         }
 
         scoped_actor::~scoped_actor() {
@@ -64,7 +64,7 @@ namespace nil {
             auto x = ptr();
             if (!x->getf(abstract_actor::is_terminated_flag))
                 x->cleanup(exit_reason::normal, &context_);
-            MTL_SET_AID(prev_);
+            ACTOR_SET_AID(prev_);
         }
 
         blocking_actor *scoped_actor::ptr() const {
@@ -75,5 +75,5 @@ namespace nil {
             return to_string(x.address());
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

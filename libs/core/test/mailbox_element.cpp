@@ -18,14 +18,14 @@
 #include <tuple>
 #include <vector>
 
-#include <nil/mtl/all.hpp>
+#include <nil/actor/all.hpp>
 
 using std::make_tuple;
 using std::string;
 using std::tuple;
 using std::vector;
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 

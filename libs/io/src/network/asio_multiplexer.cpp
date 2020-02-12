@@ -15,13 +15,13 @@
 #include <memory>
 #include <boost/asio/ip/tcp.hpp>
 
-#include <nil/mtl/io/broker.hpp>
-#include <nil/mtl/io/middleman.hpp>
+#include <nil/actor/io/broker.hpp>
+#include <nil/actor/io/middleman.hpp>
 
-#include <nil/mtl/io/network/asio_multiplexer.hpp>
+#include <nil/actor/io/network/asio_multiplexer.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace network {
 
@@ -58,7 +58,7 @@ namespace nil {
 
                 void ip_bind(default_socket_acceptor &fd, uint16_t port, const char *addr = nullptr,
                              bool reuse_addr = true) {
-                    BOOST_ACTOR_LOGF_TRACE(MTL_ARG(port));
+                    BOOST_ACTOR_LOGF_TRACE(ACTOR_ARG(port));
                     using boost::asio::ip::tcp;
                     try {
                         auto bind_and_listen = [&](tcp::endpoint &ep) {
@@ -105,7 +105,7 @@ namespace nil {
 
                 template<class Socket>
                 connection_handle asio_multiplexer::add_tcp_scribe(abstract_broker *self, Socket &&sock) {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     class impl : public scribe {
                     public:
                         typedef typename scribe::buffer_type buffer_type;
@@ -116,7 +116,7 @@ namespace nil {
                             stream_.init(std::move(s));
                         }
                         void configure_read(receive_policy::config config) override {
-                            MTL_LOG_TRACE("");
+                            ACTOR_LOG_TRACE("");
                             stream_.configure_read(config);
                             if (!launched_) {
                                 launch();
@@ -130,17 +130,17 @@ namespace nil {
                             return stream_.rd_buf();
                         }
                         void stop_reading() override {
-                            MTL_LOG_TRACE("");
+                            ACTOR_LOG_TRACE("");
                             stream_.stop_reading();
                             detach(false);
                         }
                         void flush() override {
-                            MTL_LOG_TRACE("");
+                            ACTOR_LOG_TRACE("");
                             stream_.flush(this);
                         }
                         void launch() {
-                            MTL_LOG_TRACE("");
-                            MTL_ASSERT(!launched_);
+                            ACTOR_LOG_TRACE("");
+                            ACTOR_ASSERT(!launched_);
                             launched_ = true;
                             stream_.start(this);
                         }
@@ -155,7 +155,7 @@ namespace nil {
                 }
 
                 connection_handle asio_multiplexer::add_tcp_scribe(abstract_broker *self, native_socket fd) {
-                    MTL_LOG_TRACE(MTL_ARG(self) << ", " << MTL_ARG(fd));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(self) << ", " << ACTOR_ARG(fd));
                     boost::system::error_code ec;
                     default_socket sock {backend()};
                     sock.assign(boost::asio::ip::tcp::v6(), fd, ec);
@@ -170,13 +170,13 @@ namespace nil {
 
                 connection_handle asio_multiplexer::add_tcp_scribe(abstract_broker *self, const std::string &host,
                                                                    uint16_t port) {
-                    MTL_LOG_TRACE(MTL_ARG(self) << ", " << MTL_ARG(host) << ":" << MTL_ARG(port));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(self) << ", " << ACTOR_ARG(host) << ":" << ACTOR_ARG(port));
                     return add_tcp_scribe(self, new_tcp_connection(backend(), host, port));
                 }
 
                 std::pair<accept_handle, uint16_t> asio_multiplexer::new_tcp_doorman(uint16_t port, const char *in,
                                                                                      bool rflag) {
-                    MTL_LOG_TRACE(MTL_ARG(port) << ", addr = " << (in ? in : "nullptr"));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(port) << ", addr = " << (in ? in : "nullptr"));
                     default_socket_acceptor fd {backend()};
                     ip_bind(fd, port, in, rflag);
                     auto id = int64_from_native_socket(fd.native_handle());
@@ -187,7 +187,7 @@ namespace nil {
                 }
 
                 void asio_multiplexer::assign_tcp_doorman(abstract_broker *self, accept_handle hdl) {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     std::lock_guard<std::mutex> lock(mtx_acceptors_);
                     auto itr = unassigned_acceptors_.find(hdl.id());
                     if (itr != unassigned_acceptors_.end()) {
@@ -197,8 +197,8 @@ namespace nil {
                 }
 
                 accept_handle asio_multiplexer::add_tcp_doorman(abstract_broker *self, default_socket_acceptor &&sock) {
-                    MTL_LOG_TRACE("sock.fd = " << sock.native_handle());
-                    MTL_ASSERT(sock.native_handle() != network::invalid_native_socket);
+                    ACTOR_LOG_TRACE("sock.fd = " << sock.native_handle());
+                    ACTOR_ASSERT(sock.native_handle() != network::invalid_native_socket);
                     class impl : public doorman {
                     public:
                         impl(abstract_broker *ptr, default_socket_acceptor &&s, network::asio_multiplexer &am) :
@@ -207,18 +207,18 @@ namespace nil {
                             acceptor_.init(std::move(s));
                         }
                         void new_connection() override {
-                            MTL_LOG_TRACE("");
+                            ACTOR_LOG_TRACE("");
                             auto &am = acceptor_.backend();
                             accept_msg().handle = am.add_tcp_scribe(parent(), std::move(acceptor_.accepted_socket()));
                             parent()->invoke_message(invalid_actor_addr, invalid_message_id, accept_msg_);
                         }
                         void stop_reading() override {
-                            MTL_LOG_TRACE("");
+                            ACTOR_LOG_TRACE("");
                             acceptor_.stop();
                             detach(false);
                         }
                         void launch() override {
-                            MTL_LOG_TRACE("");
+                            ACTOR_LOG_TRACE("");
                             acceptor_.start(this);
                         }
 
@@ -269,7 +269,7 @@ namespace nil {
                 }
 
                 void asio_multiplexer::run() {
-                    MTL_LOG_TRACE("asio-based multiplexer");
+                    ACTOR_LOG_TRACE("asio-based multiplexer");
                     boost::system::error_code ec;
                     backend().run(ec);
                     if (ec) {
@@ -287,5 +287,5 @@ namespace nil {
 
             }    // namespace network
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

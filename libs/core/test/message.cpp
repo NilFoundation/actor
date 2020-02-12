@@ -24,15 +24,15 @@
 #include <set>
 #include <unordered_set>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/all.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/all.hpp>
 
 using std::make_tuple;
 using std::map;
 using std::string;
 using std::vector;
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 BOOST_AUTO_TEST_CASE(apply_test) {
     auto f1 = [] { BOOST_ERROR("f1 invoked!"); };

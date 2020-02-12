@@ -11,22 +11,22 @@
 
 #define BOOST_TEST_MODULE udp_datagram_socket
 
-#include <nil/mtl/network/udp_datagram_socket.hpp>
+#include <nil/actor/network/udp_datagram_socket.hpp>
 
-#include <nil/mtl/test/host_fixture.hpp>
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/host_fixture.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-#include <nil/mtl/serialization/binary_serializer.hpp>
-#include <nil/mtl/detail/net_syscall.hpp>
-#include <nil/mtl/detail/socket_sys_includes.hpp>
-#include <nil/mtl/ip_address.hpp>
-#include <nil/mtl/ip_endpoint.hpp>
-#include <nil/mtl/ipv4_address.hpp>
-#include <nil/mtl/network/ip.hpp>
+#include <nil/actor/serialization/binary_serializer.hpp>
+#include <nil/actor/detail/net_syscall.hpp>
+#include <nil/actor/detail/socket_sys_includes.hpp>
+#include <nil/actor/ip_address.hpp>
+#include <nil/actor/ip_endpoint.hpp>
+#include <nil/actor/ipv4_address.hpp>
+#include <nil/actor/network/ip.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::network;
-using namespace nil::mtl::network::ip;
+using namespace nil::actor;
+using namespace nil::actor::network;
+using namespace nil::actor::network::ip;
 
 namespace {
 

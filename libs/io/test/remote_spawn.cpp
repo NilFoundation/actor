@@ -1,8 +1,8 @@
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
 #define BOOST_TEST_MODULE io_remote_spawn_test
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <thread>
 #include <string>
@@ -11,10 +11,10 @@
 #include <iostream>
 #include <functional>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/io/all.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/io/all.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 

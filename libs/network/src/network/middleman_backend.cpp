@@ -9,10 +9,10 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/middleman_backend.hpp>
+#include <nil/actor/network/middleman_backend.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
 
             middleman_backend::middleman_backend(std::string id) : id_(std::move(id)) {
@@ -24,5 +24,5 @@ namespace nil {
             }
 
         }    // namespace network
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

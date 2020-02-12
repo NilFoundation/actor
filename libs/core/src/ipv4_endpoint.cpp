@@ -8,12 +8,12 @@
 // License 1.0. See accompanying files LICENSE and LICENSE_ALTERNATIVE.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/ipv4_endpoint.hpp>
+#include <nil/actor/ipv4_endpoint.hpp>
 
-#include <nil/mtl/detail/fnv_hash.hpp>
+#include <nil/actor/detail/fnv_hash.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         ipv4_endpoint::ipv4_endpoint(ipv4_address address, uint16_t port) : address_(address), port_(port) {
             // nop
@@ -33,5 +33,5 @@ namespace nil {
             return to_string(ep.address()) + ":" + std::to_string(ep.port());
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

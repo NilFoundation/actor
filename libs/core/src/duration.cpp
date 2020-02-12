@@ -12,12 +12,12 @@
 
 #include <sstream>
 
-#include <nil/mtl/duration.hpp>
+#include <nil/actor/duration.hpp>
 
-#include <nil/mtl/detail/enum_to_string.hpp>
+#include <nil/actor/detail/enum_to_string.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         namespace {
 
@@ -44,5 +44,5 @@ namespace nil {
             return lhs.unit == rhs.unit && lhs.count == rhs.count;
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

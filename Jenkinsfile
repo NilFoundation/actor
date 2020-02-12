@@ -2,9 +2,9 @@
 
 // Default CMake flags for most builds (except coverage).
 defaultBuildFlags = [
-    'MTL_MORE_WARNINGS:BOOL=yes',
-    'MTL_ENABLE_RUNTIME_CHECKS:BOOL=yes',
-    'MTL_NO_OPENCL:BOOL=yes',
+    'ACTOR_MORE_WARNINGS:BOOL=yes',
+    'ACTOR_ENABLE_RUNTIME_CHECKS:BOOL=yes',
+    'ACTOR_NO_OPENCL:BOOL=yes',
     'OPENSSL_ROOT_DIR=/usr/local/opt/openssl',
     'OPENSSL_INCLUDE_DIR=/usr/local/opt/openssl/include',
 ]
@@ -15,9 +15,9 @@ releaseBuildFlags = defaultBuildFlags + [
 
 // CMake flags for debug builds.
 debugBuildFlags = defaultBuildFlags + [
-    'MTL_ENABLE_RUNTIME_CHECKS:BOOL=yes',
-    'MTL_ENABLE_ADDRESS_SANITIZER:BOOL=yes',
-    'MTL_LOG_LEVEL:STRING=4',
+    'ACTOR_ENABLE_RUNTIME_CHECKS:BOOL=yes',
+    'ACTOR_ENABLE_ADDRESS_SANITIZER:BOOL=yes',
+    'ACTOR_LOG_LEVEL:STRING=4',
 ]
 
 // Our build matrix. The keys are the operating system labels and the values
@@ -55,9 +55,9 @@ buildMatrix = [
         builds: ['debug', 'release'],
         tools: ['msvc'],
         cmakeArgs: [
-            'MTL_BUILD_STATIC_ONLY:BOOL=yes',
-            'MTL_ENABLE_RUNTIME_CHECKS:BOOL=yes',
-            'MTL_NO_OPENCL:BOOL=yes',
+            'ACTOR_BUILD_STATIC_ONLY:BOOL=yes',
+            'ACTOR_ENABLE_RUNTIME_CHECKS:BOOL=yes',
+            'ACTOR_NO_OPENCL:BOOL=yes',
         ],
     ]],
     // One Additional build for coverage reports.
@@ -66,9 +66,9 @@ buildMatrix = [
         tools: ['gcc8 && gcovr'],
         extraSteps: ['coverageReport'],
         cmakeArgs: [
-            'MTL_ENABLE_GCOV:BOOL=yes',
-            'MTL_NO_EXCEPTIONS:BOOL=yes',
-            'MTL_FORCE_NO_EXCEPTIONS:BOOL=yes',
+            'ACTOR_ENABLE_GCOV:BOOL=yes',
+            'ACTOR_NO_EXCEPTIONS:BOOL=yes',
+            'ACTOR_FORCE_NO_EXCEPTIONS:BOOL=yes',
         ],
     ]],
 ]
@@ -192,7 +192,7 @@ pipeline {
         LD_LIBRARY_PATH = "$WORKSPACE/caf-sources/build/lib"
         DYLD_LIBRARY_PATH = "$WORKSPACE/caf-sources/build/lib"
         PrettyJobBaseName = env.JOB_BASE_NAME.replace('%2F', '/')
-        PrettyJobName = "MTL build #${env.BUILD_NUMBER} for $PrettyJobBaseName"
+        PrettyJobName = "ACTOR build #${env.BUILD_NUMBER} for $PrettyJobBaseName"
     }
     stages {
         stage('Git Checkout') {
@@ -236,7 +236,7 @@ pipeline {
                         buildDir: 'build',
                         installation: 'cmake in search path',
                         sourceDir: '.',
-                        cmakeArgs: '-DMTL_BUILD_TEX_MANUAL=yes',
+                        cmakeArgs: '-DACTOR_BUILD_TEX_MANUAL=yes',
                         steps: [[
                             args: '--target doc',
                             withCmake: true,

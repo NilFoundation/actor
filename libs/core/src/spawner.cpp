@@ -10,28 +10,28 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/spawner.hpp>
+#include <nil/actor/spawner.hpp>
 
 #include <memory>
 #include <unordered_set>
 
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/event_based_actor.hpp>
-#include <nil/mtl/raise_error.hpp>
-#include <nil/mtl/raw_event_based_actor.hpp>
-#include <nil/mtl/send.hpp>
-#include <nil/mtl/to_string.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/event_based_actor.hpp>
+#include <nil/actor/raise_error.hpp>
+#include <nil/actor/raw_event_based_actor.hpp>
+#include <nil/actor/send.hpp>
+#include <nil/actor/to_string.hpp>
 
-#include <nil/mtl/policy/work_sharing.hpp>
-#include <nil/mtl/policy/work_stealing.hpp>
+#include <nil/actor/policy/work_sharing.hpp>
+#include <nil/actor/policy/work_stealing.hpp>
 
-#include <nil/mtl/scheduler/coordinator.hpp>
-#include <nil/mtl/scheduler/test_coordinator.hpp>
-#include <nil/mtl/scheduler/abstract_coordinator.hpp>
-#include <nil/mtl/scheduler/profiled_coordinator.hpp>
+#include <nil/actor/scheduler/coordinator.hpp>
+#include <nil/actor/scheduler/test_coordinator.hpp>
+#include <nil/actor/scheduler/abstract_coordinator.hpp>
+#include <nil/actor/scheduler/profiled_coordinator.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         namespace {
 
@@ -48,7 +48,7 @@ namespace nil {
             const char *kvstate::name = "config_server";
 
             behavior config_serv_impl(stateful_actor<kvstate> *self) {
-                MTL_LOG_TRACE("");
+                ACTOR_LOG_TRACE("");
                 std::string wildcard = "*";
                 auto unsubscribe_all = [=](actor subscriber) {
                     auto &subscribers = self->state.subscribers;
@@ -61,14 +61,14 @@ namespace nil {
                     subscribers.erase(i);
                 };
                 self->set_down_handler([=](down_msg &dm) {
-                    MTL_LOG_TRACE(MTL_ARG(dm));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(dm));
                     auto ptr = actor_cast<strong_actor_ptr>(dm.source);
                     if (ptr)
                         unsubscribe_all(actor_cast<actor>(std::move(ptr)));
                 });
                 return {// set a key/value pair
                         [=](put_atom, const std::string &key, message &msg) {
-                            MTL_LOG_TRACE(MTL_ARG(key) << MTL_ARG(msg));
+                            ACTOR_LOG_TRACE(ACTOR_ARG(key) << ACTOR_ARG(msg));
                             if (key == "*")
                                 return;
                             auto &vp = self->state.data[key];
@@ -86,7 +86,7 @@ namespace nil {
                         },
                         // get a key/value pair
                         [=](get_atom, std::string &key) -> message {
-                            MTL_LOG_TRACE(MTL_ARG(key));
+                            ACTOR_LOG_TRACE(ACTOR_ARG(key));
                             if (key == wildcard) {
                                 std::vector<std::pair<std::string, message>> msgs;
                                 for (auto &kvp : self->state.data)
@@ -101,7 +101,7 @@ namespace nil {
                         // subscribe to a key
                         [=](subscribe_atom, const std::string &key) {
                             auto subscriber = actor_cast<strong_actor_ptr>(self->current_sender());
-                            MTL_LOG_TRACE(MTL_ARG(key) << MTL_ARG(subscriber));
+                            ACTOR_LOG_TRACE(ACTOR_ARG(key) << ACTOR_ARG(subscriber));
                             if (!subscriber)
                                 return;
                             self->state.data[key].second.insert(subscriber);
@@ -119,7 +119,7 @@ namespace nil {
                             auto subscriber = actor_cast<strong_actor_ptr>(self->current_sender());
                             if (!subscriber)
                                 return;
-                            MTL_LOG_TRACE(MTL_ARG(key) << MTL_ARG(subscriber));
+                            ACTOR_LOG_TRACE(ACTOR_ARG(key) << ACTOR_ARG(subscriber));
                             if (key == wildcard) {
                                 unsubscribe_all(actor_cast<actor>(std::move(subscriber)));
                                 return;
@@ -144,10 +144,10 @@ namespace nil {
             const char *spawn_serv_state::name = "spawn_server";
 
             behavior spawn_serv_impl(stateful_actor<spawn_serv_state> *self) {
-                MTL_LOG_TRACE("");
+                ACTOR_LOG_TRACE("");
                 return {[=](spawn_atom, const std::string &name, message &args,
-                            actor_system::mpi &xs) -> expected<strong_actor_ptr> {
-                    MTL_LOG_TRACE(MTL_ARG(name) << MTL_ARG(args));
+                            spawner::mpi &xs) -> expected<strong_actor_ptr> {
+                    ACTOR_LOG_TRACE(ACTOR_ARG(name) << ACTOR_ARG(args));
                     return self->system().spawn<strong_actor_ptr>(name, std::move(args), self->context(), true, &xs);
                 }};
             }
@@ -168,23 +168,23 @@ namespace nil {
 
             class dropping_execution_unit : public execution_unit {
             public:
-                dropping_execution_unit(actor_system *sys) : execution_unit(sys) {
+                dropping_execution_unit(spawner *sys) : execution_unit(sys) {
                     // nop
                 }
 
                 void exec_later(resumable *) override {
                     // should not happen in the first place
-                    MTL_LOG_ERROR("actor registry actor called exec_later during shutdown");
+                    ACTOR_LOG_ERROR("actor registry actor called exec_later during shutdown");
                 }
             };
 
         }    // namespace
 
-        actor_system::module::~module() {
+        spawner::module::~module() {
             // nop
         }
 
-        const char *actor_system::module::name() const noexcept {
+        const char *spawner::module::name() const noexcept {
             switch (id()) {
                 case scheduler:
                     return "Scheduler";
@@ -199,11 +199,11 @@ namespace nil {
             }
         }
 
-        actor_system::spawner(actor_system_config &cfg) :
-            ids_(0), types_(*this), logger_(new nil::mtl::logger(*this), false), registry_(*this), groups_(*this),
+        spawner::spawner(spawner_config &cfg) :
+            ids_(0), types_(*this), logger_(new nil::actor::logger(*this), false), registry_(*this), groups_(*this),
             dummy_execution_unit_(this), await_actors_before_shutdown_(true), detached_(0), cfg_(cfg),
             logger_dtor_done_(false) {
-            MTL_SET_LOGGER_SYS(this);
+            ACTOR_SET_LOGGER_SYS(this);
             for (auto &hook : cfg.thread_hooks_)
                 hook->init(*this);
             for (auto &f : cfg.module_factories) {
@@ -262,7 +262,7 @@ namespace nil {
             // initialize state for each module and give each module the opportunity
             // to influence the system configuration, e.g., by adding more types
             logger_->init(cfg);
-            MTL_SET_LOGGER_SYS(this);
+            ACTOR_SET_LOGGER_SYS(this);
             for (auto &mod : modules_) {
                 if (mod) {
                     mod->init(cfg);
@@ -284,10 +284,10 @@ namespace nil {
             logger_->start();
         }
 
-        actor_system::~spawner() {
+        spawner::~spawner() {
             {
-                MTL_LOG_TRACE("");
-                MTL_LOG_DEBUG("shutdown actor system");
+                ACTOR_LOG_TRACE("");
+                ACTOR_LOG_DEBUG("shutdown actor system");
                 if (await_actors_before_shutdown_)
                     await_all_actors_done();
                 // shutdown internal actors
@@ -304,7 +304,7 @@ namespace nil {
                 for (auto i = modules_.rbegin(); i != modules_.rend(); ++i) {
                     auto &ptr = *i;
                     if (ptr != nullptr) {
-                        MTL_LOG_DEBUG("stop module" << ptr->name());
+                        ACTOR_LOG_DEBUG("stop module" << ptr->name());
                         ptr->stop();
                     }
                 }
@@ -312,7 +312,7 @@ namespace nil {
                 registry_.stop();
             }
             // reset logger and wait until dtor was called
-            MTL_SET_LOGGER_SYS(nullptr);
+            ACTOR_SET_LOGGER_SYS(nullptr);
             logger_.reset();
             std::unique_lock<std::mutex> guard {logger_dtor_mtx_};
             while (!logger_dtor_done_)
@@ -320,29 +320,29 @@ namespace nil {
         }
 
         /// Returns the host-local identifier for this system.
-        const node_id &actor_system::node() const {
+        const node_id &spawner::node() const {
             return node_;
         }
 
         /// Returns the scheduler instance.
-        scheduler::abstract_coordinator &actor_system::scheduler() {
+        scheduler::abstract_coordinator &spawner::scheduler() {
             using ptr = scheduler::abstract_coordinator *;
             return *dynamic_cast<ptr>(modules_[module::scheduler].get());
         }
 
-        nil::mtl::logger &actor_system::logger() {
+        nil::actor::logger &spawner::logger() {
             return *logger_;
         }
 
-        actor_registry &actor_system::registry() {
+        actor_registry &spawner::registry() {
             return registry_;
         }
 
-        const uniform_type_info_map &actor_system::types() const {
+        const uniform_type_info_map &spawner::types() const {
             return types_;
         }
 
-        std::string actor_system::render(const error &x) const {
+        std::string spawner::render(const error &x) const {
             if (!x)
                 return to_string(x);
             auto &xs = config().error_renderers;
@@ -352,93 +352,93 @@ namespace nil {
             return to_string(x);
         }
 
-        group_manager &actor_system::groups() {
+        group_manager &spawner::groups() {
             return groups_;
         }
 
-        bool actor_system::has_middleman() const {
+        bool spawner::has_middleman() const {
             return modules_[module::middleman] != nullptr;
         }
 
-        io::middleman &actor_system::middleman() {
+        io::middleman &spawner::middleman() {
             auto &clptr = modules_[module::middleman];
             if (!clptr)
-                MTL_RAISE_ERROR("cannot access middleman: module not loaded");
+                ACTOR_RAISE_ERROR("cannot access middleman: module not loaded");
             return *reinterpret_cast<io::middleman *>(clptr->subtype_ptr());
         }
 
-        bool actor_system::has_opencl_manager() const {
+        bool spawner::has_opencl_manager() const {
             return modules_[module::opencl_manager] != nullptr;
         }
 
-        opencl::manager &actor_system::opencl_manager() const {
+        opencl::manager &spawner::opencl_manager() const {
             auto &clptr = modules_[module::opencl_manager];
             if (!clptr)
-                MTL_RAISE_ERROR("cannot access opencl manager: module not loaded");
+                ACTOR_RAISE_ERROR("cannot access opencl manager: module not loaded");
             return *reinterpret_cast<opencl::manager *>(clptr->subtype_ptr());
         }
 
-        bool actor_system::has_openssl_manager() const {
+        bool spawner::has_openssl_manager() const {
             return modules_[module::openssl_manager] != nullptr;
         }
 
-        openssl::manager &actor_system::openssl_manager() const {
+        openssl::manager &spawner::openssl_manager() const {
             auto &clptr = modules_[module::openssl_manager];
             if (!clptr)
-                MTL_RAISE_ERROR("cannot access openssl manager: module not loaded");
+                ACTOR_RAISE_ERROR("cannot access openssl manager: module not loaded");
             return *reinterpret_cast<openssl::manager *>(clptr->subtype_ptr());
         }
 
-        scoped_execution_unit *actor_system::dummy_execution_unit() {
+        scoped_execution_unit *spawner::dummy_execution_unit() {
             return &dummy_execution_unit_;
         }
 
-        actor_id actor_system::next_actor_id() {
+        actor_id spawner::next_actor_id() {
             return ++ids_;
         }
 
-        actor_id actor_system::latest_actor_id() const {
+        actor_id spawner::latest_actor_id() const {
             return ids_.load();
         }
 
-        void actor_system::await_all_actors_done() const {
+        void spawner::await_all_actors_done() const {
             registry_.await_running_count_equal(0);
         }
 
-        actor_clock &actor_system::clock() noexcept {
+        actor_clock &spawner::clock() noexcept {
             return scheduler().clock();
         }
 
-        void actor_system::inc_detached_threads() {
+        void spawner::inc_detached_threads() {
             ++detached_;
         }
 
-        void actor_system::dec_detached_threads() {
+        void spawner::dec_detached_threads() {
             std::unique_lock<std::mutex> guard {detached_mtx_};
             if (--detached_ == 0)
                 detached_cv_.notify_all();
         }
 
-        void actor_system::await_detached_threads() {
+        void spawner::await_detached_threads() {
             std::unique_lock<std::mutex> guard {detached_mtx_};
             while (detached_ != 0)
                 detached_cv_.wait(guard);
         }
 
-        void actor_system::thread_started() {
+        void spawner::thread_started() {
             for (auto &hook : cfg_.thread_hooks_)
                 hook->thread_started();
         }
 
-        void actor_system::thread_terminates() {
+        void spawner::thread_terminates() {
             for (auto &hook : cfg_.thread_hooks_)
                 hook->thread_terminates();
         }
 
-        expected<strong_actor_ptr> actor_system::dyn_spawn_impl(const std::string &name, message &args,
-                                                                execution_unit *ctx, bool check_interface,
-                                                                optional<const mpi &> expected_ifs) {
-            MTL_LOG_TRACE(MTL_ARG(name) << MTL_ARG(args) << MTL_ARG(check_interface) << MTL_ARG(expected_ifs));
+        expected<strong_actor_ptr> spawner::dyn_spawn_impl(const std::string &name, message &args, execution_unit *ctx,
+                                                           bool check_interface, optional<const mpi &> expected_ifs) {
+            ACTOR_LOG_TRACE(ACTOR_ARG(name)
+                            << ACTOR_ARG(args) << ACTOR_ARG(check_interface) << ACTOR_ARG(expected_ifs));
             if (name.empty())
                 return sec::invalid_argument;
             auto &fs = cfg_.actor_factories;
@@ -454,5 +454,5 @@ namespace nil {
             return std::move(res.first);
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

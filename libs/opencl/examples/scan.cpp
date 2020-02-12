@@ -4,14 +4,14 @@
 #include <numeric>
 #include <iostream>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/opencl/all.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/opencl/all.hpp>
 
 using namespace std;
-using namespace nil::mtl;
-using namespace nil::mtl::opencl;
+using namespace nil::actor;
+using namespace nil::actor::opencl;
 
-using nil::mtl::detail::limited_vector;
+using nil::actor::detail::limited_vector;
 
 namespace {
 
@@ -147,15 +147,15 @@ kernel void phase_3(global uint* restrict data,
 
 }    // namespace
 
-template<class T, class E = nil::mtl::detail::enable_if_t<is_integral<T>::value>>
+template<class T, class E = nil::actor::detail::enable_if_t<is_integral<T>::value>>
 T round_up(T numToRound, T multiple) {
     return ((numToRound + multiple - 1) / multiple) * multiple;
 }
 
 int main() {
-    actor_system_config cfg;
+    spawner_config cfg;
     cfg.load<opencl::manager>().add_message_type<uvec>("uint_vector");
-    actor_system system {cfg};
+    spawner system {cfg};
     cout << "Calculating exclusive scan of '" << problem_size << "' values." << endl;
     // ---- create data ----
     uvec values(problem_size);

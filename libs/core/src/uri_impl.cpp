@@ -10,16 +10,16 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/uri_impl.hpp>
+#include <nil/actor/detail/uri_impl.hpp>
 
-#include <nil/mtl/detail/append_percent_encoded.hpp>
-#include <nil/mtl/detail/parser/read_uri.hpp>
-#include <nil/mtl/error.hpp>
-#include <nil/mtl/ip_address.hpp>
-#include <nil/mtl/string_algorithms.hpp>
+#include <nil/actor/detail/append_percent_encoded.hpp>
+#include <nil/actor/detail/parser/read_uri.hpp>
+#include <nil/actor/error.hpp>
+#include <nil/actor/ip_address.hpp>
+#include <nil/actor/string_algorithms.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             // -- constructors, destructors, and assignment operators ----------------------
@@ -38,7 +38,7 @@ namespace nil {
                 append_percent_encoded(str, scheme);
                 str += ':';
                 if (authority.empty()) {
-                    MTL_ASSERT(!path.empty());
+                    ACTOR_ASSERT(!path.empty());
                     append_percent_encoded(str, path, true);
                 } else {
                     str += "//";
@@ -80,5 +80,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

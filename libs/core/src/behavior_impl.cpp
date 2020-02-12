@@ -12,13 +12,13 @@
 
 #include <utility>
 
-#include <nil/mtl/detail/behavior_impl.hpp>
+#include <nil/actor/detail/behavior_impl.hpp>
 
-#include <nil/mtl/message_handler.hpp>
-#include <nil/mtl/make_type_erased_tuple_view.hpp>
+#include <nil/actor/message_handler.hpp>
+#include <nil/actor/make_type_erased_tuple_view.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             namespace {
@@ -127,10 +127,10 @@ namespace nil {
             }
 
             behavior_impl::pointer behavior_impl::or_else(const pointer &other) {
-                MTL_ASSERT(other != nullptr);
+                ACTOR_ASSERT(other != nullptr);
                 return make_counted<combinator>(this, other);
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

@@ -9,28 +9,28 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/stream_socket.hpp>
+#include <nil/actor/network/stream_socket.hpp>
 
-#include <nil/mtl/byte.hpp>
-#include <nil/mtl/detail/net_syscall.hpp>
-#include <nil/mtl/detail/socket_sys_aliases.hpp>
-#include <nil/mtl/detail/socket_sys_includes.hpp>
-#include <nil/mtl/expected.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/network/socket.hpp>
-#include <nil/mtl/network/socket_guard.hpp>
-#include <nil/mtl/span.hpp>
-#include <nil/mtl/variant.hpp>
+#include <nil/actor/byte.hpp>
+#include <nil/actor/detail/net_syscall.hpp>
+#include <nil/actor/detail/socket_sys_aliases.hpp>
+#include <nil/actor/detail/socket_sys_includes.hpp>
+#include <nil/actor/expected.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/network/socket.hpp>
+#include <nil/actor/network/socket_guard.hpp>
+#include <nil/actor/span.hpp>
+#include <nil/actor/variant.hpp>
 
-#ifdef MTL_POSIX
+#ifdef ACTOR_POSIX
 #include <sys/uio.h>
 #endif
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 
             constexpr int no_sigpipe_io_flag = 0;
 
@@ -68,7 +68,7 @@ namespace nil {
             expected<std::pair<stream_socket, stream_socket>> make_stream_socket_pair() {
                 auto addrlen = static_cast<int>(sizeof(sockaddr_in));
                 socket_id socks[2] = {invalid_socket_id, invalid_socket_id};
-                MTL_NET_SYSCALL("socket", listener, ==, invalid_socket_id, ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
+                ACTOR_NET_SYSCALL("socket", listener, ==, invalid_socket_id, ::socket(AF_INET, SOCK_STREAM, IPPROTO_TCP));
                 union {
                     sockaddr_in inaddr;
                     sockaddr addr;
@@ -87,41 +87,41 @@ namespace nil {
                 });
                 // bind listener to a local port
                 int reuse = 1;
-                MTL_NET_SYSCALL("setsockopt", tmp1, !=, 0,
+                ACTOR_NET_SYSCALL("setsockopt", tmp1, !=, 0,
                                 setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, reinterpret_cast<char *>(&reuse),
                                            static_cast<int>(sizeof(reuse))));
-                MTL_NET_SYSCALL("bind", tmp2, !=, 0, bind(listener, &a.addr, static_cast<int>(sizeof(a.inaddr))));
+                ACTOR_NET_SYSCALL("bind", tmp2, !=, 0, bind(listener, &a.addr, static_cast<int>(sizeof(a.inaddr))));
                 // Read the port in use: win32 getsockname may only set the port number
                 // (http://msdn.microsoft.com/library/ms738543.aspx).
                 memset(&a, 0, sizeof(a));
-                MTL_NET_SYSCALL("getsockname", tmp3, !=, 0, getsockname(listener, &a.addr, &addrlen));
+                ACTOR_NET_SYSCALL("getsockname", tmp3, !=, 0, getsockname(listener, &a.addr, &addrlen));
                 a.inaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
                 a.inaddr.sin_family = AF_INET;
                 // set listener to listen mode
-                MTL_NET_SYSCALL("listen", tmp5, !=, 0, listen(listener, 1));
+                ACTOR_NET_SYSCALL("listen", tmp5, !=, 0, listen(listener, 1));
                 // create read-only end of the pipe
                 DWORD flags = 0;
-                MTL_NET_SYSCALL("WSASocketW", read_fd, ==, invalid_socket_id,
+                ACTOR_NET_SYSCALL("WSASocketW", read_fd, ==, invalid_socket_id,
                                 WSASocketW(AF_INET, SOCK_STREAM, 0, nullptr, 0, flags));
-                MTL_NET_SYSCALL("connect", tmp6, !=, 0, connect(read_fd, &a.addr, static_cast<int>(sizeof(a.inaddr))));
+                ACTOR_NET_SYSCALL("connect", tmp6, !=, 0, connect(read_fd, &a.addr, static_cast<int>(sizeof(a.inaddr))));
                 // get write-only end of the pipe
-                MTL_NET_SYSCALL("accept", write_fd, ==, invalid_socket_id, accept(listener, nullptr, nullptr));
+                ACTOR_NET_SYSCALL("accept", write_fd, ==, invalid_socket_id, accept(listener, nullptr, nullptr));
                 close(socket {listener});
                 guard.disable();
                 return std::make_pair(stream_socket {read_fd}, stream_socket {write_fd});
             }
 
             error keepalive(stream_socket x, bool new_value) {
-                MTL_LOG_TRACE(MTL_ARG(x) << MTL_ARG(new_value));
+                ACTOR_LOG_TRACE(ACTOR_ARG(x) << ACTOR_ARG(new_value));
                 char value = new_value ? 1 : 0;
-                MTL_NET_SYSCALL("setsockopt", res, !=, 0,
+                ACTOR_NET_SYSCALL("setsockopt", res, !=, 0,
                                 setsockopt(x.id, SOL_SOCKET, SO_KEEPALIVE, &value, static_cast<int>(sizeof(value))));
                 return none;
             }
 
-#else    // MTL_WINDOWS
+#else    // ACTOR_WINDOWS
 
-#if defined(MTL_MACOS) || defined(MTL_IOS) || defined(MTL_BSD)
+#if defined(ACTOR_MACOS) || defined(ACTOR_IOS) || defined(ACTOR_BSD)
             constexpr int no_sigpipe_io_flag = 0;
 #else
             constexpr int no_sigpipe_io_flag = MSG_NOSIGNAL;
@@ -129,25 +129,25 @@ namespace nil {
 
             expected<std::pair<stream_socket, stream_socket>> make_stream_socket_pair() {
                 int sockets[2];
-                MTL_NET_SYSCALL("socketpair", spair_res, !=, 0, socketpair(AF_UNIX, SOCK_STREAM, 0, sockets));
+                ACTOR_NET_SYSCALL("socketpair", spair_res, !=, 0, socketpair(AF_UNIX, SOCK_STREAM, 0, sockets));
                 return std::make_pair(stream_socket {sockets[0]}, stream_socket {sockets[1]});
             }
 
             error keepalive(stream_socket x, bool new_value) {
-                MTL_LOG_TRACE(MTL_ARG(x) << MTL_ARG(new_value));
+                ACTOR_LOG_TRACE(ACTOR_ARG(x) << ACTOR_ARG(new_value));
                 int value = new_value ? 1 : 0;
-                MTL_NET_SYSCALL(
+                ACTOR_NET_SYSCALL(
                     "setsockopt", res, !=, 0,
                     setsockopt(x.id, SOL_SOCKET, SO_KEEPALIVE, &value, static_cast<unsigned>(sizeof(value))));
                 return none;
             }
 
-#endif    // MTL_WINDOWS
+#endif    // ACTOR_WINDOWS
 
             error nodelay(stream_socket x, bool new_value) {
-                MTL_LOG_TRACE(MTL_ARG(x) << MTL_ARG(new_value));
+                ACTOR_LOG_TRACE(ACTOR_ARG(x) << ACTOR_ARG(new_value));
                 int flag = new_value ? 1 : 0;
-                MTL_NET_SYSCALL("setsockopt", res, !=, 0,
+                ACTOR_NET_SYSCALL("setsockopt", res, !=, 0,
                                 setsockopt(x.id, IPPROTO_TCP, TCP_NODELAY, reinterpret_cast<setsockopt_ptr>(&flag),
                                            static_cast<socket_size_type>(sizeof(flag))));
                 return none;
@@ -163,10 +163,10 @@ namespace nil {
                 return check_stream_socket_io_res(res);
             }
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 
             variant<size_t, sec> write(stream_socket x, std::initializer_list<span<const byte>> bufs) {
-                MTL_ASSERT(bufs.size() < 10);
+                ACTOR_ASSERT(bufs.size() < 10);
                 WSABUF buf_array[10];
                 auto convert = [](span<const byte> buf) {
                     auto data = const_cast<byte *>(buf.data());
@@ -184,10 +184,10 @@ namespace nil {
                 return static_cast<size_t>(bytes_sent);
             }
 
-#else    // MTL_WINDOWS
+#else    // ACTOR_WINDOWS
 
             variant<size_t, sec> write(stream_socket x, std::initializer_list<span<const byte>> bufs) {
-                MTL_ASSERT(bufs.size() < 10);
+                ACTOR_ASSERT(bufs.size() < 10);
                 iovec buf_array[10];
                 auto convert = [](span<const byte> buf) { return iovec {const_cast<byte *>(buf.data()), buf.size()}; };
                 std::transform(bufs.begin(), bufs.end(), std::begin(buf_array), convert);
@@ -195,7 +195,7 @@ namespace nil {
                 return check_stream_socket_io_res(res);
             }
 
-#endif    // MTL_WINDOWS
+#endif    // ACTOR_WINDOWS
 
             variant<size_t, sec> check_stream_socket_io_res(std::make_signed<size_t>::type res) {
                 if (res == 0)
@@ -210,5 +210,5 @@ namespace nil {
             }
 
         }    // namespace network
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

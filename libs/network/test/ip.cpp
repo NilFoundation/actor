@@ -11,16 +11,16 @@
 
 #define BOOST_TEST_MODULE ip
 
-#include <nil/mtl/network/ip.hpp>
+#include <nil/actor/network/ip.hpp>
 
-#include <nil/mtl/test/host_fixture.hpp>
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/host_fixture.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-#include <nil/mtl/ip_address.hpp>
-#include <nil/mtl/ipv4_address.hpp>
+#include <nil/actor/ip_address.hpp>
+#include <nil/actor/ipv4_address.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::network;
+using namespace nil::actor;
+using namespace nil::actor::network;
 
 namespace {
 

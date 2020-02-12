@@ -10,14 +10,14 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/thread_hook.hpp>
+#include <nil/actor/thread_hook.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         thread_hook::~thread_hook() {
             // nop
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

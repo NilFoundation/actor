@@ -9,33 +9,33 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/basp/application.hpp>
+#include <nil/actor/network/basp/application.hpp>
 
 #include <vector>
 
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/serialization/binary_deserializer.hpp>
-#include <nil/mtl/serialization/binary_serializer.hpp>
-#include <nil/mtl/byte.hpp>
-#include <nil/mtl/defaults.hpp>
-#include <nil/mtl/detail/network_order.hpp>
-#include <nil/mtl/detail/parse.hpp>
-#include <nil/mtl/error.hpp>
-#include <nil/mtl/expected.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/network/basp/constants.hpp>
-#include <nil/mtl/network/basp/ec.hpp>
-#include <nil/mtl/network/packet_writer.hpp>
-#include <nil/mtl/no_stages.hpp>
-#include <nil/mtl/none.hpp>
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/send.hpp>
-#include <nil/mtl/string_algorithms.hpp>
-#include <nil/mtl/type_erased_tuple.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/serialization/binary_deserializer.hpp>
+#include <nil/actor/serialization/binary_serializer.hpp>
+#include <nil/actor/byte.hpp>
+#include <nil/actor/defaults.hpp>
+#include <nil/actor/detail/network_order.hpp>
+#include <nil/actor/detail/parse.hpp>
+#include <nil/actor/error.hpp>
+#include <nil/actor/expected.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/network/basp/constants.hpp>
+#include <nil/actor/network/basp/ec.hpp>
+#include <nil/actor/network/packet_writer.hpp>
+#include <nil/actor/no_stages.hpp>
+#include <nil/actor/none.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/send.hpp>
+#include <nil/actor/string_algorithms.hpp>
+#include <nil/actor/type_erased_tuple.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
             namespace basp {
 
@@ -47,9 +47,9 @@ namespace nil {
                 error application::write_message(packet_writer &writer,
                                                  std::unique_ptr<endpoint_manager_queue::message>
                                                      ptr) {
-                    MTL_ASSERT(ptr != nullptr);
-                    MTL_ASSERT(ptr->msg != nullptr);
-                    MTL_LOG_TRACE(MTL_ARG2("content", ptr->msg->content()));
+                    ACTOR_ASSERT(ptr != nullptr);
+                    ACTOR_ASSERT(ptr->msg != nullptr);
+                    ACTOR_LOG_TRACE(ACTOR_ARG2("content", ptr->msg->content()));
                     auto payload_prefix = writer.next_payload_buffer();
                     binary_serializer sink {system(), payload_prefix};
                     const auto &src = ptr->msg->sender;
@@ -77,11 +77,11 @@ namespace nil {
                 }
 
                 void application::resolve(packet_writer &writer, string_view path, const actor &listener) {
-                    MTL_LOG_TRACE(MTL_ARG(path) << MTL_ARG(listener));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(path) << ACTOR_ARG(listener));
                     auto payload = writer.next_payload_buffer();
                     binary_serializer sink {&executor_, payload};
                     if (auto err = sink(path)) {
-                        MTL_LOG_ERROR("unable to serialize path" << MTL_ARG(err));
+                        ACTOR_LOG_ERROR("unable to serialize path" << ACTOR_ARG(err));
                         return;
                     }
                     auto req_id = next_request_id_++;
@@ -102,7 +102,7 @@ namespace nil {
                     auto payload = writer.next_payload_buffer();
                     binary_serializer sink {system(), payload};
                     if (auto err = sink(reason))
-                        MTL_RAISE_ERROR("unable to serialize an error");
+                        ACTOR_RAISE_ERROR("unable to serialize an error");
                     auto hdr = writer.next_header_buffer();
                     to_bytes(header {message_type::down_message, static_cast<uint32_t>(payload.size()),
                                      static_cast<uint64_t>(id)},
@@ -119,7 +119,7 @@ namespace nil {
                 }
 
                 strong_actor_ptr application::resolve_local_path(string_view path) {
-                    MTL_LOG_TRACE(MTL_ARG(path));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(path));
                     // We currently support two path formats: `id/<actor_id>` and `name/<atom>`.
                     static constexpr string_view id_prefix = "id/";
                     if (starts_with(path, id_prefix)) {
@@ -141,7 +141,7 @@ namespace nil {
                 }
 
                 error application::handle(size_t &next_read_size, packet_writer &writer, byte_span bytes) {
-                    MTL_LOG_TRACE(MTL_ARG(state_) << MTL_ARG2("bytes.size", bytes.size()));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(state_) << ACTOR_ARG2("bytes.size", bytes.size()));
                     switch (state_) {
                         case connection_state::await_handshake_header: {
                             if (bytes.size() != header_size)
@@ -185,7 +185,7 @@ namespace nil {
                 }
 
                 error application::handle(packet_writer &writer, header hdr, byte_span payload) {
-                    MTL_LOG_TRACE(MTL_ARG(hdr) << MTL_ARG2("payload.size", payload.size()));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(hdr) << ACTOR_ARG2("payload.size", payload.size()));
                     switch (hdr.type) {
                         case message_type::handshake:
                             return ec::unexpected_handshake;
@@ -207,7 +207,7 @@ namespace nil {
                 }
 
                 error application::handle_handshake(packet_writer &, header hdr, byte_span payload) {
-                    MTL_LOG_TRACE(MTL_ARG(hdr) << MTL_ARG2("payload.size", payload.size()));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(hdr) << ACTOR_ARG2("payload.size", payload.size()));
                     if (hdr.type != message_type::handshake)
                         return ec::missing_handshake;
                     if (hdr.operation_data != version)
@@ -234,10 +234,10 @@ namespace nil {
                 error application::handle_actor_message(packet_writer &, header hdr, byte_span payload) {
                     auto worker = hub_->pop();
                     if (worker != nullptr) {
-                        MTL_LOG_DEBUG("launch BASP worker for deserializing an actor_message");
+                        ACTOR_LOG_DEBUG("launch BASP worker for deserializing an actor_message");
                         worker->launch(node_id {}, hdr, payload);
                     } else {
-                        MTL_LOG_DEBUG("out of BASP workers, continue deserializing an actor_message");
+                        ACTOR_LOG_DEBUG("out of BASP workers, continue deserializing an actor_message");
                         // If no worker is available then we have no other choice than to take
                         // the performance hit and deserialize in this thread.
                         struct handler : remote_message_handler<handler> {
@@ -263,8 +263,8 @@ namespace nil {
                 }
 
                 error application::handle_resolve_request(packet_writer &writer, header rec_hdr, byte_span received) {
-                    MTL_LOG_TRACE(MTL_ARG(rec_hdr) << MTL_ARG2("received.size", received.size()));
-                    MTL_ASSERT(rec_hdr.type == message_type::resolve_request);
+                    ACTOR_LOG_TRACE(ACTOR_ARG(rec_hdr) << ACTOR_ARG2("received.size", received.size()));
+                    ACTOR_ASSERT(rec_hdr.type == message_type::resolve_request);
                     size_t path_size = 0;
                     binary_deserializer source {&executor_, received};
                     if (auto err = source.begin_sequence(path_size))
@@ -298,11 +298,11 @@ namespace nil {
                 }
 
                 error application::handle_resolve_response(packet_writer &, header received_hdr, byte_span received) {
-                    MTL_LOG_TRACE(MTL_ARG(received_hdr) << MTL_ARG2("received.size", received.size()));
-                    MTL_ASSERT(received_hdr.type == message_type::resolve_response);
+                    ACTOR_LOG_TRACE(ACTOR_ARG(received_hdr) << ACTOR_ARG2("received.size", received.size()));
+                    ACTOR_ASSERT(received_hdr.type == message_type::resolve_response);
                     auto i = pending_resolves_.find(received_hdr.operation_data);
                     if (i == pending_resolves_.end()) {
-                        MTL_LOG_ERROR("received unknown ID in resolve_response message");
+                        ACTOR_LOG_ERROR("received unknown ID in resolve_response message");
                         return none;
                     }
                     auto guard = detail::make_scope_guard([&] { pending_resolves_.erase(i); });
@@ -324,7 +324,7 @@ namespace nil {
                 error application::handle_monitor_message(packet_writer &writer,
                                                           header received_hdr,
                                                           byte_span received) {
-                    MTL_LOG_TRACE(MTL_ARG(received_hdr) << MTL_ARG2("received.size", received.size()));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(received_hdr) << ACTOR_ARG2("received.size", received.size()));
                     if (!received.empty())
                         return ec::unexpected_payload;
                     auto aid = static_cast<actor_id>(received_hdr.operation_data);
@@ -351,7 +351,7 @@ namespace nil {
                 }
 
                 error application::handle_down_message(packet_writer &, header received_hdr, byte_span received) {
-                    MTL_LOG_TRACE(MTL_ARG(received_hdr) << MTL_ARG2("received.size", received.size()));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(received_hdr) << ACTOR_ARG2("received.size", received.size()));
                     error reason;
                     binary_deserializer source {&executor_, received};
                     if (auto err = source(reason))
@@ -369,5 +369,5 @@ namespace nil {
 
             }    // namespace basp
         }        // namespace network
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

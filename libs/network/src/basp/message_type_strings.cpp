@@ -1,9 +1,9 @@
-#include <nil/mtl/network/basp/message_type.hpp>
+#include <nil/actor/network/basp/message_type.hpp>
 
 #include <string>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace net {
             namespace basp {
 
@@ -29,6 +29,6 @@ namespace nil {
                 }
 
             }    // namespace basp
-        }        // namespace net
-    }            // namespace mtl
+        }        // namespace network
+    }            // namespace actor
 }    // namespace nil

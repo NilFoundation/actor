@@ -11,14 +11,14 @@
 
 #define BOOST_TEST_MODULE socket_guard
 
-#include <nil/mtl/network/socket_guard.hpp>
+#include <nil/actor/network/socket_guard.hpp>
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-#include <nil/mtl/network/socket_id.hpp>
+#include <nil/actor/network/socket_id.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::network;
+using namespace nil::actor;
+using namespace nil::actor::network;
 
 namespace {
 

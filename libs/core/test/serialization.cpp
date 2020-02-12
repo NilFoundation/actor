@@ -15,7 +15,7 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <new>
 #include <set>
@@ -40,31 +40,31 @@
 #include <functional>
 #include <type_traits>
 
-#include <nil/mtl/message.hpp>
-#include <nil/mtl/serialization/serializer.hpp>
-#include <nil/mtl/ref_counted.hpp>
-#include <nil/mtl/serialization/deserializer.hpp>
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/proxy_registry.hpp>
-#include <nil/mtl/message_handler.hpp>
-#include <nil/mtl/event_based_actor.hpp>
-#include <nil/mtl/primitive_variant.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/make_type_erased_view.hpp>
-#include <nil/mtl/make_type_erased_tuple_view.hpp>
+#include <nil/actor/message.hpp>
+#include <nil/actor/serialization/serializer.hpp>
+#include <nil/actor/ref_counted.hpp>
+#include <nil/actor/serialization/deserializer.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/proxy_registry.hpp>
+#include <nil/actor/message_handler.hpp>
+#include <nil/actor/event_based_actor.hpp>
+#include <nil/actor/primitive_variant.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/make_type_erased_view.hpp>
+#include <nil/actor/make_type_erased_tuple_view.hpp>
 
-#include <nil/mtl/serialization/binary_serializer.hpp>
-#include <nil/mtl/serialization/binary_deserializer.hpp>
+#include <nil/actor/serialization/binary_serializer.hpp>
+#include <nil/actor/serialization/binary_deserializer.hpp>
 
-#include <nil/mtl/detail/ieee_754.hpp>
-#include <nil/mtl/detail/int_list.hpp>
-#include <nil/mtl/detail/safe_equal.hpp>
-#include <nil/mtl/detail/type_traits.hpp>
-#include <nil/mtl/detail/enum_to_string.hpp>
-#include <nil/mtl/detail/get_mac_addresses.hpp>
+#include <nil/actor/detail/ieee_754.hpp>
+#include <nil/actor/detail/int_list.hpp>
+#include <nil/actor/detail/safe_equal.hpp>
+#include <nil/actor/detail/type_traits.hpp>
+#include <nil/actor/detail/enum_to_string.hpp>
+#include <nil/actor/detail/get_mac_addresses.hpp>
 
-using namespace nil::mtl;
-using nil::mtl::detail::type_erased_value_impl;
+using namespace nil::actor;
+using nil::actor::detail::type_erased_value_impl;
 
 namespace boost {
     namespace test_tools {
@@ -94,8 +94,8 @@ namespace boost {
             };
 
             template<typename... T>
-            struct print_log_value<nil::mtl::variant<T...>> {
-                void operator()(std::ostream &, nil::mtl::variant<T...> const &) {
+            struct print_log_value<nil::actor::variant<T...>> {
+                void operator()(std::ostream &, nil::actor::variant<T...> const &) {
                 }
             };
         }    // namespace tt_detail
@@ -225,7 +225,7 @@ namespace {
             auto tmp = make_message(x);
             deserialize(serialize(tmp), result);
             if (!result.match_elements<T>())
-                BOOST_FAIL("got: " << nil::mtl::to_string(result));
+                BOOST_FAIL("got: " << nil::actor::to_string(result));
             return result.get_as<T>(0);
         }
 
@@ -264,15 +264,15 @@ BOOST_FIXTURE_TEST_SUITE(serialization_tests, fixture)
 BOOST_AUTO_TEST_CASE(ieee_754_conversion) {
     // check conversion of float
     float f1 = 3.1415925f;                      // float value
-    auto p1 = nil::mtl::detail::pack754(f1);    // packet value
+    auto p1 = nil::actor::detail::pack754(f1);    // packet value
     BOOST_CHECK_EQUAL(p1, static_cast<decltype(p1)>(0x40490FDA));
-    auto u1 = nil::mtl::detail::unpack754(p1);    // unpacked value
+    auto u1 = nil::actor::detail::unpack754(p1);    // unpacked value
     BOOST_CHECK_EQUAL(f1, u1);
     // check conversion of double
     double f2 = 3.14159265358979311600;         // double value
-    auto p2 = nil::mtl::detail::pack754(f2);    // packet value
+    auto p2 = nil::actor::detail::pack754(f2);    // packet value
     BOOST_CHECK_EQUAL(p2, static_cast<decltype(p2)>(0x400921FB54442D18));
-    auto u2 = nil::mtl::detail::unpack754(p2);    // unpacked value
+    auto u2 = nil::actor::detail::unpack754(p2);    // unpacked value
     BOOST_CHECK_EQUAL(f2, u2);
 }
 

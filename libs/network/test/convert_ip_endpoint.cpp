@@ -11,19 +11,19 @@
 
 #define BOOST_TEST_MODULE convert_ip_endpoint
 
-#include <nil/mtl/detail/convert_ip_endpoint.hpp>
+#include <nil/actor/detail/convert_ip_endpoint.hpp>
 
-#include <nil/mtl/test/host_fixture.hpp>
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/host_fixture.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <cstring>
 
-#include <nil/mtl/detail/socket_sys_includes.hpp>
-#include <nil/mtl/ipv4_endpoint.hpp>
-#include <nil/mtl/ipv6_endpoint.hpp>
+#include <nil/actor/detail/socket_sys_includes.hpp>
+#include <nil/actor/ipv4_endpoint.hpp>
+#include <nil/actor/ipv6_endpoint.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::detail;
+using namespace nil::actor;
+using namespace nil::actor::detail;
 
 namespace {
 

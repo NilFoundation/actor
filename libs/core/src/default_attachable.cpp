@@ -10,15 +10,15 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/default_attachable.hpp>
+#include <nil/actor/default_attachable.hpp>
 
-#include <nil/mtl/actor.hpp>
-#include <nil/mtl/message.hpp>
-#include <nil/mtl/actor_cast.hpp>
-#include <nil/mtl/system_messages.hpp>
+#include <nil/actor/actor.hpp>
+#include <nil/actor/message.hpp>
+#include <nil/actor/actor_cast.hpp>
+#include <nil/actor/system_messages.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         namespace {
 
@@ -30,7 +30,7 @@ namespace nil {
         }    // namespace
 
         void default_attachable::actor_exited(const error &rsn, execution_unit *host) {
-            MTL_ASSERT(observed_ != observer_);
+            ACTOR_ASSERT(observed_ != observer_);
             auto factory = type_ == monitor ? &make<down_msg> : &make<exit_msg>;
             auto observer = actor_cast<strong_actor_ptr>(observer_);
             auto observed = actor_cast<strong_actor_ptr>(observed_);
@@ -53,5 +53,5 @@ namespace nil {
             // nop
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

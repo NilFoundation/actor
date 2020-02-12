@@ -9,10 +9,10 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/defaults.hpp>
+#include <nil/actor/network/defaults.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace defaults {
             namespace middleman {
 
@@ -22,5 +22,5 @@ namespace nil {
 
             }    // namespace middleman
         }        // namespace defaults
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

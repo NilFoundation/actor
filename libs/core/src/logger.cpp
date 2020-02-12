@@ -10,7 +10,7 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/logger.hpp>
 
 #include <ctime>
 #include <thread>
@@ -21,24 +21,24 @@
 #include <condition_variable>
 #include <unordered_map>
 
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
-#include <nil/mtl/actor_proxy.hpp>
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/defaults.hpp>
-#include <nil/mtl/detail/get_process_id.hpp>
-#include <nil/mtl/detail/pretty_type_name.hpp>
-#include <nil/mtl/detail/set_thread_name.hpp>
-#include <nil/mtl/intrusive/task_result.hpp>
-#include <nil/mtl/local_actor.hpp>
-#include <nil/mtl/locks.hpp>
-#include <nil/mtl/string_algorithms.hpp>
-#include <nil/mtl/term.hpp>
-#include <nil/mtl/timestamp.hpp>
+#include <nil/actor/actor_proxy.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/defaults.hpp>
+#include <nil/actor/detail/get_process_id.hpp>
+#include <nil/actor/detail/pretty_type_name.hpp>
+#include <nil/actor/detail/set_thread_name.hpp>
+#include <nil/actor/intrusive/task_result.hpp>
+#include <nil/actor/local_actor.hpp>
+#include <nil/actor/locks.hpp>
+#include <nil/actor/string_algorithms.hpp>
+#include <nil/actor/term.hpp>
+#include <nil/actor/timestamp.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         namespace {
 
@@ -50,7 +50,7 @@ namespace nil {
                 "virtual ", "static ", "const ", "signed ", "unsigned ",
             };
 
-            // Various spellings of the anonymous namespace as reported by MTL_PRETTY_FUN.
+            // Various spellings of the anonymous namespace as reported by ACTOR_PRETTY_FUN.
             constexpr string_view anon_ns[] = {
                 "(anonymous namespace)",    // Clang
                 "{anonymous}",              // GCC
@@ -61,19 +61,19 @@ namespace nil {
             unsigned to_level_int(atom_value x) {
                 switch (atom_uint(to_lowercase(x))) {
                     default:
-                        return MTL_LOG_LEVEL_QUIET;
+                        return ACTOR_LOG_LEVEL_QUIET;
                     case atom_uint("quiet"):
-                        return MTL_LOG_LEVEL_QUIET;
+                        return ACTOR_LOG_LEVEL_QUIET;
                     case atom_uint("error"):
-                        return MTL_LOG_LEVEL_ERROR;
+                        return ACTOR_LOG_LEVEL_ERROR;
                     case atom_uint("warning"):
-                        return MTL_LOG_LEVEL_WARNING;
+                        return ACTOR_LOG_LEVEL_WARNING;
                     case atom_uint("info"):
-                        return MTL_LOG_LEVEL_INFO;
+                        return ACTOR_LOG_LEVEL_INFO;
                     case atom_uint("debug"):
-                        return MTL_LOG_LEVEL_DEBUG;
+                        return ACTOR_LOG_LEVEL_DEBUG;
                     case atom_uint("trace"):
-                        return MTL_LOG_LEVEL_TRACE;
+                        return ACTOR_LOG_LEVEL_TRACE;
                 }
             }
 
@@ -164,7 +164,7 @@ namespace nil {
                 return symbol;
             }
 
-#if defined(MTL_NO_THREAD_LOCAL)
+#if defined(ACTOR_NO_THREAD_LOCAL)
 
             pthread_key_t s_key;
             pthread_once_t s_key_once = PTHREAD_ONCE_INIT;
@@ -192,7 +192,7 @@ namespace nil {
                 return reinterpret_cast<logger *>(pthread_getspecific(s_key));
             }
 
-#else    // !MTL_NO_THREAD_LOCAL
+#else    // !ACTOR_NO_THREAD_LOCAL
 
             thread_local intrusive_ptr<logger> current_logger;
 
@@ -204,12 +204,12 @@ namespace nil {
                 return current_logger.get();
             }
 
-#endif    // MTL_NO_THREAD_LOCAL
+#endif    // ACTOR_NO_THREAD_LOCAL
 
         }    // namespace
 
         logger::config::config() :
-            verbosity(MTL_LOG_LEVEL), file_verbosity(MTL_LOG_LEVEL), console_verbosity(MTL_LOG_LEVEL),
+            verbosity(ACTOR_LOG_LEVEL), file_verbosity(ACTOR_LOG_LEVEL), console_verbosity(ACTOR_LOG_LEVEL),
             inline_output(false), console_coloring(false) {
             // nop
         }
@@ -321,7 +321,7 @@ namespace nil {
         }
 
         void logger::init(spawner_config &cfg) {
-            MTL_IGNORE_UNUSED(cfg);
+            ACTOR_IGNORE_UNUSED(cfg);
             namespace lg = defaults::logger;
             auto blacklist = cfg.logger_component_blacklist;
             if (!cfg.logger_component_blacklist.empty())
@@ -341,12 +341,12 @@ namespace nil {
                 cfg_.console_coloring = true;
             } else if (to_lowercase(con_atm) != atom("uncolored")) {
                 // Disable logger_console output if neither 'colored' nor 'uncolored' are present.
-                cfg_.console_verbosity = MTL_LOG_LEVEL_QUIET;
+                cfg_.console_verbosity = ACTOR_LOG_LEVEL_QUIET;
             }
         }
 
         bool logger::open_file() {
-            if (file_verbosity() == MTL_LOG_LEVEL_QUIET || file_name_.empty())
+            if (file_verbosity() == ACTOR_LOG_LEVEL_QUIET || file_name_.empty())
                 return false;
             file_.open(file_name_, std::ios::out | std::ios::app);
             if (!file_) {
@@ -553,7 +553,7 @@ namespace nil {
             queue_.wait_nonempty();
             if (queue_.front().message.empty())
                 return;
-            if (!open_file() && console_verbosity() == MTL_LOG_LEVEL_QUIET)
+            if (!open_file() && console_verbosity() == ACTOR_LOG_LEVEL_QUIET)
                 return;
             log_first_line();
             // Loop until receiving an empty message.
@@ -584,19 +584,19 @@ namespace nil {
                 switch (x.level) {
                     default:
                         break;
-                    case MTL_LOG_LEVEL_ERROR:
+                    case ACTOR_LOG_LEVEL_ERROR:
                         std::clog << term::red;
                         break;
-                    case MTL_LOG_LEVEL_WARNING:
+                    case ACTOR_LOG_LEVEL_WARNING:
                         std::clog << term::yellow;
                         break;
-                    case MTL_LOG_LEVEL_INFO:
+                    case ACTOR_LOG_LEVEL_INFO:
                         std::clog << term::green;
                         break;
-                    case MTL_LOG_LEVEL_DEBUG:
+                    case ACTOR_LOG_LEVEL_DEBUG:
                         std::clog << term::cyan;
                         break;
-                    case MTL_LOG_LEVEL_TRACE:
+                    case ACTOR_LOG_LEVEL_TRACE:
                         std::clog << term::blue;
                         break;
                 }
@@ -629,7 +629,7 @@ namespace nil {
         }    // namespace detail
 
         void logger::log_first_line() {
-            auto e = MTL_LOG_MAKE_EVENT(0, MTL_LOG_COMPONENT, MTL_LOG_LEVEL_DEBUG, "");
+            auto e = ACTOR_LOG_MAKE_EVENT(0, ACTOR_LOG_COMPONENT, ACTOR_LOG_LEVEL_DEBUG, "");
             namespace lg = defaults::logger;
             e.message = detail::make_message(system_, component_blacklist, system_.config().logger_file_verbosity);
             handle_file_event(e);
@@ -638,18 +638,18 @@ namespace nil {
         }
 
         void logger::log_last_line() {
-            auto e = MTL_LOG_MAKE_EVENT(0, MTL_LOG_COMPONENT, MTL_LOG_LEVEL_DEBUG, "");
+            auto e = ACTOR_LOG_MAKE_EVENT(0, ACTOR_LOG_COMPONENT, ACTOR_LOG_LEVEL_DEBUG, "");
             handle_event(e);
         }
 
         void logger::start() {
             parent_thread_ = std::this_thread::get_id();
-            if (verbosity() == MTL_LOG_LEVEL_QUIET)
+            if (verbosity() == ACTOR_LOG_LEVEL_QUIET)
                 return;
             file_name_ = system_.config().logger_file_name;
             if (file_name_.empty()) {
                 // No need to continue if logger_console and log file are disabled.
-                if (console_verbosity() == MTL_LOG_LEVEL_QUIET)
+                if (console_verbosity() == ACTOR_LOG_LEVEL_QUIET)
                     return;
             } else {
                 // Replace placeholders.
@@ -678,7 +678,7 @@ namespace nil {
                 log_first_line();
             } else {
                 thread_ = std::thread {[this] {
-                    detail::set_thread_name("mtl.logger");
+                    detail::set_thread_name("actor.logger");
                     this->system_.thread_started();
                     this->run();
                     this->system_.thread_terminates();
@@ -721,5 +721,5 @@ namespace nil {
             return x.kind == y.kind && x.text == y.text;
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

@@ -10,24 +10,24 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/string_view.hpp>
+#include <nil/actor/string_view.hpp>
 
 #include <algorithm>
 #include <cstring>
 #include <iostream>
 #include <stdexcept>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/raise_error.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/raise_error.hpp>
 
 namespace {
 
-    using size_type = nil::mtl::string_view::size_type;
+    using size_type = nil::actor::string_view::size_type;
 
 }    // namespace
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         // -- iterator access ----------------------------------------------------------
 
@@ -52,7 +52,7 @@ namespace nil {
         string_view::const_reference string_view::at(size_type pos) const {
             if (pos < size_)
                 return data_[pos];
-            MTL_RAISE_ERROR(std::out_of_range, "string_view::at out of range");
+            ACTOR_RAISE_ERROR(std::out_of_range, "string_view::at out of range");
         }
 
         // -- modifiers ----------------------------------------------------------------
@@ -82,7 +82,7 @@ namespace nil {
 
         string_view::size_type string_view::copy(pointer dest, size_type n, size_type pos) const {
             if (pos > size_)
-                MTL_RAISE_ERROR("string_view::copy out of range");
+                ACTOR_RAISE_ERROR("string_view::copy out of range");
             auto first = begin() + pos;
             auto end = first + std::min(n, size() - pos);
             auto cpy_end = std::copy(first, end, dest);
@@ -283,12 +283,12 @@ namespace nil {
             return find_last_not_of(string_view {str, strlen(str)}, pos);
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil
 
 namespace std {
 
-    std::ostream &operator<<(std::ostream &out, nil::mtl::string_view str) {
+    std::ostream &operator<<(std::ostream &out, nil::actor::string_view str) {
         for (auto ch : str)
             out.put(ch);
         return out;

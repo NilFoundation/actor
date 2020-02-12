@@ -14,12 +14,12 @@
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/all.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/all.hpp>
 
 #define ERROR_HANDLER [&](error &err) { BOOST_FAIL(system.render(err)); }
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 

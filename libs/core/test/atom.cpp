@@ -16,10 +16,10 @@
 
 #include <string>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/config.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/config.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 

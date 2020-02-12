@@ -11,15 +11,15 @@
 
 #define BOOST_TEST_MODULE basp.header
 
-#include <nil/mtl/network/basp/header.hpp>
+#include <nil/actor/network/basp/header.hpp>
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-#include <nil/mtl/serialization/binary_deserializer.hpp>
-#include <nil/mtl/serialization/binary_serializer.hpp>
+#include <nil/actor/serialization/binary_deserializer.hpp>
+#include <nil/actor/serialization/binary_serializer.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::network;
+using namespace nil::actor;
+using namespace nil::actor::network;
 
 BOOST_AUTO_TEST_CASE(serialization) {
     basp::header x {basp::message_type::handshake, 42, 4};

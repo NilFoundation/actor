@@ -10,12 +10,12 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/pec.hpp>
+#include <nil/actor/pec.hpp>
 
-#include <nil/mtl/config_value.hpp>
-#include <nil/mtl/error.hpp>
-#include <nil/mtl/make_message.hpp>
-#include <nil/mtl/string_view.hpp>
+#include <nil/actor/config_value.hpp>
+#include <nil/actor/error.hpp>
+#include <nil/actor/make_message.hpp>
+#include <nil/actor/string_view.hpp>
 
 namespace {
 
@@ -43,7 +43,7 @@ namespace {
 }    // namespace
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         error make_error(pec code) {
             return {static_cast<uint8_t>(code), atom("parser")};
@@ -66,5 +66,5 @@ namespace nil {
             return tbl[static_cast<uint8_t>(x)];
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

@@ -1,24 +1,24 @@
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
 #define BOOST_TEST_MODULE io_dynamic_remote_actor_udp_test
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <vector>
 #include <sstream>
 #include <utility>
 #include <algorithm>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/io/all.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/io/all.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 
     constexpr char local_host[] = "127.0.0.1";
 
-    class config : public actor_system_config {
+    class config : public spawner_config {
     public:
         config() {
             load<io::middleman>();
@@ -30,12 +30,12 @@ namespace {
     struct fixture {
         // State for the server.
         config server_side_config;
-        actor_system server_side;
+        spawner server_side;
         io::middleman &server_side_mm;
 
         // State for the client.
         config client_side_config;
-        actor_system client_side;
+        spawner client_side;
         io::middleman &client_side_mm;
 
         fixture() :
@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_CASE(multiple_endpoints_udp_test) {
     config cfg;
     // Setup server.
     BOOST_TEST_MESSAGE("creating server");
-    actor_system server_sys {cfg};
+    spawner server_sys {cfg};
     auto mirror = server_sys.spawn([]() -> behavior {
         return {[](std::string str) {
             std::reverse(begin(str), end(str));
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(multiple_endpoints_udp_test) {
     // Setup a client.
     BOOST_TEST_MESSAGE("creating first client");
     config client_cfg;
-    actor_system client_sys {client_cfg};
+    spawner client_sys {client_cfg};
     auto client = client_sys.spawn(client_fun);
     // Acquire remote actor from the server.
     auto client_srv = client_sys.middleman().remote_actor_udp("localhost", *port);
@@ -184,7 +184,7 @@ BOOST_AUTO_TEST_CASE(multiple_endpoints_udp_test) {
     // Setup other clients.
     for (int i = 0; i < 5; ++i) {
         config other_cfg;
-        actor_system other_sys {other_cfg};
+        spawner other_sys {other_cfg};
         BOOST_TEST_MESSAGE("creating new client");
         auto other = other_sys.spawn(client_fun);
         // Acquire remote actor from the new server.

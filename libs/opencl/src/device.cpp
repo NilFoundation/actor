@@ -1,21 +1,21 @@
 #include <iostream>
 #include <utility>
 
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/ref_counted.hpp>
-#include <nil/mtl/string_algorithms.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/ref_counted.hpp>
+#include <nil/actor/string_algorithms.hpp>
 
-#include <nil/mtl/opencl/global.hpp>
-#include <nil/mtl/opencl/device.hpp>
-#include <nil/mtl/opencl/opencl_err.hpp>
+#include <nil/actor/opencl/global.hpp>
+#include <nil/actor/opencl/device.hpp>
+#include <nil/actor/opencl/opencl_err.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace opencl {
 
             device_ptr device::create(const detail::raw_context_ptr &context, const detail::raw_device_ptr &device_id,
                                       unsigned id) {
-                MTL_LOG_DEBUG("creating device for opencl device with id:" << MTL_ARG(id));
+                ACTOR_LOG_DEBUG("creating device for opencl device with id:" << ACTOR_ARG(id));
                 // look up properties we need to create the command queue
                 auto supported = info<cl_ulong>(device_id, CL_DEVICE_QUEUE_PROPERTIES);
                 bool profiling = false;    // (supported & CL_QUEUE_PROFILING_ENABLE) != 0u;
@@ -26,7 +26,7 @@ namespace nil {
                 }
                 // create the command queue
                 detail::raw_command_queue_ptr command_queue {
-                    v2get(MTL_CLF(clCreateCommandQueue), context.get(), device_id.get(), properties), false};
+                    v2get(ACTOR_CLF(clCreateCommandQueue), context.get(), device_id.get(), properties), false};
                 // create the device
                 auto dev = make_counted<device>(device_id, std::move(command_queue), context, id);
                 // device dev{device_id, std::move(command_queue), context, id};
@@ -86,5 +86,5 @@ namespace nil {
             }
 
         }    // namespace opencl
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

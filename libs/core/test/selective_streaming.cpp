@@ -12,21 +12,21 @@
 
 #define BOOST_TEST_MODULE selective_streaming_test
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <memory>
 #include <numeric>
 
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/atom.hpp>
-#include <nil/mtl/broadcast_downstream_manager.hpp>
-#include <nil/mtl/event_based_actor.hpp>
-#include <nil/mtl/stateful_actor.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/atom.hpp>
+#include <nil/actor/broadcast_downstream_manager.hpp>
+#include <nil/actor/event_based_actor.hpp>
+#include <nil/actor/stateful_actor.hpp>
 
 using std::string;
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 
@@ -152,7 +152,7 @@ BOOST_FIXTURE_TEST_SUITE(selective_streaming_tests, fixture)
 BOOST_AUTO_TEST_CASE(select_all_test) {
     auto src = sys.spawn(log_producer);
     auto snk = sys.spawn(log_consumer);
-    //    BOOST_TEST_MESSAGE(MTL_ARG(self) << MTL_ARG(src) << MTL_ARG(snk));
+    //    BOOST_TEST_MESSAGE(ACTOR_ARG(self) << ACTOR_ARG(src) << ACTOR_ARG(snk));
     BOOST_TEST_MESSAGE("initiate stream handshake");
     self->send(snk * src, level::all);
     run();
@@ -162,7 +162,7 @@ BOOST_AUTO_TEST_CASE(select_all_test) {
 BOOST_AUTO_TEST_CASE(select_trace_test) {
     auto src = sys.spawn(log_producer);
     auto snk = sys.spawn(log_consumer);
-    //    BOOST_TEST_MESSAGE(MTL_ARG(self) << MTL_ARG(src) << MTL_ARG(snk));
+    //    BOOST_TEST_MESSAGE(ACTOR_ARG(self) << ACTOR_ARG(src) << ACTOR_ARG(snk));
     BOOST_TEST_MESSAGE("initiate stream handshake");
     self->send(snk * src, level::trace);
     run();

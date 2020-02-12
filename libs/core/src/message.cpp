@@ -10,24 +10,24 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/message.hpp>
+#include <nil/actor/message.hpp>
 
 #include <iostream>
 #include <utility>
 
-#include <nil/mtl/serialization/serializer.hpp>
-#include <nil/mtl/serialization/deserializer.hpp>
+#include <nil/actor/serialization/serializer.hpp>
+#include <nil/actor/serialization/deserializer.hpp>
 
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/message_builder.hpp>
-#include <nil/mtl/message_handler.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/message_builder.hpp>
+#include <nil/actor/message_handler.hpp>
 
-#include <nil/mtl/detail/decorated_tuple.hpp>
-#include <nil/mtl/detail/concatenated_tuple.hpp>
-#include <nil/mtl/detail/dynamic_message_data.hpp>
+#include <nil/actor/detail/decorated_tuple.hpp>
+#include <nil/actor/detail/concatenated_tuple.hpp>
+#include <nil/actor/detail/dynamic_message_data.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         message::message(none_t) noexcept {
             // nop
@@ -53,17 +53,17 @@ namespace nil {
         // -- implementation of type_erased_tuple --------------------------------------
 
         void *message::get_mutable(size_t p) {
-            MTL_ASSERT(vals_ != nullptr);
+            ACTOR_ASSERT(vals_ != nullptr);
             return vals_.unshared().get_mutable(p);
         }
 
         error message::load(size_t pos, deserializer &source) {
-            MTL_ASSERT(vals_ != nullptr);
+            ACTOR_ASSERT(vals_ != nullptr);
             return vals_.unshared().load(pos, source);
         }
 
         error_code<sec> message::load(size_t pos, binary_deserializer &source) {
-            MTL_ASSERT(vals_ != nullptr);
+            ACTOR_ASSERT(vals_ != nullptr);
             return vals_.unshared().load(pos, source);
         }
 
@@ -76,32 +76,32 @@ namespace nil {
         }
 
         rtti_pair message::type(size_t pos) const noexcept {
-            MTL_ASSERT(vals_ != nullptr);
+            ACTOR_ASSERT(vals_ != nullptr);
             return vals_->type(pos);
         }
 
         const void *message::get(size_t pos) const noexcept {
-            MTL_ASSERT(vals_ != nullptr);
+            ACTOR_ASSERT(vals_ != nullptr);
             return vals_->get(pos);
         }
 
         std::string message::stringify(size_t pos) const {
-            MTL_ASSERT(vals_ != nullptr);
+            ACTOR_ASSERT(vals_ != nullptr);
             return vals_->stringify(pos);
         }
 
         type_erased_value_ptr message::copy(size_t pos) const {
-            MTL_ASSERT(vals_ != nullptr);
+            ACTOR_ASSERT(vals_ != nullptr);
             return vals_->copy(pos);
         }
 
         error message::save(size_t pos, serializer &sink) const {
-            MTL_ASSERT(vals_ != nullptr);
+            ACTOR_ASSERT(vals_ != nullptr);
             return vals_->save(pos, sink);
         }
 
         error_code<sec> message::save(size_t pos, binary_serializer &sink) const {
-            MTL_ASSERT(vals_ != nullptr);
+            ACTOR_ASSERT(vals_ != nullptr);
             return vals_->save(pos, sink);
         }
 
@@ -140,7 +140,7 @@ namespace nil {
                     tmp.assign(i, n);
                     auto ptr = types.make_value(tmp);
                     if (!ptr) {
-                        MTL_LOG_ERROR("unknown type:" << tmp);
+                        ACTOR_LOG_ERROR("unknown type:" << tmp);
                         return sec::unknown_type;
                     }
                     if (auto err = ptr->load(source))
@@ -273,5 +273,5 @@ namespace nil {
             str += ")";
             return str;
         }
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

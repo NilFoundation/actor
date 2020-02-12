@@ -10,17 +10,17 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/ipv6_address.hpp>
+#include <nil/actor/ipv6_address.hpp>
 
-#include <nil/mtl/detail/network_order.hpp>
-#include <nil/mtl/detail/parser/read_ipv6_address.hpp>
-#include <nil/mtl/error.hpp>
-#include <nil/mtl/ipv4_address.hpp>
-#include <nil/mtl/pec.hpp>
-#include <nil/mtl/string_view.hpp>
+#include <nil/actor/detail/network_order.hpp>
+#include <nil/actor/detail/parser/read_ipv6_address.hpp>
+#include <nil/actor/error.hpp>
+#include <nil/actor/ipv4_address.hpp>
+#include <nil/actor/pec.hpp>
+#include <nil/actor/string_view.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         namespace {
 
@@ -52,7 +52,7 @@ namespace nil {
                 }
                 auto pred = [](char c) { return c != '0'; };
                 auto first_non_zero = std::find_if(buf.begin(), buf.end(), pred);
-                MTL_ASSERT(first_non_zero != buf.end());
+                ACTOR_ASSERT(first_non_zero != buf.end());
                 if (*first_non_zero != '\0')
                     result += &(*first_non_zero);
                 else
@@ -79,7 +79,7 @@ namespace nil {
         }
 
         ipv6_address::ipv6_address(uint16_ilist prefix, uint16_ilist suffix) {
-            MTL_ASSERT((prefix.size() + suffix.size()) <= 8);
+            ACTOR_ASSERT((prefix.size() + suffix.size()) <= 8);
             auto addr_fill = [&](uint16_ilist chunks) {
                 union {
                     uint16_t i;
@@ -203,5 +203,5 @@ namespace nil {
             return make_error(res.code, static_cast<size_t>(res.line), static_cast<size_t>(res.column));
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

@@ -15,11 +15,11 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/to_string.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/to_string.hpp>
 
 using namespace std;
-using namespace nil::mtl;
+using namespace nil::actor;
 
 BOOST_AUTO_TEST_CASE(buffer_test) {
     // Use `signed char` explicitly to make sure all compilers agree.

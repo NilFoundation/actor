@@ -7,10 +7,10 @@
 #include <fstream>
 #include <iostream>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/io/all.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/io/all.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 using std::cout;
 using std::cerr;
@@ -104,7 +104,7 @@ std::vector<host_desc> read_hostfile(const string &fname) {
     return result;
 }
 
-bool run_ssh(actor_system &system, const string &wdir, const string &cmd, const string &host) {
+bool run_ssh(spawner &system, const string &wdir, const string &cmd, const string &host) {
     std::cout << "runssh, wdir: " << wdir << " cmd: " << cmd << " host: " << host << std::endl;
     // pack command before sending it to avoid any issue with shell escaping
     string full_cmd = "cd ";
@@ -147,7 +147,7 @@ bool run_ssh(actor_system &system, const string &wdir, const string &cmd, const 
     return true;
 }
 
-void bootstrap(actor_system &system, const string &wdir, const host_desc &master, vector<host_desc> slaves,
+void bootstrap(spawner &system, const string &wdir, const host_desc &master, vector<host_desc> slaves,
                const string &cmd, vector<string> args) {
     using io::network::interfaces;
     if (!args.empty()) {
@@ -167,18 +167,18 @@ void bootstrap(actor_system &system, const string &wdir, const host_desc &master
         slaves.emplace_back(master.host, master.cpu_slots - 1, master.opencl_device_ids);
     }
     for (auto &slave : slaves) {
-        using namespace nil::mtl::io::network;
+        using namespace nil::actor::io::network;
         // build SSH command and pack it to avoid any issue with shell escaping
         std::thread{[=, &system](actor bootstrapper) {
             std::ostringstream oss;
             oss << cmd;
             if (slave.cpu_slots > 0) {
-                oss << " --mtl#scheduler.max-threads=" << slave.cpu_slots;
+                oss << " --actor#scheduler.max-threads=" << slave.cpu_slots;
             }
             if (!slave.opencl_device_ids.empty()) {
-                oss << " --mtl#opencl-devices=" << slave.opencl_device_ids;
+                oss << " --actor#opencl-devices=" << slave.opencl_device_ids;
             }
-            oss << " --mtl#slave-mode" << " --mtl#slave-name=" << slave.host << " --mtl#bootstrap-node=";
+            oss << " --actor#slave-mode" << " --actor#slave-name=" << slave.host << " --actor#bootstrap-node=";
             bool is_first = true;
             interfaces::traverse({protocol::ipv4, protocol::ipv6},
                                  [&](const char *, protocol::network, bool lo, const char *x) {
@@ -215,7 +215,7 @@ void bootstrap(actor_system &system, const string &wdir, const host_desc &master
     }
     // run (and wait for) master
     std::ostringstream oss;
-    oss << cmd << " --mtl#slave-nodes=" << slaveslist << " " << join(args, " ");
+    oss << cmd << " --actor#slave-nodes=" << slaveslist << " " << join(args, " ");
     run_ssh(system, wdir, oss.str(), master.host);
 }
 
@@ -225,7 +225,7 @@ void bootstrap(actor_system &system, const string &wdir, const host_desc &master
     return 1;                                                                  \
   } while (true)
 
-struct config : actor_system_config {
+struct config : spawner_config {
     config() {
         opt_group{custom_options_, "global"}.add(hostfile, "hostfile", "path to hostfile").add(wdir, "wdir",
                                                                                                "working directory");
@@ -242,7 +242,7 @@ int main(int argc, char **argv) {
         return 0;
     }
     if (cfg.slave_mode)
-        RETURN_WITH_ERROR("cannot use slave mode in mtl-run tool");
+        RETURN_WITH_ERROR("cannot use slave mode in actor-run tool");
     std::unique_ptr<char, void (*)(void *)> pwd{getcwd(nullptr, 0), ::free};
     if (cfg.hostfile.empty())
         RETURN_WITH_ERROR("no hostfile specified or hostfile is empty");
@@ -257,7 +257,7 @@ int main(int argc, char **argv) {
     auto hosts = read_hostfile(cfg.hostfile);
     if (hosts.empty())
         RETURN_WITH_ERROR("no valid entry in hostfile");
-    actor_system system{cfg};
+    spawner system{cfg};
     auto master = hosts.front();
     hosts.erase(hosts.begin());
     bootstrap(system, (cfg.wdir.empty()) ? pwd.get() : cfg.wdir.c_str(), master, std::move(hosts), cmd, xs);

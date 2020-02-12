@@ -11,20 +11,20 @@
 //---------------------------------------------------------------------------//
 #define BOOST_TEST_MODULE fused_streaming_test
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <memory>
 #include <numeric>
 
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/event_based_actor.hpp>
-#include <nil/mtl/fused_downstream_manager.hpp>
-#include <nil/mtl/stateful_actor.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/event_based_actor.hpp>
+#include <nil/actor/fused_downstream_manager.hpp>
+#include <nil/actor/stateful_actor.hpp>
 
 using std::string;
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 
@@ -174,7 +174,7 @@ namespace {
                 buf.insert(buf.end(), xs.begin(), xs.end());
                 return;
             }
-            MTL_LOG_ERROR("received unexpected batch type (dropped)");
+            ACTOR_LOG_ERROR("received unexpected batch type (dropped)");
         }
 
         bool congested() const noexcept override {

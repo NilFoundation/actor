@@ -13,15 +13,15 @@
 // This unit test checks guarantees regarding ordering and equality for actor
 // handles, i.e., actor_addr, actor, and typed_actor<...>.
 
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
 #define BOOST_TEST_MODULE handles_test
 
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
-#include <nil/mtl/all.hpp>
+#include <nil/actor/all.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 
@@ -263,7 +263,7 @@ BOOST_AUTO_TEST_CASE(string_representation_test) {
 
 BOOST_AUTO_TEST_CASE(mpi_string_representation_test) {
     BOOST_CHECK(sys.message_types(a0.dt).empty());
-    std::set<std::string> st_expected {"nil::mtl::replies_to<@i32>::with<@i32>"};
+    std::set<std::string> st_expected {"nil::actor::replies_to<@i32>::with<@i32>"};
     BOOST_CHECK(st_expected == sys.message_types(a0.st));
     BOOST_CHECK(st_expected == sys.message_types<testee_actor>());
 }

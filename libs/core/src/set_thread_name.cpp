@@ -10,17 +10,17 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/set_thread_name.hpp>
+#include <nil/actor/detail/set_thread_name.hpp>
 
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
-#ifndef MTL_WINDOWS
+#ifndef ACTOR_WINDOWS
 #include <pthread.h>
-#endif    // MTL_WINDOWS
+#endif    // ACTOR_WINDOWS
 
-#if defined(MTL_LINUX)
+#if defined(ACTOR_LINUX)
 #include <sys/prctl.h>
-#elif defined(MTL_BSD)
+#elif defined(ACTOR_BSD)
 #include <pthread_np.h>
 #endif    // defined(...)
 
@@ -28,26 +28,26 @@
 #include <type_traits>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             void set_thread_name(const char *name) {
-                MTL_IGNORE_UNUSED(name);
-#ifdef MTL_WINDOWS
+                ACTOR_IGNORE_UNUSED(name);
+#ifdef ACTOR_WINDOWS
                 // nop
-#else    // MTL_WINDOWS
+#else    // ACTOR_WINDOWS
                 static_assert(std::is_same<std::thread::native_handle_type, pthread_t>::value,
                               "std::thread not based on pthread_t");
-#if defined(MTL_MACOS)
+#if defined(ACTOR_MACOS)
                 pthread_setname_np(name);
-#elif defined(MTL_LINUX)
+#elif defined(ACTOR_LINUX)
                 prctl(PR_SET_NAME, name, 0, 0, 0);
-#elif defined(MTL_BSD)
+#elif defined(ACTOR_BSD)
                 pthread_set_name_np(pthread_self(), name);
 #endif    // defined(...)
-#endif    // MTL_WINDOWS
+#endif    // ACTOR_WINDOWS
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

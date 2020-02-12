@@ -12,21 +12,21 @@
 
 #define BOOST_TEST_MODULE binary_serializer_test
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <cstring>
 #include <vector>
 
-#include <nil/mtl/serialization/binary_serializer.hpp>
+#include <nil/actor/serialization/binary_serializer.hpp>
 
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/byte.hpp>
-#include <nil/mtl/byte_buffer.hpp>
-#include <nil/mtl/duration.hpp>
-#include <nil/mtl/timestamp.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/byte.hpp>
+#include <nil/actor/byte_buffer.hpp>
+#include <nil/actor/duration.hpp>
+#include <nil/actor/timestamp.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 
@@ -49,15 +49,15 @@ namespace {
         int64_t i64_;
         float f32_;
         double f64_;
-        nil::mtl::duration dur_;
-        nil::mtl::timestamp ts_;
+        nil::actor::duration dur_;
+        nil::actor::timestamp ts_;
         test_enum te_;
         std::string str_;
     };
 
     template<class Inspector>
     typename Inspector::result_type inspect(Inspector &f, test_data &x) {
-        return f(nil::mtl::meta::type_name("test_data"), x.i32_, x.i64_, x.f32_, x.f64_, x.dur_, x.ts_, x.te_, x.str_);
+        return f(nil::actor::meta::type_name("test_data"), x.i32_, x.i64_, x.f32_, x.f64_, x.dur_, x.ts_, x.te_, x.str_);
     }
 
     struct fixture {
@@ -189,12 +189,12 @@ BOOST_AUTO_TEST_CASE(binary_serializer_picks_up_inspect_functions) {
                    10_b, 11_b, 12_b, 13_b, 14_b, 15_b, 16_b, 17_b, 18_b, 19_b);
     }
     SUBTEST("custom struct") {
-        nil::mtl::timestamp ts {nil::mtl::timestamp::duration {1478715821 * 1000000000ll}};
+        nil::actor::timestamp ts {nil::actor::timestamp::duration {1478715821 * 1000000000ll}};
         test_data value {-345,
                          -1234567890123456789ll,
                          3.45,
                          54.3,
-                         nil::mtl::duration(nil::mtl::time_unit::seconds, 123),
+                         nil::actor::duration(nil::actor::time_unit::seconds, 123),
                          ts,
                          test_enum::b,
                          "Lorem ipsum dolor sit amet."};

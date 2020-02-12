@@ -9,20 +9,20 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/middleman_actor.hpp>
+#include <nil/actor/io/middleman_actor.hpp>
 
 #include <tuple>
 #include <stdexcept>
 #include <utility>
 
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/spawn_options.hpp>
-#include <nil/mtl/spawner_config.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/spawn_options.hpp>
+#include <nil/actor/spawner_config.hpp>
 
-#include <nil/mtl/io/middleman_actor_impl.hpp>
+#include <nil/actor/io/middleman_actor_impl.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
 
             middleman_actor make_middleman_actor(spawner &sys, actor db) {
@@ -32,5 +32,5 @@ namespace nil {
             }
 
         }    // namespace io
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

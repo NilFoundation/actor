@@ -10,26 +10,26 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/local_actor.hpp>
+#include <nil/actor/local_actor.hpp>
 
 #include <string>
 #include <condition_variable>
 
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/atom.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/scheduler.hpp>
-#include <nil/mtl/resumable.hpp>
-#include <nil/mtl/actor_cast.hpp>
-#include <nil/mtl/exit_reason.hpp>
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/actor_ostream.hpp>
-#include <nil/mtl/serialization/binary_serializer.hpp>
-#include <nil/mtl/default_attachable.hpp>
-#include <nil/mtl/serialization/binary_deserializer.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/atom.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/scheduler.hpp>
+#include <nil/actor/resumable.hpp>
+#include <nil/actor/actor_cast.hpp>
+#include <nil/actor/exit_reason.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/actor_ostream.hpp>
+#include <nil/actor/serialization/binary_serializer.hpp>
+#include <nil/actor/default_attachable.hpp>
+#include <nil/actor/serialization/binary_deserializer.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         local_actor::local_actor(actor_config &cfg) :
             monitorable_actor(cfg), context_(cfg.host), current_element_(nullptr),
@@ -42,7 +42,7 @@ namespace nil {
         }
 
         void local_actor::on_destroy() {
-            MTL_PUSH_AID_FROM_PTR(this);
+            ACTOR_PUSH_AID_FROM_PTR(this);
             if (!getf(is_cleaned_up_flag)) {
                 on_exit();
                 cleanup(exit_reason::unreachable, nullptr);
@@ -51,7 +51,7 @@ namespace nil {
         }
 
         void local_actor::request_response_timeout(const duration &d, message_id mid) {
-            MTL_LOG_TRACE(MTL_ARG(d) << MTL_ARG(mid));
+            ACTOR_LOG_TRACE(ACTOR_ARG(d) << ACTOR_ARG(mid));
             if (!d.valid())
                 return;
             auto t = clock().now();
@@ -65,7 +65,7 @@ namespace nil {
         }
 
         void local_actor::demonitor(const actor_addr &whom) {
-            MTL_LOG_TRACE(MTL_ARG(whom));
+            ACTOR_LOG_TRACE(ACTOR_ARG(whom));
             auto ptr = actor_cast<strong_actor_ptr>(whom);
             if (ptr) {
                 default_attachable::observe_token tk {address(), default_attachable::monitor};
@@ -97,26 +97,26 @@ namespace nil {
         }
 
         error local_actor::save_state(serializer &, const unsigned int) {
-            MTL_RAISE_ERROR("local_actor::serialize called");
+            ACTOR_RAISE_ERROR("local_actor::serialize called");
         }
 
         error local_actor::load_state(deserializer &, const unsigned int) {
-            MTL_RAISE_ERROR("local_actor::deserialize called");
+            ACTOR_RAISE_ERROR("local_actor::deserialize called");
         }
 
         void local_actor::initialize() {
-            MTL_LOG_TRACE(MTL_ARG2("id", id()) << MTL_ARG2("name", name()));
+            ACTOR_LOG_TRACE(ACTOR_ARG2("id", id()) << ACTOR_ARG2("name", name()));
         }
 
         bool local_actor::cleanup(error &&fail_state, execution_unit *host) {
-            MTL_LOG_TRACE(MTL_ARG(fail_state));
+            ACTOR_LOG_TRACE(ACTOR_ARG(fail_state));
             // tell registry we're done
             unregister_from_system();
-            MTL_LOG_TERMINATE_EVENT(this, fail_state);
+            ACTOR_LOG_TERMINATE_EVENT(this, fail_state);
             monitorable_actor::cleanup(std::move(fail_state), host);
             clock().cancel_timeouts(this);
             return true;
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

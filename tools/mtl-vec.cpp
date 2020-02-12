@@ -8,11 +8,11 @@
 
 #include <boost/thread.hpp>
 
-#include <nil/mtl/all.hpp>
+#include <nil/actor/all.hpp>
 
 using std::string;
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 using thread_id = string;
 using vector_timestamp = std::vector<size_t>;
@@ -214,7 +214,7 @@ typename Inspector::result_type inspect(Inspector &f, entity &x) {
 
 mailbox_id to_mailbox_id(const entity &x) {
     if (x.aid == 0) {
-        MTL_RAISE_ERROR("threads do not have a mailbox ID");
+        ACTOR_RAISE_ERROR("threads do not have a mailbox ID");
     }
     return {x.aid, x.nid};
 }
@@ -436,7 +436,7 @@ string to_string(const se_event &x) {
 }
 
 
-MTL_ALLOW_UNSAFE_MESSAGE_TYPE(se_event)
+ACTOR_ALLOW_UNSAFE_MESSAGE_TYPE(se_event)
 
 bool field_key_compare(const std::pair<const std::string, std::string> &x, const std::string &y) {
     return x.first == y;
@@ -547,9 +547,9 @@ enum verbosity_level {
 expected <first_pass_result> first_pass(blocking_actor *self, std::istream &in, verbosity_level vl) {
     first_pass_result res;
     // read first line to extract the node ID of local actors
-    // _ mtl INFO actor0 _ mtl.logger start _:_ level = _, node = NODE
-    if (!(in >> skip_word >> consume("mtl") >> consume("INFO") >> consume("actor0") >> skip_word
-             >> consume("mtl.logger") >> consume("start") >> skip_word >> consume("level =") >> skip_word
+    // _ actor INFO actor0 _ actor.logger start _:_ level = _, node = NODE
+    if (!(in >> skip_word >> consume("actor") >> consume("INFO") >> consume("actor0") >> skip_word
+             >> consume("actor.logger") >> consume("start") >> skip_word >> consume("level =") >> skip_word
              >> consume("node = ") >> res.this_node >> skip_to_next_line)) {
         std::cerr << "*** malformed log file, expect the first line to contain " << "an INFO entry of the logger"
                   << std::endl;
@@ -582,7 +582,7 @@ const string &get(const std::map<string, string> &xs, const string &x) {
     if (i != xs.end()) {
         return i->second;
     }
-    MTL_RAISE_ERROR("key not found");
+    ACTOR_RAISE_ERROR("key not found");
 }
 
 void second_pass(blocking_actor *self, const group &grp, const entity_set &entities, const node_id &nid,
@@ -610,7 +610,7 @@ void second_pass(blocking_actor *self, const group &grp, const entity_set &entit
         if (i != local_entities_state.end()) {
             return i->second;
         }
-        MTL_RAISE_ERROR("logger ID not found");
+        ACTOR_RAISE_ERROR("logger ID not found");
     };
     // additional state for second pass
     size_t line = 0;
@@ -752,7 +752,7 @@ void second_pass(blocking_actor *self, const group &grp, const entity_set &entit
 
 namespace {
 
-    struct config : public actor_system_config {
+    struct config : public spawner_config {
         string output_file;
         bool include_hidden_actors = false;
         size_t verbosity = 0;
@@ -768,7 +768,7 @@ namespace {
 
 // two pass parser for MTL log files that enhances logs with vector
 // clock timestamps
-    void caf_main(actor_system &sys, const config &cfg) {
+    void caf_main(spawner &sys, const config &cfg) {
         using namespace std;
         if (cfg.output_file.empty()) {
             cerr << "*** no output file specified" << std::endl;
@@ -798,7 +798,7 @@ namespace {
             file_path fname;
             ifstream_ptr fstream;
             first_pass_result res;
-            char pad[irsize >= MTL_CACHE_LINE_SIZE ? 1 : MTL_CACHE_LINE_SIZE - irsize];
+            char pad[irsize >= ACTOR_CACHE_LINE_SIZE ? 1 : ACTOR_CACHE_LINE_SIZE - irsize];
 
             intermediate_res() = default;
 
@@ -891,5 +891,5 @@ namespace {
 
 } // namespace <anonymous>
 
-MTL_MAIN()
+ACTOR_MAIN()
 

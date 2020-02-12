@@ -10,16 +10,16 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/message_builder.hpp>
+#include <nil/actor/message_builder.hpp>
 
 #include <vector>
 
-#include <nil/mtl/detail/dynamic_message_data.hpp>
-#include <nil/mtl/make_copy_on_write.hpp>
-#include <nil/mtl/message_handler.hpp>
+#include <nil/actor/detail/dynamic_message_data.hpp>
+#include <nil/actor/make_copy_on_write.hpp>
+#include <nil/actor/message_handler.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         message_builder::message_builder() {
             init();
@@ -73,5 +73,5 @@ namespace nil {
             return res;
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

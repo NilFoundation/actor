@@ -10,17 +10,17 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/actor_addr.hpp>
+#include <nil/actor/actor_addr.hpp>
 
-#include <nil/mtl/actor.hpp>
-#include <nil/mtl/node_id.hpp>
-#include <nil/mtl/serialization/serializer.hpp>
-#include <nil/mtl/local_actor.hpp>
-#include <nil/mtl/serialization/deserializer.hpp>
-#include <nil/mtl/proxy_registry.hpp>
+#include <nil/actor/actor.hpp>
+#include <nil/actor/node_id.hpp>
+#include <nil/actor/serialization/serializer.hpp>
+#include <nil/actor/local_actor.hpp>
+#include <nil/actor/serialization/deserializer.hpp>
+#include <nil/actor/proxy_registry.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         actor_addr::actor_addr(std::nullptr_t) {
             // nop
@@ -72,5 +72,5 @@ namespace nil {
             ptr_.swap(other.ptr_);
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

@@ -9,16 +9,16 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/network/scribe_impl.hpp>
+#include <nil/actor/io/network/scribe_impl.hpp>
 
 #include <algorithm>
 
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/logger.hpp>
 
-#include <nil/mtl/io/network/default_multiplexer.hpp>
+#include <nil/actor/io/network/default_multiplexer.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace network {
 
@@ -28,14 +28,14 @@ namespace nil {
                 }
 
                 void scribe_impl::configure_read(receive_policy::config config) {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     stream_.configure_read(config);
                     if (!launched_)
                         launch();
                 }
 
                 void scribe_impl::ack_writes(bool enable) {
-                    MTL_LOG_TRACE(MTL_ARG(enable));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(enable));
                     stream_.ack_writes(enable);
                 }
 
@@ -48,13 +48,13 @@ namespace nil {
                 }
 
                 void scribe_impl::graceful_shutdown() {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     stream_.graceful_shutdown();
                     detach(&stream_.backend(), false);
                 }
 
                 void scribe_impl::flush() {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     stream_.flush(this);
                 }
 
@@ -73,8 +73,8 @@ namespace nil {
                 }
 
                 void scribe_impl::launch() {
-                    MTL_LOG_TRACE("");
-                    MTL_ASSERT(!launched_);
+                    ACTOR_LOG_TRACE("");
+                    ACTOR_ASSERT(!launched_);
                     launched_ = true;
                     stream_.start(this);
                 }
@@ -89,5 +89,5 @@ namespace nil {
 
             }    // namespace network
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

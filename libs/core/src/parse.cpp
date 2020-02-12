@@ -8,28 +8,28 @@
 // License 1.0. See accompanying files LICENSE and LICENSE_ALTERNATIVE.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/parse.hpp>
+#include <nil/actor/detail/parse.hpp>
 
-#include <nil/mtl/detail/consumer.hpp>
-#include <nil/mtl/detail/parser/chars.hpp>
-#include <nil/mtl/detail/parser/read_atom.hpp>
-#include <nil/mtl/detail/parser/read_bool.hpp>
-#include <nil/mtl/detail/parser/read_floating_point.hpp>
-#include <nil/mtl/detail/parser/read_ipv4_address.hpp>
-#include <nil/mtl/detail/parser/read_ipv6_address.hpp>
-#include <nil/mtl/detail/parser/read_signed_integer.hpp>
-#include <nil/mtl/detail/parser/read_string.hpp>
-#include <nil/mtl/detail/parser/read_timespan.hpp>
-#include <nil/mtl/detail/parser/read_unsigned_integer.hpp>
-#include <nil/mtl/detail/parser/read_uri.hpp>
+#include <nil/actor/detail/consumer.hpp>
+#include <nil/actor/detail/parser/chars.hpp>
+#include <nil/actor/detail/parser/read_atom.hpp>
+#include <nil/actor/detail/parser/read_bool.hpp>
+#include <nil/actor/detail/parser/read_floating_point.hpp>
+#include <nil/actor/detail/parser/read_ipv4_address.hpp>
+#include <nil/actor/detail/parser/read_ipv6_address.hpp>
+#include <nil/actor/detail/parser/read_signed_integer.hpp>
+#include <nil/actor/detail/parser/read_string.hpp>
+#include <nil/actor/detail/parser/read_timespan.hpp>
+#include <nil/actor/detail/parser/read_unsigned_integer.hpp>
+#include <nil/actor/detail/parser/read_uri.hpp>
 
-#include <nil/mtl/ipv4_address.hpp>
-#include <nil/mtl/ipv4_endpoint.hpp>
-#include <nil/mtl/ipv4_subnet.hpp>
-#include <nil/mtl/ipv6_address.hpp>
-#include <nil/mtl/ipv6_endpoint.hpp>
-#include <nil/mtl/ipv6_subnet.hpp>
-#include <nil/mtl/uri_builder.hpp>
+#include <nil/actor/ipv4_address.hpp>
+#include <nil/actor/ipv4_endpoint.hpp>
+#include <nil/actor/ipv4_subnet.hpp>
+#include <nil/actor/ipv6_address.hpp>
+#include <nil/actor/ipv6_endpoint.hpp>
+#include <nil/actor/ipv6_subnet.hpp>
+#include <nil/actor/uri_builder.hpp>
 
 #define PARSE_IMPL(type, parser_name)                     \
     void parse(parse_state &ps, type &x) {                \
@@ -37,7 +37,7 @@
     }
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             struct literal {
@@ -50,7 +50,7 @@ namespace nil {
             };
 
             void parse(parse_state &ps, literal &x) {
-                MTL_ASSERT(x.str.size() > 0);
+                ACTOR_ASSERT(x.str.size() > 0);
                 if (ps.current() != x.str[0]) {
                     ps.code = pec::unexpected_character;
                     return;
@@ -75,7 +75,7 @@ namespace nil {
                 parse(ps, x);
                 // TODO: use `if constexpr` when switching to C++17
                 if (sizeof...(Ts) > 0) {
-                    MTL_ASSERT(ps.code != pec::success);
+                    ACTOR_ASSERT(ps.code != pec::success);
                     if (ps.code == pec::trailing_character)
                         parse_sequence(ps, std::forward<Ts>(xs)...);
                 }
@@ -222,5 +222,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

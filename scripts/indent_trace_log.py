@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-# Indents a MTL log with trace verbosity. The script does *not* deal with a log
+# Indents a ACTOR log with trace verbosity. The script does *not* deal with a log
 # with multiple threads.
 
 # usage (read file): indent_trace_log.py FILENAME

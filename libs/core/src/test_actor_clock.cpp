@@ -10,12 +10,12 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/test_actor_clock.hpp>
+#include <nil/actor/detail/test_actor_clock.hpp>
 
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/logger.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             test_actor_clock::test_actor_clock() : current_time(duration_type {1}) {
@@ -37,7 +37,7 @@ namespace nil {
             }
 
             bool test_actor_clock::trigger_timeout() {
-                MTL_LOG_TRACE(MTL_ARG2("schedule.size", schedule_.size()));
+                ACTOR_LOG_TRACE(ACTOR_ARG2("schedule.size", schedule_.size()));
                 if (schedule_.empty())
                     return false;
                 auto i = schedule_.begin();
@@ -54,7 +54,7 @@ namespace nil {
             }
 
             size_t test_actor_clock::trigger_timeouts() {
-                MTL_LOG_TRACE(MTL_ARG2("schedule.size", schedule_.size()));
+                ACTOR_LOG_TRACE(ACTOR_ARG2("schedule.size", schedule_.size()));
                 if (schedule_.empty())
                     return 0u;
                 size_t result = 0;
@@ -64,12 +64,12 @@ namespace nil {
             }
 
             size_t test_actor_clock::advance_time(duration_type x) {
-                MTL_LOG_TRACE(MTL_ARG(x) << MTL_ARG2("schedule.size", schedule_.size()));
-                MTL_ASSERT(x.count() >= 0);
+                ACTOR_LOG_TRACE(ACTOR_ARG(x) << ACTOR_ARG2("schedule.size", schedule_.size()));
+                ACTOR_ASSERT(x.count() >= 0);
                 current_time += x;
                 return trigger_expired_timeouts();
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

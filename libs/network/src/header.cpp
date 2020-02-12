@@ -9,16 +9,16 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/basp/header.hpp>
+#include <nil/actor/network/basp/header.hpp>
 
 #include <cstring>
 
-#include <nil/mtl/byte.hpp>
-#include <nil/mtl/detail/network_order.hpp>
-#include <nil/mtl/span.hpp>
+#include <nil/actor/byte.hpp>
+#include <nil/actor/detail/network_order.hpp>
+#include <nil/actor/span.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
             namespace basp {
 
@@ -41,7 +41,7 @@ namespace nil {
                 }
 
                 header header::from_bytes(span<const byte> bytes) {
-                    MTL_ASSERT(bytes.size() >= header_size);
+                    ACTOR_ASSERT(bytes.size() >= header_size);
                     header result;
                     auto ptr = bytes.data();
                     result.type = *reinterpret_cast<const message_type *>(ptr);
@@ -67,5 +67,5 @@ namespace nil {
 
             }    // namespace basp
         }        // namespace network
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

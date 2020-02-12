@@ -10,13 +10,13 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/abstract_channel.hpp>
+#include <nil/actor/abstract_channel.hpp>
 
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/mailbox_element.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/mailbox_element.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         abstract_channel::abstract_channel(int fs) : flags_(fs) {
             // nop
@@ -26,5 +26,5 @@ namespace nil {
             // nop
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

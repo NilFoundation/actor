@@ -10,15 +10,15 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/private_thread.hpp>
+#include <nil/actor/detail/private_thread.hpp>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/detail/set_thread_name.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/scheduled_actor.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/detail/set_thread_name.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/scheduled_actor.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             private_thread::private_thread(scheduled_actor *self) :
@@ -29,10 +29,10 @@ namespace nil {
 
             void private_thread::run() {
                 auto job = self_.load();
-                MTL_ASSERT(job != nullptr);
-                MTL_SET_LOGGER_SYS(&job->system());
-                MTL_PUSH_AID(job->id());
-                MTL_LOG_TRACE("");
+                ACTOR_ASSERT(job != nullptr);
+                ACTOR_SET_LOGGER_SYS(&job->system());
+                ACTOR_PUSH_AID(job->id());
+                ACTOR_LOG_TRACE("");
                 scoped_execution_unit ctx {&job->system()};
                 auto max_throughput = std::numeric_limits<size_t>::max();
                 bool resume_later;
@@ -80,7 +80,7 @@ namespace nil {
             }
 
             void private_thread::exec(private_thread *this_ptr) {
-                detail::set_thread_name("mtl.actor");
+                detail::set_thread_name("actor.actor");
                 this_ptr->system_.thread_started();
                 this_ptr->run();
                 // make sure to not destroy the private thread object before the
@@ -110,5 +110,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

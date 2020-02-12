@@ -12,14 +12,14 @@
 
 #define BOOST_TEST_MODULE request_timeout_test
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <boost/chrono/duration.hpp>
 
-#include <nil/mtl/after.hpp>
-#include <nil/mtl/all.hpp>
+#include <nil/actor/after.hpp>
+#include <nil/actor/all.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 using std::string;
 using std::chrono::milliseconds;

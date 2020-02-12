@@ -10,10 +10,10 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/type_erased_value.hpp>
+#include <nil/actor/type_erased_value.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         type_erased_value::~type_erased_value() {
             // nop
@@ -28,5 +28,5 @@ namespace nil {
             return true;
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

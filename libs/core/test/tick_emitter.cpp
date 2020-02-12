@@ -12,7 +12,7 @@
 
 // This test simulates a complex multiplexing over multiple layers of WDRR
 // scheduled queues. The goal is to reduce the complex mailbox management of
-// MTL to its bare bones in order to test whether the multiplexing of stream
+// ACTOR to its bare bones in order to test whether the multiplexing of stream
 // traffic and asynchronous messages works as intended.
 //
 // The setup is a fixed WDRR queue with three nestes queues. The first nested
@@ -30,16 +30,16 @@
 
 #include <boost/integer/common_factor_rt.hpp>
 
-#include <nil/mtl/timestamp.hpp>
-#include <nil/mtl/deep_to_string.hpp>
+#include <nil/actor/timestamp.hpp>
+#include <nil/actor/deep_to_string.hpp>
 
-#include <nil/mtl/detail/tick_emitter.hpp>
+#include <nil/actor/detail/tick_emitter.hpp>
 
 using std::vector;
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
-using time_point = nil::mtl::detail::tick_emitter::time_point;
+using time_point = nil::actor::detail::tick_emitter::time_point;
 
 namespace {
 

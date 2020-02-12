@@ -9,27 +9,27 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/pipe_socket.hpp>
+#include <nil/actor/network/pipe_socket.hpp>
 
 #include <cstdio>
 #include <utility>
 
-#include <nil/mtl/byte.hpp>
-#include <nil/mtl/detail/scope_guard.hpp>
-#include <nil/mtl/detail/socket_sys_aliases.hpp>
-#include <nil/mtl/detail/socket_sys_includes.hpp>
-#include <nil/mtl/expected.hpp>
-#include <nil/mtl/make_message.hpp>
-#include <nil/mtl/message.hpp>
-#include <nil/mtl/network/stream_socket.hpp>
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/variant.hpp>
+#include <nil/actor/byte.hpp>
+#include <nil/actor/detail/scope_guard.hpp>
+#include <nil/actor/detail/socket_sys_aliases.hpp>
+#include <nil/actor/detail/socket_sys_includes.hpp>
+#include <nil/actor/expected.hpp>
+#include <nil/actor/make_message.hpp>
+#include <nil/actor/message.hpp>
+#include <nil/actor/network/stream_socket.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/variant.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 
             expected<std::pair<pipe_socket, pipe_socket>> make_pipe() {
                 // Windows has no support for unidirectional pipes. Emulate pipes by using a
@@ -54,7 +54,7 @@ namespace nil {
                 return read(socket_cast<stream_socket>(x), buf);
             }
 
-#else    // MTL_WINDOWS
+#else    // ACTOR_WINDOWS
 
             expected<std::pair<pipe_socket, pipe_socket>> make_pipe() {
                 socket_id pipefds[2];
@@ -84,12 +84,12 @@ namespace nil {
                 return check_pipe_socket_io_res(res);
             }
 
-#endif    // MTL_WINDOWS
+#endif    // ACTOR_WINDOWS
 
             variant<size_t, sec> check_pipe_socket_io_res(std::make_signed<size_t>::type res) {
                 return check_stream_socket_io_res(res);
             }
 
         }    // namespace network
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

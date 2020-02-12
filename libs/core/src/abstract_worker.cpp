@@ -8,10 +8,10 @@
 // License 1.0. See accompanying files LICENSE and LICENSE_ALTERNATIVE.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/abstract_worker.hpp>
+#include <nil/actor/detail/abstract_worker.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             // -- constructors, destructors, and assignment operators ----------------------
@@ -39,5 +39,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

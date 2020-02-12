@@ -1,27 +1,27 @@
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
 #define BOOST_TEST_MODULE io_typed_broker_test
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <memory>
 #include <iostream>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/io/all.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/io/all.hpp>
 
-#include <nil/mtl/string_algorithms.hpp>
+#include <nil/actor/string_algorithms.hpp>
 
 using namespace std;
-using namespace nil::mtl;
-using namespace nil::mtl::io;
+using namespace nil::actor;
+using namespace nil::actor::io;
 
 namespace {
 
     using publish_atom = atom_constant<atom("publish")>;
-    using ping_atom = nil::mtl::atom_constant<atom("ping")>;
-    using pong_atom = nil::mtl::atom_constant<atom("pong")>;
-    using kickoff_atom = nil::mtl::atom_constant<atom("kickoff")>;
+    using ping_atom = nil::actor::atom_constant<atom("ping")>;
+    using pong_atom = nil::actor::atom_constant<atom("pong")>;
+    using kickoff_atom = nil::actor::atom_constant<atom("kickoff")>;
 
     using peer = connection_handler::extend<reacts_to<ping_atom, int>, reacts_to<pong_atom, int>>;
 

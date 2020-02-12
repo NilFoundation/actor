@@ -15,18 +15,18 @@
 #include <memory>
 #include <numeric>
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/event_based_actor.hpp>
-#include <nil/mtl/stateful_actor.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/event_based_actor.hpp>
+#include <nil/actor/stateful_actor.hpp>
 
-#include <nil/mtl/spawner_config.hpp>
+#include <nil/actor/spawner_config.hpp>
 
 using std::string;
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 

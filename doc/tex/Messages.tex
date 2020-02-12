@@ -1,7 +1,7 @@
 \section{Type-Erased Tuples, Messages and Message Views}
 \label{message}
 
-Messages in MTL are stored in type-erased tuples. The actual message type
+Messages in ACTOR are stored in type-erased tuples. The actual message type
 itself is usually hidden, as actors use pattern matching to decompose messages
 automatically. However, the classes \lstinline^message^ and
 \lstinline^message_builder^ allow more advanced use cases than only sending
@@ -25,13 +25,13 @@ tuple into a new message.
 
 \subsection{RTTI and Type Numbers}
 
-All builtin types in MTL have a non-zero 6-bit \emph{type number}. All
+All builtin types in ACTOR have a non-zero 6-bit \emph{type number}. All
 user-defined types are mapped to 0. When querying the run-time type information
-(RTTI) for individual message or tuple elements, MTL returns a pair consisting
+(RTTI) for individual message or tuple elements, ACTOR returns a pair consisting
 of an integer and a pointer to \lstinline^std::type_info^. The first value is
 the 6-bit type number. If the type number is non-zero, the second value is a
 pointer to the C++ type info, otherwise the second value is null. Additionally,
-MTL generates 32 bit \emph{type tokens}. These tokens are \emph{type hints}
+ACTOR generates 32 bit \emph{type tokens}. These tokens are \emph{type hints}
 that summarizes all types in a type-erased tuple. Two type-erased tuples are of
 different type if they have different type tokens (the reverse is not true).
 

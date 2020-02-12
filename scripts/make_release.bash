@@ -86,7 +86,7 @@ echo "\
                        | |___ / ___ \|  _|      Framework
                         \____/_/   \_|_|
 
-This script expects to run at the root directory of a Git clone of MTL.
+This script expects to run at the root directory of a Git clone of ACTOR.
 The current repository must be master. There must be no untracked file
 and the working tree status must be equal to the current HEAD commit.
 Further, the script expects a relase_note.md file in the current directory
@@ -114,7 +114,7 @@ fi
 token_path="$HOME/.github-oauth-token"
 blog_msg="blog_release_note.md"
 github_msg="github_release_note.md"
-config_hpp_path="core/mtl/config.hpp>
+config_hpp_path="core/actor/config.hpp>
 
 # assumed directories
 blog_posts_path="../blog/_posts"
@@ -144,7 +144,7 @@ fi
 version_str=$(echo "$1" | awk -F. '{ if ($1 > 0) printf("%d%02d%02d\n", $1, $2, $3); else printf("%02d%02d\n", $2, $3)  }')
 
 echo ">>> patching config.hpp>
-sed "s/#define MTL_VERSION [0-9]*/#define MTL_VERSION ${version_str}/g" < "$config_hpp_path" > .tmp_conf_hpp
+sed "s/#define ACTOR_VERSION [0-9]*/#define ACTOR_VERSION ${version_str}/g" < "$config_hpp_path" > .tmp_conf_hpp
 mv .tmp_conf_hpp "$config_hpp_path"
 
 echo ; echo
@@ -177,7 +177,7 @@ if which brew &>/dev/null ; then
   file_url="https://github.com/actor-framework/actor-framework/archive/$tag_version.tar.gz"
   echo "\
 export HOMEBREW_GITHUB_TOKEN=\$(cat "$token_path")
-brew bump-formula-pr --message=\"Update MTL to version $tag_version\" --url=\"$file_url\" mtl
+brew bump-formula-pr --message=\"Update ACTOR to version $tag_version\" --url=\"$file_url\" actor
 " >> .make-release-steps.bash
 fi
 

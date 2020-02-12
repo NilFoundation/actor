@@ -10,18 +10,18 @@
 // http://opensource.org/licenses/BSD-3-Clause
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/runtime_settings_map.hpp>
+#include <nil/actor/runtime_settings_map.hpp>
 
-#include <nil/mtl/locks.hpp>
+#include <nil/actor/locks.hpp>
 
 namespace {
 
-    using mapped_type = nil::mtl::runtime_settings_map::mapped_type;
+    using mapped_type = nil::actor::runtime_settings_map::mapped_type;
 
 }    // namespace
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         mapped_type runtime_settings_map::get(atom_value key) const {
             mapped_type fallback;
@@ -55,5 +55,5 @@ namespace nil {
             return map_.size();
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

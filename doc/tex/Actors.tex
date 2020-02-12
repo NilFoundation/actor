@@ -1,12 +1,12 @@
 \section{Actors}
 \label{actor}
 
-Actors in MTL are a lightweight abstraction for units of computations. They
+Actors in ACTOR are a lightweight abstraction for units of computations. They
 are active objects in the sense that they own their state and do not allow
 others to access it. The only way to modify the state of an actor is sending
 messages to it.
 
-MTL provides several actor implementations, each covering a particular use
+ACTOR provides several actor implementations, each covering a particular use
 case. The available implementations differ in three characteristics: (1)
 dynamically or statically typed, (2) class-based or function-based, and (3)
 using asynchronous event handlers or blocking receives. These three
@@ -18,7 +18,7 @@ for all user-defined actors is called \lstinline^local_actor^.
 Dynamically typed actors are more familiar to developers coming from Erlang or
 Akka. They (usually) enable faster prototyping but require extensive unit
 testing. Statically typed actors require more source code but enable the
-compiler to verify communication between actors. Since MTL supports both,
+compiler to verify communication between actors. Since ACTOR supports both,
 developers can freely mix both kinds of actors to get the best of both worlds.
 A good rule of thumb is to make use of static type checking for actors that are
 visible across multiple translation units.
@@ -40,27 +40,27 @@ have multiple \lstinline^spawner^ instances, but this is usually not
 recommended (a use case for multiple systems is to strictly separate two or
 more sets of actors by running them in different schedulers). For configuration
 and fine-tuning options of actor systems see \sref{system-config}. A
-distributed MTL application consists of two or more connected actor systems. We
+distributed ACTOR application consists of two or more connected actor systems. We
 also refer to interconnected \lstinline^spawner^ instances as a
 \emph{distributed actor system}.
 
 \clearpage
 \subsection{Common Actor Base Types}
 
-The following pseudo-UML depicts the class diagram for actors in MTL.
+The following pseudo-UML depicts the class diagram for actors in ACTOR.
 Irrelevant member functions and classes as well as mixins are omitted for
 brevity. Selected individual classes are presented in more detail in the
 following sections.
 
 \singlefig{actor_types}%
-          {Actor Types in MTL}%
+          {Actor Types in ACTOR}%
           {actor-types}
 
 \clearpage
 \subsubsection{Class \lstinline^local_actor^}
 
 The class \lstinline^local_actor^ is the root type for all user-defined actors
-in MTL. It defines all common operations. However, users of the library
+in ACTOR. It defines all common operations. However, users of the library
 usually do not inherit from this class directly. Proper base classes for
 user-defined actors are \lstinline^event_based_actor^ or
 \lstinline^blocking_actor^. The following table also includes member function
@@ -169,7 +169,7 @@ statically and dynamically typed event-based actors as well as brokers
 A blocking actor always lives in its own thread of execution. They are not as
 lightweight as event-based actors and thus do not scale up to large numbers.
 The primary use case for blocking actors is to use a \lstinline^scoped_actor^
-for ad-hoc communication to selected actors. Unlike scheduled actors, MTL does
+for ad-hoc communication to selected actors. Unlike scheduled actors, ACTOR does
 \textbf{not} dispatch system messages to special-purpose handlers. A blocking
 actors receives \emph{all} messages regularly through its mailbox. A blocking
 actor is considered \emph{done} only after it returned from \lstinline^act^ (or
@@ -216,7 +216,7 @@ sends its exit messages as part of its destruction.
 \label{interface}
 
 Statically typed actors require abstract messaging interfaces to allow the
-compiler to type-check actor communication. Interfaces in MTL are defined using
+compiler to type-check actor communication. Interfaces in ACTOR are defined using
 the variadic template \lstinline^typed_actor<...>^, which defines the proper
 actor handle at the same time. Each template parameter defines one
 \lstinline^input/output^ pair via
@@ -338,7 +338,7 @@ Implementing actors with classes works for all kinds of actors and allows
 simple management of state via member variables. However, composing states via
 inheritance can get quite tedious. For dynamically typed actors, composing
 states is particularly hard, because the compiler cannot provide much help. For
-statically typed actors, MTL also provides an API for composable
+statically typed actors, ACTOR also provides an API for composable
 behaviors~\see{composable-behavior} that works well with inheritance. The
 following three examples implement the forward declarations shown in
 \sref{spawn}.
@@ -372,11 +372,11 @@ Stateful actors are spawned in the same way as any other function-based actor
 
 When building larger systems, it is often useful to implement the behavior of
 an actor in terms of other, existing behaviors. The composable behaviors in
-MTL allow developers to generate a behavior class from a messaging
+ACTOR allow developers to generate a behavior class from a messaging
 interface~\see{interface}.
 
 The base type for composable behaviors is \lstinline^composable_behavior<T>^,
-where \lstinline^T^ is a \lstinline^typed_actor<...>^. MTL maps each
+where \lstinline^T^ is a \lstinline^typed_actor<...>^. ACTOR maps each
 \lstinline^replies_to<A,B,C>::with<D,E,F>^ in \lstinline^T^ to a pure virtual
 member function with signature:
 
@@ -416,7 +416,7 @@ non-constant access. Constant access is modeled with the implicit conversion
 operator to a const reference, the member function \lstinline^get()^, and
 \lstinline^operator->^.
 
-When acquiring mutable access to the represented value, MTL copies the value
+When acquiring mutable access to the represented value, ACTOR copies the value
 before allowing mutable access to it if more than one reference to the value
 exists. This copy-on-write optimization avoids race conditions by design, while
 minimizing copy operations \see{copy-on-write}. A mutable reference is returned
@@ -443,7 +443,7 @@ run on the local machine.
 \subsection{Blocking Actors}
 \label{blocking-actor}
 
-Blocking actors always run in a separate thread and are not scheduled by MTL.
+Blocking actors always run in a separate thread and are not scheduled by ACTOR.
 Unlike event-based actors, blocking actors have explicit, blocking
 \emph{receive} functions. Further, blocking actors do not handle system
 messages automatically via special-purpose callbacks \see{special-handler}.
@@ -498,7 +498,7 @@ self->receive(
 
 Message handler passed to \lstinline^receive^ are temporary object at runtime.
 Hence, calling \lstinline^receive^ inside a loop creates an unnecessary amount
-of short-lived objects. MTL provides predefined receive loops to allow for
+of short-lived objects. ACTOR provides predefined receive loops to allow for
 more efficient code.
 
 \begin{lstlisting}
@@ -585,7 +585,7 @@ self->receive_while([&] { return running; }) (
 \label{scoped-actors}
 
 The class \lstinline^scoped_actor^ offers a simple way of communicating with
-MTL actors from non-actor contexts. It overloads \lstinline^operator->^ to
+ACTOR actors from non-actor contexts. It overloads \lstinline^operator->^ to
 return a \lstinline^blocking_actor*^. Hence, it behaves like the implicit
 \lstinline^self^ pointer in functor-based actors, only that it ceases to exist
 at scope end.

@@ -10,10 +10,10 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/string_algorithms.hpp>
+#include <nil/actor/string_algorithms.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         namespace {
 
@@ -61,7 +61,7 @@ namespace nil {
             auto i = next(str.begin());
             while (i != str.end()) {
                 auto before = std::distance(str.begin(), i);
-                MTL_ASSERT(before >= 0);
+                ACTOR_ASSERT(before >= 0);
                 auto ws = static_cast<decltype(before)>(what.size());
                 str.replace(i, i + ws, with.begin(), with.end());
                 // Iterator i became invalidated -> use new iterator pointing to the first
@@ -80,5 +80,5 @@ namespace nil {
             return n >= m ? str.compare(n - m, m, suffix) == 0 : false;
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

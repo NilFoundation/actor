@@ -15,14 +15,14 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
 
-#include <nil/mtl/actor_registry.hpp>
+#include <nil/actor/actor_registry.hpp>
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-#include <nil/mtl/serialization/binary_deserializer.hpp>
-#include <nil/mtl/serialization/binary_serializer.hpp>
+#include <nil/actor/serialization/binary_deserializer.hpp>
+#include <nil/actor/serialization/binary_serializer.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 

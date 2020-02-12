@@ -9,14 +9,14 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/policy/downstream_messages.hpp>
+#include <nil/actor/policy/downstream_messages.hpp>
 
-#include <nil/mtl/downstream_msg.hpp>
-#include <nil/mtl/inbound_path.hpp>
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/downstream_msg.hpp>
+#include <nil/actor/inbound_path.hpp>
+#include <nil/actor/logger.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace policy {
 
             namespace {
@@ -26,7 +26,7 @@ namespace nil {
                     using size_type = downstream_messages::nested::task_size_type;
 
                     inline size_type operator()(const downstream_msg::batch &x) const noexcept {
-                        MTL_ASSERT(x.xs_size > 0);
+                        ACTOR_ASSERT(x.xs_size > 0);
                         return static_cast<size_type>(x.xs_size);
                     }
 
@@ -49,8 +49,8 @@ namespace nil {
 
             bool downstream_messages::enabled(const nested_queue_type &q) noexcept {
                 auto congested = q.policy().handler->mgr->congested();
-                MTL_LOG_DEBUG_IF(congested,
-                                 "path is congested:" << MTL_ARG2("slot", q.policy().handler->slots.receiver));
+                ACTOR_LOG_DEBUG_IF(congested,
+                                 "path is congested:" << ACTOR_ARG2("slot", q.policy().handler->slots.receiver));
                 return !congested;
             }
 
@@ -60,5 +60,5 @@ namespace nil {
             }
 
         }    // namespace policy
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

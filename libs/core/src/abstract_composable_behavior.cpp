@@ -10,14 +10,14 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/abstract_composable_behavior.hpp>
+#include <nil/actor/abstract_composable_behavior.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         abstract_composable_behavior::~abstract_composable_behavior() {
             // nop
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

@@ -8,10 +8,10 @@
 // License 1.0. See accompanying files LICENSE and LICENSE_ALTERNATIVE.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/fnv_hash.hpp>
+#include <nil/actor/detail/fnv_hash.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             namespace {
@@ -51,5 +51,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

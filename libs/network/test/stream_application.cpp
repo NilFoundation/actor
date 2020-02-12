@@ -11,27 +11,27 @@
 
 #define BOOST_TEST_MODULE basp.stream_application
 
-#include <nil/mtl/network/basp/application.hpp>
+#include <nil/actor/network/basp/application.hpp>
 
-#include <nil/mtl/test/host_fixture.hpp>
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/host_fixture.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <vector>
 
-#include <nil/mtl/byte.hpp>
-#include <nil/mtl/network/backend/test.hpp>
-#include <nil/mtl/network/basp/connection_state.hpp>
-#include <nil/mtl/network/basp/constants.hpp>
-#include <nil/mtl/network/basp/ec.hpp>
-#include <nil/mtl/network/make_endpoint_manager.hpp>
-#include <nil/mtl/network/middleman.hpp>
-#include <nil/mtl/network/multiplexer.hpp>
-#include <nil/mtl/network/stream_socket.hpp>
-#include <nil/mtl/network/stream_transport.hpp>
-#include <nil/mtl/uri.hpp>
+#include <nil/actor/byte.hpp>
+#include <nil/actor/network/backend/test.hpp>
+#include <nil/actor/network/basp/connection_state.hpp>
+#include <nil/actor/network/basp/constants.hpp>
+#include <nil/actor/network/basp/ec.hpp>
+#include <nil/actor/network/make_endpoint_manager.hpp>
+#include <nil/actor/network/middleman.hpp>
+#include <nil/actor/network/multiplexer.hpp>
+#include <nil/actor/network/stream_socket.hpp>
+#include <nil/actor/network/stream_transport.hpp>
+#include <nil/actor/uri.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::network;
+using namespace nil::actor;
+using namespace nil::actor::network;
 
 #define REQUIRE_OK(statement) \
     if (auto err = statement) \
@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(actor message and down message) {
     self->receive([&](const std::string &str) {
         BOOST_CHECK_EQUAL(str, "hello world!");
         proxy = self->current_sender();
-        MTL_REQUIRE_NOT_EQUAL(proxy, nullptr);
+        ACTOR_REQUIRE_NOT_EQUAL(proxy, nullptr);
         self->monitor(proxy);
     });
     MOCK(basp::message_type::down_message, 42u, error {exit_reason::user_shutdown});

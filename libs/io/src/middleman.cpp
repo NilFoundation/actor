@@ -9,7 +9,7 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/middleman.hpp>
+#include <nil/actor/io/middleman.hpp>
 
 #include <tuple>
 #include <cerrno>
@@ -18,45 +18,45 @@
 #include <sstream>
 #include <stdexcept>
 
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/send.hpp>
-#include <nil/mtl/actor.hpp>
-#include <nil/mtl/after.hpp>
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/node_id.hpp>
-#include <nil/mtl/defaults.hpp>
-#include <nil/mtl/actor_proxy.hpp>
-#include <nil/mtl/make_counted.hpp>
-#include <nil/mtl/scoped_actor.hpp>
-#include <nil/mtl/function_view.hpp>
-#include <nil/mtl/actor_registry.hpp>
-#include <nil/mtl/event_based_actor.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/raw_event_based_actor.hpp>
-#include <nil/mtl/typed_event_based_actor.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/send.hpp>
+#include <nil/actor/actor.hpp>
+#include <nil/actor/after.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/node_id.hpp>
+#include <nil/actor/defaults.hpp>
+#include <nil/actor/actor_proxy.hpp>
+#include <nil/actor/make_counted.hpp>
+#include <nil/actor/scoped_actor.hpp>
+#include <nil/actor/function_view.hpp>
+#include <nil/actor/actor_registry.hpp>
+#include <nil/actor/event_based_actor.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/raw_event_based_actor.hpp>
+#include <nil/actor/typed_event_based_actor.hpp>
 
-#include <nil/mtl/io/basp_broker.hpp>
-#include <nil/mtl/io/system_messages.hpp>
+#include <nil/actor/io/basp_broker.hpp>
+#include <nil/actor/io/system_messages.hpp>
 
-#include <nil/mtl/io/network/interfaces.hpp>
-#include <nil/mtl/io/network/test_multiplexer.hpp>
-#include <nil/mtl/io/network/default_multiplexer.hpp>
+#include <nil/actor/io/network/interfaces.hpp>
+#include <nil/actor/io/network/test_multiplexer.hpp>
+#include <nil/actor/io/network/default_multiplexer.hpp>
 
-#include <nil/mtl/scheduler/abstract_coordinator.hpp>
+#include <nil/actor/scheduler/abstract_coordinator.hpp>
 
-#include <nil/mtl/detail/safe_equal.hpp>
-#include <nil/mtl/detail/get_root_uuid.hpp>
-#include <nil/mtl/detail/set_thread_name.hpp>
-#include <nil/mtl/detail/get_mac_addresses.hpp>
+#include <nil/actor/detail/safe_equal.hpp>
+#include <nil/actor/detail/get_root_uuid.hpp>
+#include <nil/actor/detail/set_thread_name.hpp>
+#include <nil/actor/detail/get_mac_addresses.hpp>
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 #include <io.h>
 #include <fcntl.h>
-#endif    // MTL_WINDOWS
+#endif    // ACTOR_WINDOWS
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
 
             namespace {
@@ -125,7 +125,7 @@ namespace nil {
 
             expected<uint16_t> middleman::publish(const strong_actor_ptr &whom, std::set<std::string> sigs,
                                                   uint16_t port, const char *cstr, bool ru) {
-                MTL_LOG_TRACE(MTL_ARG(whom) << MTL_ARG(sigs) << MTL_ARG(port));
+                ACTOR_LOG_TRACE(ACTOR_ARG(whom) << ACTOR_ARG(sigs) << ACTOR_ARG(port));
                 if (!whom)
                     return sec::cannot_publish_invalid_actor;
                 std::string in;
@@ -136,7 +136,7 @@ namespace nil {
             }
 
             expected<uint16_t> middleman::publish_local_groups(uint16_t port, const char *in, bool reuse) {
-                MTL_LOG_TRACE(MTL_ARG(port) << MTL_ARG(in));
+                ACTOR_LOG_TRACE(ACTOR_ARG(port) << ACTOR_ARG(in));
                 auto group_nameserver = [](event_based_actor *self) -> behavior {
                     return {
                         [self](get_atom, const std::string &name) { return self->system().groups().get_local(name); }};
@@ -152,14 +152,14 @@ namespace nil {
             }
 
             expected<void> middleman::unpublish(const actor_addr &whom, uint16_t port) {
-                MTL_LOG_TRACE(MTL_ARG(whom) << MTL_ARG(port));
+                ACTOR_LOG_TRACE(ACTOR_ARG(whom) << ACTOR_ARG(port));
                 auto f = make_function_view(actor_handle());
                 return f(unpublish_atom::value, whom, port);
             }
 
             expected<strong_actor_ptr> middleman::remote_actor(std::set<std::string> ifs, std::string host,
                                                                uint16_t port) {
-                MTL_LOG_TRACE(MTL_ARG(ifs) << MTL_ARG(host) << MTL_ARG(port));
+                ACTOR_LOG_TRACE(ACTOR_ARG(ifs) << ACTOR_ARG(host) << ACTOR_ARG(port));
                 auto f = make_function_view(actor_handle());
                 auto res = f(connect_atom::value, std::move(host), port);
                 if (!res)
@@ -174,7 +174,7 @@ namespace nil {
             }
 
             expected<group> middleman::remote_group(const std::string &group_uri) {
-                MTL_LOG_TRACE(MTL_ARG(group_uri));
+                ACTOR_LOG_TRACE(ACTOR_ARG(group_uri));
                 // format of group_identifier is group@host:port
                 // a regex would be the natural choice here, but we want to support
                 // older compilers that don't have <regex> implemented (e.g. GCC < 4.9)
@@ -191,7 +191,7 @@ namespace nil {
 
             expected<group> middleman::remote_group(const std::string &group_identifier, const std::string &host,
                                                     uint16_t port) {
-                MTL_LOG_TRACE(MTL_ARG(group_identifier) << MTL_ARG(host) << MTL_ARG(port));
+                ACTOR_LOG_TRACE(ACTOR_ARG(group_identifier) << ACTOR_ARG(host) << ACTOR_ARG(port));
                 // Helper actor that first connects to the remote actor at `host:port` and
                 // then tries to get a valid group from that actor.
                 auto two_step_lookup = [=](event_based_actor *self, middleman_actor mm) -> behavior {
@@ -218,7 +218,7 @@ namespace nil {
             }
 
             strong_actor_ptr middleman::remote_lookup(atom_value name, const node_id &nid) {
-                MTL_LOG_TRACE(MTL_ARG(name) << MTL_ARG(nid));
+                ACTOR_LOG_TRACE(ACTOR_ARG(name) << ACTOR_ARG(nid));
                 if (system().node() == nid)
                     return system().registry().get(name);
                 auto basp = named_broker<basp_broker>(atom("BASP"));
@@ -234,7 +234,7 @@ namespace nil {
             }
 
             void middleman::start() {
-                MTL_LOG_TRACE("");
+                ACTOR_LOG_TRACE("");
                 // Launch backend.
                 if (!config().middleman_manual_multiplexing)
                     backend_supervisor_ = backend().make_supervisor();
@@ -247,10 +247,10 @@ namespace nil {
                     std::mutex mtx;
                     std::condition_variable cv;
                     thread_ = std::thread {[&, this] {
-                        MTL_SET_LOGGER_SYS(&system());
-                        detail::set_thread_name("mtl.multiplexer");
+                        ACTOR_SET_LOGGER_SYS(&system());
+                        detail::set_thread_name("actor.multiplexer");
                         system().thread_started();
-                        MTL_LOG_TRACE("");
+                        ACTOR_LOG_TRACE("");
                         {
                             std::unique_lock<std::mutex> guard {mtx};
                             backend().thread_id(std::this_thread::get_id());
@@ -270,9 +270,9 @@ namespace nil {
             }
 
             void middleman::stop() {
-                MTL_LOG_TRACE("");
+                ACTOR_LOG_TRACE("");
                 backend().dispatch([=] {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     // managers_ will be modified while we are stopping each manager,
                     // because each manager will call remove(...)
                     for (auto &kvp : named_brokers_) {
@@ -380,5 +380,5 @@ namespace nil {
             }
 
         }    // namespace io
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

@@ -9,19 +9,19 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/middleman.hpp>
+#include <nil/actor/network/middleman.hpp>
 
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/detail/set_thread_name.hpp>
-#include <nil/mtl/network/basp/ec.hpp>
-#include <nil/mtl/network/middleman_backend.hpp>
-#include <nil/mtl/network/multiplexer.hpp>
-#include <nil/mtl/raise_error.hpp>
-#include <nil/mtl/send.hpp>
-#include <nil/mtl/uri.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/detail/set_thread_name.hpp>
+#include <nil/actor/network/basp/ec.hpp>
+#include <nil/actor/network/middleman_backend.hpp>
+#include <nil/actor/network/multiplexer.hpp>
+#include <nil/actor/raise_error.hpp>
+#include <nil/actor/send.hpp>
+#include <nil/actor/uri.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
 
             middleman::middleman(spawner &sys) : sys_(sys) {
@@ -37,7 +37,7 @@ namespace nil {
                     auto mpx = mpx_;
                     auto sys_ptr = &system();
                     mpx_thread_ = std::thread {[mpx, sys_ptr] {
-                        MTL_SET_LOGGER_SYS(sys_ptr);
+                        ACTOR_SET_LOGGER_SYS(sys_ptr);
                         detail::set_thread_name("caf.multiplexer");
                         sys_ptr->thread_started();
                         mpx->set_thread_id();
@@ -59,19 +59,19 @@ namespace nil {
 
             void middleman::init(spawner_config &cfg) {
                 if (auto err = mpx_->init()) {
-                    MTL_LOG_ERROR("mgr->init() failed: " << system().render(err));
-                    MTL_RAISE_ERROR("mpx->init() failed");
+                    ACTOR_LOG_ERROR("mgr->init() failed: " << system().render(err));
+                    ACTOR_RAISE_ERROR("mpx->init() failed");
                 }
                 if (auto node_uri = get_if<uri>(&cfg, "middleman.this-node")) {
                     auto this_node = make_node_id(std::move(*node_uri));
                     sys_.node_.swap(this_node);
                 } else {
-                    MTL_RAISE_ERROR("no valid entry for middleman.this-node found");
+                    ACTOR_RAISE_ERROR("no valid entry for middleman.this-node found");
                 }
                 for (auto &backend : backends_)
                     if (auto err = backend->init()) {
-                        MTL_LOG_ERROR("failed to initialize backend: " << system().render(err));
-                        MTL_RAISE_ERROR("failed to initialize backend");
+                        ACTOR_LOG_ERROR("failed to initialize backend: " << system().render(err));
+                        ACTOR_RAISE_ERROR("failed to initialize backend");
                     }
             }
 
@@ -100,5 +100,5 @@ namespace nil {
             }
 
         }    // namespace network
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

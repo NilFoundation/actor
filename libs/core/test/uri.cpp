@@ -15,15 +15,15 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-#include <nil/mtl/ipv4_address.hpp>
-#include <nil/mtl/uri.hpp>
-#include <nil/mtl/uri_builder.hpp>
-#include <nil/mtl/error_code.hpp>
+#include <nil/actor/ipv4_address.hpp>
+#include <nil/actor/uri.hpp>
+#include <nil/actor/uri_builder.hpp>
+#include <nil/actor/error_code.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 

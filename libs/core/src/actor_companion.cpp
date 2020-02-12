@@ -10,11 +10,11 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/locks.hpp>
-#include <nil/mtl/actor_companion.hpp>
+#include <nil/actor/locks.hpp>
+#include <nil/actor/actor_companion.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         actor_companion::actor_companion(actor_config &cfg) : extended_base(cfg) {
             // nop
@@ -34,7 +34,7 @@ namespace nil {
         }
 
         void actor_companion::enqueue(mailbox_element_ptr ptr, execution_unit *) {
-            MTL_ASSERT(ptr);
+            ACTOR_ASSERT(ptr);
             shared_lock<lock_type> guard(lock_);
             if (on_enqueue_)
                 on_enqueue_(std::move(ptr));
@@ -60,5 +60,5 @@ namespace nil {
                 on_exit_();
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

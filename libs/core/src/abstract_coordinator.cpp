@@ -10,7 +10,7 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/scheduler/abstract_coordinator.hpp>
+#include <nil/actor/scheduler/abstract_coordinator.hpp>
 
 #include <ios>
 #include <thread>
@@ -21,23 +21,23 @@
 #include <unordered_map>
 #include <condition_variable>
 
-#include <nil/mtl/actor_ostream.hpp>
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/after.hpp>
-#include <nil/mtl/defaults.hpp>
-#include <nil/mtl/duration.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/others.hpp>
-#include <nil/mtl/policy/work_stealing.hpp>
-#include <nil/mtl/scheduled_actor.hpp>
-#include <nil/mtl/scheduler/coordinator.hpp>
-#include <nil/mtl/scoped_actor.hpp>
-#include <nil/mtl/send.hpp>
-#include <nil/mtl/system_messages.hpp>
+#include <nil/actor/actor_ostream.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/after.hpp>
+#include <nil/actor/defaults.hpp>
+#include <nil/actor/duration.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/others.hpp>
+#include <nil/actor/policy/work_stealing.hpp>
+#include <nil/actor/scheduled_actor.hpp>
+#include <nil/actor/scheduler/coordinator.hpp>
+#include <nil/actor/scoped_actor.hpp>
+#include <nil/actor/send.hpp>
+#include <nil/actor/system_messages.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace scheduler {
 
             /******************************************************************************
@@ -92,7 +92,7 @@ namespace nil {
                     }
 
                     string_sink &operator*() {
-                        MTL_ASSERT(iter_->second.second != nullptr);
+                        ACTOR_ASSERT(iter_->second.second != nullptr);
                         return iter_->second.second;
                     }
 
@@ -233,7 +233,7 @@ namespace nil {
             }
 
             void abstract_coordinator::start() {
-                MTL_LOG_TRACE("");
+                ACTOR_LOG_TRACE("");
                 // launch utility actors
                 static constexpr auto fs = hidden + detached;
                 utility_actors_[printer_id] = system_.spawn<printer_actor, fs>();
@@ -254,7 +254,7 @@ namespace nil {
             }
 
             void abstract_coordinator::stop_actors() {
-                MTL_LOG_TRACE("");
+                ACTOR_LOG_TRACE("");
                 scoped_actor self {system_, true};
                 for (auto &x : utility_actors_)
                     anon_send_exit(x, exit_reason::user_shutdown);
@@ -306,5 +306,5 @@ namespace nil {
             }
 
         }    // namespace scheduler
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

@@ -9,16 +9,16 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/network/doorman_impl.hpp>
+#include <nil/actor/io/network/doorman_impl.hpp>
 
 #include <algorithm>
 
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/logger.hpp>
 
-#include <nil/mtl/io/network/default_multiplexer.hpp>
+#include <nil/actor/io/network/default_multiplexer.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace network {
 
@@ -28,7 +28,7 @@ namespace nil {
                 }
 
                 bool doorman_impl::new_connection() {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     if (detached())
                         // we are already disconnected from the broker while the multiplexer
                         // did not yet remove the socket, this can happen if an I/O event causes
@@ -43,13 +43,13 @@ namespace nil {
                 }
 
                 void doorman_impl::graceful_shutdown() {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     acceptor_.graceful_shutdown();
                     detach(&acceptor_.backend(), false);
                 }
 
                 void doorman_impl::launch() {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     acceptor_.start(this);
                 }
 
@@ -77,5 +77,5 @@ namespace nil {
 
             }    // namespace network
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

@@ -10,18 +10,18 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/append_percent_encoded.hpp>
+#include <nil/actor/detail/append_percent_encoded.hpp>
 
 #include <nil/crypto3/codec/algorithm/encode.hpp>
 #include <nil/crypto3/codec/hex.hpp>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/string_view.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/string_view.hpp>
 
 using namespace nil::crypto3;
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             void append_percent_encoded(std::string &str, string_view x, bool is_path) {
@@ -32,7 +32,7 @@ namespace nil {
                                 str += ch;
                                 break;
                             }
-                            MTL_ANNOTATE_FALLTHROUGH;
+                            ACTOR_ANNOTATE_FALLTHROUGH;
                         case ' ':
                         case ':':
                         case '?':
@@ -62,5 +62,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

@@ -10,25 +10,25 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/actor.hpp>
+#include <nil/actor/actor.hpp>
 
 #include <cassert>
 #include <utility>
 
-#include <nil/mtl/actor_addr.hpp>
-#include <nil/mtl/make_actor.hpp>
-#include <nil/mtl/serialization/serializer.hpp>
-#include <nil/mtl/actor_proxy.hpp>
-#include <nil/mtl/local_actor.hpp>
-#include <nil/mtl/serialization/deserializer.hpp>
-#include <nil/mtl/scoped_actor.hpp>
-#include <nil/mtl/event_based_actor.hpp>
+#include <nil/actor/actor_addr.hpp>
+#include <nil/actor/make_actor.hpp>
+#include <nil/actor/serialization/serializer.hpp>
+#include <nil/actor/actor_proxy.hpp>
+#include <nil/actor/local_actor.hpp>
+#include <nil/actor/serialization/deserializer.hpp>
+#include <nil/actor/scoped_actor.hpp>
+#include <nil/actor/event_based_actor.hpp>
 
-#include <nil/mtl/decorator/splitter.hpp>
-#include <nil/mtl/decorator/sequencer.hpp>
+#include <nil/actor/decorator/splitter.hpp>
+#include <nil/actor/decorator/sequencer.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         actor::actor(std::nullptr_t) : ptr_(nullptr) {
             // nop
@@ -98,5 +98,5 @@ namespace nil {
         bool operator!=(abstract_actor *lhs, const actor &rhs) {
             return !(lhs == rhs);
         }
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

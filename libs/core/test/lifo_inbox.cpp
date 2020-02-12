@@ -17,11 +17,11 @@
 #include <memory>
 #include <thread>
 
-#include <nil/mtl/intrusive/lifo_inbox.hpp>
-#include <nil/mtl/intrusive/singly_linked.hpp>
+#include <nil/actor/intrusive/lifo_inbox.hpp>
+#include <nil/actor/intrusive/singly_linked.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::intrusive;
+using namespace nil::actor;
+using namespace nil::actor::intrusive;
 
 namespace {
 

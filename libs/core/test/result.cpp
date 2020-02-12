@@ -15,13 +15,13 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/result.hpp>
-#include <nil/mtl/make_message.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/result.hpp>
+#include <nil/actor/make_message.hpp>
 
 using namespace std;
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 

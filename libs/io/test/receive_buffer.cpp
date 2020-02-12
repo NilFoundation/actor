@@ -4,11 +4,11 @@
 
 #include <algorithm>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/io/network/receive_buffer.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/io/network/receive_buffer.hpp>
 
-using namespace nil::mtl;
-using nil::mtl::io::network::receive_buffer;
+using namespace nil::actor;
+using nil::actor::io::network::receive_buffer;
 
 namespace {
 

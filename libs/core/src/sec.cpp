@@ -10,15 +10,15 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/error.hpp>
-#include <nil/mtl/make_message.hpp>
-#include <nil/mtl/message.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/error.hpp>
+#include <nil/actor/make_message.hpp>
+#include <nil/actor/message.hpp>
 
-#include <nil/mtl/detail/enum_to_string.hpp>
+#include <nil/actor/detail/enum_to_string.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         namespace {
 
@@ -90,5 +90,5 @@ namespace nil {
         error make_error(sec x, std::string msg) {
             return make_error(x, make_message(std::move(msg)));
         }
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

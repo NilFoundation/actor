@@ -15,10 +15,10 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/string_view.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/string_view.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 

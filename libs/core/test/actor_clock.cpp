@@ -12,19 +12,19 @@
 
 #define BOOST_TEST_MODULE actor_clock_test
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <boost/chrono/duration.hpp>
 
 #include <memory>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/raw_event_based_actor.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/raw_event_based_actor.hpp>
 
-#include <nil/mtl/detail/test_actor_clock.hpp>
+#include <nil/actor/detail/test_actor_clock.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 

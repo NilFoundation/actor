@@ -11,9 +11,9 @@
 
 #include <algorithm>
 
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
-#include <nil/mtl/io/network/receive_buffer.hpp>
+#include <nil/actor/io/network/receive_buffer.hpp>
 
 namespace {
 
@@ -22,7 +22,7 @@ namespace {
 }    // namespace
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace network {
 
@@ -102,7 +102,7 @@ namespace nil {
                 }
 
                 void receive_buffer::shrink_by(size_t bytes) {
-                    MTL_ASSERT(bytes <= capacity_);
+                    ACTOR_ASSERT(bytes <= capacity_);
                     size_t new_size = capacity_ - bytes;
                     if (new_size == 0) {
                         buffer_.reset();
@@ -129,5 +129,5 @@ namespace nil {
 
             }    // namespace network
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

@@ -16,19 +16,19 @@
 #include <stdexcept>
 #include <condition_variable>
 
-#include <nil/mtl/locks.hpp>
+#include <nil/actor/locks.hpp>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/group.hpp>
-#include <nil/mtl/message.hpp>
-#include <nil/mtl/serialization/serializer.hpp>
-#include <nil/mtl/serialization/deserializer.hpp>
-#include <nil/mtl/event_based_actor.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/group.hpp>
+#include <nil/actor/message.hpp>
+#include <nil/actor/serialization/serializer.hpp>
+#include <nil/actor/serialization/deserializer.hpp>
+#include <nil/actor/event_based_actor.hpp>
 
-#include <nil/mtl/group_manager.hpp>
+#include <nil/actor/group_manager.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         namespace {
 
@@ -41,7 +41,7 @@ namespace nil {
             class local_group_module;
 
             void await_all_locals_down(spawner &sys, std::initializer_list<actor> xs) {
-                MTL_LOG_TRACE("");
+                ACTOR_LOG_TRACE("");
                 scoped_actor self {sys, true};
                 std::vector<actor> ys;
                 for (auto &x : xs)
@@ -57,20 +57,20 @@ namespace nil {
             class local_group : public abstract_group {
             public:
                 void send_all_subscribers(const strong_actor_ptr &sender, const message &msg, execution_unit *host) {
-                    MTL_LOG_TRACE(MTL_ARG(sender) << MTL_ARG(msg));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(sender) << ACTOR_ARG(msg));
                     shared_guard guard(mtx_);
                     for (auto &s : subscribers_)
                         s->enqueue(sender, make_message_id(), msg, host);
                 }
 
                 void enqueue(strong_actor_ptr sender, message_id, message msg, execution_unit *host) override {
-                    MTL_LOG_TRACE(MTL_ARG(sender) << MTL_ARG(msg));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(sender) << ACTOR_ARG(msg));
                     send_all_subscribers(sender, msg, host);
                     broker_->enqueue(sender, make_message_id(), msg, host);
                 }
 
                 std::pair<bool, size_t> add_subscriber(strong_actor_ptr who) {
-                    MTL_LOG_TRACE(MTL_ARG(who));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(who));
                     if (!who)
                         return {false, subscribers_.size()};
                     exclusive_guard guard(mtx_);
@@ -79,7 +79,7 @@ namespace nil {
                 }
 
                 std::pair<bool, size_t> erase_subscriber(const actor_control_block *who) {
-                    MTL_LOG_TRACE("");    // serializing who would cause a deadlock
+                    ACTOR_LOG_TRACE("");    // serializing who would cause a deadlock
                     exclusive_guard guard(mtx_);
                     auto e = subscribers_.end();
                     auto cmp = [&](const strong_actor_ptr &lhs) { return lhs.get() == who; };
@@ -91,12 +91,12 @@ namespace nil {
                 }
 
                 bool subscribe(strong_actor_ptr who) override {
-                    MTL_LOG_TRACE(MTL_ARG(who));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(who));
                     return add_subscriber(std::move(who)).first;
                 }
 
                 void unsubscribe(const actor_control_block *who) override {
-                    MTL_LOG_TRACE(MTL_ARG(who));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(who));
                     erase_subscriber(who);
                 }
 
@@ -105,7 +105,7 @@ namespace nil {
                 error_code<sec> save(binary_serializer &sink) const override;
 
                 void stop() override {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     await_all_locals_down(system(), {broker_});
                 }
 
@@ -146,7 +146,7 @@ namespace nil {
                 }
 
                 behavior make_behavior() override {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     // instead of dropping "unexpected" messages,
                     // we simply forward them to our acquaintances
                     auto fwd = [=](scheduled_actor *, message_view &x) -> result<message> {
@@ -155,7 +155,7 @@ namespace nil {
                     };
                     set_default_handler(fwd);
                     set_down_handler([=](down_msg &dm) {
-                        MTL_LOG_TRACE(MTL_ARG(dm));
+                        ACTOR_LOG_TRACE(ACTOR_ARG(dm));
                         auto first = acquaintances_.begin();
                         auto last = acquaintances_.end();
                         auto i = std::find_if(first, last, [&](const actor &a) { return a == dm.source; });
@@ -164,19 +164,19 @@ namespace nil {
                     });
                     // return behavior
                     return {[=](join_atom, const actor &other) {
-                                MTL_LOG_TRACE(MTL_ARG(other));
+                                ACTOR_LOG_TRACE(ACTOR_ARG(other));
                                 if (acquaintances_.insert(other).second) {
                                     monitor(other);
                                 }
                             },
                             [=](leave_atom, const actor &other) {
-                                MTL_LOG_TRACE(MTL_ARG(other));
+                                ACTOR_LOG_TRACE(ACTOR_ARG(other));
                                 acquaintances_.erase(other);
                                 if (acquaintances_.erase(other) > 0)
                                     demonitor(other);
                             },
                             [=](forward_atom, const message &what) {
-                                MTL_LOG_TRACE(MTL_ARG(what));
+                                ACTOR_LOG_TRACE(ACTOR_ARG(what));
                                 // local forwarding
                                 group_->send_all_subscribers(current_element_->sender, what, context());
                                 // forward to all acquaintances
@@ -188,7 +188,7 @@ namespace nil {
                 void send_to_acquaintances(const message &what) {
                     // send to all remote subscribers
                     auto src = current_element_->sender;
-                    MTL_LOG_DEBUG(MTL_ARG(acquaintances_.size()) << MTL_ARG(src) << MTL_ARG(what));
+                    ACTOR_LOG_DEBUG(ACTOR_ARG(acquaintances_.size()) << ACTOR_ARG(src) << ACTOR_ARG(what));
                     for (auto &acquaintance : acquaintances_)
                         acquaintance->enqueue(src, make_message_id(), what, context());
                 }
@@ -209,7 +209,7 @@ namespace nil {
             public:
                 proxy_broker(actor_config &cfg, local_group_proxy_ptr grp) :
                     event_based_actor(cfg), group_(std::move(grp)) {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                 }
 
                 behavior make_behavior() override;
@@ -233,7 +233,7 @@ namespace nil {
                 }
 
                 bool subscribe(strong_actor_ptr who) override {
-                    MTL_LOG_TRACE(MTL_ARG(who));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(who));
                     auto res = add_subscriber(std::move(who));
                     if (res.first) {
                         // join remote source
@@ -241,12 +241,12 @@ namespace nil {
                             anon_send(broker_, join_atom::value, proxy_broker_);
                         return true;
                     }
-                    MTL_LOG_WARNING("actor already joined group");
+                    ACTOR_LOG_WARNING("actor already joined group");
                     return false;
                 }
 
                 void unsubscribe(const actor_control_block *who) override {
-                    MTL_LOG_TRACE(MTL_ARG(who));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(who));
                     auto res = erase_subscriber(who);
                     if (res.first && res.second == 0) {
                         // leave the remote source,
@@ -256,22 +256,22 @@ namespace nil {
                 }
 
                 void enqueue(strong_actor_ptr sender, message_id mid, message msg, execution_unit *eu) override {
-                    MTL_LOG_TRACE(MTL_ARG(sender) << MTL_ARG(mid) << MTL_ARG(msg));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(sender) << ACTOR_ARG(mid) << ACTOR_ARG(msg));
                     // forward message to the broker
                     broker_->enqueue(std::move(sender), mid, make_message(forward_atom::value, std::move(msg)), eu);
                 }
 
                 void stop() override {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     await_all_locals_down(system_, {monitor_, proxy_broker_, broker_});
                 }
 
             private:
                 static behavior broker_monitor_actor(event_based_actor *self, local_group_proxy *grp) {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     self->monitor(grp->broker_);
                     self->set_down_handler([=](down_msg &down) {
-                        MTL_LOG_TRACE(MTL_ARG(down));
+                        ACTOR_LOG_TRACE(ACTOR_ARG(down));
                         auto msg = make_message(group_down_msg {group(grp)});
                         grp->send_all_subscribers(self->ctrl(), std::move(msg), self->context());
                         self->quit(down.reason);
@@ -286,7 +286,7 @@ namespace nil {
             };
 
             behavior proxy_broker::make_behavior() {
-                MTL_LOG_TRACE("");
+                ACTOR_LOG_TRACE("");
                 // instead of dropping "unexpected" messages,
                 // we simply forward them to our acquaintances
                 auto fwd = [=](local_actor *, message_view &x) -> result<message> {
@@ -303,11 +303,11 @@ namespace nil {
             class local_group_module : public group_module {
             public:
                 local_group_module(spawner &sys) : group_module(sys, "local") {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                 }
 
                 expected<group> get(const std::string &identifier) override {
-                    MTL_LOG_TRACE(MTL_ARG(identifier));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(identifier));
                     upgrade_guard guard(instances_mtx_);
                     auto i = instances_.find(identifier);
                     if (i != instances_.end())
@@ -325,14 +325,14 @@ namespace nil {
 
                 template<class Deserializer>
                 typename Deserializer::result_type load_impl(Deserializer &source, group &storage) {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     // deserialize identifier and broker
                     std::string identifier;
                     strong_actor_ptr broker_ptr;
                     auto e = source(identifier, broker_ptr);
                     if (e)
                         return e;
-                    MTL_LOG_DEBUG(MTL_ARG(identifier) << MTL_ARG(broker_ptr));
+                    ACTOR_LOG_DEBUG(ACTOR_ARG(identifier) << ACTOR_ARG(broker_ptr));
                     if (!broker_ptr) {
                         storage = invalid_group;
                         return none;
@@ -366,8 +366,8 @@ namespace nil {
 
                 template<class Serializer>
                 auto save_impl(const local_group *ptr, Serializer &sink) const {
-                    MTL_ASSERT(ptr != nullptr);
-                    MTL_LOG_TRACE("");
+                    ACTOR_ASSERT(ptr != nullptr);
+                    ACTOR_LOG_TRACE("");
                     auto bro = actor_cast<strong_actor_ptr>(ptr->broker());
                     auto &id = const_cast<std::string &>(ptr->identifier());
                     return sink(id, bro);
@@ -382,7 +382,7 @@ namespace nil {
                 }
 
                 void stop() override {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     std::map<std::string, local_group_ptr> imap;
                     std::map<actor, local_group_ptr> pmap;
                     {    // critical section
@@ -407,7 +407,7 @@ namespace nil {
             local_group::local_group(local_group_module &mod, std::string id, node_id nid, optional<actor> lb) :
                 abstract_group(mod, std::move(id), std::move(nid)),
                 broker_(lb ? *lb : mod.system().spawn<local_broker, hidden>(this)) {
-                MTL_LOG_TRACE(MTL_ARG(id) << MTL_ARG(nid));
+                ACTOR_LOG_TRACE(ACTOR_ARG(id) << ACTOR_ARG(nid));
             }
 
             local_group::~local_group() {
@@ -415,14 +415,14 @@ namespace nil {
             }
 
             error local_group::save(serializer &sink) const {
-                MTL_LOG_TRACE("");
+                ACTOR_LOG_TRACE("");
                 // this cast is safe, because the only available constructor accepts
                 // local_group_module* as module pointer
                 return static_cast<local_group_module &>(parent_).save(this, sink);
             }
 
             error_code<sec> local_group::save(binary_serializer &sink) const {
-                MTL_LOG_TRACE("");
+                ACTOR_LOG_TRACE("");
                 return static_cast<local_group_module &>(parent_).save(this, sink);
             }
 
@@ -431,7 +431,7 @@ namespace nil {
         }    // namespace
 
         void group_manager::init(spawner_config &cfg) {
-            MTL_LOG_TRACE("");
+            ACTOR_LOG_TRACE("");
             using ptr_type = std::unique_ptr<group_module>;
             mmap_.emplace("local", ptr_type {new local_group_module(system_)});
             for (auto &fac : cfg.group_module_factories) {
@@ -442,11 +442,11 @@ namespace nil {
         }
 
         void group_manager::start() {
-            MTL_LOG_TRACE("");
+            ACTOR_LOG_TRACE("");
         }
 
         void group_manager::stop() {
-            MTL_LOG_TRACE("");
+            ACTOR_LOG_TRACE("");
             for (auto &kvp : mmap_)
                 kvp.second->stop();
         }
@@ -460,7 +460,7 @@ namespace nil {
         }
 
         group group_manager::anonymous() const {
-            MTL_LOG_TRACE("");
+            ACTOR_LOG_TRACE("");
             std::string id = "__#";
             id += std::to_string(++s_ad_hoc_id);
             // local module is guaranteed to not return an error
@@ -468,7 +468,7 @@ namespace nil {
         }
 
         expected<group> group_manager::get(std::string group_uri) const {
-            MTL_LOG_TRACE(MTL_ARG(group_uri));
+            ACTOR_LOG_TRACE(ACTOR_ARG(group_uri));
             // URI parsing is pretty much a brute-force approach, no actual validation yet
             auto p = group_uri.find(':');
             if (p == std::string::npos)
@@ -480,7 +480,7 @@ namespace nil {
         }
 
         expected<group> group_manager::get(const std::string &module_name, const std::string &group_identifier) const {
-            MTL_LOG_TRACE(MTL_ARG(module_name) << MTL_ARG(group_identifier));
+            ACTOR_LOG_TRACE(ACTOR_ARG(module_name) << ACTOR_ARG(group_identifier));
             auto mod = get_module(module_name);
             if (mod)
                 return mod->get(group_identifier);
@@ -502,5 +502,5 @@ namespace nil {
             return *get("local", group_identifier);
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

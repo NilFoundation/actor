@@ -10,26 +10,26 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/stream_manager.hpp>
+#include <nil/actor/stream_manager.hpp>
 
-#include <nil/mtl/actor_addr.hpp>
-#include <nil/mtl/actor_cast.hpp>
-#include <nil/mtl/actor_control_block.hpp>
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/error.hpp>
-#include <nil/mtl/expected.hpp>
-#include <nil/mtl/inbound_path.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/message.hpp>
-#include <nil/mtl/outbound_path.hpp>
-#include <nil/mtl/response_promise.hpp>
-#include <nil/mtl/scheduled_actor.hpp>
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/type_nr.hpp>
+#include <nil/actor/actor_addr.hpp>
+#include <nil/actor/actor_cast.hpp>
+#include <nil/actor/actor_control_block.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/error.hpp>
+#include <nil/actor/expected.hpp>
+#include <nil/actor/inbound_path.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/message.hpp>
+#include <nil/actor/outbound_path.hpp>
+#include <nil/actor/response_promise.hpp>
+#include <nil/actor/scheduled_actor.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/type_nr.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         stream_manager::stream_manager(scheduled_actor *selfptr, stream_priority prio) :
             self_(selfptr), pending_handshakes_(0), priority_(prio), flags_(0) {
@@ -41,7 +41,7 @@ namespace nil {
         }
 
         void stream_manager::handle(inbound_path *, downstream_msg::batch &) {
-            MTL_LOG_WARNING("unimplemented base handler for batches called");
+            ACTOR_LOG_WARNING("unimplemented base handler for batches called");
         }
 
         void stream_manager::handle(inbound_path *in, downstream_msg::close &) {
@@ -50,8 +50,8 @@ namespace nil {
         }
 
         void stream_manager::handle(inbound_path *in, downstream_msg::forced_close &x) {
-            MTL_ASSERT(in != nullptr);
-            MTL_LOG_TRACE(MTL_ARG2("slots", in->slots) << MTL_ARG(x));
+            ACTOR_ASSERT(in != nullptr);
+            ACTOR_LOG_TRACE(ACTOR_ARG2("slots", in->slots) << ACTOR_ARG(x));
             // Reset the actor handle to make sure no further messages travel upstream.
             in->hdl = nullptr;
             // A continuous stream exists independent of sources. Hence, we ignore
@@ -59,22 +59,22 @@ namespace nil {
             if (!continuous()) {
                 stop(std::move(x.reason));
             } else {
-                MTL_LOG_INFO("received (and ignored) forced_close from a source");
+                ACTOR_LOG_INFO("received (and ignored) forced_close from a source");
             }
         }
 
         bool stream_manager::handle(stream_slots slots, upstream_msg::ack_open &x) {
-            MTL_LOG_TRACE(MTL_ARG(slots) << MTL_ARG(x));
-            MTL_ASSERT(x.desired_batch_size > 0);
+            ACTOR_LOG_TRACE(ACTOR_ARG(slots) << ACTOR_ARG(x));
+            ACTOR_ASSERT(x.desired_batch_size > 0);
             auto ptr = out().path(slots.receiver);
             if (ptr == nullptr)
                 return false;
             if (!ptr->pending()) {
-                MTL_LOG_ERROR("received repeated ack_open");
+                ACTOR_LOG_ERROR("received repeated ack_open");
                 return false;
             }
             if (ptr->hdl != x.rebind_from) {
-                MTL_LOG_ERROR("received ack_open with invalid rebind_from");
+                ACTOR_LOG_ERROR("received ack_open with invalid rebind_from");
                 return false;
             }
             if (x.rebind_from != x.rebind_to) {
@@ -82,7 +82,7 @@ namespace nil {
             }
             ptr->slots.receiver = slots.sender;
             ptr->open_credit = x.initial_demand;
-            MTL_ASSERT(ptr->open_credit >= 0);
+            ACTOR_ASSERT(ptr->open_credit >= 0);
             ptr->set_desired_batch_size(x.desired_batch_size);
             --pending_handshakes_;
             push();
@@ -90,14 +90,14 @@ namespace nil {
         }
 
         void stream_manager::handle(stream_slots slots, upstream_msg::ack_batch &x) {
-            MTL_LOG_TRACE(MTL_ARG(slots) << MTL_ARG(x));
-            MTL_ASSERT(x.desired_batch_size > 0);
+            ACTOR_LOG_TRACE(ACTOR_ARG(slots) << ACTOR_ARG(x));
+            ACTOR_ASSERT(x.desired_batch_size > 0);
             auto path = out().path(slots.receiver);
             if (path != nullptr) {
                 path->open_credit += x.new_capacity;
                 path->max_capacity = x.max_capacity;
-                MTL_ASSERT(path->open_credit >= 0);
-                MTL_ASSERT(path->max_capacity >= 0);
+                ACTOR_ASSERT(path->open_credit >= 0);
+                ACTOR_ASSERT(path->max_capacity >= 0);
                 path->set_desired_batch_size(x.desired_batch_size);
                 path->next_ack_id = x.acknowledged_id + 1;
                 // Gravefully remove path after receiving its final ACK.
@@ -126,20 +126,20 @@ namespace nil {
         }
 
         void stream_manager::shutdown() {
-            MTL_LOG_TRACE("");
+            ACTOR_LOG_TRACE("");
             // Mark as shutting down and reset other flags.
             if (shutting_down())
                 return;
             flags_ = is_shutting_down_flag;
-            MTL_LOG_DEBUG("emit shutdown messages on" << inbound_paths_.size() << "inbound paths;"
-                                                      << MTL_ARG2("out.clean", out().clean())
-                                                      << MTL_ARG2("out.paths", out().num_paths()));
+            ACTOR_LOG_DEBUG("emit shutdown messages on" << inbound_paths_.size() << "inbound paths;"
+                                                      << ACTOR_ARG2("out.clean", out().clean())
+                                                      << ACTOR_ARG2("out.paths", out().num_paths()));
             for (auto ipath : inbound_paths_)
                 ipath->emit_regular_shutdown(self_);
         }
 
         void stream_manager::advance() {
-            MTL_LOG_TRACE("");
+            ACTOR_LOG_TRACE("");
             // Try to emit more credit.
             if (!inbound_paths_.empty()) {
                 auto now = self_->clock().now();
@@ -162,7 +162,7 @@ namespace nil {
         }
 
         void stream_manager::push() {
-            MTL_LOG_TRACE("");
+            ACTOR_LOG_TRACE("");
             do {
                 out().emit_batches();
             } while (generate_messages());
@@ -173,9 +173,9 @@ namespace nil {
         }
 
         void stream_manager::deliver_handshake(response_promise &rp, stream_slot slot, message handshake) {
-            MTL_LOG_TRACE(MTL_ARG(rp) << MTL_ARG(slot) << MTL_ARG(handshake));
-            MTL_ASSERT(rp.pending());
-            MTL_ASSERT(slot != invalid_stream_slot);
+            ACTOR_LOG_TRACE(ACTOR_ARG(rp) << ACTOR_ARG(slot) << ACTOR_ARG(handshake));
+            ACTOR_ASSERT(rp.pending());
+            ACTOR_ASSERT(slot != invalid_stream_slot);
             ++pending_handshakes_;
             auto next = rp.next();
             rp.deliver(open_stream_msg {slot, std::move(handshake), self_->ctrl(), next, priority_});
@@ -195,23 +195,23 @@ namespace nil {
         }
 
         void stream_manager::register_input_path(inbound_path *ptr) {
-            MTL_ASSERT(ptr != nullptr);
-            MTL_LOG_TRACE(MTL_ARG2("path", *ptr));
+            ACTOR_ASSERT(ptr != nullptr);
+            ACTOR_LOG_TRACE(ACTOR_ARG2("path", *ptr));
             inbound_paths_.emplace_back(ptr);
         }
 
         void stream_manager::deregister_input_path(inbound_path *ptr) noexcept {
-            MTL_ASSERT(ptr != nullptr);
-            MTL_LOG_TRACE(MTL_ARG2("path", *ptr));
-            MTL_ASSERT(inbound_paths_.size() > 0);
+            ACTOR_ASSERT(ptr != nullptr);
+            ACTOR_LOG_TRACE(ACTOR_ARG2("path", *ptr));
+            ACTOR_ASSERT(inbound_paths_.size() > 0);
             using std::swap;
             if (ptr != inbound_paths_.back()) {
                 auto i = std::find(inbound_paths_.begin(), inbound_paths_.end(), ptr);
-                MTL_ASSERT(i != inbound_paths_.end());
+                ACTOR_ASSERT(i != inbound_paths_.end());
                 swap(*i, inbound_paths_.back());
             }
             inbound_paths_.pop_back();
-            MTL_LOG_DEBUG(inbound_paths_.size() << "paths remaining");
+            ACTOR_LOG_DEBUG(inbound_paths_.size() << "paths remaining");
         }
 
         void stream_manager::remove_input_path(stream_slot slot, error reason, bool silent) {
@@ -238,17 +238,17 @@ namespace nil {
         }
 
         stream_slot stream_manager::add_unchecked_outbound_path_impl(response_promise &rp, message handshake) {
-            MTL_LOG_TRACE(MTL_ARG(rp) << MTL_ARG(handshake));
-            MTL_ASSERT(out().terminal() == false);
+            ACTOR_LOG_TRACE(ACTOR_ARG(rp) << ACTOR_ARG(handshake));
+            ACTOR_ASSERT(out().terminal() == false);
             if (!rp.pending()) {
-                MTL_LOG_WARNING("add_outbound_path called with next == nullptr");
+                ACTOR_LOG_WARNING("add_outbound_path called with next == nullptr");
                 rp.deliver(sec::no_downstream_stages_defined);
                 return invalid_stream_slot;
             }
             auto slot = self_->assign_next_pending_slot_to(this);
             auto path = out().add_path(slot, rp.next());
-            MTL_IGNORE_UNUSED(path);
-            MTL_ASSERT(path != nullptr);
+            ACTOR_IGNORE_UNUSED(path);
+            ACTOR_ASSERT(path != nullptr);
             // Build pipeline by forwarding handshake along the path.
             deliver_handshake(rp, slot, std::move(handshake));
             generate_messages();
@@ -256,22 +256,22 @@ namespace nil {
         }
 
         stream_slot stream_manager::add_unchecked_outbound_path_impl(strong_actor_ptr next, message handshake) {
-            MTL_LOG_TRACE(MTL_ARG(next) << MTL_ARG(handshake));
+            ACTOR_LOG_TRACE(ACTOR_ARG(next) << ACTOR_ARG(handshake));
             response_promise rp {self_->ctrl(), self_->ctrl(), {next}, make_message_id()};
             return add_unchecked_outbound_path_impl(rp, std::move(handshake));
         }
 
         stream_slot stream_manager::add_unchecked_outbound_path_impl(message handshake) {
-            MTL_LOG_TRACE(MTL_ARG(handshake));
+            ACTOR_LOG_TRACE(ACTOR_ARG(handshake));
             auto rp = self_->make_response_promise();
             return add_unchecked_outbound_path_impl(rp, std::move(handshake));
         }
 
         stream_slot stream_manager::add_unchecked_inbound_path_impl(rtti_pair rtti) {
-            MTL_LOG_TRACE("");
+            ACTOR_LOG_TRACE("");
             auto x = self_->current_mailbox_element();
             if (x == nullptr || !x->content().match_elements<open_stream_msg>()) {
-                MTL_LOG_ERROR(
+                ACTOR_LOG_ERROR(
                     "add_unchecked_inbound_path called, but current message "
                     "is not an open_stream_msg");
                 return invalid_stream_slot;
@@ -279,7 +279,7 @@ namespace nil {
             auto &osm = x->content().get_mutable_as<open_stream_msg>(0);
             if (out().terminal() && !self_->current_forwarding_stack().empty()) {
                 // Sinks must always terminate the stream.
-                MTL_LOG_WARNING(
+                ACTOR_LOG_WARNING(
                     "add_unchecked_inbound_path called in a sink, but the "
                     "handshake has further stages");
                 stream_slots path_id {osm.slot, 0};
@@ -292,7 +292,7 @@ namespace nil {
             auto slot = assign_next_slot();
             stream_slots path_id {osm.slot, slot};
             auto ptr = self_->make_inbound_path(this, path_id, std::move(osm.prev_stage), rtti);
-            MTL_ASSERT(ptr != nullptr);
+            ACTOR_ASSERT(ptr != nullptr);
             ptr->emit_ack_open(self_, actor_cast<actor_addr>(osm.original_stage));
             return slot;
         }
@@ -314,12 +314,12 @@ namespace nil {
         }
 
         void stream_manager::downstream_demand(outbound_path *, long) {
-            MTL_LOG_ERROR("stream_manager::downstream_demand called");
+            ACTOR_LOG_ERROR("stream_manager::downstream_demand called");
         }
 
         void stream_manager::input_closed(error) {
             // nop
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

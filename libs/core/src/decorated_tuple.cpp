@@ -10,17 +10,17 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/decorated_tuple.hpp>
+#include <nil/actor/detail/decorated_tuple.hpp>
 
-#include <nil/mtl/make_counted.hpp>
+#include <nil/actor/make_counted.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             decorated_tuple::decorated_tuple(cow_ptr &&d, vector_type &&v) :
                 decorated_(std::move(d)), mapping_(std::move(v)), type_token_(0xFFFFFFFF) {
-                MTL_ASSERT(mapping_.empty() || *(std::max_element(mapping_.begin(), mapping_.end())) <
+                ACTOR_ASSERT(mapping_.empty() || *(std::max_element(mapping_.begin(), mapping_.end())) <
                                                    static_cast<const cow_ptr &>(decorated_)->size());
                 // calculate type token
                 for (unsigned long i : mapping_) {
@@ -46,12 +46,12 @@ namespace nil {
             }
 
             void *decorated_tuple::get_mutable(size_t pos) {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 return decorated_.unshared().get_mutable(mapping_[pos]);
             }
 
             error decorated_tuple::load(size_t pos, deserializer &source) {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 return decorated_.unshared().load(mapping_[pos], source);
             }
 
@@ -64,29 +64,29 @@ namespace nil {
             }
 
             rtti_pair decorated_tuple::type(size_t pos) const noexcept {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 return decorated_->type(mapping_[pos]);
             }
 
             const void *decorated_tuple::get(size_t pos) const noexcept {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 return decorated_->get(mapping_[pos]);
             }
 
             std::string decorated_tuple::stringify(size_t pos) const {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 return decorated_->stringify(mapping_[pos]);
             }
 
             type_erased_value_ptr decorated_tuple::copy(size_t pos) const {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 return decorated_->copy(mapping_[pos]);
             }
 
             error decorated_tuple::save(size_t pos, serializer &sink) const {
-                MTL_ASSERT(pos < size());
+                ACTOR_ASSERT(pos < size());
                 return decorated_->save(mapping_[pos], sink);
             }
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

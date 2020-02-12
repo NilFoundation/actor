@@ -10,10 +10,10 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/ref_counted.hpp>
+#include <nil/actor/ref_counted.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         ref_counted::~ref_counted() {
             // nop
@@ -42,5 +42,5 @@ namespace nil {
             }
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

@@ -11,12 +11,12 @@
 
 #define BOOST_TEST_MODULE datagram_socket
 
-#include <nil/mtl/network/datagram_socket.hpp>
+#include <nil/actor/network/datagram_socket.hpp>
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::network;
+using namespace nil::actor;
+using namespace nil::actor::network;
 
 BOOST_AUTO_TEST_CASE(invalid_socket) {
     datagram_socket x;

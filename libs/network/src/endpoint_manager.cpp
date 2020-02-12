@@ -9,16 +9,16 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/endpoint_manager.hpp>
+#include <nil/actor/network/endpoint_manager.hpp>
 
-#include <nil/mtl/byte.hpp>
-#include <nil/mtl/intrusive/inbox_result.hpp>
-#include <nil/mtl/network/multiplexer.hpp>
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/send.hpp>
+#include <nil/actor/byte.hpp>
+#include <nil/actor/intrusive/inbox_result.hpp>
+#include <nil/actor/network/multiplexer.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/send.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
 
             endpoint_manager::endpoint_manager(socket handle, const multiplexer_ptr &parent, spawner &sys) :
@@ -80,5 +80,5 @@ namespace nil {
             }
 
         }    // namespace network
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

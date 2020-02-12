@@ -9,12 +9,12 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/basp/message_queue.hpp>
+#include <nil/actor/io/basp/message_queue.hpp>
 
 #include <iterator>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace basp {
 
@@ -25,8 +25,8 @@ namespace nil {
                 void message_queue::push(execution_unit *ctx, uint64_t id, strong_actor_ptr receiver,
                                          mailbox_element_ptr content) {
                     std::unique_lock<std::mutex> guard {lock};
-                    MTL_ASSERT(id >= next_undelivered);
-                    MTL_ASSERT(id < next_id);
+                    ACTOR_ASSERT(id >= next_undelivered);
+                    ACTOR_ASSERT(id < next_id);
                     auto first = pending.begin();
                     auto last = pending.end();
                     if (id == next_undelivered) {
@@ -37,7 +37,7 @@ namespace nil {
                         // Check whether we can deliver more.
                         if (first == last || first->id != next) {
                             next_undelivered = next;
-                            MTL_ASSERT(next_undelivered <= next_id);
+                            ACTOR_ASSERT(next_undelivered <= next_id);
                             return;
                         }
                         // Deliver everything until reaching a non-consecutive ID or the end.
@@ -47,7 +47,7 @@ namespace nil {
                                 i->receiver->enqueue(std::move(i->content), ctx);
                         next_undelivered = next;
                         pending.erase(first, i);
-                        MTL_ASSERT(next_undelivered <= next_id);
+                        ACTOR_ASSERT(next_undelivered <= next_id);
                         return;
                     }
                     // Get the insertion point.
@@ -66,5 +66,5 @@ namespace nil {
                 }
             }    // namespace basp
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

@@ -10,34 +10,34 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
 #include <map>
 #include <mutex>
 #include <atomic>
 #include <stdexcept>
 
-#include <nil/mtl/atom.hpp>
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/message.hpp>
-#include <nil/mtl/actor_addr.hpp>
-#include <nil/mtl/actor_cast.hpp>
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/abstract_actor.hpp>
-#include <nil/mtl/actor_registry.hpp>
-#include <nil/mtl/execution_unit.hpp>
-#include <nil/mtl/mailbox_element.hpp>
-#include <nil/mtl/system_messages.hpp>
-#include <nil/mtl/default_attachable.hpp>
-#include <nil/mtl/actor_control_block.hpp>
+#include <nil/actor/atom.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/message.hpp>
+#include <nil/actor/actor_addr.hpp>
+#include <nil/actor/actor_cast.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/abstract_actor.hpp>
+#include <nil/actor/actor_registry.hpp>
+#include <nil/actor/execution_unit.hpp>
+#include <nil/actor/mailbox_element.hpp>
+#include <nil/actor/system_messages.hpp>
+#include <nil/actor/default_attachable.hpp>
+#include <nil/actor/actor_control_block.hpp>
 
-#include <nil/mtl/detail/disposer.hpp>
-#include <nil/mtl/detail/enum_to_string.hpp>
-#include <nil/mtl/detail/shared_spinlock.hpp>
+#include <nil/actor/detail/disposer.hpp>
+#include <nil/actor/detail/enum_to_string.hpp>
+#include <nil/actor/detail/shared_spinlock.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         // exit_state_ is guaranteed to be set to 0, i.e., exit_reason::not_exited,
         // by std::atomic<> constructor
@@ -101,5 +101,5 @@ namespace nil {
             home_system().registry().dec_running();
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

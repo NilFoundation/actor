@@ -15,14 +15,14 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
 
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/atom.hpp>
-#include <nil/mtl/event_based_actor.hpp>
-#include <nil/mtl/scoped_actor.hpp>
-#include <nil/mtl/unit.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/atom.hpp>
+#include <nil/actor/event_based_actor.hpp>
+#include <nil/actor/scoped_actor.hpp>
+#include <nil/actor/unit.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 using unit_res_atom = atom_constant<atom("unitRes")>;
 using void_res_atom = atom_constant<atom("voidRes")>;

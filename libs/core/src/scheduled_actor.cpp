@@ -10,22 +10,22 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/scheduled_actor.hpp>
+#include <nil/actor/scheduled_actor.hpp>
 
-#include <nil/mtl/actor_ostream.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/inbound_path.hpp>
-#include <nil/mtl/to_string.hpp>
+#include <nil/actor/actor_ostream.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/inbound_path.hpp>
+#include <nil/actor/to_string.hpp>
 
-#include <nil/mtl/scheduler/abstract_coordinator.hpp>
+#include <nil/actor/scheduler/abstract_coordinator.hpp>
 
-#include <nil/mtl/detail/default_invoke_result_visitor.hpp>
-#include <nil/mtl/detail/private_thread.hpp>
-#include <nil/mtl/detail/sync_request_bouncer.hpp>
+#include <nil/actor/detail/default_invoke_result_visitor.hpp>
+#include <nil/actor/detail/private_thread.hpp>
+#include <nil/actor/detail/sync_request_bouncer.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         // -- related free functions ---------------------------------------------------
 
@@ -40,7 +40,7 @@ namespace nil {
         }
 
         result<message> print_and_drop(scheduled_actor *ptr, message_view &x) {
-            MTL_LOG_WARNING("unexpected message" << MTL_ARG(x.content()));
+            ACTOR_LOG_WARNING("unexpected message" << ACTOR_ARG(x.content()));
             aout(ptr) << "*** unexpected message [id: " << ptr->id() << ", name: " << ptr->name()
                       << "]: " << x.content().stringify() << std::endl;
             return sec::unexpected_message;
@@ -83,9 +83,9 @@ namespace nil {
                 default_error_handler(ptr, x.reason);
         }
 
-#ifndef MTL_NO_EXCEPTIONS
+#ifndef ACTOR_NO_EXCEPTIONS
         error scheduled_actor::default_exception_handler(pointer ptr, std::exception_ptr &x) {
-            MTL_ASSERT(x != nullptr);
+            ACTOR_ASSERT(x != nullptr);
             try {
                 std::rethrow_exception(x);
             } catch (const std::exception &e) {
@@ -97,7 +97,7 @@ namespace nil {
             }
             return sec::runtime_error;
         }
-#endif    // MTL_NO_EXCEPTIONS
+#endif    // ACTOR_NO_EXCEPTIONS
 
         // -- constructors and destructors ---------------------------------------------
 
@@ -105,22 +105,22 @@ namespace nil {
             super(cfg), mailbox_(unit, unit, unit, unit, unit), timeout_id_(0), default_handler_(print_and_drop),
             error_handler_(default_error_handler), down_handler_(default_down_handler),
             exit_handler_(default_exit_handler), private_thread_(nullptr)
-#ifndef MTL_NO_EXCEPTIONS
+#ifndef ACTOR_NO_EXCEPTIONS
             ,
             exception_handler_(default_exception_handler)
-#endif    // MTL_NO_EXCEPTIONS
+#endif    // ACTOR_NO_EXCEPTIONS
         {
             auto &sys_cfg = home_system().config();
             auto interval = sys_cfg.stream_tick_duration();
-            MTL_ASSERT(interval.count() > 0);
+            ACTOR_ASSERT(interval.count() > 0);
             stream_ticks_.interval(interval);
-            MTL_ASSERT(sys_cfg.stream_max_batch_delay.count() > 0);
+            ACTOR_ASSERT(sys_cfg.stream_max_batch_delay.count() > 0);
             auto div = [](timespan x, timespan y) { return static_cast<size_t>(x.count() / y.count()); };
             max_batch_delay_ticks_ = div(sys_cfg.stream_max_batch_delay, interval);
-            MTL_ASSERT(max_batch_delay_ticks_ > 0);
+            ACTOR_ASSERT(max_batch_delay_ticks_ > 0);
             credit_round_ticks_ = div(sys_cfg.stream_credit_round_interval, interval);
-            MTL_ASSERT(credit_round_ticks_ > 0);
-            MTL_LOG_DEBUG(MTL_ARG(interval) << MTL_ARG(max_batch_delay_ticks_) << MTL_ARG(credit_round_ticks_));
+            ACTOR_ASSERT(credit_round_ticks_ > 0);
+            ACTOR_LOG_DEBUG(ACTOR_ARG(interval) << ACTOR_ARG(max_batch_delay_ticks_) << ACTOR_ARG(credit_round_ticks_));
         }
 
         scheduled_actor::~scheduled_actor() {
@@ -133,19 +133,19 @@ namespace nil {
         // -- overridden functions of abstract_actor -----------------------------------
 
         void scheduled_actor::enqueue(mailbox_element_ptr ptr, execution_unit *eu) {
-            MTL_ASSERT(ptr != nullptr);
-            MTL_ASSERT(!getf(is_blocking_flag));
-            MTL_LOG_TRACE(MTL_ARG(*ptr));
-            MTL_LOG_SEND_EVENT(ptr);
+            ACTOR_ASSERT(ptr != nullptr);
+            ACTOR_ASSERT(!getf(is_blocking_flag));
+            ACTOR_LOG_TRACE(ACTOR_ARG(*ptr));
+            ACTOR_LOG_SEND_EVENT(ptr);
             auto mid = ptr->mid;
             auto sender = ptr->sender;
             switch (mailbox().push_back(std::move(ptr))) {
                 case intrusive::inbox_result::unblocked_reader: {
-                    MTL_LOG_ACCEPT_EVENT(true);
+                    ACTOR_LOG_ACCEPT_EVENT(true);
                     // add a reference count to this actor and re-schedule it
                     intrusive_ptr_add_ref(ctrl());
                     if (getf(is_detached_flag)) {
-                        MTL_ASSERT(private_thread_ != nullptr);
+                        ACTOR_ASSERT(private_thread_ != nullptr);
                         private_thread_->resume();
                     } else {
                         if (eu != nullptr)
@@ -156,7 +156,7 @@ namespace nil {
                     break;
                 }
                 case intrusive::inbox_result::queue_closed: {
-                    MTL_LOG_REJECT_EVENT();
+                    ACTOR_LOG_REJECT_EVENT();
                     if (mid.is_request()) {
                         detail::sync_request_bouncer f {exit_reason()};
                         f(sender, mid);
@@ -165,7 +165,7 @@ namespace nil {
                 }
                 case intrusive::inbox_result::success:
                     // enqueued to a running actors' mailbox; nothing to do
-                    MTL_LOG_ACCEPT_EVENT(false);
+                    ACTOR_LOG_ACCEPT_EVENT(false);
                     break;
             }
         }
@@ -180,9 +180,9 @@ namespace nil {
         }
 
         void scheduled_actor::launch(execution_unit *eu, bool lazy, bool hide) {
-            MTL_PUSH_AID_FROM_PTR(this);
-            MTL_LOG_TRACE(MTL_ARG(lazy) << MTL_ARG(hide));
-            MTL_ASSERT(!getf(is_blocking_flag));
+            ACTOR_PUSH_AID_FROM_PTR(this);
+            ACTOR_LOG_TRACE(ACTOR_ARG(lazy) << ACTOR_ARG(hide));
+            ACTOR_ASSERT(!getf(is_blocking_flag));
             if (!hide)
                 register_at_system();
             if (getf(is_detached_flag)) {
@@ -190,7 +190,7 @@ namespace nil {
                 private_thread_->start();
                 return;
             }
-            MTL_ASSERT(eu != nullptr);
+            ACTOR_ASSERT(eu != nullptr);
             // do not schedule immediately when spawned with `lazy_init`
             // mailbox could be set to blocked
             if (lazy && mailbox().try_block())
@@ -202,10 +202,10 @@ namespace nil {
         }
 
         bool scheduled_actor::cleanup(error &&fail_state, execution_unit *host) {
-            MTL_LOG_TRACE(MTL_ARG(fail_state));
+            ACTOR_LOG_TRACE(ACTOR_ARG(fail_state));
             // Shutdown hosting thread when running detached.
             if (getf(is_detached_flag)) {
-                MTL_ASSERT(private_thread_ != nullptr);
+                ACTOR_ASSERT(private_thread_ != nullptr);
                 private_thread_->shutdown();
             }
             // Clear state for open requests.
@@ -263,9 +263,9 @@ namespace nil {
 
         intrusive::task_result scheduled_actor::mailbox_visitor::operator()(size_t, upstream_queue &,
                                                                             mailbox_element &x) {
-            MTL_ASSERT(x.content().type_token() == make_type_token<upstream_msg>());
+            ACTOR_ASSERT(x.content().type_token() == make_type_token<upstream_msg>());
             self->current_mailbox_element(&x);
-            MTL_LOG_RECEIVE_EVENT((&x));
+            ACTOR_LOG_RECEIVE_EVENT((&x));
             auto &um = x.content().get_mutable_as<upstream_msg>(0);
             upstream_msg_visitor f {self, um};
             visit(f, um.content);
@@ -291,7 +291,7 @@ namespace nil {
                     inptr->handle(x);
                     // The sender slot can be 0. This is the case for forced_close or
                     // forced_drop messages from stream aborters.
-                    MTL_ASSERT(inptr->slots == dm.slots ||
+                    ACTOR_ASSERT(inptr->slots == dm.slots ||
                                (dm.slots.sender == 0 && dm.slots.receiver == inptr->slots.receiver));
                     // TODO: replace with `if constexpr` when switching to C++17
                     if (std::is_same<T, downstream_msg::close>::value ||
@@ -305,7 +305,7 @@ namespace nil {
                         }
                         return intrusive::task_result::stop;
                     } else if (mgr->done()) {
-                        MTL_LOG_DEBUG("path is done receiving and closes its manager");
+                        ACTOR_LOG_DEBUG("path is done receiving and closes its manager");
                         selfptr->erase_stream_manager(mgr);
                         mgr->stop();
                         return intrusive::task_result::stop;
@@ -320,10 +320,10 @@ namespace nil {
             scheduled_actor::mailbox_visitor::operator()(size_t, downstream_queue &qs, stream_slot,
                                                          policy::downstream_messages::nested_queue_type &q,
                                                          mailbox_element &x) {
-            MTL_LOG_TRACE(MTL_ARG(x) << MTL_ARG(handled_msgs));
+            ACTOR_LOG_TRACE(ACTOR_ARG(x) << ACTOR_ARG(handled_msgs));
             self->current_mailbox_element(&x);
-            MTL_LOG_RECEIVE_EVENT((&x));
-            MTL_ASSERT(x.content().type_token() == make_type_token<downstream_msg>());
+            ACTOR_LOG_RECEIVE_EVENT((&x));
+            ACTOR_ASSERT(x.content().type_token() == make_type_token<downstream_msg>());
             auto &dm = x.content().get_mutable_as<downstream_msg>(0);
             downstream_msg_visitor f {self, qs, q, dm};
             auto res = visit(f, dm.content);
@@ -331,7 +331,7 @@ namespace nil {
         }
 
         intrusive::task_result scheduled_actor::mailbox_visitor::operator()(mailbox_element &x) {
-            MTL_LOG_TRACE(MTL_ARG(x) << MTL_ARG(handled_msgs));
+            ACTOR_LOG_TRACE(ACTOR_ARG(x) << ACTOR_ARG(handled_msgs));
             switch (self->reactivate(x)) {
                 case activation_result::terminated:
                     return intrusive::task_result::stop;
@@ -346,8 +346,8 @@ namespace nil {
         }
 
         resumable::resume_result scheduled_actor::resume(execution_unit *ctx, size_t max_throughput) {
-            MTL_PUSH_AID(id());
-            MTL_LOG_TRACE(MTL_ARG(max_throughput));
+            ACTOR_PUSH_AID(id());
+            ACTOR_LOG_TRACE(ACTOR_ARG(max_throughput));
             if (!activate(ctx))
                 return resumable::done;
             size_t handled_msgs = 0;
@@ -368,7 +368,7 @@ namespace nil {
             mailbox_element_ptr ptr;
             // Timeout for calling `advance_streams`.
             while (handled_msgs < max_throughput) {
-                MTL_LOG_DEBUG("start new DRR round");
+                ACTOR_LOG_DEBUG("start new DRR round");
                 // TODO: maybe replace '3' with configurable / adaptive value?
                 // Dispatch on the different message categories in our mailbox.
                 if (!mailbox_.new_round(3, f).consumed_items) {
@@ -385,7 +385,7 @@ namespace nil {
                 if (now >= tout)
                     tout = advance_streams(now);
             }
-            MTL_LOG_DEBUG("max throughput reached");
+            ACTOR_LOG_DEBUG("max throughput reached");
             reset_timeouts_if_needed();
             if (mailbox().try_block())
                 return resumable::awaiting_message;
@@ -402,7 +402,7 @@ namespace nil {
         // -- state modifiers ----------------------------------------------------------
 
         void scheduled_actor::quit(error x) {
-            MTL_LOG_TRACE(MTL_ARG(x));
+            ACTOR_LOG_TRACE(ACTOR_ARG(x));
             // Make sure repeated calls to quit don't do anything.
             if (getf(is_shutting_down_flag))
                 return;
@@ -442,13 +442,13 @@ namespace nil {
         // -- timeout management -------------------------------------------------------
 
         uint64_t scheduled_actor::set_receive_timeout(actor_clock::time_point x) {
-            MTL_LOG_TRACE(x);
+            ACTOR_LOG_TRACE(x);
             setf(has_timeout_flag);
             return set_timeout(receive_atom::value, x);
         }
 
         uint64_t scheduled_actor::set_receive_timeout() {
-            MTL_LOG_TRACE("");
+            ACTOR_LOG_TRACE("");
             if (bhvr_stack_.empty())
                 return 0;
             auto d = bhvr_stack_.back().timeout();
@@ -478,10 +478,10 @@ namespace nil {
         }
 
         uint64_t scheduled_actor::set_stream_timeout(actor_clock::time_point x) {
-            MTL_LOG_TRACE(x);
+            ACTOR_LOG_TRACE(x);
             // Do not request 'infinite' timeouts.
             if (x == actor_clock::time_point::max()) {
-                MTL_LOG_DEBUG("drop infinite timeout");
+                ACTOR_LOG_DEBUG("drop infinite timeout");
                 return 0;
             }
             // Do not request a timeout if all streams are idle.
@@ -492,7 +492,7 @@ namespace nil {
             auto e = std::unique(mgrs.begin(), mgrs.end());
             auto idle = [=](const stream_manager_ptr &y) { return y->idle(); };
             if (std::all_of(mgrs.begin(), e, idle)) {
-                MTL_LOG_DEBUG("suppress stream timeout");
+                ACTOR_LOG_DEBUG("suppress stream timeout");
                 return 0;
             }
             // Delegate call.
@@ -514,7 +514,7 @@ namespace nil {
         }
 
         scheduled_actor::message_category scheduled_actor::categorize(mailbox_element &x) {
-            MTL_LOG_TRACE(MTL_ARG(x));
+            ACTOR_LOG_TRACE(ACTOR_ARG(x));
             auto &content = x.content();
             switch (content.type_token()) {
                 case make_type_token<atom_value, atom_value, std::string>():
@@ -522,12 +522,12 @@ namespace nil {
                         content.get_as<atom_value>(1) == get_atom::value) {
                         auto rp = make_response_promise();
                         if (!rp.pending()) {
-                            MTL_LOG_WARNING("received anonymous ('get', 'sys', $key) message");
+                            ACTOR_LOG_WARNING("received anonymous ('get', 'sys', $key) message");
                             return message_category::internal;
                         }
                         auto &what = content.get_as<std::string>(2);
                         if (what == "info") {
-                            MTL_LOG_DEBUG("reply to 'info' message");
+                            ACTOR_LOG_DEBUG("reply to 'info' message");
                             rp.deliver(ok_atom::value, std::move(what), strong_actor_ptr {ctrl()}, name());
                         } else {
                             rp.deliver(make_error(sec::unsupported_sys_key));
@@ -536,16 +536,16 @@ namespace nil {
                     }
                     return message_category::ordinary;
                 case make_type_token<timeout_msg>(): {
-                    MTL_ASSERT(x.mid.is_async());
+                    ACTOR_ASSERT(x.mid.is_async());
                     auto &tm = content.get_as<timeout_msg>(0);
                     auto tid = tm.timeout_id;
                     if (tm.type == receive_atom::value) {
-                        MTL_LOG_DEBUG("handle ordinary timeout message");
+                        ACTOR_LOG_DEBUG("handle ordinary timeout message");
                         if (is_active_receive_timeout(tid) && !bhvr_stack_.empty())
                             bhvr_stack_.back().handle_timeout();
                     } else {
-                        MTL_ASSERT(tm.type == atom("stream"));
-                        MTL_LOG_DEBUG("handle stream timeout message");
+                        ACTOR_ASSERT(tm.type == atom("stream"));
+                        ACTOR_LOG_DEBUG("handle stream timeout message");
                         set_stream_timeout(advance_streams(clock().now()));
                     }
                     return message_category::internal;
@@ -592,9 +592,9 @@ namespace nil {
         }
 
         invoke_message_result scheduled_actor::consume(mailbox_element &x) {
-            MTL_LOG_TRACE(MTL_ARG(x));
+            ACTOR_LOG_TRACE(ACTOR_ARG(x));
             current_element_ = &x;
-            MTL_LOG_RECEIVE_EVENT(current_element_);
+            ACTOR_LOG_RECEIVE_EVENT(current_element_);
             // Helper function for dispatching a message to a response handler.
             using ptr_t = scheduled_actor *;
             using fun_t = bool (*)(ptr_t, behavior &, mailbox_element &);
@@ -639,7 +639,7 @@ namespace nil {
                 case message_category::skipped:
                     return im_skipped;
                 case message_category::internal:
-                    MTL_LOG_DEBUG("handled system message");
+                    ACTOR_LOG_DEBUG("handled system message");
                     return im_success;
                 case message_category::ordinary: {
                     detail::default_invoke_result_visitor<scheduled_actor> visitor {this};
@@ -683,7 +683,7 @@ namespace nil {
                 }
             }
             // Unreachable.
-            MTL_CRITICAL("invalid message type");
+            ACTOR_CRITICAL("invalid message type");
         }
 
         /// Tries to consume `x`.
@@ -697,39 +697,39 @@ namespace nil {
         }
 
         bool scheduled_actor::activate(execution_unit *ctx) {
-            MTL_LOG_TRACE("");
-            MTL_ASSERT(ctx != nullptr);
-            MTL_ASSERT(!getf(is_blocking_flag));
+            ACTOR_LOG_TRACE("");
+            ACTOR_ASSERT(ctx != nullptr);
+            ACTOR_ASSERT(!getf(is_blocking_flag));
             context(ctx);
             if (getf(is_initialized_flag) && !alive()) {
-                MTL_LOG_ERROR("activate called on a terminated actor");
+                ACTOR_LOG_ERROR("activate called on a terminated actor");
                 return false;
             }
-#ifndef MTL_NO_EXCEPTIONS
+#ifndef ACTOR_NO_EXCEPTIONS
             try {
-#endif    // MTL_NO_EXCEPTIONS
+#endif    // ACTOR_NO_EXCEPTIONS
                 if (!getf(is_initialized_flag)) {
                     initialize();
                     if (finalize()) {
-                        MTL_LOG_DEBUG("finalize() returned true right after make_behavior()");
+                        ACTOR_LOG_DEBUG("finalize() returned true right after make_behavior()");
                         return false;
                     }
-                    MTL_LOG_DEBUG("initialized actor:" << MTL_ARG(name()));
+                    ACTOR_LOG_DEBUG("initialized actor:" << ACTOR_ARG(name()));
                 }
-#ifndef MTL_NO_EXCEPTIONS
+#ifndef ACTOR_NO_EXCEPTIONS
             } catch (...) {
-                MTL_LOG_ERROR("actor died during initialization");
+                ACTOR_LOG_ERROR("actor died during initialization");
                 auto eptr = std::current_exception();
                 quit(call_handler(exception_handler_, this, eptr));
                 finalize();
                 return false;
             }
-#endif    // MTL_NO_EXCEPTIONS
+#endif    // ACTOR_NO_EXCEPTIONS
             return true;
         }
 
         auto scheduled_actor::activate(execution_unit *ctx, mailbox_element &x) -> activation_result {
-            MTL_LOG_TRACE(MTL_ARG(x));
+            ACTOR_LOG_TRACE(ACTOR_ARG(x));
             if (!activate(ctx))
                 return activation_result::terminated;
             auto res = reactivate(x);
@@ -739,44 +739,44 @@ namespace nil {
         }
 
         auto scheduled_actor::reactivate(mailbox_element &x) -> activation_result {
-            MTL_LOG_TRACE(MTL_ARG(x));
-#ifndef MTL_NO_EXCEPTIONS
+            ACTOR_LOG_TRACE(ACTOR_ARG(x));
+#ifndef ACTOR_NO_EXCEPTIONS
             try {
-#endif    // MTL_NO_EXCEPTIONS
+#endif    // ACTOR_NO_EXCEPTIONS
                 switch (consume(x)) {
                     case im_dropped:
                         return activation_result::dropped;
                     case im_success:
                         bhvr_stack_.cleanup();
                         if (finalize()) {
-                            MTL_LOG_DEBUG("actor finalized");
+                            ACTOR_LOG_DEBUG("actor finalized");
                             return activation_result::terminated;
                         }
                         return activation_result::success;
                     case im_skipped:
                         return activation_result::skipped;
                 }
-#ifndef MTL_NO_EXCEPTIONS
+#ifndef ACTOR_NO_EXCEPTIONS
             } catch (std::exception &e) {
-                MTL_LOG_INFO("actor died because of an exception, what: " << e.what());
+                ACTOR_LOG_INFO("actor died because of an exception, what: " << e.what());
                 static_cast<void>(e);    // keep compiler happy when not logging
                 auto eptr = std::current_exception();
                 quit(call_handler(exception_handler_, this, eptr));
             } catch (...) {
-                MTL_LOG_INFO("actor died because of an unknown exception");
+                ACTOR_LOG_INFO("actor died because of an unknown exception");
                 auto eptr = std::current_exception();
                 quit(call_handler(exception_handler_, this, eptr));
             }
             finalize();
             return activation_result::terminated;
-#endif    // MTL_NO_EXCEPTIONS
+#endif    // ACTOR_NO_EXCEPTIONS
         }
 
         // -- behavior management ----------------------------------------------------
 
         void scheduled_actor::do_become(behavior bhvr, bool discard_old) {
             if (getf(is_terminated_flag | is_shutting_down_flag)) {
-                MTL_LOG_WARNING("called become() on a terminated actor");
+                ACTOR_LOG_WARNING("called become() on a terminated actor");
                 return;
             }
             if (discard_old && !bhvr_stack_.empty())
@@ -788,7 +788,7 @@ namespace nil {
         }
 
         bool scheduled_actor::finalize() {
-            MTL_LOG_TRACE("");
+            ACTOR_LOG_TRACE("");
             // Repeated calls always return `true` but have no side effects.
             if (getf(is_cleaned_up_flag))
                 return true;
@@ -796,12 +796,12 @@ namespace nil {
             // the terminated flag.
             if (alive())
                 return false;
-            MTL_LOG_DEBUG("actor has no behavior and is ready for cleanup");
-            MTL_ASSERT(!has_behavior());
+            ACTOR_LOG_DEBUG("actor has no behavior and is ready for cleanup");
+            ACTOR_ASSERT(!has_behavior());
             on_exit();
             bhvr_stack_.cleanup();
             cleanup(std::move(fail_state_), context());
-            MTL_ASSERT(getf(is_cleaned_up_flag));
+            ACTOR_ASSERT(getf(is_cleaned_up_flag));
             return true;
         }
 
@@ -853,12 +853,12 @@ namespace nil {
         }
 
         void scheduled_actor::erase_inbound_path_later(stream_slot slot) {
-            MTL_LOG_TRACE(MTL_ARG(slot));
+            ACTOR_LOG_TRACE(ACTOR_ARG(slot));
             get_downstream_queue().erase_later(slot);
         }
 
         void scheduled_actor::erase_inbound_path_later(stream_slot slot, error reason) {
-            MTL_LOG_TRACE(MTL_ARG(slot) << MTL_ARG(reason));
+            ACTOR_LOG_TRACE(ACTOR_ARG(slot) << ACTOR_ARG(reason));
             auto &q = get_downstream_queue();
             auto e = q.queues().end();
             auto i = q.queues().find(slot);
@@ -875,7 +875,7 @@ namespace nil {
         }
 
         void scheduled_actor::erase_inbound_paths_later(const stream_manager *ptr) {
-            MTL_LOG_TRACE("");
+            ACTOR_LOG_TRACE("");
             for (auto &kvp : get_downstream_queue().queues()) {
                 auto &path = kvp.second.policy().handler;
                 if (path != nullptr && path->mgr == ptr)
@@ -884,7 +884,7 @@ namespace nil {
         }
 
         void scheduled_actor::erase_inbound_paths_later(const stream_manager *ptr, error reason) {
-            MTL_LOG_TRACE(MTL_ARG(reason));
+            ACTOR_LOG_TRACE(ACTOR_ARG(reason));
             using fn = void (*)(local_actor *, inbound_path &, error &);
             fn regular = [](local_actor *self, inbound_path &in, error &) { in.emit_regular_shutdown(self); };
             fn irregular = [](local_actor *self, inbound_path &in, error &rsn) {
@@ -901,29 +901,29 @@ namespace nil {
         }
 
         void scheduled_actor::handle_upstream_msg(stream_slots slots, actor_addr &sender, upstream_msg::ack_open &x) {
-            MTL_IGNORE_UNUSED(sender);
-            MTL_LOG_TRACE(MTL_ARG(slots) << MTL_ARG(sender) << MTL_ARG(x));
-            MTL_ASSERT(sender == x.rebind_to);
+            ACTOR_IGNORE_UNUSED(sender);
+            ACTOR_LOG_TRACE(ACTOR_ARG(slots) << ACTOR_ARG(sender) << ACTOR_ARG(x));
+            ACTOR_ASSERT(sender == x.rebind_to);
             // Get the manager for that stream, move it from `pending_managers_` to
             // `managers_`, and handle `x`.
             auto i = pending_stream_managers_.find(slots.receiver);
             if (i == pending_stream_managers_.end()) {
-                MTL_LOG_WARNING("found no corresponding manager for received ack_open");
+                ACTOR_LOG_WARNING("found no corresponding manager for received ack_open");
                 return;
             }
             auto ptr = std::move(i->second);
             pending_stream_managers_.erase(i);
             if (!add_stream_manager(slots.receiver, ptr)) {
-                MTL_LOG_WARNING("unable to add stream manager after receiving ack_open");
+                ACTOR_LOG_WARNING("unable to add stream manager after receiving ack_open");
                 return;
             }
             ptr->handle(slots, x);
         }
 
         uint64_t scheduled_actor::set_timeout(atom_value type, actor_clock::time_point x) {
-            MTL_LOG_TRACE(MTL_ARG(type) << MTL_ARG(x));
+            ACTOR_LOG_TRACE(ACTOR_ARG(type) << ACTOR_ARG(x));
             auto id = ++timeout_id_;
-            MTL_LOG_DEBUG("set timeout:" << MTL_ARG(type) << MTL_ARG(x));
+            ACTOR_LOG_DEBUG("set timeout:" << ACTOR_ARG(type) << ACTOR_ARG(x));
             clock().set_ordinary_timeout(x, this, type, id);
             return id;
         }
@@ -939,54 +939,54 @@ namespace nil {
         }
 
         void scheduled_actor::assign_slot(stream_slot x, stream_manager_ptr mgr) {
-            MTL_LOG_TRACE(MTL_ARG(x));
+            ACTOR_LOG_TRACE(ACTOR_ARG(x));
             if (stream_managers_.empty())
                 stream_ticks_.start(clock().now());
-            MTL_ASSERT(stream_managers_.count(x) == 0);
+            ACTOR_ASSERT(stream_managers_.count(x) == 0);
             stream_managers_.emplace(x, std::move(mgr));
         }
 
         void scheduled_actor::assign_pending_slot(stream_slot x, stream_manager_ptr mgr) {
-            MTL_LOG_TRACE(MTL_ARG(x));
-            MTL_ASSERT(pending_stream_managers_.count(x) == 0);
+            ACTOR_LOG_TRACE(ACTOR_ARG(x));
+            ACTOR_ASSERT(pending_stream_managers_.count(x) == 0);
             pending_stream_managers_.emplace(x, std::move(mgr));
         }
 
         stream_slot scheduled_actor::assign_next_slot_to(stream_manager_ptr mgr) {
-            MTL_LOG_TRACE("");
+            ACTOR_LOG_TRACE("");
             auto x = next_slot();
             assign_slot(x, std::move(mgr));
             return x;
         }
 
         stream_slot scheduled_actor::assign_next_pending_slot_to(stream_manager_ptr mgr) {
-            MTL_LOG_TRACE("");
+            ACTOR_LOG_TRACE("");
             auto x = next_slot();
             assign_pending_slot(x, std::move(mgr));
             return x;
         }
 
         bool scheduled_actor::add_stream_manager(stream_slot id, stream_manager_ptr mgr) {
-            MTL_LOG_TRACE(MTL_ARG(id));
+            ACTOR_LOG_TRACE(ACTOR_ARG(id));
             if (stream_managers_.empty())
                 stream_ticks_.start(clock().now());
             return stream_managers_.emplace(id, std::move(mgr)).second;
         }
 
         void scheduled_actor::erase_stream_manager(stream_slot id) {
-            MTL_LOG_TRACE(MTL_ARG(id));
+            ACTOR_LOG_TRACE(ACTOR_ARG(id));
             if (stream_managers_.erase(id) != 0 && stream_managers_.empty())
                 stream_ticks_.stop();
-            MTL_LOG_DEBUG(MTL_ARG2("stream_managers_.size", stream_managers_.size()));
+            ACTOR_LOG_DEBUG(ACTOR_ARG2("stream_managers_.size", stream_managers_.size()));
         }
 
         void scheduled_actor::erase_pending_stream_manager(stream_slot id) {
-            MTL_LOG_TRACE(MTL_ARG(id));
+            ACTOR_LOG_TRACE(ACTOR_ARG(id));
             pending_stream_managers_.erase(id);
         }
 
         void scheduled_actor::erase_stream_manager(const stream_manager_ptr &mgr) {
-            MTL_LOG_TRACE("");
+            ACTOR_LOG_TRACE("");
             if (!stream_managers_.empty()) {
                 auto i = stream_managers_.begin();
                 auto e = stream_managers_.end();
@@ -1007,12 +1007,12 @@ namespace nil {
                     else
                         ++i;
             }
-            MTL_LOG_DEBUG(MTL_ARG2("stream_managers_.size", stream_managers_.size())
-                          << MTL_ARG2("pending_stream_managers_.size", pending_stream_managers_.size()));
+            ACTOR_LOG_DEBUG(ACTOR_ARG2("stream_managers_.size", stream_managers_.size())
+                          << ACTOR_ARG2("pending_stream_managers_.size", pending_stream_managers_.size()));
         }
 
         invoke_message_result scheduled_actor::handle_open_stream_msg(mailbox_element &x) {
-            MTL_LOG_TRACE(MTL_ARG(x));
+            ACTOR_LOG_TRACE(ACTOR_ARG(x));
             // Fetches a stream manger from a behavior.
             struct visitor : detail::invoke_result_visitor {
                 void operator()() override {
@@ -1032,7 +1032,7 @@ namespace nil {
                 }
             };
             // Extract the handshake part of the message.
-            MTL_ASSERT(x.content().match_elements<open_stream_msg>());
+            ACTOR_ASSERT(x.content().match_elements<open_stream_msg>());
             auto &osm = x.content().get_mutable_as<open_stream_msg>(0);
             visitor f;
             // Utility lambda for aborting the stream on error.
@@ -1047,11 +1047,11 @@ namespace nil {
                 auto sres = call_handler(default_handler_, this, x);
                 switch (sres.flag) {
                     default:
-                        MTL_LOG_DEBUG("default handler was called for open_stream_msg:" << osm.msg);
+                        ACTOR_LOG_DEBUG("default handler was called for open_stream_msg:" << osm.msg);
                         fail(sec::stream_init_failed, "dropped open_stream_msg (no match)");
                         return im_dropped;
                     case rt_skip:
-                        MTL_LOG_DEBUG("default handler skipped open_stream_msg:" << osm.msg);
+                        ACTOR_LOG_DEBUG("default handler skipped open_stream_msg:" << osm.msg);
                         return im_skipped;
                 }
             };
@@ -1062,21 +1062,21 @@ namespace nil {
             auto res = (bs.back())(f, osm.msg);
             switch (res) {
                 case match_case::result::no_match:
-                    MTL_LOG_DEBUG("no match in behavior, fall back to default handler");
+                    ACTOR_LOG_DEBUG("no match in behavior, fall back to default handler");
                     return fallback();
                 case match_case::result::match: {
                     return im_success;
                 }
                 default:
-                    MTL_LOG_DEBUG("behavior skipped open_stream_msg:" << osm.msg);
+                    ACTOR_LOG_DEBUG("behavior skipped open_stream_msg:" << osm.msg);
                     return im_skipped;    // nop
             }
         }
 
         actor_clock::time_point scheduled_actor::advance_streams(actor_clock::time_point now) {
-            MTL_LOG_TRACE("");
+            ACTOR_LOG_TRACE("");
             if (!stream_ticks_.started()) {
-                MTL_LOG_DEBUG("tick emitter not started yet");
+                ACTOR_LOG_DEBUG("tick emitter not started yet");
                 return actor_clock::time_point::max();
             }
             /// Advance time for driving forced batches and credit.
@@ -1088,7 +1088,7 @@ namespace nil {
             }
             // Fill up credit on each input path.
             if ((bitmask & 0x02) != 0) {
-                MTL_LOG_DEBUG("new credit round");
+                ACTOR_LOG_DEBUG("new credit round");
                 auto cycle = stream_ticks_.interval();
                 cycle *= static_cast<decltype(cycle)::rep>(credit_round_ticks_);
                 auto bc = home_system().config().stream_desired_batch_complexity;
@@ -1102,5 +1102,5 @@ namespace nil {
             return stream_ticks_.next_timeout(now, {max_batch_delay_ticks_, credit_round_ticks_});
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

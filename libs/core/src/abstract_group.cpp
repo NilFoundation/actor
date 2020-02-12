@@ -10,17 +10,17 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/abstract_group.hpp>
+#include <nil/actor/abstract_group.hpp>
 
-#include <nil/mtl/group.hpp>
-#include <nil/mtl/message.hpp>
-#include <nil/mtl/actor_cast.hpp>
-#include <nil/mtl/group_module.hpp>
-#include <nil/mtl/group_manager.hpp>
-#include <nil/mtl/detail/shared_spinlock.hpp>
+#include <nil/actor/group.hpp>
+#include <nil/actor/message.hpp>
+#include <nil/actor/actor_cast.hpp>
+#include <nil/actor/group_module.hpp>
+#include <nil/actor/group_manager.hpp>
+#include <nil/actor/detail/shared_spinlock.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         abstract_group::abstract_group(group_module &mod, std::string id, node_id nid) :
             abstract_channel(abstract_channel::is_abstract_group_flag), system_(mod.system()), parent_(mod),
@@ -32,5 +32,5 @@ namespace nil {
             // nop
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

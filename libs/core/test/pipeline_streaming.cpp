@@ -15,19 +15,19 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <memory>
 #include <numeric>
 
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/event_based_actor.hpp>
-#include <nil/mtl/stateful_actor.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/event_based_actor.hpp>
+#include <nil/actor/stateful_actor.hpp>
 
 using std::string;
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 
@@ -140,14 +140,14 @@ namespace {
     }
 
     TESTEE(broken_sink) {
-        MTL_IGNORE_UNUSED(self);
+        ACTOR_IGNORE_UNUSED(self);
         return {[=](stream<int> &, const actor &) {
             // nop
         }};
     }
 
     TESTEE(filter) {
-        MTL_IGNORE_UNUSED(self);
+        ACTOR_IGNORE_UNUSED(self);
         return {[=](stream<int> &in) {
             return self->make_stage(
                 // input stream
@@ -168,7 +168,7 @@ namespace {
     }
 
     TESTEE(doubler) {
-        MTL_IGNORE_UNUSED(self);
+        ACTOR_IGNORE_UNUSED(self);
         return {[=](stream<int> &in) {
             return self->make_stage(
                 // input stream
@@ -205,7 +205,7 @@ BOOST_FIXTURE_TEST_SUITE(local_streaming_tests, fixture)
 BOOST_AUTO_TEST_CASE(depth_2_pipeline_50_items_test) {
     auto src = sys.spawn(file_reader, 50u);
     auto snk = sys.spawn(sum_up);
-    //    BOOST_TEST_MESSAGE(MTL_ARG(self) << MTL_ARG(src) << MTL_ARG(snk));
+    //    BOOST_TEST_MESSAGE(ACTOR_ARG(self) << ACTOR_ARG(src) << ACTOR_ARG(snk));
     BOOST_TEST_MESSAGE("initiate stream handshake");
     self->send(snk * src, "numbers.txt");
     expect((string), from(self).to(src).with("numbers.txt"));
@@ -225,7 +225,7 @@ BOOST_AUTO_TEST_CASE(depth_2_pipeline_50_items_test) {
 BOOST_AUTO_TEST_CASE(depth_2_pipeline_setup2_50_items_test) {
     auto src = sys.spawn(file_reader, 50u);
     auto snk = sys.spawn(sum_up);
-    //    BOOST_TEST_MESSAGE(MTL_ARG(self) << MTL_ARG(src) << MTL_ARG(snk));
+    //    BOOST_TEST_MESSAGE(ACTOR_ARG(self) << ACTOR_ARG(src) << ACTOR_ARG(snk));
     BOOST_TEST_MESSAGE("initiate stream handshake");
     self->send(src, "numbers.txt", snk);
     expect((string, actor), from(self).to(src).with("numbers.txt", snk));
@@ -245,7 +245,7 @@ BOOST_AUTO_TEST_CASE(depth_2_pipeline_setup2_50_items_test) {
 BOOST_AUTO_TEST_CASE(delayed_depth_2_pipeline_50_items_test) {
     auto src = sys.spawn(file_reader, 50u);
     auto snk = sys.spawn(delayed_sum_up);
-    //    BOOST_TEST_MESSAGE(MTL_ARG(self) << MTL_ARG(src) << MTL_ARG(snk));
+    //    BOOST_TEST_MESSAGE(ACTOR_ARG(self) << ACTOR_ARG(src) << ACTOR_ARG(snk));
     BOOST_TEST_MESSAGE("initiate stream handshake");
     self->send(snk * src, "numbers.txt");
     expect((string), from(self).to(src).with("numbers.txt"));
@@ -271,7 +271,7 @@ BOOST_AUTO_TEST_CASE(delayed_depth_2_pipeline_50_items_test) {
 BOOST_AUTO_TEST_CASE(depth_2_pipeline_500_items_test) {
     auto src = sys.spawn(file_reader, 500u);
     auto snk = sys.spawn(sum_up);
-    //    BOOST_TEST_MESSAGE(MTL_ARG(self) << MTL_ARG(src) << MTL_ARG(snk));
+    //    BOOST_TEST_MESSAGE(ACTOR_ARG(self) << ACTOR_ARG(src) << ACTOR_ARG(snk));
     BOOST_TEST_MESSAGE("initiate stream handshake");
     self->send(snk * src, "numbers.txt");
     expect((string), from(self).to(src).with("numbers.txt"));
@@ -311,7 +311,7 @@ BOOST_AUTO_TEST_CASE(depth_2_pipeline_error_at_source_test) {
     BOOST_TEST_MESSAGE("streams must abort if a source fails at runtime");
     auto src = sys.spawn(file_reader, 500u);
     auto snk = sys.spawn(sum_up);
-    //    BOOST_TEST_MESSAGE(MTL_ARG(self) << MTL_ARG(src) << MTL_ARG(snk));
+    //    BOOST_TEST_MESSAGE(ACTOR_ARG(self) << ACTOR_ARG(src) << ACTOR_ARG(snk));
     BOOST_TEST_MESSAGE("initiate stream handshake");
     self->send(snk * src, "numbers.txt");
     expect((string), from(self).to(src).with("numbers.txt"));
@@ -327,7 +327,7 @@ BOOST_AUTO_TEST_CASE(depth_2_pipelin_error_at_sink_test) {
     BOOST_TEST_MESSAGE("streams must abort if a sink fails at runtime");
     auto src = sys.spawn(file_reader, 500u);
     auto snk = sys.spawn(sum_up);
-    //    BOOST_TEST_MESSAGE(MTL_ARG(self) << MTL_ARG(src) << MTL_ARG(snk));
+    //    BOOST_TEST_MESSAGE(ACTOR_ARG(self) << ACTOR_ARG(src) << ACTOR_ARG(snk));
     BOOST_TEST_MESSAGE("initiate stream handshake");
     self->send(snk * src, "numbers.txt");
     expect((string), from(self).to(src).with("numbers.txt"));
@@ -348,7 +348,7 @@ BOOST_AUTO_TEST_CASE(depth_3_pipeline_50_items_test) {
         allow((timeout_msg), from(stg).to(stg));
         allow((timeout_msg), from(src).to(src));
     };
-    //    BOOST_TEST_MESSAGE(MTL_ARG(self) << MTL_ARG(src) << MTL_ARG(stg) << MTL_ARG(snk));
+    //    BOOST_TEST_MESSAGE(ACTOR_ARG(self) << ACTOR_ARG(src) << ACTOR_ARG(stg) << ACTOR_ARG(snk));
     BOOST_TEST_MESSAGE("initiate stream handshake");
     self->send(snk * stg * src, "numbers.txt");
     expect((string), from(self).to(src).with("numbers.txt"));
@@ -377,7 +377,7 @@ BOOST_AUTO_TEST_CASE(depth_4_pipeline_500_items_test) {
     auto stg1 = sys.spawn(filter);
     auto stg2 = sys.spawn(doubler);
     auto snk = sys.spawn(sum_up);
-    //    BOOST_TEST_MESSAGE(MTL_ARG(self) << MTL_ARG(src) << MTL_ARG(stg1) << MTL_ARG(stg2) << MTL_ARG(snk));
+    //    BOOST_TEST_MESSAGE(ACTOR_ARG(self) << ACTOR_ARG(src) << ACTOR_ARG(stg1) << ACTOR_ARG(stg2) << ACTOR_ARG(snk));
     BOOST_TEST_MESSAGE("initiate stream handshake");
     self->send(snk * stg2 * stg1 * src, "numbers.txt");
     expect((string), from(self).to(src).with("numbers.txt"));
@@ -397,7 +397,7 @@ BOOST_AUTO_TEST_CASE(depth_3_pipeline_graceful_shutdown_test) {
     auto src = sys.spawn(file_reader, 50u);
     auto stg = sys.spawn(filter);
     auto snk = sys.spawn(sum_up);
-    //    BOOST_TEST_MESSAGE(MTL_ARG(self) << MTL_ARG(src) << MTL_ARG(stg) << MTL_ARG(snk));
+    //    BOOST_TEST_MESSAGE(ACTOR_ARG(self) << ACTOR_ARG(src) << ACTOR_ARG(stg) << ACTOR_ARG(snk));
     BOOST_TEST_MESSAGE("initiate stream handshake");
     self->send(snk * stg * src, "numbers.txt");
     expect((string), from(self).to(src).with("numbers.txt"));
@@ -417,7 +417,7 @@ BOOST_AUTO_TEST_CASE(depth_3_pipeline_infinite_source_test) {
     auto src = sys.spawn(infinite_source);
     auto stg = sys.spawn(filter);
     auto snk = sys.spawn(sum_up);
-    //    BOOST_TEST_MESSAGE(MTL_ARG(self) << MTL_ARG(src) << MTL_ARG(stg) << MTL_ARG(snk));
+    //    BOOST_TEST_MESSAGE(ACTOR_ARG(self) << ACTOR_ARG(src) << ACTOR_ARG(stg) << ACTOR_ARG(snk));
     BOOST_TEST_MESSAGE("initiate stream handshake");
     self->send(snk * stg * src, "numbers.txt");
     expect((string), from(self).to(src).with("numbers.txt"));

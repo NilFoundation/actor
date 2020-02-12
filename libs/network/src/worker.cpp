@@ -9,16 +9,16 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/basp/worker.hpp>
+#include <nil/actor/network/basp/worker.hpp>
 
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/byte.hpp>
-#include <nil/mtl/network/basp/message_queue.hpp>
-#include <nil/mtl/proxy_registry.hpp>
-#include <nil/mtl/scheduler/abstract_coordinator.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/byte.hpp>
+#include <nil/actor/network/basp/message_queue.hpp>
+#include <nil/actor/proxy_registry.hpp>
+#include <nil/actor/scheduler/abstract_coordinator.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
             namespace basp {
 
@@ -26,7 +26,7 @@ namespace nil {
 
                 worker::worker(hub_type &hub, message_queue &queue, proxy_registry &proxies) :
                     hub_(&hub), queue_(&queue), proxies_(&proxies), system_(&proxies.system()) {
-                    MTL_IGNORE_UNUSED(pad_);
+                    ACTOR_IGNORE_UNUSED(pad_);
                 }
 
                 worker::~worker() {
@@ -55,5 +55,5 @@ namespace nil {
 
             }    // namespace basp
         }        // namespace network
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

@@ -15,7 +15,7 @@ endif()
 
 # get header files; only needed by CMake generators,
 # e.g., for creating proper Xcode projects
-file(GLOB_RECURSE ${CURRENT_PROJECT_NAME}_HEADERS "include/nil/mtl/**.hpp")
+file(GLOB_RECURSE ${CURRENT_PROJECT_NAME}_HEADERS "include/nil/actor/**.hpp")
 
 # list cpp files excluding platform-dependent files
 set(${CURRENT_PROJECT_NAME}_SOURCES
@@ -147,17 +147,17 @@ set(${CURRENT_PROJECT_NAME}_SOURCES
 
 # configure build_config.hpp header
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/../../cmake/build_config.hpp.in"
-               "${CMAKE_BINARY_DIR}/include/nil/mtl/detail/build_config.hpp"
+               "${CMAKE_BINARY_DIR}/include/nil/actor/detail/build_config.hpp"
                @ONLY)
-install(FILES "${CMAKE_BINARY_DIR}/include/nil/mtl/detail/build_config.hpp"
-        DESTINATION include/nil/mtl/detail
+install(FILES "${CMAKE_BINARY_DIR}/include/nil/actor/detail/build_config.hpp"
+        DESTINATION include/nil/actor/detail
         )
-list(APPEND LIBMTL_CORE_HDRS
-     "${CMAKE_BINARY_DIR}/include/nil/mtl/detail/build_config.hpp"
+list(APPEND LIBACTOR_CORE_HDRS
+     "${CMAKE_BINARY_DIR}/include/nil/actor/detail/build_config.hpp"
      )
 
 add_library(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} ${${CURRENT_PROJECT_NAME}_SOURCES}
-            ${${CURRENT_PROJECT_NAME}_HEADERS} ${LIBMTL_CORE_HDRS})
+            ${${CURRENT_PROJECT_NAME}_HEADERS} ${LIBACTOR_CORE_HDRS})
 set_target_properties(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} PROPERTIES
                       LINKER_LANGUAGE CXX
                       EXPORT_NAME ${CURRENT_PROJECT_NAME}
@@ -172,7 +172,7 @@ target_include_directories(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} PUBLI
                            ${Boost_INCLUDE_DIRS})
 
 target_link_libraries(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} PUBLIC
-                      ${MTL_EXTRA_LDFLAGS}
+                      ${ACTOR_EXTRA_LDFLAGS}
 
                       crypto3::block
                       crypto3::codec

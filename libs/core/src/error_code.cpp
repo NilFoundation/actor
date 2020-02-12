@@ -8,10 +8,10 @@
 // License 1.0. See accompanying files LICENSE and LICENSE_ALTERNATIVE.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/error_code.hpp>
+#include <nil/actor/error_code.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             /// @addtogroup BASP
@@ -22,5 +22,5 @@ namespace nil {
             /// @}
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

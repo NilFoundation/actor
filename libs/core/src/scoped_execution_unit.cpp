@@ -10,13 +10,13 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/scoped_execution_unit.hpp>
+#include <nil/actor/scoped_execution_unit.hpp>
 
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/scheduler/abstract_coordinator.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/scheduler/abstract_coordinator.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         scoped_execution_unit::~scoped_execution_unit() {
             // nop
@@ -26,5 +26,5 @@ namespace nil {
             system().scheduler().enqueue(ptr);
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

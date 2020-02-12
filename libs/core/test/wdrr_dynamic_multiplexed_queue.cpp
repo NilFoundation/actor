@@ -17,14 +17,14 @@
 
 #include <memory>
 
-#include <nil/mtl/deep_to_string.hpp>
+#include <nil/actor/deep_to_string.hpp>
 
-#include <nil/mtl/intrusive/drr_queue.hpp>
-#include <nil/mtl/intrusive/singly_linked.hpp>
-#include <nil/mtl/intrusive/wdrr_dynamic_multiplexed_queue.hpp>
+#include <nil/actor/intrusive/drr_queue.hpp>
+#include <nil/actor/intrusive/singly_linked.hpp>
+#include <nil/actor/intrusive/wdrr_dynamic_multiplexed_queue.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::intrusive;
+using namespace nil::actor;
+using namespace nil::actor::intrusive;
 
 namespace {
 

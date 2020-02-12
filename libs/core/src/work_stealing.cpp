@@ -10,16 +10,16 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/policy/work_stealing.hpp>
+#include <nil/actor/policy/work_stealing.hpp>
 
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/defaults.hpp>
-#include <nil/mtl/scheduler/abstract_coordinator.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/defaults.hpp>
+#include <nil/actor/scheduler/abstract_coordinator.hpp>
 
 #define CONFIG(str_name, var_name) get_or(p->config(), "work-stealing." str_name, defaults::work_stealing::var_name)
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace policy {
 
             work_stealing::~work_stealing() {
@@ -47,5 +47,5 @@ namespace nil {
             }
 
         }    // namespace policy
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

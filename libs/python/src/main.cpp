@@ -1,4 +1,4 @@
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
 #include <set>
 
@@ -11,14 +11,14 @@
 #include <functional>
 #include <unordered_map>
 
-MTL_PUSH_WARNINGS
+ACTOR_PUSH_WARNINGS
 
 #include "third_party/pybind/include/pybind11/pybind11.h"
 
-MTL_POP_WARNINGS
+ACTOR_POP_WARNINGS
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/io/all.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/io/all.hpp>
 
 using std::cout;
 using std::cerr;
@@ -37,7 +37,7 @@ namespace {
 )__";
 
     constexpr char init_script[] = R"__(
-from MTL import *
+from ACTOR import *
 
 caf_mail_cache=[]
 
@@ -77,7 +77,7 @@ def receive(timeout = None, msg_filter = no_receive_filter):
 } // namespace <anonymous>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         void register_class(atom_value *, pybind11::module &m, const std::string &name) {
             auto repr_fun = [](atom_value x) {
@@ -274,7 +274,7 @@ namespace nil {
                             pybind11::init<int>());
                 }
 
-                class py_config : public actor_system_config {
+                class py_config : public spawner_config {
                 public:
                     std::string pre_run;
                     std::string banner = default_banner;
@@ -284,12 +284,12 @@ namespace nil {
                     &, const std::string&)>;
 
                     py_config() {
-                        // allow MTL to convert native Python types to C++ types
+                        // allow ACTOR to convert native Python types to C++ types
                         add_py<int>("int");
                         add_py<bool>("bool");
                         add_py<float>("float");
                         add_py<std::string>("str");
-                        // create Python bindings for builtin MTL types
+                        // create Python bindings for builtin ACTOR types
                         add_cpp<actor>("actor", "@actor");
                         add_cpp<message>("message", "@message");
                         add_cpp<atom_value>("atom_value", "@atom");
@@ -305,7 +305,7 @@ namespace nil {
                     template<class T>
                     py_config &add_message_type(std::string name, register_fun reg = &default_python_class_init<T>) {
                         add_cpp<T>(name, name, std::move(reg));
-                        actor_system_config::add_message_type<T>(std::move(name));
+                        spawner_config::add_message_type<T>(std::move(name));
                         return *this;
                     }
 
@@ -368,8 +368,8 @@ namespace nil {
                             });
                         }
                         auto ptr = new default_cpp_binding<T>(py_name, reg != nullptr);
-                        // all type names are prefix with "MTL."
-                        py_name.insert(0, "MTL.");
+                        // all type names are prefix with "ACTOR."
+                        py_name.insert(0, "ACTOR.");
                         cpp_bindings_.emplace(py_name, cpp_binding_ptr{ptr});
                         bindings_.emplace(std::move(py_name), ptr);
                         portable_bindings_.emplace(std::move(cpp_name), ptr);
@@ -419,7 +419,7 @@ namespace nil {
 
                 void py_send(const pybind11::args &xs) {
                     if (xs.size() < 2) {
-                        set_py_exception("Too few arguments to call MTL.send");
+                        set_py_exception("Too few arguments to call ACTOR.send");
                         return;
                     }
                     auto i = xs.begin();
@@ -432,7 +432,7 @@ namespace nil {
                         auto kvp = bindings.find(type_name);
                         if (kvp == bindings.end()) {
                             set_py_exception(R"(Unable to add element of type ")", type_name,
-                                    R"(" to message: type is unknown to MTL)");
+                                    R"(" to message: type is unknown to ACTOR)");
                             return;
                         }
                         kvp->second->append(mb, *i);
@@ -455,7 +455,7 @@ namespace nil {
                         auto kvp = bindings.find(*str_ptr);
                         if (kvp == bindings.end()) {
                             set_py_exception(R"(Unable to add element of type ")", *str_ptr,
-                                    R"(" to message: type is unknown to MTL)");
+                                    R"(" to message: type is unknown to ACTOR)");
                             return pybind11::tuple{};
                         }
                         auto obj = kvp->second->to_object(msg, i);
@@ -521,15 +521,15 @@ namespace nil {
                 }
 
 #if PY_MAJOR_VERSION == 3
-#define MTL_MODULE_INIT_RES PyObject*
-#define MTL_MODULE_INIT_RET(res) return res;
+#define ACTOR_MODULE_INIT_RES PyObject*
+#define ACTOR_MODULE_INIT_RET(res) return res;
 #else
-#define MTL_MODULE_INIT_RES void
-#define MTL_MODULE_INIT_RET(unused)
+#define ACTOR_MODULE_INIT_RES void
+#define ACTOR_MODULE_INIT_RET(unused)
 #endif
 
-                MTL_MODULE_INIT_RES caf_module_init() {
-                    pybind11::module m("MTL", "Python binding for MTL");
+                ACTOR_MODULE_INIT_RES caf_module_init() {
+                    pybind11::module m("ACTOR", "Python binding for ACTOR");
                     s_context->cfg.py_init(m);
                     // add classes
                     // add free functions
@@ -537,19 +537,19 @@ namespace nil {
                             "Receives the next message").def("dequeue_message_with_timeout", &py_dequeue_with_timeout,
                             "Receives the next message").def("self", &py_self, "Returns the global self handle").def(
                             "atom", &atom_from_string, "Creates an atom from a string");
-                    MTL_MODULE_INIT_RET(m.ptr())
+                    ACTOR_MODULE_INIT_RET(m.ptr())
                 }
 
 
             } // namespace <anonymous>
         } // namespace python
-    } // namespace mtl
+    } // namespace actor
 } // namespace nil
 
 namespace {
 
-    using namespace nil::mtl;
-    using namespace nil::mtl::python;
+    using namespace nil::actor;
+    using namespace nil::actor::python;
 
     class config : public py_config {
     public:
@@ -567,9 +567,9 @@ namespace {
         py_context ctx{cfg, system, self};
         s_context = &ctx;
         // init Python
-        PyImport_AppendInittab("MTL", caf_module_init);
+        PyImport_AppendInittab("ACTOR", caf_module_init);
         Py_Initialize();
-        // create Python module for MTL
+        // create Python module for ACTOR
         int py_res = 0;
         if (!cfg.py_file.empty()) {
             auto fp = fopen(cfg.py_file.c_str(), "r");
@@ -596,4 +596,4 @@ namespace {
 
 } // namespace <anonymous>
 
-MTL_MAIN()
+ACTOR_MAIN()

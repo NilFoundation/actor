@@ -9,29 +9,29 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/tcp_stream_socket.hpp>
+#include <nil/actor/network/tcp_stream_socket.hpp>
 
-#include <nil/mtl/detail/net_syscall.hpp>
-#include <nil/mtl/detail/sockaddr_members.hpp>
-#include <nil/mtl/detail/socket_sys_includes.hpp>
-#include <nil/mtl/expected.hpp>
-#include <nil/mtl/ipv4_address.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/network/ip.hpp>
-#include <nil/mtl/network/socket_guard.hpp>
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/variant.hpp>
+#include <nil/actor/detail/net_syscall.hpp>
+#include <nil/actor/detail/sockaddr_members.hpp>
+#include <nil/actor/detail/socket_sys_includes.hpp>
+#include <nil/actor/expected.hpp>
+#include <nil/actor/ipv4_address.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/network/ip.hpp>
+#include <nil/actor/network/socket_guard.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/variant.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
 
             namespace {
 
                 template<int Family>
                 bool ip_connect(stream_socket fd, std::string host, uint16_t port) {
-                    MTL_LOG_TRACE("Family =" << (Family == AF_INET ? "AF_INET" : "AF_INET6") << MTL_ARG(fd.id)
-                                             << MTL_ARG(host) << MTL_ARG(port));
+                    ACTOR_LOG_TRACE("Family =" << (Family == AF_INET ? "AF_INET" : "AF_INET6") << ACTOR_ARG(fd.id)
+                                             << ACTOR_ARG(host) << ACTOR_ARG(port));
                     static_assert(Family == AF_INET || Family == AF_INET6, "invalid family");
                     using sockaddr_type = typename std::conditional<Family == AF_INET, sockaddr_in, sockaddr_in6>::type;
                     sockaddr_type sa;
@@ -46,26 +46,26 @@ namespace nil {
             }    // namespace
 
             expected<tcp_stream_socket> make_connected_tcp_stream_socket(ip_endpoint node) {
-                MTL_LOG_DEBUG("tcp connect to: " << to_string(node));
+                ACTOR_LOG_DEBUG("tcp connect to: " << to_string(node));
                 auto proto = node.address().embeds_v4() ? AF_INET : AF_INET6;
                 int socktype = SOCK_STREAM;
 #ifdef SOCK_CLOEXEC
                 socktype |= SOCK_CLOEXEC;
 #endif
-                MTL_NET_SYSCALL("socket", fd, ==, -1, ::socket(proto, socktype, 0));
+                ACTOR_NET_SYSCALL("socket", fd, ==, -1, ::socket(proto, socktype, 0));
                 tcp_stream_socket sock {fd};
                 child_process_inherit(sock, false);
                 auto sguard = make_socket_guard(sock);
                 if (proto == AF_INET6) {
                     if (ip_connect<AF_INET6>(sock, to_string(node.address()), node.port())) {
-                        MTL_LOG_INFO("successfully connected to (IPv6):" << to_string(node));
+                        ACTOR_LOG_INFO("successfully connected to (IPv6):" << to_string(node));
                         return sguard.release();
                     }
                 } else if (ip_connect<AF_INET>(sock, to_string(node.address().embedded_v4()), node.port())) {
-                    MTL_LOG_INFO("successfully connected to (IPv4):" << to_string(node));
+                    ACTOR_LOG_INFO("successfully connected to (IPv4):" << to_string(node));
                     return sguard.release();
                 }
-                MTL_LOG_WARNING("could not connect to: " << to_string(node));
+                ACTOR_LOG_WARNING("could not connect to: " << to_string(node));
                 return make_error(sec::cannot_connect_to_node);
             }
 
@@ -88,5 +88,5 @@ namespace nil {
             }
 
         }    // namespace network
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

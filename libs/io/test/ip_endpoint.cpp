@@ -4,19 +4,19 @@
 
 #include <vector>
 
-#include <nil/mtl/test/dsl.hpp>
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/serialization/binary_serializer.hpp>
-#include <nil/mtl/serialization/binary_deserializer.hpp>
+#include <nil/actor/test/dsl.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/serialization/binary_serializer.hpp>
+#include <nil/actor/serialization/binary_deserializer.hpp>
 
-#include <nil/mtl/io/middleman.hpp>
-#include <nil/mtl/io/network/interfaces.hpp>
-#include <nil/mtl/io/network/ip_endpoint.hpp>
+#include <nil/actor/io/middleman.hpp>
+#include <nil/actor/io/network/interfaces.hpp>
+#include <nil/actor/io/network/ip_endpoint.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::io;
+using namespace nil::actor;
+using namespace nil::actor::io;
 
 namespace {
 

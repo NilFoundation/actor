@@ -10,10 +10,10 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/memory_managed.hpp>
+#include <nil/actor/memory_managed.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         memory_managed::~memory_managed() {
             // nop
@@ -23,5 +23,5 @@ namespace nil {
             delete this;
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

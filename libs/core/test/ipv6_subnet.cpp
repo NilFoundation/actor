@@ -15,12 +15,12 @@
 #include <boost/test/unit_test.hpp>
 #include <boost/test/data/test_case.hpp>
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-#include <nil/mtl/ipv6_subnet.hpp>
-#include <nil/mtl/config.hpp>
+#include <nil/actor/ipv6_subnet.hpp>
+#include <nil/actor/config.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 

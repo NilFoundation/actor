@@ -11,22 +11,22 @@
 
 #define BOOST_TEST_MODULE transport_worker
 
-#include <nil/mtl/network/transport_worker.hpp>
+#include <nil/actor/network/transport_worker.hpp>
 
-#include <nil/mtl/test/host_fixture.hpp>
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/host_fixture.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-#include <nil/mtl/serialization/binary_serializer.hpp>
-#include <nil/mtl/byte.hpp>
-#include <nil/mtl/detail/scope_guard.hpp>
-#include <nil/mtl/ip_endpoint.hpp>
-#include <nil/mtl/make_actor.hpp>
-#include <nil/mtl/network/actor_proxy_impl.hpp>
-#include <nil/mtl/network/multiplexer.hpp>
-#include <nil/mtl/span.hpp>
+#include <nil/actor/serialization/binary_serializer.hpp>
+#include <nil/actor/byte.hpp>
+#include <nil/actor/detail/scope_guard.hpp>
+#include <nil/actor/ip_endpoint.hpp>
+#include <nil/actor/make_actor.hpp>
+#include <nil/actor/network/actor_proxy_impl.hpp>
+#include <nil/actor/network/multiplexer.hpp>
+#include <nil/actor/span.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::network;
+using namespace nil::actor;
+using namespace nil::actor::network;
 
 namespace {
 

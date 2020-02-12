@@ -10,10 +10,10 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/parser/chars.hpp>
+#include <nil/actor/detail/parser/chars.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
             namespace parser {
 
@@ -34,5 +34,5 @@ namespace nil {
 
             }    // namespace parser
         }        // namespace detail
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

@@ -10,20 +10,20 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/blocking_actor.hpp>
+#include <nil/actor/blocking_actor.hpp>
 
 #include <utility>
 
-#include <nil/mtl/actor_registry.hpp>
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/detail/default_invoke_result_visitor.hpp>
-#include <nil/mtl/detail/invoke_result_visitor.hpp>
-#include <nil/mtl/detail/set_thread_name.hpp>
-#include <nil/mtl/detail/sync_request_bouncer.hpp>
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/actor_registry.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/detail/default_invoke_result_visitor.hpp>
+#include <nil/actor/detail/invoke_result_visitor.hpp>
+#include <nil/actor/detail/set_thread_name.hpp>
+#include <nil/actor/detail/sync_request_bouncer.hpp>
+#include <nil/actor/logger.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         blocking_actor::receive_cond::~receive_cond() {
             // nop
@@ -55,21 +55,21 @@ namespace nil {
         }
 
         void blocking_actor::enqueue(mailbox_element_ptr ptr, execution_unit *) {
-            MTL_ASSERT(ptr != nullptr);
-            MTL_ASSERT(getf(is_blocking_flag));
-            MTL_LOG_TRACE(MTL_ARG(*ptr));
-            MTL_LOG_SEND_EVENT(ptr);
+            ACTOR_ASSERT(ptr != nullptr);
+            ACTOR_ASSERT(getf(is_blocking_flag));
+            ACTOR_LOG_TRACE(ACTOR_ARG(*ptr));
+            ACTOR_LOG_SEND_EVENT(ptr);
             auto mid = ptr->mid;
             auto src = ptr->sender;
             // returns false if mailbox has been closed
             if (!mailbox().synchronized_push_back(mtx_, cv_, std::move(ptr))) {
-                MTL_LOG_REJECT_EVENT();
+                ACTOR_LOG_REJECT_EVENT();
                 if (mid.is_request()) {
                     detail::sync_request_bouncer srb {exit_reason()};
                     srb(src, mid);
                 }
             } else {
-                MTL_LOG_ACCEPT_EVENT(false);
+                ACTOR_LOG_ACCEPT_EVENT(false);
             }
         }
 
@@ -82,25 +82,25 @@ namespace nil {
         }
 
         void blocking_actor::launch(execution_unit *, bool, bool hide) {
-            MTL_PUSH_AID_FROM_PTR(this);
-            MTL_LOG_TRACE(MTL_ARG(hide));
-            MTL_ASSERT(getf(is_blocking_flag));
+            ACTOR_PUSH_AID_FROM_PTR(this);
+            ACTOR_LOG_TRACE(ACTOR_ARG(hide));
+            ACTOR_ASSERT(getf(is_blocking_flag));
             if (!hide)
                 register_at_system();
             home_system().inc_detached_threads();
             std::thread(
                 [](strong_actor_ptr ptr) {
                     // actor lives in its own thread
-                    detail::set_thread_name("mtl.actor");
+                    detail::set_thread_name("actor.actor");
                     ptr->home_system->thread_started();
                     auto this_ptr = ptr->get();
-                    MTL_ASSERT(dynamic_cast<blocking_actor *>(this_ptr) != nullptr);
+                    ACTOR_ASSERT(dynamic_cast<blocking_actor *>(this_ptr) != nullptr);
                     auto self = static_cast<blocking_actor *>(this_ptr);
-                    MTL_SET_LOGGER_SYS(ptr->home_system);
-                    MTL_PUSH_AID_FROM_PTR(self);
+                    ACTOR_SET_LOGGER_SYS(ptr->home_system);
+                    ACTOR_PUSH_AID_FROM_PTR(self);
                     self->initialize();
                     error rsn;
-#ifndef MTL_NO_EXCEPTIONS
+#ifndef ACTOR_NO_EXCEPTIONS
                     try {
                         self->act();
                         rsn = self->fail_state_;
@@ -138,7 +138,7 @@ namespace nil {
         }
 
         void blocking_actor::act() {
-            MTL_LOG_TRACE("");
+            ACTOR_LOG_TRACE("");
             if (initial_behavior_fac_)
                 initial_behavior_fac_(this);
         }
@@ -148,8 +148,8 @@ namespace nil {
         }
 
         intrusive::task_result blocking_actor::mailbox_visitor::operator()(mailbox_element &x) {
-            MTL_LOG_TRACE(MTL_ARG(x));
-            MTL_LOG_RECEIVE_EVENT((&x));
+            ACTOR_LOG_TRACE(ACTOR_ARG(x));
+            ACTOR_LOG_RECEIVE_EVENT((&x));
             auto check_if_done = [&]() -> intrusive::task_result {
                 // Stop consuming items when reaching the end of the user-defined receive
                 // loop either via post or pre condition.
@@ -161,11 +161,11 @@ namespace nil {
             // Skip messages that don't match our message ID.
             if (mid.is_response()) {
                 if (mid != x.mid) {
-                    MTL_LOG_SKIP_EVENT();
+                    ACTOR_LOG_SKIP_EVENT();
                     return intrusive::task_result::skip;
                 }
             } else if (x.mid.is_response()) {
-                MTL_LOG_SKIP_EVENT();
+                ACTOR_LOG_SKIP_EVENT();
                 return intrusive::task_result::skip;
             }
             // Automatically unlink from actors after receiving an exit.
@@ -184,7 +184,7 @@ namespace nil {
                     auto sres = bhvr.fallback(*self->current_element_);
                     if (sres.flag != rt_skip) {
                         visitor.visit(sres);
-                        MTL_LOG_FINALIZE_EVENT();
+                        ACTOR_LOG_FINALIZE_EVENT();
                         return check_if_done();
                     }
                 }
@@ -195,18 +195,18 @@ namespace nil {
                         mailbox_element_view<error> tmp {std::move(x.sender), x.mid, std::move(x.stages), err};
                         self->current_element_ = &tmp;
                         bhvr.nested(tmp.content());
-                        MTL_LOG_FINALIZE_EVENT();
+                        ACTOR_LOG_FINALIZE_EVENT();
                         return check_if_done();
                     }
-                    MTL_ANNOTATE_FALLTHROUGH;
+                    ACTOR_ANNOTATE_FALLTHROUGH;
                 case match_case::skip:
-                    MTL_LOG_SKIP_EVENT();
+                    ACTOR_LOG_SKIP_EVENT();
                     return intrusive::task_result::skip;
             }
         }
 
         void blocking_actor::receive_impl(receive_cond &rcc, message_id mid, detail::blocking_behavior &bhvr) {
-            MTL_LOG_TRACE(MTL_ARG(mid));
+            ACTOR_LOG_TRACE(ACTOR_ARG(mid));
             // Set to `true` by the visitor when done.
             bool done = false;
             // Make sure each receive sees all mailbox elements.
@@ -256,7 +256,7 @@ namespace nil {
             auto result = get<mailbox_policy::urgent_queue_index>(qs).take_front();
             if (!result)
                 result = get<mailbox_policy::normal_queue_index>(qs).take_front();
-            MTL_ASSERT(result != nullptr);
+            ACTOR_ASSERT(result != nullptr);
             return result;
         }
 
@@ -274,7 +274,7 @@ namespace nil {
         }
 
         sec blocking_actor::build_pipeline(stream_slot, stream_slot, stream_manager_ptr) {
-            MTL_LOG_ERROR("blocking_actor::build_pipeline called");
+            ACTOR_LOG_ERROR("blocking_actor::build_pipeline called");
             return sec::bad_function_call;
         }
 
@@ -307,5 +307,5 @@ namespace nil {
             return super::cleanup(std::move(fail_state), host);
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

@@ -10,7 +10,7 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/node_id.hpp>
+#include <nil/actor/node_id.hpp>
 
 #include <cstdio>
 #include <cstring>
@@ -23,22 +23,22 @@
 #include <nil/crypto3/hash/algorithm/hash.hpp>
 #include <nil/crypto3/hash/ripemd.hpp>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/serialization/deserializer.hpp>
-#include <nil/mtl/detail/get_mac_addresses.hpp>
-#include <nil/mtl/detail/get_process_id.hpp>
-#include <nil/mtl/detail/get_root_uuid.hpp>
-#include <nil/mtl/detail/parser/ascii_to_int.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/make_counted.hpp>
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/serialization/serializer.hpp>
-#include <nil/mtl/string_algorithms.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/serialization/deserializer.hpp>
+#include <nil/actor/detail/get_mac_addresses.hpp>
+#include <nil/actor/detail/get_process_id.hpp>
+#include <nil/actor/detail/get_root_uuid.hpp>
+#include <nil/actor/detail/parser/ascii_to_int.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/make_counted.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/serialization/serializer.hpp>
+#include <nil/actor/string_algorithms.hpp>
 
 using namespace nil::crypto3;
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         node_id::data::~data() {
             // nop
@@ -59,7 +59,7 @@ namespace nil {
         }    // namespace
 
         node_id node_id::default_data::local(const spawner_config &) {
-            MTL_LOG_TRACE("");
+            ACTOR_LOG_TRACE("");
             auto ifs = detail::get_mac_addresses();
             std::vector<std::string> macs;
             macs.reserve(ifs.size());
@@ -98,7 +98,7 @@ namespace nil {
                 return 0;
             auto other_id = other.implementation_id();
             if (class_id != other_id)
-                return nil::mtl::compare(class_id, other_id);
+                return nil::actor::compare(class_id, other_id);
             auto &x = static_cast<const default_data &>(other);
             if (pid_ != x.pid_)
                 return pid_ < x.pid_ ? -1 : 1;
@@ -152,7 +152,7 @@ namespace nil {
                 return 0;
             auto other_id = other.implementation_id();
             if (class_id != other_id)
-                return nil::mtl::compare(class_id, other_id);
+                return nil::actor::compare(class_id, other_id);
             return value_.compare(static_cast<const uri_data &>(other).value_);
         }
 
@@ -303,5 +303,5 @@ namespace nil {
                 return none;
             return make_node_id(process_id, host_id);
         }
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

@@ -1,9 +1,9 @@
 
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
 #define BOOST_TEST_MODULE io_basp_udp_test
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <array>
 #include <mutex>
@@ -13,17 +13,17 @@
 #include <iostream>
 #include <condition_variable>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/io/all.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/io/all.hpp>
 
-#include <nil/mtl/io/datagram_handle.hpp>
-#include <nil/mtl/io/datagram_servant.hpp>
+#include <nil/actor/io/datagram_handle.hpp>
+#include <nil/actor/io/datagram_servant.hpp>
 
-#include <nil/mtl/deep_to_string.hpp>
+#include <nil/actor/deep_to_string.hpp>
 
-#include <nil/mtl/io/network/interfaces.hpp>
-#include <nil/mtl/io/network/ip_endpoint.hpp>
-#include <nil/mtl/io/network/test_multiplexer.hpp>
+#include <nil/actor/io/network/interfaces.hpp>
+#include <nil/actor/io/network/ip_endpoint.hpp>
+#include <nil/actor/io/network/test_multiplexer.hpp>
 
 namespace {
 
@@ -41,7 +41,7 @@ namespace {
             // nop
         }
 
-        nil::mtl::optional<T> val;
+        nil::actor::optional<T> val;
     };
 
     template<class T>
@@ -73,15 +73,15 @@ namespace {
     constexpr uint32_t no_payload = 0;
     constexpr uint64_t no_operation_data = 0;
 
-    constexpr auto basp_atom = nil::mtl::atom("BASP");
-    constexpr auto spawn_serv_atom = nil::mtl::atom("SpawnServ");
-    constexpr auto config_serv_atom = nil::mtl::atom("ConfigServ");
+    constexpr auto basp_atom = nil::actor::atom("BASP");
+    constexpr auto spawn_serv_atom = nil::actor::atom("SpawnServ");
+    constexpr auto config_serv_atom = nil::actor::atom("ConfigServ");
 
 }    // namespace
 
 using namespace std;
-using namespace nil::mtl;
-using namespace nil::mtl::io;
+using namespace nil::actor;
+using namespace nil::actor::io;
 
 namespace {
 
@@ -111,12 +111,12 @@ namespace {
     };
 
     class fixture {
-        static inline actor_system_config &config(actor_system_config &cfg, bool autoconn = false,
+        static inline spawner_config &config(spawner_config &cfg, bool autoconn = false,
                                                   bool use_test_coordinator = false) {
             cfg.enable_automatic_connections = autoconn;
             cfg.enable_udp = true;
             cfg.disable_tcp = true;
-            cfg.policy = autoconn || use_test_coordinator ? nil::mtl::atom("testing") : nil::mtl::atom("stealing");
+            cfg.policy = autoconn || use_test_coordinator ? nil::actor::atom("testing") : nil::actor::atom("stealing");
             cfg.attach_utility_actors = autoconn || use_test_coordinator;
         }
 
@@ -459,8 +459,8 @@ namespace {
             return {this};
         }
 
-        actor_system_config cfg;
-        actor_system sys;
+        spawner_config cfg;
+        spawner sys;
 
     private:
         basp_broker *aut_;
@@ -479,7 +479,7 @@ namespace {
 
     class manual_timer_fixture : public fixture {
     public:
-        using scheduler_type = nil::mtl::scheduler::test_coordinator;
+        using scheduler_type = nil::actor::scheduler::test_coordinator;
 
         scheduler_type &sched;
 
@@ -490,7 +490,7 @@ namespace {
 
     class autoconn_enabled_fixture : public fixture {
     public:
-        using scheduler_type = nil::mtl::scheduler::test_coordinator;
+        using scheduler_type = nil::actor::scheduler::test_coordinator;
 
         scheduler_type &sched;
         middleman_actor mma;
@@ -574,7 +574,7 @@ BOOST_AUTO_TEST_CASE(non_empty_server_handshake_udp, *boost::unit_test::disabled
     // server handshake with published actors
     buffer buf;
     instance().add_published_actor(4242, actor_cast<strong_actor_ptr>(self()),
-                                   {"nil::mtl::replies_to<@u16>::with<@u16>"});
+                                   {"nil::actor::replies_to<@u16>::with<@u16>"});
     instance().write_server_handshake(mpx(), buf, uint16_t {4242});
     buffer expected_buf;
     basp::header expected {basp::message_type::server_handshake,
@@ -587,7 +587,7 @@ BOOST_AUTO_TEST_CASE(non_empty_server_handshake_udp, *boost::unit_test::disabled
                            invalid_actor_id,
                            0};
     to_buf(expected_buf, expected, nullptr, std::string {}, self()->id(),
-           set<string> {"nil::mtl::replies_to<@u16>::with<@u16>"});
+           set<string> {"nil::actor::replies_to<@u16>::with<@u16>"});
     BOOST_CHECK_EQUAL(hexstr(buf), hexstr(expected_buf));
 }
 

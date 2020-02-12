@@ -20,10 +20,10 @@
 #include <utility>
 #include <vector>
 
-#include <nil/mtl/detail/unordered_flat_map.hpp>
+#include <nil/actor/detail/unordered_flat_map.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             template<class T>
@@ -37,12 +37,12 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil
 
-using nil::mtl::detail::unordered_flat_map;
+using nil::actor::detail::unordered_flat_map;
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 template<class T>
 using kvp_vec = std::vector<std::pair<int, T>>;
@@ -152,7 +152,7 @@ BOOST_AUTO_TEST_CASE(lookup_test) {
     BOOST_CHECK(cxs.find(5) == xs.end());
 }
 
-#ifndef MTL_NO_EXCEPTIONS
+#ifndef ACTOR_NO_EXCEPTIONS
 BOOST_AUTO_TEST_CASE(exceptions_test) {
     fill_xs();
     try {
@@ -165,7 +165,7 @@ BOOST_AUTO_TEST_CASE(exceptions_test) {
     }
 }
 
-#endif    // MTL_NO_EXCEPTIONS
+#endif    // ACTOR_NO_EXCEPTIONS
 
 // We repeat several tests with std::strings as value type instead of integers to
 // trigger non-trivial destructors.

@@ -10,20 +10,20 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/actor_control_block.hpp>
+#include <nil/actor/actor_control_block.hpp>
 
-#include <nil/mtl/to_string.hpp>
+#include <nil/actor/to_string.hpp>
 
-#include <nil/mtl/message.hpp>
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/proxy_registry.hpp>
-#include <nil/mtl/abstract_actor.hpp>
-#include <nil/mtl/mailbox_element.hpp>
+#include <nil/actor/message.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/proxy_registry.hpp>
+#include <nil/actor/abstract_actor.hpp>
+#include <nil/actor/mailbox_element.hpp>
 
-#include <nil/mtl/detail/disposer.hpp>
+#include <nil/actor/detail/disposer.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         actor_addr actor_control_block::address() {
             return {this, true};
@@ -75,7 +75,7 @@ namespace nil {
             auto &sys = ctx->system();
             if (sys.node() == nid) {
                 storage = sys.registry().get(aid);
-                MTL_LOG_DEBUG("fetch actor handle from local actor registry: " << (storage ? "found" : "not found"));
+                ACTOR_LOG_DEBUG("fetch actor handle from local actor registry: " << (storage ? "found" : "not found"));
                 return none;
             }
             auto prp = ctx->proxy_registry_ptr();
@@ -132,5 +132,5 @@ namespace nil {
             return append_to_string_impl(x, y.get());
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

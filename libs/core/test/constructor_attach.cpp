@@ -14,10 +14,10 @@
 
 #include <boost/test/unit_test.hpp>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/config.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/config.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 
@@ -35,9 +35,9 @@ namespace {
         }
     };
 
-    class spawner : public event_based_actor {
+    class actor_spawner : public event_based_actor {
     public:
-        spawner(actor_config &cfg) : event_based_actor(cfg), downs_(0), testee_(spawn<testee, monitored>(this)) {
+        actor_spawner(actor_config &cfg) : event_based_actor(cfg), downs_(0), testee_(spawn<testee, monitored>(this)) {
             set_down_handler([=](down_msg &msg) {
                 BOOST_CHECK(msg.reason == exit_reason::user_shutdown);
                 BOOST_CHECK(msg.source == testee_.address());
@@ -71,5 +71,5 @@ namespace {
 BOOST_AUTO_TEST_CASE(constructor_attach_test) {
     spawner_config cfg;
     spawner system {cfg};
-    anon_send(system.spawn<spawner>(), die_atom::value);
+    anon_send(system.spawn<actor_spawner>(), die_atom::value);
 }

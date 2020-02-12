@@ -10,10 +10,10 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/group_module.hpp>
+#include <nil/actor/group_module.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         group_module::group_module(spawner &sys, std::string mname) : system_(sys), name_(std::move(mname)) {
             // nop
@@ -23,5 +23,5 @@ namespace nil {
             // nop
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

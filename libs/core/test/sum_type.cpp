@@ -18,19 +18,19 @@
 #include <map>
 #include <string>
 
-#include <nil/mtl/deep_to_string.hpp>
-#include <nil/mtl/default_sum_type_access.hpp>
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/raise_error.hpp>
-#include <nil/mtl/static_visitor.hpp>
-#include <nil/mtl/sum_type.hpp>
-#include <nil/mtl/sum_type_access.hpp>
+#include <nil/actor/deep_to_string.hpp>
+#include <nil/actor/default_sum_type_access.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/raise_error.hpp>
+#include <nil/actor/static_visitor.hpp>
+#include <nil/actor/sum_type.hpp>
+#include <nil/actor/sum_type_access.hpp>
 
-#include <nil/mtl/detail/overload.hpp>
+#include <nil/actor/detail/overload.hpp>
 
 namespace {
 
-    struct tostring_visitor : nil::mtl::static_visitor<std::string> {
+    struct tostring_visitor : nil::actor::static_visitor<std::string> {
         template<class T>
         inline std::string operator()(const T &value) {
             return to_string(value);
@@ -39,13 +39,13 @@ namespace {
 
     class union_type {
     public:
-        friend struct nil::mtl::default_sum_type_access<union_type>;
+        friend struct nil::actor::default_sum_type_access<union_type>;
 
         using T0 = int;
         using T1 = std::string;
         using T2 = std::map<int, int>;
 
-        using types = nil::mtl::detail::type_list<T0, T1, T2>;
+        using types = nil::actor::detail::type_list<T0, T1, T2>;
 
         union_type() : index_(0), v0(0) {
             // nop
@@ -135,7 +135,7 @@ namespace {
                 case 2:
                     return f(std::forward<Ts>(xs)..., v2);
             }
-            MTL_RAISE_ERROR("invalid index in union_type");
+            ACTOR_RAISE_ERROR("invalid index in union_type");
         }
 
         void destroy() {
@@ -156,15 +156,15 @@ namespace {
 }    // namespace
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         template<>
         struct sum_type_access<union_type> : default_sum_type_access<union_type> {};
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 using std::string;
 using map_type = std::map<int, int>;

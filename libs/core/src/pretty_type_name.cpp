@@ -10,20 +10,20 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/pretty_type_name.hpp>
+#include <nil/actor/detail/pretty_type_name.hpp>
 
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
-#if defined(MTL_LINUX) || defined(MTL_MACOS)
+#if defined(ACTOR_LINUX) || defined(ACTOR_MACOS)
 #include <unistd.h>
 #include <cxxabi.h>
 #include <sys/types.h>
 #endif
 
-#include <nil/mtl/string_algorithms.hpp>
+#include <nil/actor/string_algorithms.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             void prettify_type_name(std::string &class_name) {
@@ -31,7 +31,7 @@ namespace nil {
                 replace_all(class_name, "::", ".");
                 replace_all(class_name, "(anonymous namespace)", "ANON");
                 replace_all(class_name, ".__1.", ".");    // gets rid of weird Clang-lib names
-                // hide MTL magic in logs
+                // hide ACTOR magic in logs
                 auto strip_magic = [&](const char *prefix_begin, const char *prefix_end) {
                     auto last = class_name.end();
                     auto i = std::search(class_name.begin(), last, prefix_begin, prefix_end);
@@ -42,7 +42,7 @@ namespace nil {
                         class_name.swap(substr);
                     }
                 };
-                char prefix1[] = "mtl.detail.embedded<";
+                char prefix1[] = "actor.detail.embedded<";
                 strip_magic(prefix1, prefix1 + (sizeof(prefix1) - 1));
                 // Drop template parameters, only leaving the template class name.
                 auto i = std::find(class_name.begin(), class_name.end(), '<');
@@ -53,7 +53,7 @@ namespace nil {
             }
 
             void prettify_type_name(std::string &class_name, const char *c_class_name) {
-#if defined(MTL_LINUX) || defined(MTL_MACOS)
+#if defined(ACTOR_LINUX) || defined(ACTOR_MACOS)
                 int stat = 0;
                 std::unique_ptr<char, decltype(free) *> real_class_name {nullptr, free};
                 auto tmp = abi::__cxa_demangle(c_class_name, nullptr, nullptr, &stat);
@@ -72,5 +72,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

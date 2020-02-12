@@ -10,15 +10,15 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/group.hpp>
+#include <nil/actor/group.hpp>
 
-#include <nil/mtl/message.hpp>
-#include <nil/mtl/actor_cast.hpp>
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/group_manager.hpp>
+#include <nil/actor/message.hpp>
+#include <nil/actor/actor_cast.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/group_manager.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         group::group(abstract_group *ptr) : ptr_(ptr) {
             // nop
@@ -112,5 +112,5 @@ namespace nil {
             return result;
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

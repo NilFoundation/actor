@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# obs-commit-version.sh: update MTL packages on OBS from Jenkins.
-# This shell script is created for easy updating MTL binary packages located
+# obs-commit-version.sh: update ACTOR packages on OBS from Jenkins.
+# This shell script is created for easy updating ACTOR binary packages located
 # on OpenSUSE Build Service (OBS). It should be issued from the Jenkins after
 # release has proven to be operating, like this:
 #
@@ -12,7 +12,7 @@
 #
 # In brief, it performs the following steps:
 #
-#  1. Determines current version from <mtl/config.h> header. It's crucial to
+#  1. Determines current version from <actor/config.h> header. It's crucial to
 #     have this version set correctly for script to operate properly.
 #  2. Determines current branch. If it's 'master' then rebuild stable
 #     packages, if it's 'develop' then rebuild nightly.
@@ -37,10 +37,10 @@ set -o nounset
 set -o errexit
 
 # Script configuration (yet unlikely to change in the future).
-confReleaseProject="devel:libraries:mtl"
-confNightlyProject="devel:libraries:mtl:nightly"
-confReleasePackage="mtl"
-confNightlyPackage="mtl"
+confReleaseProject="devel:libraries:actor"
+confNightlyProject="devel:libraries:actor:nightly"
+confReleasePackage="actor"
+confNightlyPackage="actor"
 
 # Check for 'osc' command.
 type osc >/dev/null 2>&1 || {
@@ -56,8 +56,8 @@ fi
 sourceDir="$PWD"
 
 # Check if header exists.
-if [ ! -f "$sourceDir/core/mtl/config.hpp> ] ; then
-  echo "This script must be called from the root directly of MTL." >&2
+if [ ! -f "$sourceDir/core/actor/config.hpp> ] ; then
+  echo "This script must be called from the root directly of ACTOR." >&2
   exit 1
 fi
 
@@ -67,7 +67,7 @@ if [ ! -f "$sourceDir/manual.pdf" ] ; then
 fi
 
 # Extract version information from header file.
-versionAsInt=$(grep "#define MTL_VERSION" core/caf/config.hpp | awk '{print $3'})
+versionAsInt=$(grep "#define ACTOR_VERSION" core/caf/config.hpp | awk '{print $3'})
 versionMajor=$(echo "$versionAsInt / 10000" | bc)
 versionMinor=$(echo "( $versionAsInt / 100 ) % 100" | bc)
 versionPatch=$(echo "$versionAsInt % 100" | bc)

@@ -10,7 +10,7 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/defaults.hpp>
+#include <nil/actor/defaults.hpp>
 
 #include <algorithm>
 #include <chrono>
@@ -24,20 +24,20 @@ namespace {
 
     using us_t = std::chrono::microseconds;
 
-    constexpr nil::mtl::timespan us(us_t::rep x) {
-        return std::chrono::duration_cast<nil::mtl::timespan>(us_t {x});
+    constexpr nil::actor::timespan us(us_t::rep x) {
+        return std::chrono::duration_cast<nil::actor::timespan>(us_t {x});
     }
 
     using ms_t = std::chrono::milliseconds;
 
-    constexpr nil::mtl::timespan ms(ms_t::rep x) {
-        return std::chrono::duration_cast<nil::mtl::timespan>(ms_t {x});
+    constexpr nil::actor::timespan ms(ms_t::rep x) {
+        return std::chrono::duration_cast<nil::actor::timespan>(ms_t {x});
     }
 
 }    // namespace
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace defaults {
 
             namespace stream {
@@ -84,7 +84,7 @@ namespace nil {
 
             namespace middleman {
 
-                std::vector<std::string> app_identifiers {"generic-mtl-app"};
+                std::vector<std::string> app_identifiers {"generic-actor-app"};
                 const atom_value network_backend = atom("default");
                 const size_t max_consecutive_reads = 50;
                 const size_t heartbeat_interval = 0;
@@ -95,5 +95,5 @@ namespace nil {
             }    // namespace middleman
 
         }    // namespace defaults
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

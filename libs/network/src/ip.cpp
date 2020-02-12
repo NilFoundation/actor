@@ -9,24 +9,24 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/ip.hpp>
+#include <nil/actor/network/ip.hpp>
 
 #include <cstddef>
 #include <string>
 #include <utility>
 #include <vector>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/detail/socket_sys_includes.hpp>
-#include <nil/mtl/error.hpp>
-#include <nil/mtl/ip_address.hpp>
-#include <nil/mtl/ip_subnet.hpp>
-#include <nil/mtl/ipv4_address.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/string_algorithms.hpp>
-#include <nil/mtl/string_view.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/detail/socket_sys_includes.hpp>
+#include <nil/actor/error.hpp>
+#include <nil/actor/ip_address.hpp>
+#include <nil/actor/ip_subnet.hpp>
+#include <nil/actor/ipv4_address.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/string_algorithms.hpp>
+#include <nil/actor/string_view.hpp>
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0600
 #endif
@@ -48,7 +48,7 @@ using std::string;
 using std::vector;
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
             namespace ip {
 
@@ -75,7 +75,7 @@ namespace nil {
                                    AF_UNSPEC;
                     }
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 
                     template<class F>
                     void for_each_adapter(F f, bool is_link_local = false) {
@@ -83,12 +83,12 @@ namespace nil {
                         ULONG len = 0;
                         if (GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, nullptr, nullptr, &len) !=
                             ERROR_BUFFER_OVERFLOW) {
-                            MTL_LOG_ERROR("failed to get adapter addresses buffer length");
+                            ACTOR_LOG_ERROR("failed to get adapter addresses buffer length");
                             return;
                         }
                         auto adapters = adapters_ptr {reinterpret_cast<IP_ADAPTER_ADDRESSES *>(::malloc(len)), free};
                         if (!adapters) {
-                            MTL_LOG_ERROR("malloc failed");
+                            ACTOR_LOG_ERROR("malloc failed");
                             return;
                         }
                         // TODO: The Microsoft WIN32 API example propopses to try three times, other
@@ -96,7 +96,7 @@ namespace nil {
                         // unreliable, we might adapt that behavior.
                         if (GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, nullptr, adapters.get(), &len) !=
                             ERROR_SUCCESS) {
-                            MTL_LOG_ERROR("failed to get adapter addresses");
+                            ACTOR_LOG_ERROR("failed to get adapter addresses");
                             return;
                         }
                         char ip_buf[INET6_ADDRSTRLEN];
@@ -113,7 +113,7 @@ namespace nil {
                                             sizeof(ip_buf), nullptr, 0, NI_NUMERICHOST);
                                 ip_address ip;
                                 if (!is_link_local && starts_with(ip_buf, "fe80:")) {
-                                    MTL_LOG_DEBUG("skipping link-local address: " << ip_buf);
+                                    ACTOR_LOG_DEBUG("skipping link-local address: " << ip_buf);
                                     continue;
                                 } else if (auto err = parse(ip_buf, ip))
                                     continue;
@@ -122,7 +122,7 @@ namespace nil {
                         }
                     }
 
-#else    // MTL_WINDOWS
+#else    // ACTOR_WINDOWS
 
                     template<class F>
                     void for_each_adapter(F f, bool is_link_local = false) {
@@ -137,10 +137,10 @@ namespace nil {
                             if (family != AF_UNSPEC) {
                                 ip_address ip;
                                 if (!is_link_local && starts_with(buffer, "fe80:")) {
-                                    MTL_LOG_DEBUG("skipping link-local address: " << buffer);
+                                    ACTOR_LOG_DEBUG("skipping link-local address: " << buffer);
                                     continue;
                                 } else if (auto err = parse(buffer, ip)) {
-                                    MTL_LOG_ERROR("could not parse into ip address " << buffer);
+                                    ACTOR_LOG_ERROR("could not parse into ip address " << buffer);
                                     continue;
                                 }
                                 f({i->ifa_name, strlen(i->ifa_name)}, ip);
@@ -148,7 +148,7 @@ namespace nil {
                         }
                     }
 
-#endif    // MTL_WINDOWS
+#endif    // ACTOR_WINDOWS
 
                 }    // namespace
 
@@ -172,7 +172,7 @@ namespace nil {
                         if (family != AF_UNSPEC) {
                             ip_address ip;
                             if (auto err = parse(buffer, ip))
-                                MTL_LOG_ERROR("could not parse IP address: " << buffer);
+                                ACTOR_LOG_ERROR("could not parse IP address: " << buffer);
                             else
                                 results.emplace_back(ip);
                         }
@@ -240,5 +240,5 @@ namespace nil {
 
             }    // namespace ip
         }        // namespace network
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

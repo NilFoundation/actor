@@ -9,19 +9,19 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/network_socket.hpp>
+#include <nil/actor/network/network_socket.hpp>
 
 #include <cstdint>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/detail/net_syscall.hpp>
-#include <nil/mtl/detail/socket_sys_aliases.hpp>
-#include <nil/mtl/detail/socket_sys_includes.hpp>
-#include <nil/mtl/error.hpp>
-#include <nil/mtl/expected.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/variant.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/detail/net_syscall.hpp>
+#include <nil/actor/detail/socket_sys_aliases.hpp>
+#include <nil/actor/detail/socket_sys_includes.hpp>
+#include <nil/actor/error.hpp>
+#include <nil/actor/expected.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/variant.hpp>
 
 namespace {
 
@@ -42,20 +42,20 @@ namespace {
             default:
                 break;
         }
-        MTL_CRITICAL("invalid protocol family");
+        ACTOR_CRITICAL("invalid protocol family");
     }
 
 }    // namespace
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
 
-#if defined(MTL_MACOS) || defined(MTL_IOS) || defined(MTL_BSD)
-#define MTL_HAS_NOSIGPIPE_SOCKET_FLAG
+#if defined(ACTOR_MACOS) || defined(ACTOR_IOS) || defined(ACTOR_BSD)
+#define ACTOR_HAS_NOSIGPIPE_SOCKET_FLAG
 #endif
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 
             error allow_sigpipe(network_socket x, bool) {
                 if (x == invalid_socket)
@@ -65,23 +65,23 @@ namespace nil {
 
             error allow_udp_connreset(network_socket x, bool new_value) {
                 DWORD bytes_returned = 0;
-                MTL_NET_SYSCALL("WSAIoctl", res, !=, 0,
+                ACTOR_NET_SYSCALL("WSAIoctl", res, !=, 0,
                                 WSAIoctl(x.id, _WSAIOW(IOC_VENDOR, 12), &new_value, sizeof(new_value), NULL, 0,
                                          &bytes_returned, NULL, NULL));
                 return none;
             }
-#else    // MTL_WINDOWS
+#else    // ACTOR_WINDOWS
 
             error allow_sigpipe(network_socket x, [[maybe_unused]] bool new_value) {
-#ifdef MTL_HAS_NOSIGPIPE_SOCKET_FLAG
+#ifdef ACTOR_HAS_NOSIGPIPE_SOCKET_FLAG
                 int value = new_value ? 0 : 1;
-                MTL_NET_SYSCALL(
+                ACTOR_NET_SYSCALL(
                     "setsockopt", res, !=, 0,
                     setsockopt(x.id, SOL_SOCKET, SO_NOSIGPIPE, &value, static_cast<unsigned>(sizeof(value))));
-#else     // MTL_HAS_NO_SIGPIPE_SOCKET_FLAG
+#else     // ACTOR_HAS_NO_SIGPIPE_SOCKET_FLAG
                 if (x == invalid_socket)
                     return make_error(sec::network_syscall_failed, "setsockopt", "invalid socket");
-#endif    // MTL_HAS_NO_SIGPIPE_SOCKET_FLAG
+#endif    // ACTOR_HAS_NO_SIGPIPE_SOCKET_FLAG
                 return none;
             }
 
@@ -92,12 +92,12 @@ namespace nil {
                 return none;
             }
 
-#endif    // MTL_WINDOWS
+#endif    // ACTOR_WINDOWS
 
             expected<size_t> send_buffer_size(network_socket x) {
                 int size = 0;
                 socket_size_type ret_size = sizeof(size);
-                MTL_NET_SYSCALL(
+                ACTOR_NET_SYSCALL(
                     "getsockopt", res, !=, 0,
                     getsockopt(x.id, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<getsockopt_ptr>(&size), &ret_size));
                 return static_cast<size_t>(size);
@@ -105,7 +105,7 @@ namespace nil {
 
             error send_buffer_size(network_socket x, size_t capacity) {
                 auto new_value = static_cast<int>(capacity);
-                MTL_NET_SYSCALL("setsockopt", res, !=, 0,
+                ACTOR_NET_SYSCALL("setsockopt", res, !=, 0,
                                 setsockopt(x.id, SOL_SOCKET, SO_SNDBUF, reinterpret_cast<setsockopt_ptr>(&new_value),
                                            static_cast<socket_size_type>(sizeof(int))));
                 return none;
@@ -115,7 +115,7 @@ namespace nil {
                 sockaddr_storage st;
                 socket_size_type st_len = sizeof(st);
                 sockaddr *sa = reinterpret_cast<sockaddr *>(&st);
-                MTL_NET_SYSCALL("getsockname", tmp1, !=, 0, getsockname(x.id, sa, &st_len));
+                ACTOR_NET_SYSCALL("getsockname", tmp1, !=, 0, getsockname(x.id, sa, &st_len));
                 char addr[INET6_ADDRSTRLEN] {0};
                 switch (sa->sa_family) {
                     case AF_INET:
@@ -132,7 +132,7 @@ namespace nil {
             expected<uint16_t> local_port(network_socket x) {
                 sockaddr_storage st;
                 auto st_len = static_cast<socket_size_type>(sizeof(st));
-                MTL_NET_SYSCALL("getsockname", tmp, !=, 0,
+                ACTOR_NET_SYSCALL("getsockname", tmp, !=, 0,
                                 getsockname(x.id, reinterpret_cast<sockaddr *>(&st), &st_len));
                 return ntohs(port_of(reinterpret_cast<sockaddr &>(st)));
             }
@@ -141,7 +141,7 @@ namespace nil {
                 sockaddr_storage st;
                 socket_size_type st_len = sizeof(st);
                 sockaddr *sa = reinterpret_cast<sockaddr *>(&st);
-                MTL_NET_SYSCALL("getpeername", tmp, !=, 0, getpeername(x.id, sa, &st_len));
+                ACTOR_NET_SYSCALL("getpeername", tmp, !=, 0, getpeername(x.id, sa, &st_len));
                 char addr[INET6_ADDRSTRLEN] {0};
                 switch (sa->sa_family) {
                     case AF_INET:
@@ -158,7 +158,7 @@ namespace nil {
             expected<uint16_t> remote_port(network_socket x) {
                 sockaddr_storage st;
                 socket_size_type st_len = sizeof(st);
-                MTL_NET_SYSCALL("getpeername", tmp, !=, 0,
+                ACTOR_NET_SYSCALL("getpeername", tmp, !=, 0,
                                 getpeername(x.id, reinterpret_cast<sockaddr *>(&st), &st_len));
                 return ntohs(port_of(reinterpret_cast<sockaddr &>(st)));
             }
@@ -176,5 +176,5 @@ namespace nil {
             }
 
         }    // namespace network
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

@@ -9,19 +9,19 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/network/socket_manager.hpp>
+#include <nil/actor/network/socket_manager.hpp>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/network/multiplexer.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/network/multiplexer.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace network {
 
             socket_manager::socket_manager(socket handle, const multiplexer_ptr &parent) :
                 handle_(handle), mask_(operation::none), parent_(parent) {
-                MTL_ASSERT(parent != nullptr);
-                MTL_ASSERT(handle_ != invalid_socket);
+                ACTOR_ASSERT(parent != nullptr);
+                ACTOR_ASSERT(handle_ != invalid_socket);
             }
 
             socket_manager::~socket_manager() {
@@ -29,7 +29,7 @@ namespace nil {
             }
 
             bool socket_manager::mask_add(operation flag) noexcept {
-                MTL_ASSERT(flag != operation::none);
+                ACTOR_ASSERT(flag != operation::none);
                 auto x = mask();
                 if ((x & flag) == flag)
                     return false;
@@ -38,7 +38,7 @@ namespace nil {
             }
 
             bool socket_manager::mask_del(operation flag) noexcept {
-                MTL_ASSERT(flag != operation::none);
+                ACTOR_ASSERT(flag != operation::none);
                 auto x = mask();
                 if ((x & flag) == operation::none)
                     return false;
@@ -63,5 +63,5 @@ namespace nil {
             }
 
         }    // namespace network
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

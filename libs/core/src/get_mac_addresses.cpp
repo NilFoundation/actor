@@ -10,12 +10,12 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/get_mac_addresses.hpp>
+#include <nil/actor/detail/get_mac_addresses.hpp>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/detail/scope_guard.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/detail/scope_guard.hpp>
 
-#if defined(MTL_MACOS) || defined(MTL_BSD) || defined(MTL_IOS)
+#if defined(ACTOR_MACOS) || defined(ACTOR_BSD) || defined(ACTOR_IOS)
 
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -34,7 +34,7 @@
 #include <iostream>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             std::vector<iface_info> get_mac_addresses() {
@@ -56,7 +56,7 @@ namespace nil {
                     }
                     if (buf.size() < len)
                         buf.resize(len);
-                    MTL_ASSERT(len > 0);
+                    ACTOR_ASSERT(len > 0);
                     if (sysctl(mib, 6, buf.data(), &len, nullptr, 0) < 0) {
                         perror("sysctl 2 error");
                         exit(5);
@@ -88,10 +88,10 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil
 
-#elif defined(MTL_LINUX) || defined(MTL_ANDROID) || defined(MTL_CYGWIN)
+#elif defined(ACTOR_LINUX) || defined(ACTOR_ANDROID) || defined(ACTOR_CYGWIN)
 
 #include <vector>
 #include <string>
@@ -111,7 +111,7 @@ namespace nil {
 #include <iostream>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             std::vector<iface_info> get_mac_addresses() {
@@ -165,7 +165,7 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil
 
 #else
@@ -204,7 +204,7 @@ namespace {
 }    // namespace
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             std::vector<iface_info> get_mac_addresses() {
@@ -260,7 +260,7 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil
 
 #endif

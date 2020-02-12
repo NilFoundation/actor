@@ -9,16 +9,16 @@
 // http://www.boost.org/LICENSE_1_0.txt
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/config_value.hpp>
+#include <nil/actor/config_value.hpp>
 
 #include <ostream>
 
-#include <nil/mtl/detail/type_traits.hpp>
-#include <nil/mtl/expected.hpp>
-#include <nil/mtl/pec.hpp>
+#include <nil/actor/detail/type_traits.hpp>
+#include <nil/actor/expected.hpp>
+#include <nil/actor/pec.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         namespace {
 
@@ -85,5 +85,5 @@ namespace nil {
             return out << to_string(x);
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

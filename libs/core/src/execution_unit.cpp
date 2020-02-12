@@ -10,10 +10,10 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/execution_unit.hpp>
+#include <nil/actor/execution_unit.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
 
         execution_unit::execution_unit(spawner *sys) : system_(sys), proxies_(nullptr) {
             // nop
@@ -23,5 +23,5 @@ namespace nil {
             // nop
         }
 
-    }    // namespace mtl
+    }    // namespace actor
 }    // namespace nil

@@ -10,14 +10,14 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/detail/simple_actor_clock.hpp>
+#include <nil/actor/detail/simple_actor_clock.hpp>
 
-#include <nil/mtl/actor_cast.hpp>
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/system_messages.hpp>
+#include <nil/actor/actor_cast.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/system_messages.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace detail {
 
             simple_actor_clock::event::~event() {
@@ -182,5 +182,5 @@ namespace nil {
             }
 
         }    // namespace detail
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

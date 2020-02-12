@@ -1,7 +1,7 @@
 ---
 Checks:          'clang-diagnostic-*,clang-analyzer-*,-clang-analyzer-alpha*,modernize-*,performance-*,readability-*,-readability-braces-around-statements,-readability-named-parameter'
 WarningsAsErrors: ''
-HeaderFilterRegex: '/mtl/'
+HeaderFilterRegex: '/actor/'
 AnalyzeTemporaryDtors: false
 CheckOptions:
   - key:             cert-oop11-cpp.UseCERTSemantics
