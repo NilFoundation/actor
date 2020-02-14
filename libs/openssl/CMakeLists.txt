@@ -71,7 +71,7 @@ set_target_properties(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} PROPERTIES
                       CXX_STANDARD_REQUIRED TRUE)
 
 target_link_libraries(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME} PRIVATE
-                      ${CMAKE_WORKSPACE_NAME}::core
+                      ${CMAKE_WORKSPACE_NAME}::actor
                       ${CMAKE_WORKSPACE_NAME}::io
 
                       ${OPENSSL_LIBRARIES})

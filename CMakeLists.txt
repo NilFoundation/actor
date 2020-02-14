@@ -10,7 +10,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake"
 include(CMConfig)
 include(CMSetupVersion)
 
-cm_workspace(actor LANGUAGES C CXX)
+cm_workspace(mtl LANGUAGES C CXX)
 
 macro(cm_find_package NAME)
     if(NOT "${NAME}" MATCHES "^${CMAKE_WORKSPACE_NAME}_.*$" AND NOT "${NAME}" STREQUAL CM)
@@ -408,8 +408,8 @@ message(STATUS "Set release version for all documentation to ${ACTOR_RELEASE}.")
 # -- Setup for building manual and API documentation ---------------------------
 
 # we need the examples and some headers relative to the build/doc/tex directory
-file(COPY libs/core/include/nil/actor/exit_reason.hpp DESTINATION core/nil/actor/)
-file(COPY libs/core/include/nil/actor/sec.hpp DESTINATION core/nil/actor/)
+file(COPY libs/actor/include/nil/actor/exit_reason.hpp DESTINATION core/nil/actor/)
+file(COPY libs/actor/include/nil/actor/sec.hpp DESTINATION core/nil/actor/)
 
 add_subdirectory(doc)
 
