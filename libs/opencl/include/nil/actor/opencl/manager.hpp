@@ -26,7 +26,7 @@ namespace nil {
             public:
                 friend class program;
 
-                friend class actor_system;
+                friend class spawner;
 
                 friend detail::raw_command_queue_ptr command_queue(uint32_t id);
 

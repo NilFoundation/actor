@@ -106,8 +106,8 @@ namespace {
 
         ~fixture() {
             if (initialized) {
-                server_side.~actor_system();
-                client_side.~actor_system();
+                server_side.~spawner();
+                client_side.~spawner();
             }
         }
 
@@ -134,9 +134,9 @@ namespace {
                 *x.second = std::move(path);
             }
             BOOST_TEST_MESSAGE("initialize server side");
-            new (&server_side) actor_system(server_side_config);
+            new (&server_side) spawner(server_side_config);
             BOOST_TEST_MESSAGE("initialize client side");
-            new (&client_side) actor_system(client_side_config);
+            new (&client_side) spawner(client_side_config);
             ssched = &dynamic_cast<sched_t &>(server_side.scheduler());
             csched = &dynamic_cast<sched_t &>(client_side.scheduler());
             initialized = true;

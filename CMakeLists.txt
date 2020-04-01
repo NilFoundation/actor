@@ -358,6 +358,7 @@ add_custom_target(uninstall
 #                                 add targets                                  #
 ################################################################################
 
+add_subdirectories(${CMAKE_CURRENT_LIST_DIR}/libs/crypto)
 add_subdirectories(${CMAKE_CURRENT_LIST_DIR}/libs)
 
 # -- Fetch branch name and SHA if available ------------------------------------

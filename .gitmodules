@@ -28,3 +28,15 @@
 [submodule "libs/network"]
 	path = libs/network
 	url = git@github.com:nilfoundation/network.git
+[submodule "libs/crypto3/codec"]
+	path = libs/crypto3/codec
+	url = git@github.com:nilfoundation/codec.git
+[submodule "libs/crypto/codec"]
+	path = libs/crypto/codec
+	url = git@github.com:nilfoundation/codec.git
+[submodule "libs/crypto/hash"]
+	path = libs/crypto/hash
+	url = git@github.com:nilfoundation/hash.git
+[submodule "libs/crypto/block"]
+	path = libs/crypto/block
+	url = git@github.com:nilfoundation/block.git
