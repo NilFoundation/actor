@@ -21,8 +21,8 @@
 
 #include <nil/actor/stateful_actor.hpp>
 #include <nil/actor/proxy_registry.hpp>
-#include <nil/actor/serialization/binary_serializer.hpp>
-#include <nil/actor/serialization/binary_deserializer.hpp>
+#include <nil/actor/binary_serializer.hpp>
+#include <nil/actor/binary_deserializer.hpp>
 #include <nil/actor/forwarding_actor_proxy.hpp>
 
 #include <nil/actor/io/basp/protocol.hpp>

@@ -15,7 +15,7 @@
 
 #include <nil/actor/actor_control_block.hpp>
 #include <nil/actor/actor_proxy.hpp>
-#include <nil/actor/serialization/binary_deserializer.hpp>
+#include <nil/actor/binary_deserializer.hpp>
 #include <nil/actor/config.hpp>
 #include <nil/actor/detail/scope_guard.hpp>
 #include <nil/actor/detail/sync_request_bouncer.hpp>

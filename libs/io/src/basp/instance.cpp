@@ -10,8 +10,8 @@
 
 #include <nil/actor/io/basp/instance.hpp>
 
-#include <nil/actor/serialization/binary_deserializer.hpp>
-#include <nil/actor/serialization/binary_serializer.hpp>
+#include <nil/actor/binary_deserializer.hpp>
+#include <nil/actor/binary_serializer.hpp>
 
 #include <nil/actor/spawner_config.hpp>
 #include <nil/actor/defaults.hpp>
