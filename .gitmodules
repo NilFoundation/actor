@@ -10,12 +10,6 @@
 [submodule "libs/block"]
 	path = libs/block
 	url = git@github.com:nilfoundation/block.git
-[submodule "libs/concept_container"]
-	path = libs/concept_container
-	url = https://github.com/nemo1369/concept_container.git
-[submodule "libs/utilities"]
-	path = libs/utilities
-	url = git@github.com:nemo1369/crypto3_utilities.git
 [submodule "libs/codec"]
 	path = libs/codec
 	url = git@github.com:nilfoundation/codec.git
@@ -24,13 +18,10 @@
 	url = git@github.com:nemothenoone/marshalling.git
 [submodule "libs/actor"]
 	path = libs/actor
-	url = git@github.com:nilfoundation/actor.git
+	url = git@github.com:nilfoundation/actor-core.git
 [submodule "libs/network"]
 	path = libs/network
-	url = git@github.com:nilfoundation/network.git
-[submodule "libs/crypto3/codec"]
-	path = libs/crypto3/codec
-	url = git@github.com:nilfoundation/codec.git
+	url = git@github.com:nilfoundation/actor-network.git
 [submodule "libs/crypto/codec"]
 	path = libs/crypto/codec
 	url = git@github.com:nilfoundation/codec.git
