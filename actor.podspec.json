@@ -1,9 +1,9 @@
 {
-  "name": "mtl",
-  "version": "0.16.0",
+  "name": "actor",
+  "version": "0.18.0",
   "summary": "C++17 Actor Model Library",
   "description": "Multithreading Library is an open source C++17 actor model implementation featuring lightweight & fast actor implementations, pattern matching for messages, network transparent messaging, and more.",
-  "homepage": "http://mtl.nil.foundation/",
+  "homepage": "http://database.nil.foundation/projects/actor",
   "license": "Boost Software License",
   "authors": {
     "Dominik Charousset": "dominik.charousset@haw-hamburg.de",
@@ -14,7 +14,7 @@
     "osx": "10.7"
   },
   "source": {
-    "git": "https://github.com/nilfoundation/mtl.git",
+    "git": "https://github.com/nilfoundation/actor.git",
     "branch": "master"
   },
   "xcconfig": {
@@ -23,24 +23,24 @@
     "HEADER_SEARCH_PATHS": "\"${PODS_ROOT}/libs/core/include/\" \"${PODS_ROOT}/libs/io/include\" \"${PODS_ROOT}/libs/network/include\""
   },
   "requires_arc": false,
-  "prepare_command": "touch libs/core/include/nil/mtl/detail/build_config.hpp",
+  "prepare_command": "touch libs/actor/include/nil/actor/detail/build_config.hpp",
   "subspecs": [
     {
       "name": "core",
       "source_files": "libs/core/src/*.cpp",
       "preserve_paths": [
-        "libs/core/include/nil/mtl/**/*.hpp"
+        "libs/core/include/nil/actor/**/*.hpp"
       ]
     },
     {
       "name": "io",
       "dependencies": {
-        "mtl/core": [
+        "actor/core": [
         ]
       },
       "source_files": "libs/io/src/*.cpp",
       "preserve_paths": [
-        "libs/io/include/nil/mtl/**/*.hpp"
+        "libs/io/include/nil/actor/**/*.hpp"
       ]
     }
   ]
