@@ -40,3 +40,6 @@
 [submodule "libs/crypto/block"]
 	path = libs/crypto/block
 	url = git@github.com:nilfoundation/block.git
+[submodule "libs/opencl"]
+	path = libs/opencl
+	url = git@github.com:nilfoundation/actor-opencl.git
