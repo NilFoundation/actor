@@ -34,3 +34,6 @@
 [submodule "libs/opencl"]
 	path = libs/opencl
 	url = git@github.com:nilfoundation/actor-opencl.git
+[submodule "libs/core"]
+	path = libs/core
+	url = git@github.com:nilfoundation/actor-core.git
