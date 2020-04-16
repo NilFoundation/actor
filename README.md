@@ -1,18 +1,18 @@
-# Nil Foundation's MultiThreading Library: C++ Actor Library
+# =nil; Foundation's Actor Model Implementation Library
 
-ACTOR is an open source C++ actor model implementation featuring lightweight & fast actor implementations, pattern matching for messages, network transparent messaging, and more.
+=nil; Actor is an open source C++ actor model implementation featuring lightweight & fast actor implementations, pattern matching for messages, network transparent messaging, and more.
 
 ## Building
 
-ACTOR uses CMake [CMake](http://www.cmake.org/) build system and follows standard procedure for building:
+=nil; Actor uses CMake [CMake](http://www.cmake.org/) build system and follows standard procedure for building:
 
 ```
 git clone --recurse-submodules https://github.com/nilfoundation/actor.git actor
-cd actor && mkdir build && cd build && cmake .. && make -j4 all
+cd mtl && mkdir build && cd build && cmake .. && make -j4 all
 ```
 
-ACTOR also can be included as CMake submodule or added as dependency to other
-CMake-based projects using the file `cmake/FindACTOR.cmake`.
+=nil; Actor also can be included as CMake submodule or added as dependency to other
+CMake-based projects using the file `cmake/FindMTL.cmake`.
 
 ### CMake build options available
 
