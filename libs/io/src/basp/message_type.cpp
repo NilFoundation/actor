@@ -1,7 +1,6 @@
 //---------------------------------------------------------------------------//
-// Copyright (c) 2011-2018 Dominik Charousset
-// Copyright (c) 2018-2019 Nil Foundation AG
-// Copyright (c) 2018-2019 Mikhail Komarov <nemo@nil.foundation>
+// Copyright (c) 2011-2020 Dominik Charousset
+// Copyright (c) 2018-2020 Mikhail Komarov <nemo@nil.foundation>
 //
 // Distributed under the terms and conditions of the BSD 3-Clause License or
 // (at your option) under the terms and conditions of the Boost Software
@@ -9,12 +8,12 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/basp/message_type.hpp>
+#include <nil/actor/io/basp/message_type.hpp>
 
-#include <nil/mtl/detail/enum_to_string.hpp>
+#include <nil/actor/detail/enum_to_string.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace basp {
 
@@ -32,5 +31,5 @@ namespace nil {
 
             }    // namespace basp
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

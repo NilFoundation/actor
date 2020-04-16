@@ -1,7 +1,6 @@
 //---------------------------------------------------------------------------//
-// Copyright (c) 2011-2018 Dominik Charousset
-// Copyright (c) 2018-2019 Nil Foundation AG
-// Copyright (c) 2018-2019 Mikhail Komarov <nemo@nil.foundation>
+// Copyright (c) 2011-2020 Dominik Charousset
+// Copyright (c) 2018-2020 Mikhail Komarov <nemo@nil.foundation>
 //
 // Distributed under the terms and conditions of the BSD 3-Clause License or
 // (at your option) under the terms and conditions of the Boost Software
@@ -9,29 +8,29 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/middleman_actor_impl.hpp>
+#include <nil/actor/io/middleman_actor_impl.hpp>
 
 #include <tuple>
 #include <stdexcept>
 #include <utility>
 
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/send.hpp>
-#include <nil/mtl/actor.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/node_id.hpp>
-#include <nil/mtl/actor_proxy.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/typed_event_based_actor.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/send.hpp>
+#include <nil/actor/actor.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/node_id.hpp>
+#include <nil/actor/actor_proxy.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/typed_event_based_actor.hpp>
 
-#include <nil/mtl/io/basp_broker.hpp>
-#include <nil/mtl/io/system_messages.hpp>
+#include <nil/actor/io/basp_broker.hpp>
+#include <nil/actor/io/system_messages.hpp>
 
-#include <nil/mtl/io/network/interfaces.hpp>
-#include <nil/mtl/io/network/default_multiplexer.hpp>
+#include <nil/actor/io/network/interfaces.hpp>
+#include <nil/actor/io/network/default_multiplexer.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
 
             middleman_actor_impl::middleman_actor_impl(actor_config &cfg, actor default_broker) :
@@ -53,7 +52,7 @@ namespace nil {
             }
 
             void middleman_actor_impl::on_exit() {
-                MTL_LOG_TRACE("");
+                ACTOR_LOG_TRACE("");
                 broker_ = nullptr;
                 cached_tcp_.clear();
                 for (auto &kvp : pending_)
@@ -67,33 +66,33 @@ namespace nil {
             }
 
             auto middleman_actor_impl::make_behavior() -> behavior_type {
-                MTL_LOG_TRACE("");
+                ACTOR_LOG_TRACE("");
                 return {[=](publish_atom, uint16_t port, strong_actor_ptr &whom, mpi_set &sigs, std::string &addr,
                             bool reuse) -> put_res {
-                            MTL_LOG_TRACE("");
+                            ACTOR_LOG_TRACE("");
                             return put(port, whom, sigs, addr.c_str(), reuse);
                         },
                         [=](open_atom, uint16_t port, std::string &addr, bool reuse) -> put_res {
-                            MTL_LOG_TRACE("");
+                            ACTOR_LOG_TRACE("");
                             strong_actor_ptr whom;
                             mpi_set sigs;
                             return put(port, whom, sigs, addr.c_str(), reuse);
                         },
                         [=](connect_atom, std::string &hostname, uint16_t port) -> get_res {
-                            MTL_LOG_TRACE(MTL_ARG(hostname) << MTL_ARG(port));
+                            ACTOR_LOG_TRACE(ACTOR_ARG(hostname) << ACTOR_ARG(port));
                             auto rp = make_response_promise();
                             endpoint key {std::move(hostname), port};
                             // respond immediately if endpoint is cached
                             auto x = cached_tcp(key);
                             if (x) {
-                                MTL_LOG_DEBUG("found cached entry" << MTL_ARG(*x));
+                                ACTOR_LOG_DEBUG("found cached entry" << ACTOR_ARG(*x));
                                 rp.deliver(get<0>(*x), get<1>(*x), get<2>(*x));
                                 return get_delegated {};
                             }
                             // attach this promise to a pending request if possible
                             auto rps = pending(key);
                             if (rps) {
-                                MTL_LOG_DEBUG("attach to pending request");
+                                ACTOR_LOG_DEBUG("attach to pending request");
                                 rps->emplace_back(std::move(rp));
                                 return get_delegated {};
                             }
@@ -132,24 +131,24 @@ namespace nil {
                             return get_delegated {};
                         },
                         [=](unpublish_atom atm, actor_addr addr, uint16_t p) -> del_res {
-                            MTL_LOG_TRACE("");
+                            ACTOR_LOG_TRACE("");
                             delegate(broker_, atm, std::move(addr), p);
                             return {};
                         },
                         [=](close_atom atm, uint16_t p) -> del_res {
-                            MTL_LOG_TRACE("");
+                            ACTOR_LOG_TRACE("");
                             delegate(broker_, atm, p);
                             return {};
                         },
                         [=](spawn_atom atm, node_id &nid, std::string &str, message &msg,
                             std::set<std::string> &ifs) -> delegated<strong_actor_ptr> {
-                            MTL_LOG_TRACE("");
+                            ACTOR_LOG_TRACE("");
                             delegate(broker_, forward_atom::value, nid, atom("SpawnServ"),
                                      make_message(atm, std::move(str), std::move(msg), std::move(ifs)));
                             return {};
                         },
                         [=](get_atom atm, node_id nid) -> delegated<node_id, std::string, uint16_t> {
-                            MTL_LOG_TRACE("");
+                            ACTOR_LOG_TRACE("");
                             delegate(broker_, atm, std::move(nid));
                             return {};
                         }};
@@ -157,7 +156,7 @@ namespace nil {
 
             middleman_actor_impl::put_res middleman_actor_impl::put(uint16_t port, strong_actor_ptr &whom,
                                                                     mpi_set &sigs, const char *in, bool reuse_addr) {
-                MTL_LOG_TRACE(MTL_ARG(port) << MTL_ARG(whom) << MTL_ARG(sigs) << MTL_ARG(in) << MTL_ARG(reuse_addr));
+                ACTOR_LOG_TRACE(ACTOR_ARG(port) << ACTOR_ARG(whom) << ACTOR_ARG(sigs) << ACTOR_ARG(in) << ACTOR_ARG(reuse_addr));
                 uint16_t actual_port;
                 // treat empty strings like nullptr
                 if (in != nullptr && in[0] == '\0')
@@ -174,7 +173,7 @@ namespace nil {
             middleman_actor_impl::put_res middleman_actor_impl::put_udp(uint16_t port, strong_actor_ptr &whom,
                                                                         mpi_set &sigs, const char *in,
                                                                         bool reuse_addr) {
-                MTL_LOG_TRACE(MTL_ARG(port) << MTL_ARG(whom) << MTL_ARG(sigs) << MTL_ARG(in) << MTL_ARG(reuse_addr));
+                ACTOR_LOG_TRACE(ACTOR_ARG(port) << ACTOR_ARG(whom) << ACTOR_ARG(sigs) << ACTOR_ARG(in) << ACTOR_ARG(reuse_addr));
                 uint16_t actual_port;
                 // treat empty strings like nullptr
                 if (in != nullptr && in[0] == '\0')
@@ -227,5 +226,5 @@ namespace nil {
             }
 
         }    // namespace io
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

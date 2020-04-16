@@ -11,19 +11,19 @@ cm_setup_version(VERSION 0.16.0)
 # check whether submodules are available
 if(NOT EXISTS "${CMAKE_CURRENT_SOURCE_DIR}/third_party/pybind/CMakeLists.txt")
     message(STATUS "Pybind submodule not loaded, skip python.")
-    set(MTL_NO_PYTHON yes)
+    set(ACTOR_NO_PYTHON yes)
 else()
-    if(NOT "${MTL_PYTHON_CONFIG_BIN}" STREQUAL "")
-        execute_process(COMMAND "${MTL_PYTHON_CONFIG_BIN}" --includes
+    if(NOT "${ACTOR_PYTHON_CONFIG_BIN}" STREQUAL "")
+        execute_process(COMMAND "${ACTOR_PYTHON_CONFIG_BIN}" --includes
                         OUTPUT_VARIABLE PYTHON_INCLUDE_FLAGS)
         string(STRIP "${PYTHON_INCLUDE_FLAGS}" PYTHON_INCLUDE_FLAGS)
-        execute_process(COMMAND "${MTL_PYTHON_CONFIG_BIN}" --ldflags
+        execute_process(COMMAND "${ACTOR_PYTHON_CONFIG_BIN}" --ldflags
                         OUTPUT_VARIABLE PYTHON_LDFLAGS)
         string(STRIP "${PYTHON_LDFLAGS}" PYTHON_LDFLAGS)
-        if("${MTL_EXTRA_LDFLAGS}" STREQUAL "")
-            set(MTL_EXTRA_LDFLAGS "${PYTHON_LDFLAGS}")
+        if("${ACTOR_EXTRA_LDFLAGS}" STREQUAL "")
+            set(ACTOR_EXTRA_LDFLAGS "${PYTHON_LDFLAGS}")
         else()
-            set(MTL_EXTRA_LDFLAGS "${MTL_EXTRA_LDFLAGS} ${PYTHON_LDFLAGS}")
+            set(ACTOR_EXTRA_LDFLAGS "${ACTOR_EXTRA_LDFLAGS} ${PYTHON_LDFLAGS}")
         endif()
         string(REPLACE " -I" ";-I" dir_list ${PYTHON_INCLUDE_FLAGS})
         foreach(flag ${dir_list})
@@ -35,8 +35,8 @@ else()
         cm_find_package(PythonLibs)
         if(NOT PYTHONLIBS_FOUND)
             message(STATUS "Unable to find Python, disable Python binding")
-            message(STATUS "Set MTL_PYTHON_CONFIG_BIN or use './configure --with-python-config=...' to use python-conf")
-            set(MTL_NO_PYTHON yes)
+            message(STATUS "Set ACTOR_PYTHON_CONFIG_BIN or use './configure --with-python-config=...' to use python-conf")
+            set(ACTOR_NO_PYTHON yes)
         else()
             message(STATUS "Found Python ${PYTHONLIBS_VERSION_STRING}")
             include_directories(${PYTHON_INCLUDE_DIRS})
@@ -45,23 +45,23 @@ else()
 endif()
 
 
-set(MTL_PYTHON_SRCS src/main.cpp)
-set(MTL_PYTHON_HDRS)
+set(ACTOR_PYTHON_SRCS src/main.cpp)
+set(ACTOR_PYTHON_HDRS)
 
 # add targets to CMake
-if(NOT MTL_NO_PYTHON)
+if(NOT ACTOR_NO_PYTHON)
     include_directories("${CMAKE_CURRENT_SOURCE_DIR}")
-    add_executable(mtl_python ${MTL_PYTHON_SRCS} ${MTL_PYTHON_HDRS})
+    add_executable(mtl_python ${ACTOR_PYTHON_SRCS} ${ACTOR_PYTHON_HDRS})
     target_link_libraries(mtl_python
-                          ${MTL_EXTRA_LDFLAGS}
-                          ${MTL_LIBRARY_CORE}
-                          ${MTL_LIBRARY_IO}
-                          ${MTL_LIBRARY_RIAC}
+                          ${ACTOR_EXTRA_LDFLAGS}
+                          ${ACTOR_LIBRARY_CORE}
+                          ${ACTOR_LIBRARY_IO}
+                          ${ACTOR_LIBRARY_RIAC}
                           ${PTHREAD_LIBRARIES}
                           ${LIBEDIT_LIBRARIES}
                           ${PYTHON_LIBRARIES})
     install(TARGETS mtl_python DESTINATION bin)
 else()
-    add_custom_target(mtl_python SOURCES ${MTL_PYTHON_SRCS} ${MTL_PYTHON_HDRS})
+    add_custom_target(mtl_python SOURCES ${ACTOR_PYTHON_SRCS} ${ACTOR_PYTHON_HDRS})
 endif()
 

@@ -1,10 +1,10 @@
 \section{Type Inspection (Serialization and String Conversion)}
 \label{type-inspection}
 
-MTL is designed with distributed systems in mind. Hence, all message types
+ACTOR is designed with distributed systems in mind. Hence, all message types
 must be serializable and need a platform-neutral, unique name that is
 configured at startup \see{add-custom-message-type}. Using a message type that
-is not serializable causes a compiler error \see{unsafe-message-type}. MTL
+is not serializable causes a compiler error \see{unsafe-message-type}. ACTOR
 serializes individual elements of a message by using the inspection API. This
 API allows users to provide code for serialization as well as string conversion
 with a single free function. The signature for a class \lstinline^my_class^ is
@@ -29,7 +29,7 @@ container type with \lstinline^x.size()^, \lstinline^x.empty()^,
 \lstinline^x.begin()^ and \lstinline^x.end()^.
 
 We consciously made the inspect API as generic as possible to allow for
-extensibility. This allows users to use MTL's types in other contexts, to
+extensibility. This allows users to use ACTOR's types in other contexts, to
 implement parsers, etc.
 
 \subsection{Inspector Concept}
@@ -62,11 +62,11 @@ rvalue references to annotations.
 
 Annotations allow users to fine-tune the behavior of inspectors by providing
 addition meta information about a type. All annotations live in the namespace
-\lstinline^nil::mtl::meta^ and derive from \lstinline^nil::mtl::meta::annotation^. An
+\lstinline^nil::actor::meta^ and derive from \lstinline^nil::actor::meta::annotation^. An
 inspector can query whether a type \lstinline^T^ is an annotation with
-\lstinline^nil::mtl::meta::is_annotation<T>::value^. Annotations are passed to the
+\lstinline^nil::actor::meta::is_annotation<T>::value^. Annotations are passed to the
 call operator of the inspector along with data fields. The following list shows
-all annotations supported by MTL:
+all annotations supported by ACTOR:
 
 \begin{itemize}
 \item \lstinline^type_name(n)^: Display type name as \lstinline^n^ in
@@ -87,24 +87,24 @@ all annotations supported by MTL:
 
 \subsection{Backwards and Third-party Compatibility}
 
-MTL evaluates common free function other than \lstinline^inspect^ in order to
-simplify users to integrate MTL into existing code bases.
+ACTOR evaluates common free function other than \lstinline^inspect^ in order to
+simplify users to integrate ACTOR into existing code bases.
 
 Serializers and deserializers call user-defined \lstinline^serialize^
 functions. Both types support \lstinline^operator&^ as well as
 \lstinline^operator()^ for individual data fields. A \lstinline^serialize^
 function has priority over \lstinline^inspect^.
 
-When converting a user-defined type to a string, MTL calls user-defined
+When converting a user-defined type to a string, ACTOR calls user-defined
 \lstinline^to_string^ functions and prefers those over \lstinline^inspect^.
 
 \subsection{Whitelisting Unsafe Message Types}
 \label{unsafe-message-type}
 
 Message types that are not serializable cause compile time errors when used in
-actor communication. When using MTL for concurrency only, this errors can be
+actor communication. When using ACTOR for concurrency only, this errors can be
 suppressed by whitelisting types with
-\lstinline^MTL_ALLOW_UNSAFE_MESSAGE_TYPE^. The macro is defined as follows.
+\lstinline^ACTOR_ALLOW_UNSAFE_MESSAGE_TYPE^. The macro is defined as follows.
 
 % TODO: expand example here\cppexample[linerange={50-54}]{../../core/caf/allowed_unsafe_message_type.hpp}
 

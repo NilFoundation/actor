@@ -5,13 +5,13 @@
 #include <memory>
 #include <iostream>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/io/all.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/io/all.hpp>
 
 using namespace std;
-using namespace nil::mtl;
-using namespace nil::mtl::io;
+using namespace nil::actor;
+using namespace nil::actor::io;
 
 namespace {
 

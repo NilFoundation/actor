@@ -1,7 +1,6 @@
 //---------------------------------------------------------------------------//
-// Copyright (c) 2011-2018 Dominik Charousset
-// Copyright (c) 2018-2019 Nil Foundation AG
-// Copyright (c) 2018-2019 Mikhail Komarov <nemo@nil.foundation>
+// Copyright (c) 2011-2020 Dominik Charousset
+// Copyright (c) 2018-2020 Mikhail Komarov <nemo@nil.foundation>
 //
 // Distributed under the terms and conditions of the BSD 3-Clause License or
 // (at your option) under the terms and conditions of the Boost Software
@@ -9,18 +8,18 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/network/stream.hpp>
+#include <nil/actor/io/network/stream.hpp>
 
 #include <algorithm>
 
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/config_value.hpp>
-#include <nil/mtl/defaults.hpp>
-#include <nil/mtl/io/network/default_multiplexer.hpp>
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/config_value.hpp>
+#include <nil/actor/defaults.hpp>
+#include <nil/actor/io/network/default_multiplexer.hpp>
+#include <nil/actor/logger.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace network {
 
@@ -32,7 +31,7 @@ namespace nil {
                 }
 
                 void stream::start(stream_manager *mgr) {
-                    MTL_ASSERT(mgr != nullptr);
+                    ACTOR_ASSERT(mgr != nullptr);
                     activate(mgr);
                 }
 
@@ -50,15 +49,15 @@ namespace nil {
                 }
 
                 void stream::write(const void *buf, size_t num_bytes) {
-                    MTL_LOG_TRACE(MTL_ARG(num_bytes));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(num_bytes));
                     auto first = reinterpret_cast<const byte *>(buf);
                     auto last = first + num_bytes;
                     wr_offline_buf_.insert(wr_offline_buf_.end(), first, last);
                 }
 
                 void stream::flush(const manager_ptr &mgr) {
-                    MTL_ASSERT(mgr != nullptr);
-                    MTL_LOG_TRACE(MTL_ARG(wr_offline_buf_.size()));
+                    ACTOR_ASSERT(mgr != nullptr);
+                    ACTOR_LOG_TRACE(ACTOR_ARG(wr_offline_buf_.size()));
                     if (!wr_offline_buf_.empty() && !state_.writing) {
                         backend().add(operation::write, fd(), this);
                         writer_ = mgr;
@@ -68,7 +67,7 @@ namespace nil {
                 }
 
                 void stream::removed_from_loop(operation op) {
-                    MTL_LOG_TRACE(MTL_ARG2("fd", fd_) << MTL_ARG(op));
+                    ACTOR_LOG_TRACE(ACTOR_ARG2("fd", fd_) << ACTOR_ARG(op));
                     switch (op) {
                         case operation::read:
                             reader_.reset();
@@ -81,7 +80,7 @@ namespace nil {
                 }
 
                 void stream::graceful_shutdown() {
-                    MTL_LOG_TRACE(MTL_ARG2("fd", fd_));
+                    ACTOR_LOG_TRACE(ACTOR_ARG2("fd", fd_));
                     // Ignore repeated calls.
                     if (state_.shutting_down)
                         return;
@@ -127,7 +126,7 @@ namespace nil {
                 }
 
                 void stream::prepare_next_write() {
-                    MTL_LOG_TRACE(MTL_ARG(wr_buf_.size()) << MTL_ARG(wr_offline_buf_.size()));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(wr_buf_.size()) << ACTOR_ARG(wr_offline_buf_.size()));
                     written_ = 0;
                     wr_buf_.clear();
                     if (wr_offline_buf_.empty()) {
@@ -176,7 +175,7 @@ namespace nil {
                             break;
                         case rw_state::success:
                             written_ += wb;
-                            MTL_ASSERT(written_ <= wr_buf_.size());
+                            ACTOR_ASSERT(written_ <= wr_buf_.size());
                             auto remaining = wr_buf_.size() - written_;
                             if (state_.ack_writes)
                                 writer_->data_transferred(&backend(), wb, remaining + wr_offline_buf_.size());
@@ -195,7 +194,7 @@ namespace nil {
                 }
 
                 void stream::send_fin() {
-                    MTL_LOG_TRACE(MTL_ARG2("fd", fd_));
+                    ACTOR_LOG_TRACE(ACTOR_ARG2("fd", fd_));
                     // Shutting down the write channel will cause TCP to send FIN for the
                     // graceful shutdown sequence. The peer then closes its connection as well
                     // and we will notice this by getting 0 as return value of recv without error
@@ -205,5 +204,5 @@ namespace nil {
 
             }    // namespace network
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

@@ -1,7 +1,6 @@
 //---------------------------------------------------------------------------//
-// Copyright (c) 2011-2018 Dominik Charousset
-// Copyright (c) 2018-2019 Nil Foundation AG
-// Copyright (c) 2018-2019 Mikhail Komarov <nemo@nil.foundation>
+// Copyright (c) 2011-2020 Dominik Charousset
+// Copyright (c) 2018-2020 Mikhail Komarov <nemo@nil.foundation>
 //
 // Distributed under the terms and conditions of the BSD 3-Clause License or
 // (at your option) under the terms and conditions of the Boost Software
@@ -9,16 +8,16 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/network/datagram_servant_impl.hpp>
+#include <nil/actor/io/network/datagram_servant_impl.hpp>
 
 #include <algorithm>
 
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/logger.hpp>
 
-#include <nil/mtl/io/network/default_multiplexer.hpp>
+#include <nil/actor/io/network/default_multiplexer.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace network {
 
@@ -30,7 +29,7 @@ namespace nil {
                 }
 
                 bool datagram_servant_impl::new_endpoint(network::receive_buffer &buf) {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     if (detached())
                         // We are already disconnected from the broker while the multiplexer
                         // did not yet remove the socket, this can happen if an I/O event
@@ -38,7 +37,7 @@ namespace nil {
                         // further activities for the broker.
                         return false;
                     // A datagram that has a source port of zero is valid and never requires a
-                    // reply. In the case of MTL we can simply drop it as nothing but the
+                    // reply. In the case of ACTOR we can simply drop it as nothing but the
                     // handshake could be communicated which we could not reply to.
                     // Source: TCP/IP Illustrated, Chapter 10.2
                     if (network::port(handler_.sending_endpoint()) == 0)
@@ -51,7 +50,7 @@ namespace nil {
                 }
 
                 void datagram_servant_impl::ack_writes(bool enable) {
-                    MTL_LOG_TRACE(MTL_ARG(enable));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(enable));
                     handler_.ack_writes(enable);
                 }
 
@@ -68,14 +67,14 @@ namespace nil {
                 }
 
                 void datagram_servant_impl::graceful_shutdown() {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     handler_.graceful_shutdown();
                     detach_handles();
                     detach(&handler_.backend(), false);
                 }
 
                 void datagram_servant_impl::flush() {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     handler_.flush(this);
                 }
 
@@ -118,8 +117,8 @@ namespace nil {
                 }
 
                 void datagram_servant_impl::launch() {
-                    MTL_LOG_TRACE("");
-                    MTL_ASSERT(!launched_);
+                    ACTOR_LOG_TRACE("");
+                    ACTOR_ASSERT(!launched_);
                     launched_ = true;
                     handler_.start(this);
                 }
@@ -141,5 +140,5 @@ namespace nil {
 
             }    // namespace network
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

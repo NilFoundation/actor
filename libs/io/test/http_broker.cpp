@@ -5,16 +5,16 @@
 #include <cassert>
 #include <algorithm>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/io/all.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/io/all.hpp>
 
 using std::cerr;
 using std::cout;
 using std::endl;
 
-using namespace nil::mtl;
-using namespace nil::mtl::io;
+using namespace nil::actor;
+using namespace nil::actor::io;
 
 namespace {
 
@@ -25,7 +25,7 @@ namespace {
         "Host: localhost\r\n"
         "Connection: close\r\n"
         "Accept: text/plain\r\n"
-        "User-Agent: MTL/0.14\r\n"
+        "User-Agent: ACTOR/0.14\r\n"
         "Accept-Language: en-US\r\n"
         "\r\n";
 
@@ -65,7 +65,7 @@ namespace {
         abstract_broker *self_;
     };
 
-    using http_broker = nil::mtl::stateful_actor<http_state, broker>;
+    using http_broker = nil::actor::stateful_actor<http_state, broker>;
 
     behavior http_worker(http_broker *self, connection_handle hdl) {
         // tell network backend to receive any number of bytes between 1 and 1024

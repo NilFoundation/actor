@@ -10,26 +10,26 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/openssl/session.hpp>
+#include <nil/actor/openssl/session.hpp>
 
-MTL_PUSH_WARNINGS
+ACTOR_PUSH_WARNINGS
 #include <openssl/err.h>
-MTL_POP_WARNINGS
+ACTOR_POP_WARNINGS
 
-#include <nil/mtl/spawner_config.hpp>
+#include <nil/actor/spawner_config.hpp>
 
-#include <nil/mtl/io/network/default_multiplexer.hpp>
+#include <nil/actor/io/network/default_multiplexer.hpp>
 
-#include <nil/mtl/openssl/manager.hpp>
+#include <nil/actor/openssl/manager.hpp>
 
 // On Linux we need to block SIGPIPE whenever we access OpenSSL functions.
 // Unfortunately there's no sane way to configure OpenSSL properly.
-#ifdef MTL_LINUX
+#ifdef ACTOR_LINUX
 
-#include <nil/mtl/detail/scope_guard.hpp>
+#include <nil/actor/detail/scope_guard.hpp>
 #include <signal.h>
 
-#define MTL_BLOCK_SIGPIPE()                                             \
+#define ACTOR_BLOCK_SIGPIPE()                                             \
     sigset_t sigpipe_mask;                                              \
     sigemptyset(&sigpipe_mask);                                         \
     sigaddset(&sigpipe_mask, SIGPIPE);                                  \
@@ -38,7 +38,7 @@ MTL_POP_WARNINGS
         perror("pthread_sigmask");                                      \
         exit(1);                                                        \
     }                                                                   \
-    auto sigpipe_restore_guard = ::mtl::detail::make_scope_guard([&] {  \
+    auto sigpipe_restore_guard = ::actor::detail::make_scope_guard([&] {  \
         struct timespec zerotime = {0};                                 \
         sigtimedwait(&sigpipe_mask, 0, &zerotime);                      \
         if (pthread_sigmask(SIG_SETMASK, &saved_mask, 0) == -1) {       \
@@ -49,12 +49,12 @@ MTL_POP_WARNINGS
 
 #else
 
-#define MTL_BLOCK_SIGPIPE() static_cast<void>(0)
+#define ACTOR_BLOCK_SIGPIPE() static_cast<void>(0)
 
-#endif    // MTL_LINUX
+#endif    // ACTOR_LINUX
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace openssl {
 
             namespace {
@@ -74,11 +74,11 @@ namespace nil {
             }
 
             bool session::init() {
-                MTL_LOG_TRACE("");
+                ACTOR_LOG_TRACE("");
                 ctx_ = create_ssl_context();
                 ssl_ = SSL_new(ctx_);
                 if (ssl_ == nullptr) {
-                    MTL_LOG_ERROR("cannot create SSL session");
+                    ACTOR_LOG_ERROR("cannot create SSL session");
                     return false;
                 }
                 return true;
@@ -91,32 +91,32 @@ namespace nil {
 
             rw_state session::do_some(int (*f)(SSL *, void *, int), size_t &result, void *buf, size_t len,
                                       const char *debug_name) {
-                MTL_BLOCK_SIGPIPE();
+                ACTOR_BLOCK_SIGPIPE();
                 auto check_ssl_res = [&](int res) -> rw_state {
                     result = 0;
                     switch (SSL_get_error(ssl_, res)) {
                         default:
-                            MTL_LOG_INFO("SSL error:" << get_ssl_error());
+                            ACTOR_LOG_INFO("SSL error:" << get_ssl_error());
                             return rw_state::failure;
                         case SSL_ERROR_WANT_READ:
-                            MTL_LOG_DEBUG("SSL_ERROR_WANT_READ reported");
+                            ACTOR_LOG_DEBUG("SSL_ERROR_WANT_READ reported");
                             // Report success to poll on this socket.
                             if (len == 0 && strcmp(debug_name, "write_some") == 0)
                                 return rw_state::indeterminate;
                             return rw_state::success;
                         case SSL_ERROR_WANT_WRITE:
-                            MTL_LOG_DEBUG("SSL_ERROR_WANT_WRITE reported");
+                            ACTOR_LOG_DEBUG("SSL_ERROR_WANT_WRITE reported");
                             // Report success to poll on this socket.
                             return rw_state::success;
                     }
                 };
-                MTL_LOG_TRACE(MTL_ARG(len) << MTL_ARG(debug_name));
-                MTL_IGNORE_UNUSED(debug_name);
+                ACTOR_LOG_TRACE(ACTOR_ARG(len) << ACTOR_ARG(debug_name));
+                ACTOR_IGNORE_UNUSED(debug_name);
                 if (connecting_) {
-                    MTL_LOG_DEBUG(debug_name << ": connecting");
+                    ACTOR_LOG_DEBUG(debug_name << ": connecting");
                     auto res = SSL_connect(ssl_);
                     if (res == 1) {
-                        MTL_LOG_DEBUG("SSL connection established");
+                        ACTOR_LOG_DEBUG("SSL connection established");
                         connecting_ = false;
                     } else {
                         result = 0;
@@ -124,17 +124,17 @@ namespace nil {
                     }
                 }
                 if (accepting_) {
-                    MTL_LOG_DEBUG(debug_name << ": accepting");
+                    ACTOR_LOG_DEBUG(debug_name << ": accepting");
                     auto res = SSL_accept(ssl_);
                     if (res == 1) {
-                        MTL_LOG_DEBUG("SSL connection accepted");
+                        ACTOR_LOG_DEBUG("SSL connection accepted");
                         accepting_ = false;
                     } else {
                         result = 0;
                         return check_ssl_res(res);
                     }
                 }
-                MTL_LOG_DEBUG(debug_name << ": calling SSL_write or SSL_read");
+                ACTOR_LOG_DEBUG(debug_name << ": calling SSL_write or SSL_read");
                 if (len == 0) {
                     result = 0;
                     return rw_state::indeterminate;
@@ -149,19 +149,19 @@ namespace nil {
             }
 
             rw_state session::read_some(size_t &result, native_socket, void *buf, size_t len) {
-                MTL_LOG_TRACE(MTL_ARG(len));
+                ACTOR_LOG_TRACE(ACTOR_ARG(len));
                 return do_some(SSL_read, result, buf, len, "read_some");
             }
 
             rw_state session::write_some(size_t &result, native_socket, const void *buf, size_t len) {
-                MTL_LOG_TRACE(MTL_ARG(len));
+                ACTOR_LOG_TRACE(ACTOR_ARG(len));
                 auto wr_fun = [](SSL *sptr, void *vptr, int ptr_size) { return SSL_write(sptr, vptr, ptr_size); };
                 return do_some(wr_fun, result, const_cast<void *>(buf), len, "write_some");
             }
 
             bool session::try_connect(native_socket fd) {
-                MTL_LOG_TRACE(MTL_ARG(fd));
-                MTL_BLOCK_SIGPIPE();
+                ACTOR_LOG_TRACE(ACTOR_ARG(fd));
+                ACTOR_BLOCK_SIGPIPE();
                 SSL_set_fd(ssl_, fd);
                 SSL_set_connect_state(ssl_);
                 auto ret = SSL_connect(ssl_);
@@ -172,8 +172,8 @@ namespace nil {
             }
 
             bool session::try_accept(native_socket fd) {
-                MTL_LOG_TRACE(MTL_ARG(fd));
-                MTL_BLOCK_SIGPIPE();
+                ACTOR_LOG_TRACE(ACTOR_ARG(fd));
+                ACTOR_BLOCK_SIGPIPE();
                 SSL_set_fd(ssl_, fd);
                 SSL_set_accept_state(ssl_);
                 auto ret = SSL_accept(ssl_);
@@ -192,20 +192,20 @@ namespace nil {
             }
 
             SSL_CTX *session::create_ssl_context() {
-                MTL_BLOCK_SIGPIPE();
-#ifdef MTL_SSL_HAS_NON_VERSIONED_TLS_FUN
+                ACTOR_BLOCK_SIGPIPE();
+#ifdef ACTOR_SSL_HAS_NON_VERSIONED_TLS_FUN
                 auto ctx = SSL_CTX_new(TLS_method());
 #else
                 auto ctx = SSL_CTX_new(TLSv1_2_method());
 #endif
                 if (!ctx)
-                    MTL_RAISE_ERROR("cannot create OpenSSL context");
+                    ACTOR_RAISE_ERROR("cannot create OpenSSL context");
                 if (sys_.openssl_manager().authentication_enabled()) {
                     // Require valid certificates on both sides.
                     auto &cfg = sys_.config();
                     if (cfg.openssl_certificate.size() > 0 &&
                         SSL_CTX_use_certificate_chain_file(ctx, cfg.openssl_certificate.c_str()) != 1)
-                        MTL_RAISE_ERROR("cannot load certificate");
+                        ACTOR_RAISE_ERROR("cannot load certificate");
                     if (cfg.openssl_passphrase.size() > 0) {
                         openssl_passphrase_ = cfg.openssl_passphrase;
                         SSL_CTX_set_default_passwd_cb(ctx, pem_passwd_cb);
@@ -213,37 +213,37 @@ namespace nil {
                     }
                     if (cfg.openssl_key.size() > 0 &&
                         SSL_CTX_use_PrivateKey_file(ctx, cfg.openssl_key.c_str(), SSL_FILETYPE_PEM) != 1)
-                        MTL_RAISE_ERROR("cannot load private key");
+                        ACTOR_RAISE_ERROR("cannot load private key");
                     auto cafile = (cfg.openssl_cafile.size() > 0 ? cfg.openssl_cafile.c_str() : nullptr);
                     auto capath = (cfg.openssl_capath.size() > 0 ? cfg.openssl_capath.c_str() : nullptr);
                     if (cafile || capath) {
                         if (SSL_CTX_load_verify_locations(ctx, cafile, capath) != 1)
-                            MTL_RAISE_ERROR("cannot load trusted CA certificates");
+                            ACTOR_RAISE_ERROR("cannot load trusted CA certificates");
                     }
                     SSL_CTX_set_verify(ctx, SSL_VERIFY_PEER | SSL_VERIFY_FAIL_IF_NO_PEER_CERT, nullptr);
                     if (SSL_CTX_set_cipher_list(ctx, "HIGH:!aNULL:!MD5") != 1)
-                        MTL_RAISE_ERROR("cannot set cipher list");
+                        ACTOR_RAISE_ERROR("cannot set cipher list");
                 } else {
                     // No authentication.
                     SSL_CTX_set_verify(ctx, SSL_VERIFY_NONE, nullptr);
-#if defined(MTL_SSL_HAS_ECDH_AUTO) && (OPENSSL_VERSION_NUMBER < 0x10100000L)
+#if defined(ACTOR_SSL_HAS_ECDH_AUTO) && (OPENSSL_VERSION_NUMBER < 0x10100000L)
                     SSL_CTX_set_ecdh_auto(ctx, 1);
 #else
                     auto ecdh = EC_KEY_new_by_curve_name(NID_secp384r1);
                     if (!ecdh)
-                        MTL_RAISE_ERROR("cannot get ECDH curve");
-                    MTL_PUSH_WARNINGS
+                        ACTOR_RAISE_ERROR("cannot get ECDH curve");
+                    ACTOR_PUSH_WARNINGS
                     SSL_CTX_set_tmp_ecdh(ctx, ecdh);
                     EC_KEY_free(ecdh);
-                    MTL_POP_WARNINGS
+                    ACTOR_POP_WARNINGS
 #endif
-#ifdef MTL_SSL_HAS_SECURITY_LEVEL
+#ifdef ACTOR_SSL_HAS_SECURITY_LEVEL
                     const char *cipher = "AECDH-AES256-SHA@SECLEVEL=0";
 #else
                     const char *cipher = "AECDH-AES256-SHA";
 #endif
                     if (SSL_CTX_set_cipher_list(ctx, cipher) != 1)
-                        MTL_RAISE_ERROR("cannot set anonymous cipher");
+                        ACTOR_RAISE_ERROR("cannot set anonymous cipher");
                 }
                 return ctx;
             }
@@ -264,16 +264,16 @@ namespace nil {
                 auto err = SSL_get_error(ssl_, ret);
                 switch (err) {
                     case SSL_ERROR_WANT_READ:
-                        MTL_LOG_DEBUG("Nonblocking call to SSL returned want_read");
+                        ACTOR_LOG_DEBUG("Nonblocking call to SSL returned want_read");
                         return true;
                     case SSL_ERROR_WANT_WRITE:
-                        MTL_LOG_DEBUG("Nonblocking call to SSL returned want_write");
+                        ACTOR_LOG_DEBUG("Nonblocking call to SSL returned want_write");
                         return true;
                     case SSL_ERROR_ZERO_RETURN:    // Regular remote connection shutdown.
                     case SSL_ERROR_SYSCALL:        // Socket connection closed.
                         return false;
                     default:    // Other error
-                        MTL_LOG_INFO("SSL call failed:" << get_ssl_error());
+                        ACTOR_LOG_INFO("SSL call failed:" << get_ssl_error());
                         return false;
                 }
             }
@@ -293,5 +293,5 @@ namespace nil {
             }
 
         }    // namespace openssl
-    }        // namespace mtl
+    }        // namespace actor
 }

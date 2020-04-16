@@ -1,7 +1,7 @@
 \section{Migration Guides}
 
 The guides in this section document all possibly breaking changes in the
-library for that last versions of MTL.
+library for that last versions of ACTOR.
 
 \subsection{0.8 to 0.9}
 
@@ -24,11 +24,11 @@ actors to "catch" the self pointer with proper type information.
 
 ~
 
-MTL now distinguishes between handles to actors, i.e.,
+ACTOR now distinguishes between handles to actors, i.e.,
 \lstinline^typed_actor<...>^ or simply \lstinline^actor^, and \emph{addresses}
 of actors, i.e., \lstinline^actor_addr^. The reason for this change is that
 each actor has a logical, (network-wide) unique address, which is used by the
-networking layer of MTL. Furthermore, for monitoring or linking, the address
+networking layer of ACTOR. Furthermore, for monitoring or linking, the address
 is all you need. However, the address is not sufficient for sending messages,
 because it doesn't have any type information. The function
 \lstinline^current_sender()^ now returns the \emph{address} of the sender. This
@@ -44,9 +44,9 @@ The APIs of typed and untyped actors have been harmonized. Typed actors can now
 be published in the network and also use all operations untyped actors can.
 
 \clearpage
-\subsection{0.9 to 0.10 (\texttt{libcppa} to MTL)}
+\subsection{0.9 to 0.10 (\texttt{libcppa} to ACTOR)}
 
-The first detach under the new name MTL is an overhaul of the entire library.
+The first detach under the new name ACTOR is an overhaul of the entire library.
 Some classes have been renamed or relocated, others have been removed. The
 purpose of this refactoring was to make the library easier to grasp and to make
 its API more consistent. All classes now live in the namespace \texttt{caf} and
@@ -55,7 +55,7 @@ For example, \texttt{cppa/actor.hpp} becomes \texttt{caf/actor.hpp}. Further,
 the convenience header to get all parts of the user API is now
 \texttt{"caf/all.hpp>}. The networking has been separated from the core
 library. To get the networking components, simply include
-\texttt{caf/io/all.hpp} and use the namespace \lstinline^nil::mtl::io^.
+\texttt{caf/io/all.hpp} and use the namespace \lstinline^nil::actor::io^.
 
 Version 0.10 still includes the header \texttt{cppa/cppa.hpp} to make the
 transition process for users easier and to not break existing code right away.
@@ -109,7 +109,7 @@ new_connection_msg, new_data_msg, connection_closed_msg, acceptor_closed_msg
 \end{lstlisting}
 
 These classes concern I/O functionality and have thus been moved to
-\lstinline^nil::mtl::io^
+\lstinline^nil::actor::io^
 
 \subsection{0.10 to 0.11}
 
@@ -166,9 +166,9 @@ factory functions using the same name.
 Version 0.15 replaces the singleton-based architecture with
 \lstinline^spawner^. Most of the free functions in namespace
 \lstinline^caf^ are now member functions of \lstinline^spawner^
-\see{actor-system}. Likewise, most functions in namespace \lstinline^nil::mtl::io^
+\see{actor-system}. Likewise, most functions in namespace \lstinline^nil::actor::io^
 are now member functions of \lstinline^middleman^ \see{middleman}. The
-structure of MTL applications has changed fundamentally with a focus on
+structure of ACTOR applications has changed fundamentally with a focus on
 configurability. Setting and fine-tuning the scheduler, changing parameters of
 the middleman, etc. is now bundled in the class
 \lstinline^spawner_config^. The new configuration mechanism is also easily

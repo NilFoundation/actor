@@ -1,15 +1,15 @@
 \section{Message Passing}
 \label{message-passing}
 
-Message passing in MTL is always asynchronous. Further, MTL neither guarantees
-message delivery nor message ordering in a distributed setting. MTL uses TCP
+Message passing in ACTOR is always asynchronous. Further, ACTOR neither guarantees
+message delivery nor message ordering in a distributed setting. ACTOR uses TCP
 per default, but also enables nodes to send messages to other nodes without
 having a direct connection.  In this case, messages are forwarded by
 intermediate nodes and can get lost if one of the forwarding nodes fails.
 Likewise, forwarding paths can change dynamically and thus cause messages to
 arrive out of order.
 
-The messaging layer of MTL has three primitives for sending messages:
+The messaging layer of ACTOR has three primitives for sending messages:
 \lstinline^send^, \lstinline^request^, and \lstinline^delegate^. The former
 simply enqueues a message to the mailbox the receiver. The latter two are
 discussed in more detail in \sref{request} and \sref{delegate}.
@@ -17,7 +17,7 @@ discussed in more detail in \sref{request} and \sref{delegate}.
 \subsection{Structure of Mailbox Elements}
 \label{mailbox-element}
 
-When enqueuing a message to the mailbox of an actor, MTL wraps the content of
+When enqueuing a message to the mailbox of an actor, ACTOR wraps the content of
 the message into a \lstinline^mailbox_element^ (shown below) to add meta data
 and processing paths.
 
@@ -29,22 +29,22 @@ positive integer value that allows the sender to match a response to its
 request. The \lstinline^stages^ vector stores the path of the message. Response
 messages, i.e., the returned values of a message handler, are sent to
 \lstinline^stages.back()^ after calling \lstinline^stages.pop_back()^. This
-allows MTL to build pipelines of arbitrary size. If no more stage is left, the
+allows ACTOR to build pipelines of arbitrary size. If no more stage is left, the
 response reaches the sender. Finally, \lstinline^content()^ grants access to
 the type-erased tuple storing the message itself.
 
-Mailbox elements are created by MTL automatically and are usually invisible to
+Mailbox elements are created by ACTOR automatically and are usually invisible to
 the programmer. However, understanding how messages are processed internally
 helps understanding the behavior of the message passing layer.
 
-It is worth mentioning that MTL usually wraps the mailbox element and its
+It is worth mentioning that ACTOR usually wraps the mailbox element and its
 content into a single object in order to reduce the number of memory
 allocations.
 
 \subsection{Copy on Write}
 \label{copy-on-write}
 
-MTL allows multiple actors to implicitly share message contents, as long as no
+ACTOR allows multiple actors to implicitly share message contents, as long as no
 actor performs writes. This allows groups~\see{groups} to send the same content
 to all subscribed actors without any copying overhead.
 
@@ -53,7 +53,7 @@ one or more arguments of a message handler take a mutable reference.
 
 \subsection{Requirements for Message Types}
 
-Message types in MTL must meet the following requirements:
+Message types in ACTOR must meet the following requirements:
 
 \begin{enumerate}
 \item Serializable or inspectable \see{type-inspection}
@@ -63,15 +63,15 @@ Message types in MTL must meet the following requirements:
 
 A type is serializable if it provides free function \lstinline^serialize(Serializer&, T&)^ or \lstinline^serialize(Serializer&, T&, const unsigned int)^. Accordingly, a type is inspectable if it provides a free function \lstinline^inspect(Inspector&, T&)^.
 
-Requirement 2 is a consequence of requirement 1, because MTL needs to be able
+Requirement 2 is a consequence of requirement 1, because ACTOR needs to be able
 to create an object of a type before it can call \lstinline^serialize^ or
-\lstinline^inspect^ on it. Requirement 3 allows MTL to implement Copy on
+\lstinline^inspect^ on it. Requirement 3 allows ACTOR to implement Copy on
 Write~\see{copy-on-write}.
 
 \subsection{Default and System Message Handlers}
 \label{special-handler}
 
-MTL has three system-level message types (\lstinline^down_msg^,
+ACTOR has three system-level message types (\lstinline^down_msg^,
 \lstinline^exit_msg^, and \lstinline^error^) that all actor should handle
 regardless of there current state. Consequently, event-based actors handle such
 messages in special-purpose message handlers. Additionally, event-based actors
@@ -81,7 +81,7 @@ neither of those special-purpose handlers \see{blocking-actor}.
 \subsubsection{Down  Handler}
 \label{down-message}
 
-Actors can monitor the lifetime of other actors by calling \lstinline^self->monitor(other)^. This will cause the runtime system of MTL to send a \lstinline^down_msg^ for \lstinline^other^ if it dies. Actors drop down messages unless they provide a custom handler via \lstinline^set_down_handler(f)^, where \lstinline^f^ is a function object with signature \lstinline^void (down_msg&)^ or \lstinline^void (scheduled_actor*, down_msg&)^. The latter signature allows users to implement down message handlers as free function.
+Actors can monitor the lifetime of other actors by calling \lstinline^self->monitor(other)^. This will cause the runtime system of ACTOR to send a \lstinline^down_msg^ for \lstinline^other^ if it dies. Actors drop down messages unless they provide a custom handler via \lstinline^set_down_handler(f)^, where \lstinline^f^ is a function object with signature \lstinline^void (down_msg&)^ or \lstinline^void (scheduled_actor*, down_msg&)^. The latter signature allows users to implement down message handlers as free function.
 
 \subsubsection{Exit Handler}
 \label{exit-message}
@@ -102,7 +102,7 @@ the input. Actors can change the default handler by calling
 is \lstinline^result<message> (scheduled_actor*, message_view&)^, whereas the
 \lstinline^self^ pointer can again be omitted. The default handler can return a
 response message or cause the runtime to \emph{skip} the input message to allow
-an actor to handle it in a later state. MTL provides the following built-in
+an actor to handle it in a later state. ACTOR provides the following built-in
 implementations: \lstinline^reflect^, \lstinline^reflect_and_quit^,
 \lstinline^print_and_drop^, \lstinline^drop^, and \lstinline^skip^. The former
 two are meant for debugging and testing purposes and allow an actor to simply
@@ -113,12 +113,12 @@ input message in the mailbox. The default is \lstinline^print_and_drop^.
 \subsection{Requests}
 \label{request}
 
-A main feature of MTL is its ability to couple input and output types via the
+A main feature of ACTOR is its ability to couple input and output types via the
 type system. For example, a \lstinline^typed_actor<replies_to<int>::with<int>>^
 essentially behaves like a function. It receives a single \lstinline^int^ as
-input and responds with another \lstinline^int^. MTL embraces this functional
+input and responds with another \lstinline^int^. ACTOR embraces this functional
 take on actors by simply creating response messages from the result of message
-handlers. This allows MTL to match \emph{request} to \emph{response} messages
+handlers. This allows ACTOR to match \emph{request} to \emph{response} messages
 and to provide a convenient API for this style of communication.
 
 \subsubsection{Sending Requests and Handling Responses}
@@ -186,8 +186,8 @@ blocking function waits for a response before sending another request.
 \subsubsection{Error Handling in Requests}
 \label{error-response}
 
-Requests allow MTL to unambiguously correlate request and response messages.
-This is also true if the response is an error message. Hence, MTL allows to
+Requests allow ACTOR to unambiguously correlate request and response messages.
+This is also true if the response is an error message. Hence, ACTOR allows to
 add an error handler as optional second parameter to \lstinline^then^ and
 \lstinline^await^ (this parameter is mandatory for \lstinline^receive^). If no
 such handler is defined, the default error handler \see{error-message} is used

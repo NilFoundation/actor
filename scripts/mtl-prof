@@ -1,6 +1,6 @@
 #!/usr/bin/env Rscript --vanilla
 #
-# Generates plots from MTL profiler output.
+# Generates plots from ACTOR profiler output.
 #
 # The script takes a profiler log file on standard input and generates one plot
 # according to the command line options given. In general, the script generates
@@ -276,7 +276,7 @@ option_list <- list(
   make_option(c("-o", "--output"), default="png",
               help="the image format of the output [%default]"),
   make_option(c("-r", "--read"), default="stdin",
-              help="read MTL profile from file [-]"),
+              help="read ACTOR profile from file [-]"),
   make_option(c("-h", "--help"), action="store_true", default=F,
               help="display this help and exit")
   )

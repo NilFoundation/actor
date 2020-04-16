@@ -100,7 +100,7 @@ endmacro()
 
 # -- LaTeX setup ---------------------------------------------------------------
 
-if(MTL_BUILD_TEX_MANUAL)
+if(ACTOR_BUILD_TEX_MANUAL)
     cm_find_package(LATEX)
     message(STATUS "Add optional target: manual.")
     include("cmake/UseLATEX.cmake")

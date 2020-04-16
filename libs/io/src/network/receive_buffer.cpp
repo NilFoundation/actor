@@ -1,7 +1,6 @@
 //---------------------------------------------------------------------------//
-// Copyright (c) 2011-2018 Dominik Charousset
-// Copyright (c) 2018-2019 Nil Foundation AG
-// Copyright (c) 2018-2019 Mikhail Komarov <nemo@nil.foundation>
+// Copyright (c) 2011-2020 Dominik Charousset
+// Copyright (c) 2018-2020 Mikhail Komarov <nemo@nil.foundation>
 //
 // Distributed under the terms and conditions of the BSD 3-Clause License or
 // (at your option) under the terms and conditions of the Boost Software
@@ -11,9 +10,9 @@
 
 #include <algorithm>
 
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
-#include <nil/mtl/io/network/receive_buffer.hpp>
+#include <nil/actor/io/network/receive_buffer.hpp>
 
 namespace {
 
@@ -22,7 +21,7 @@ namespace {
 }    // namespace
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace network {
 
@@ -102,7 +101,7 @@ namespace nil {
                 }
 
                 void receive_buffer::shrink_by(size_t bytes) {
-                    MTL_ASSERT(bytes <= capacity_);
+                    ACTOR_ASSERT(bytes <= capacity_);
                     size_t new_size = capacity_ - bytes;
                     if (new_size == 0) {
                         buffer_.reset();
@@ -129,5 +128,5 @@ namespace nil {
 
             }    // namespace network
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

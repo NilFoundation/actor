@@ -1,7 +1,6 @@
 //---------------------------------------------------------------------------//
-// Copyright (c) 2011-2018 Dominik Charousset
-// Copyright (c) 2018-2019 Nil Foundation AG
-// Copyright (c) 2018-2019 Mikhail Komarov <nemo@nil.foundation>
+// Copyright (c) 2011-2020 Dominik Charousset
+// Copyright (c) 2018-2020 Mikhail Komarov <nemo@nil.foundation>
 //
 // Distributed under the terms and conditions of the BSD 3-Clause License or
 // (at your option) under the terms and conditions of the Boost Software
@@ -9,16 +8,16 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/network/interfaces.hpp>
+#include <nil/actor/io/network/interfaces.hpp>
 
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
 #include <algorithm>
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0600
 #endif
@@ -40,12 +39,12 @@
 #include <memory>
 #include <utility>
 
-#include <nil/mtl/detail/get_mac_addresses.hpp>
-#include <nil/mtl/io/network/ip_endpoint.hpp>
-#include <nil/mtl/raise_error.hpp>
+#include <nil/actor/detail/get_mac_addresses.hpp>
+#include <nil/actor/io/network/ip_endpoint.hpp>
+#include <nil/actor/raise_error.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace network {
 
@@ -74,7 +73,7 @@ namespace nil {
                                AF_UNSPEC;
                 }
 
-#ifdef MTL_WINDOWS
+#ifdef ACTOR_WINDOWS
 
                 // F consumes `{interface_name, protocol, is_localhost, address}` entries.
                 template<class F>
@@ -89,7 +88,7 @@ namespace nil {
                             free(tmp);
                         tmp = reinterpret_cast<IP_ADAPTER_ADDRESSES *>(malloc(tmp_size));
                         if (!tmp)
-                            MTL_RAISE_ERROR("malloc() failed");
+                            ACTOR_RAISE_ERROR("malloc() failed");
                         retval = GetAdaptersAddresses(AF_UNSPEC, GAA_FLAG_INCLUDE_PREFIX, nullptr, tmp, &tmp_size);
                     } while (retval == ERROR_BUFFER_OVERFLOW && ++try_nr < max_tries);
                     std::unique_ptr<IP_ADAPTER_ADDRESSES, decltype(free) *> ifs {tmp, free};
@@ -120,7 +119,7 @@ namespace nil {
                     }
                 }
 
-#else    // ifdef MTL_WINDOWS
+#else    // ifdef ACTOR_WINDOWS
 
                 // F consumes `{interface_name, protocol, is_localhost, address}` entries.
                 template<class F>
@@ -140,7 +139,7 @@ namespace nil {
                     }
                 }
 
-#endif    // ifdef MTL_WINDOWS
+#endif    // ifdef ACTOR_WINDOWS
 
                 namespace {
 
@@ -279,5 +278,5 @@ namespace nil {
 
             }    // namespace network
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

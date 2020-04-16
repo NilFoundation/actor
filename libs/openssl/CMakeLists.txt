@@ -10,7 +10,7 @@ if(OPENSSL_FOUND)
     if(OPENSSL_VERSION VERSION_LESS 1.0.1)
         message(STATUS
                 "Disable OpenSSL. Required >= 1.0.1 due to TLSv1.2 support.")
-        set(MTL_NO_OPENSSL yes)
+        set(ACTOR_NO_OPENSSL yes)
     else()
         if(NOT CMAKE_CROSSCOMPILING)
             # Check if openssl headers and library versions match
@@ -42,7 +42,7 @@ cm_setup_version(VERSION 0.16.0)
 
 # get header files; only needed by CMake generators,
 # e.g., for creating proper Xcode projects
-file(GLOB_RECURSE ${CURRENT_PROJECT_NAME}_HEADERS "include/nil/mtl/*.hpp")
+file(GLOB_RECURSE ${CURRENT_PROJECT_NAME}_HEADERS "include/nil/actor/*.hpp")
 
 # list cpp files excluding platform-dependent files
 set(${CURRENT_PROJECT_NAME}_SOURCES

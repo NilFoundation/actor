@@ -1,10 +1,10 @@
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
 #define BOOST_TEST_MODULE openssl_authentication_test
 
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/test/dsl.hpp>
 
-#ifndef MTL_WINDOWS
+#ifndef ACTOR_WINDOWS
 
 #include <unistd.h>
 
@@ -23,35 +23,35 @@
 #include <limits.h>
 #include <stdlib.h>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/io/all.hpp>
-#include <nil/mtl/openssl/all.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/io/all.hpp>
+#include <nil/actor/openssl/all.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 
     constexpr char local_host[] = "127.0.0.1";
 
-    class config : public actor_system_config {
+    class config : public spawner_config {
     public:
         config() {
             load<io::middleman>();
             load<openssl::manager>();
             add_message_type<std::vector<int>>("std::vector<int>");
-            actor_system_config::parse(test::engine::argc(), test::engine::argv());
+            spawner_config::parse(test::engine::argc(), test::engine::argv());
             set("middleman.manual-multiplexing", true);
             set("middleman.attach-utility-actors", true);
             set("scheduler.policy", atom("testing"));
         }
 
         static std::string data_dir() {
-            std::string path {::nil::mtl::test::engine::path()};
+            std::string path {::nil::actor::test::engine::path()};
             path = path.substr(0, path.find_last_of("/"));
             // TODO: https://github.com/actor-framework/actor-framework/issues/555
             path += "/../../openssl/test";
             char rpath[PATH_MAX];
-#ifndef MTL_WINDOWS
+#ifndef ACTOR_WINDOWS
             auto rp = realpath(path.c_str(), rpath);
 #else
             auto rp = GetFullPathName(path.c_str(), PATH_MAX, rpath, nullptr);
@@ -92,10 +92,10 @@ namespace {
         config client_side_config;
         bool initialized;
         union {
-            actor_system server_side;
+            spawner server_side;
         };
         union {
-            actor_system client_side;
+            spawner client_side;
         };
         sched_t *ssched;
         sched_t *csched;
@@ -106,8 +106,8 @@ namespace {
 
         ~fixture() {
             if (initialized) {
-                server_side.~actor_system();
-                client_side.~actor_system();
+                server_side.~spawner();
+                client_side.~spawner();
             }
         }
 
@@ -134,27 +134,27 @@ namespace {
                 *x.second = std::move(path);
             }
             BOOST_TEST_MESSAGE("initialize server side");
-            new (&server_side) actor_system(server_side_config);
+            new (&server_side) spawner(server_side_config);
             BOOST_TEST_MESSAGE("initialize client side");
-            new (&client_side) actor_system(client_side_config);
+            new (&client_side) spawner(client_side_config);
             ssched = &dynamic_cast<sched_t &>(server_side.scheduler());
             csched = &dynamic_cast<sched_t &>(client_side.scheduler());
             initialized = true;
             return true;
         }
 
-        sched_t &sched_by_sys(actor_system &sys) {
+        sched_t &sched_by_sys(spawner &sys) {
             return &sys == &server_side ? *ssched : *csched;
         }
 
-        bool exec_one(actor_system &sys) {
-            MTL_ASSERT(initialized);
-            MTL_PUSH_AID(0);
-            MTL_SET_LOGGER_SYS(&sys);
+        bool exec_one(spawner &sys) {
+            ACTOR_ASSERT(initialized);
+            ACTOR_PUSH_AID(0);
+            ACTOR_SET_LOGGER_SYS(&sys);
             return sched_by_sys(sys).try_run_once() || sys.middleman().backend().try_run_once();
         }
 
-        void exec_loop(actor_system &sys) {
+        void exec_loop(spawner &sys) {
             while (exec_one(sys)) {
             }    // nop
         }
@@ -164,7 +164,7 @@ namespace {
             }    // nop
         }
 
-        void loop_after_next_enqueue(actor_system &sys) {
+        void loop_after_next_enqueue(spawner &sys) {
             auto s = &sys == &server_side ? ssched : csched;
             s->after_next_enqueue([=] { exec_loop(); });
         }

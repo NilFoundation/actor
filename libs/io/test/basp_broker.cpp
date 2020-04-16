@@ -12,8 +12,8 @@
 
 #define BOOST_TEST_MODULE io_basp_tcp_test
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/test/dsl.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/test/dsl.hpp>
 
 #include <array>
 #include <mutex>
@@ -23,17 +23,17 @@
 #include <iostream>
 #include <condition_variable>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/io/all.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/io/all.hpp>
 
-#include <nil/mtl/deep_to_string.hpp>
+#include <nil/actor/deep_to_string.hpp>
 
-#include <nil/mtl/io/network/interfaces.hpp>
-#include <nil/mtl/io/network/test_multiplexer.hpp>
+#include <nil/actor/io/network/interfaces.hpp>
+#include <nil/actor/io/network/test_multiplexer.hpp>
 
 namespace {
 
-    using nil::mtl::make_message_id;
+    using nil::actor::make_message_id;
 
     struct anything {};
 
@@ -49,7 +49,7 @@ namespace {
             // nop
         }
 
-        nil::mtl::optional<T> val;
+        nil::actor::optional<T> val;
     };
 
     template<class T>
@@ -66,14 +66,14 @@ namespace {
     constexpr uint64_t no_operation_data = 0;
     constexpr uint64_t default_operation_data = make_message_id().integer_value();
 
-    constexpr auto basp_atom = nil::mtl::atom("BASP");
-    constexpr auto spawn_serv_atom = nil::mtl::atom("SpawnServ");
-    constexpr auto config_serv_atom = nil::mtl::atom("ConfigServ");
+    constexpr auto basp_atom = nil::actor::atom("BASP");
+    constexpr auto spawn_serv_atom = nil::actor::atom("SpawnServ");
+    constexpr auto config_serv_atom = nil::actor::atom("ConfigServ");
 
 }    // namespace
 
-using namespace nil::mtl;
-using namespace nil::mtl::io;
+using namespace nil::actor;
+using namespace nil::actor::io;
 
 namespace {
 
@@ -106,7 +106,7 @@ namespace {
         static inline spawner_config &config(spawner_config &cfg, bool autoconn = false) {
             cfg.middleman_enable_automatic_connections = autoconn;
             cfg.middleman_workers = 0;
-            cfg.scheduler_policy = autoconn ? nil::mtl::atom("testing") : nil::mtl::atom("stealing");
+            cfg.scheduler_policy = autoconn ? nil::actor::atom("testing") : nil::actor::atom("stealing");
             cfg.middleman_attach_utility_actors = autoconn;
             return cfg;
         }
@@ -412,7 +412,7 @@ namespace {
 
     class autoconn_enabled_fixture : public fixture {
     public:
-        using scheduler_type = nil::mtl::scheduler::test_coordinator;
+        using scheduler_type = nil::actor::scheduler::test_coordinator;
 
         scheduler_type &sched;
         middleman_actor mma;
@@ -460,7 +460,7 @@ BOOST_AUTO_TEST_CASE(non_empty_server_handshake) {
     // server handshake with published actors
     buffer buf;
     instance().add_published_actor(4242, actor_cast<strong_actor_ptr>(self()),
-                                   {"nil::mtl::replies_to<@u16>::with<@u16>"});
+                                   {"nil::actor::replies_to<@u16>::with<@u16>"});
     instance().write_server_handshake(mpx(), buf, uint16_t {4242});
     basp::header hdr;
     buffer payload;
@@ -477,7 +477,7 @@ BOOST_AUTO_TEST_CASE(non_empty_server_handshake) {
     buffer expected_payload;
     binary_serializer bd {nullptr, expected_payload};
     bd(instance().this_node(), defaults::middleman::app_identifiers, self()->id(),
-       std::set<std::string> {"nil::mtl::replies_to<@u16>::with<@u16>"});
+       std::set<std::string> {"nil::actor::replies_to<@u16>::with<@u16>"});
     BOOST_CHECK_EQUAL(hexstr(payload), hexstr(expected_payload));
 }
 

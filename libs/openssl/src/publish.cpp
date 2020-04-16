@@ -10,26 +10,26 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/openssl/publish.hpp>
+#include <nil/actor/openssl/publish.hpp>
 
 #include <set>
 
-#include <nil/mtl/atom.hpp>
-#include <nil/mtl/expected.hpp>
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/function_view.hpp>
-#include <nil/mtl/actor_control_block.hpp>
+#include <nil/actor/atom.hpp>
+#include <nil/actor/expected.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/function_view.hpp>
+#include <nil/actor/actor_control_block.hpp>
 
-#include <nil/mtl/openssl/manager.hpp>
+#include <nil/actor/openssl/manager.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace openssl {
 
             expected<uint16_t> publish(spawner &sys, const strong_actor_ptr &whom, std::set<std::string> &&sigs,
                                        uint16_t port, const char *cstr, bool ru) {
-                MTL_LOG_TRACE(MTL_ARG(whom) << MTL_ARG(sigs) << MTL_ARG(port));
-                MTL_ASSERT(whom != nullptr);
+                ACTOR_LOG_TRACE(ACTOR_ARG(whom) << ACTOR_ARG(sigs) << ACTOR_ARG(port));
+                ACTOR_ASSERT(whom != nullptr);
                 std::string in;
                 if (cstr != nullptr)
                     in = cstr;
@@ -38,5 +38,5 @@ namespace nil {
             }
 
         }    // namespace openssl
-    }        // namespace mtl
+    }        // namespace actor
 }

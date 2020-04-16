@@ -1,4 +1,3 @@
-
 # https://qt.gitorious.org/qt/qtbase/blobs/master/src/corelib/global/qprocessordetection.h
 # Currently handles arm (v5, v6, v7), x86 (32/64), ia64, and ppc (32/64)
 

@@ -9,15 +9,15 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/basp/worker.hpp>
+#include <nil/actor/io/basp/worker.hpp>
 
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/io/basp/message_queue.hpp>
-#include <nil/mtl/proxy_registry.hpp>
-#include <nil/mtl/scheduler/abstract_coordinator.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/io/basp/message_queue.hpp>
+#include <nil/actor/proxy_registry.hpp>
+#include <nil/actor/scheduler/abstract_coordinator.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace basp {
 
@@ -25,7 +25,7 @@ namespace nil {
 
                 worker::worker(hub_type &hub, message_queue &queue, proxy_registry &proxies) :
                     hub_(&hub), queue_(&queue), proxies_(&proxies), system_(&proxies.system()) {
-                    MTL_IGNORE_UNUSED(pad_);
+                    ACTOR_IGNORE_UNUSED(pad_);
                 }
 
                 worker::~worker() {
@@ -35,8 +35,8 @@ namespace nil {
                 // -- management ---------------------------------------------------------------
 
                 void worker::launch(const node_id &last_hop, const basp::header &hdr, const buffer_type &payload) {
-                    MTL_ASSERT(hdr.dest_actor != 0);
-                    MTL_ASSERT(hdr.operation == basp::message_type::direct_message ||
+                    ACTOR_ASSERT(hdr.dest_actor != 0);
+                    ACTOR_ASSERT(hdr.operation == basp::message_type::direct_message ||
                                hdr.operation == basp::message_type::routed_message);
                     msg_id_ = queue_->new_id();
                     last_hop_ = last_hop;
@@ -57,5 +57,5 @@ namespace nil {
 
             }    // namespace basp
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

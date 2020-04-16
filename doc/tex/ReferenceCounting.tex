@@ -3,7 +3,7 @@
 
 Actors systems can span complex communication graphs that make it hard to
 decide when actors are no longer needed. As a result, manually managing
-lifetime of actors is merely impossible. For this reason, MTL implements a
+lifetime of actors is merely impossible. For this reason, ACTOR implements a
 garbage collection strategy for actors based on weak and strong reference
 counts.
 
@@ -13,12 +13,12 @@ The C++ standard library already offers \lstinline^shared_ptr^ and
 \lstinline^weak_ptr^ to manage objects with complex shared ownership. The
 standard implementation is a solid general purpose design that covers most use
 cases. Weak and strong references to an object are stored in a \emph{control
-block}. However, MTL uses a slightly different design. The reason for this is
+block}. However, ACTOR uses a slightly different design. The reason for this is
 twofold. First, we need the control block to store the identity of an actor.
 Second, we wanted a design that requires less indirections, because actor
 handles are used extensively copied for messaging, and this overhead adds up.
 
-Before discussing the approach to shared ownership in MTL, we look at the
+Before discussing the approach to shared ownership in ACTOR, we look at the
 design of shared pointers in the C++ standard library.
 
 \singlefig{shared_ptr}{Shared pointer design in the C++ standard library}{shared-ptr}
@@ -53,35 +53,35 @@ block.
 
 \subsection{Smart Pointers to Actors}
 
-In MTL, we use a different approach than the standard library because (1) we
+In ACTOR, we use a different approach than the standard library because (1) we
 always allocate actors along with their control block, (2) we need additional
 information in the control block, and (3) we can store only a single raw
 pointer internally instead of the two raw pointers \lstinline^std::shared_ptr^
 needs. The following figure summarizes the design of smart pointers to actors.
 
-\singlefig{refcounting}{Shared pointer design in MTL}{actor-pointer}
+\singlefig{refcounting}{Shared pointer design in ACTOR}{actor-pointer}
 
-MTL uses \lstinline^strong_actor_ptr^ instead of
+ACTOR uses \lstinline^strong_actor_ptr^ instead of
 \lstinline^std::shared_ptr<...>^ and \lstinline^weak_actor_ptr^ instead of
 \lstinline^std::weak_ptr<...>^. Unlike the counterparts from the standard
 library, both smart pointer types only store a single pointer.
 
-Also, the control block in MTL is not a template and stores the identity of an
-actor (\lstinline^actor_id^ plus \lstinline^node_id^). This allows MTL to
+Also, the control block in ACTOR is not a template and stores the identity of an
+actor (\lstinline^actor_id^ plus \lstinline^node_id^). This allows ACTOR to
 access this information even after an actor died. The control block fits
 exactly into a single cache line (64 Bytes). This makes sure no \emph{false
 sharing} occurs between an actor and other actors that have references to it.
-Since the size of the control block is fixed and MTL \emph{guarantees} the
-memory layout enforced by \lstinline^actor_storage^, MTL can compute the
+Since the size of the control block is fixed and ACTOR \emph{guarantees} the
+memory layout enforced by \lstinline^actor_storage^, ACTOR can compute the
 address of an actor from the pointer to its control block by offsetting it by
 64 Bytes. Likewise, an actor can compute the address of its control block.
 
-The smart pointer design in MTL relies on a few assumptions about actor types.
+The smart pointer design in ACTOR relies on a few assumptions about actor types.
 Most notably, the actor object is placed 64 Bytes after the control block. This
 starting address is cast to \lstinline^abstract_actor*^. Hence, \lstinline^T*^
 must be convertible to \lstinline^abstract_actor*^ via
 \lstinline^reinterpret_cast^. In practice, this means actor subclasses must not
-use virtual inheritance, which is enforced in MTL with a
+use virtual inheritance, which is enforced in ACTOR with a
 \lstinline^static_assert^.
 
 \subsection{Strong and Weak References}
@@ -142,5 +142,5 @@ behavior, but it is safe to assign a new value to the handle.
 %Bytes after its control block would break. Luckily, this boils down to a
 %single limitation in practice: User-defined actors must not use virtual
 %inheritance. When trying to spawn actors that do make use of virtual
-%inheritance, MTL generates a compile-time error: `"actor subtype has illegal
+%inheritance, ACTOR generates a compile-time error: `"actor subtype has illegal
 %memory alignment (probably due to virtual inheritance)"`.

@@ -10,17 +10,17 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/openssl/remote_actor.hpp>
+#include <nil/actor/openssl/remote_actor.hpp>
 
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/atom.hpp>
-#include <nil/mtl/expected.hpp>
-#include <nil/mtl/function_view.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/atom.hpp>
+#include <nil/actor/expected.hpp>
+#include <nil/actor/function_view.hpp>
 
-#include <nil/mtl/openssl/manager.hpp>
+#include <nil/actor/openssl/manager.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace openssl {
 
             /// Establish a new connection to the actor at `host` on given `port`.
@@ -30,7 +30,7 @@ namespace nil {
             ///          a remote actor or an `error`.
             expected<strong_actor_ptr> remote_actor(spawner &sys, const std::set<std::string> &mpi,
                                                     std::string host, uint16_t port) {
-                MTL_LOG_TRACE(MTL_ARG(mpi) << MTL_ARG(host) << MTL_ARG(port));
+                ACTOR_LOG_TRACE(ACTOR_ARG(mpi) << ACTOR_ARG(host) << ACTOR_ARG(port));
                 expected<strong_actor_ptr> res {strong_actor_ptr {nullptr}};
                 auto f = make_function_view(sys.openssl_manager().actor_handle());
                 auto x = f(connect_atom::value, std::move(host), port);
@@ -47,5 +47,5 @@ namespace nil {
             }
 
         }    // namespace openssl
-    }        // namespace mtl
+    }        // namespace actor
 }

@@ -1,18 +1,18 @@
-#include <nil/mtl/config.hpp>
+#include <nil/actor/config.hpp>
 
 #define BOOST_TEST_MODULE io_default_multiplexer_test
 
-#include <nil/mtl/test/io_dsl.hpp>
+#include <nil/actor/test/io_dsl.hpp>
 
 #include <vector>
 #include <algorithm>
 
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/io/all.hpp>
-#include <nil/mtl/io/network/default_multiplexer.hpp>
-#include <nil/mtl/io/network/operation.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/io/all.hpp>
+#include <nil/actor/io/network/default_multiplexer.hpp>
+#include <nil/actor/io/network/operation.hpp>
 
-using namespace nil::mtl;
+using namespace nil::actor;
 
 namespace {
 

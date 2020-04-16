@@ -1,7 +1,6 @@
 //---------------------------------------------------------------------------//
-// Copyright (c) 2011-2018 Dominik Charousset
-// Copyright (c) 2018-2019 Nil Foundation AG
-// Copyright (c) 2018-2019 Mikhail Komarov <nemo@nil.foundation>
+// Copyright (c) 2011-2020 Dominik Charousset
+// Copyright (c) 2018-2020 Mikhail Komarov <nemo@nil.foundation>
 //
 // Distributed under the terms and conditions of the BSD 3-Clause License or
 // (at your option) under the terms and conditions of the Boost Software
@@ -9,12 +8,12 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/network/acceptor.hpp>
+#include <nil/actor/io/network/acceptor.hpp>
 
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/logger.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace network {
 
@@ -24,8 +23,8 @@ namespace nil {
                 }
 
                 void acceptor::start(acceptor_manager *mgr) {
-                    MTL_LOG_TRACE(MTL_ARG2("fd", fd_));
-                    MTL_ASSERT(mgr != nullptr);
+                    ACTOR_LOG_TRACE(ACTOR_ARG2("fd", fd_));
+                    ACTOR_ASSERT(mgr != nullptr);
                     activate(mgr);
                 }
 
@@ -37,13 +36,13 @@ namespace nil {
                 }
 
                 void acceptor::removed_from_loop(operation op) {
-                    MTL_LOG_TRACE(MTL_ARG2("fd", fd_) << MTL_ARG(op));
+                    ACTOR_LOG_TRACE(ACTOR_ARG2("fd", fd_) << ACTOR_ARG(op));
                     if (op == operation::read)
                         mgr_.reset();
                 }
 
                 void acceptor::graceful_shutdown() {
-                    MTL_LOG_TRACE(MTL_ARG2("fd", fd_));
+                    ACTOR_LOG_TRACE(ACTOR_ARG2("fd", fd_));
                     // Ignore repeated calls.
                     if (state_.shutting_down)
                         return;
@@ -54,5 +53,5 @@ namespace nil {
 
             }    // namespace network
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

@@ -1,7 +1,7 @@
-MTL User Manual
+ACTOR User Manual
 ===============
 
-**C++ Actor Framework** version @MTL_RELEASE@.
+**C++ Actor Framework** version @ACTOR_RELEASE@.
 
 Contents
 ========

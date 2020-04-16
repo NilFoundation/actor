@@ -1,7 +1,6 @@
 //---------------------------------------------------------------------------//
-// Copyright (c) 2011-2018 Dominik Charousset
-// Copyright (c) 2018-2019 Nil Foundation AG
-// Copyright (c) 2018-2019 Mikhail Komarov <nemo@nil.foundation>
+// Copyright (c) 2011-2020 Dominik Charousset
+// Copyright (c) 2018-2020 Mikhail Komarov <nemo@nil.foundation>
 //
 // Distributed under the terms and conditions of the BSD 3-Clause License or
 // (at your option) under the terms and conditions of the Boost Software
@@ -9,44 +8,44 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/basp_broker.hpp>
+#include <nil/actor/io/basp_broker.hpp>
 
 #include <chrono>
 #include <limits>
 
-#include <nil/mtl/actor_registry.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/after.hpp>
-#include <nil/mtl/defaults.hpp>
-#include <nil/mtl/detail/sync_request_bouncer.hpp>
-#include <nil/mtl/event_based_actor.hpp>
-#include <nil/mtl/forwarding_actor_proxy.hpp>
-#include <nil/mtl/io/basp/protocol.hpp>
-#include <nil/mtl/io/connection_helper.hpp>
-#include <nil/mtl/io/middleman.hpp>
-#include <nil/mtl/io/network/interfaces.hpp>
-#include <nil/mtl/logger.hpp>
-#include <nil/mtl/make_counted.hpp>
-#include <nil/mtl/sec.hpp>
-#include <nil/mtl/send.hpp>
+#include <nil/actor/actor_registry.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/after.hpp>
+#include <nil/actor/defaults.hpp>
+#include <nil/actor/detail/sync_request_bouncer.hpp>
+#include <nil/actor/event_based_actor.hpp>
+#include <nil/actor/forwarding_actor_proxy.hpp>
+#include <nil/actor/io/basp/protocol.hpp>
+#include <nil/actor/io/connection_helper.hpp>
+#include <nil/actor/io/middleman.hpp>
+#include <nil/actor/io/network/interfaces.hpp>
+#include <nil/actor/logger.hpp>
+#include <nil/actor/make_counted.hpp>
+#include <nil/actor/sec.hpp>
+#include <nil/actor/send.hpp>
 
 namespace {
 
-#ifdef MTL_MSVC
+#ifdef ACTOR_MSVC
 #define THREAD_LOCAL thread_local
 #else
 #define THREAD_LOCAL __thread
 #endif
 
     // Used by make_proxy to detect indirect connections.
-    THREAD_LOCAL nil::mtl::node_id *t_last_hop = nullptr;
+    THREAD_LOCAL nil::actor::node_id *t_last_hop = nullptr;
 
 #undef THREAD_LOCAL
 
 }    // namespace
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
 
             // -- constructors, destructors, and assignment operators ----------------------
@@ -55,7 +54,7 @@ namespace nil {
                 super(cfg), basp::instance::callee(super::system(), static_cast<proxy_registry::backend &>(*this)),
                 this_context(nullptr) {
                 new (&instance) basp::instance(this, *this);
-                MTL_ASSERT(this_node() != none);
+                ACTOR_ASSERT(this_node() != none);
             }
 
             basp_broker::~basp_broker() {
@@ -87,11 +86,11 @@ namespace nil {
             }
 
             behavior basp_broker::make_behavior() {
-                MTL_LOG_TRACE(MTL_ARG(system().node()));
+                ACTOR_LOG_TRACE(ACTOR_ARG(system().node()));
                 set_down_handler(
                     [](local_actor *ptr, down_msg &x) { static_cast<basp_broker *>(ptr)->handle_down_msg(x); });
                 if (config().middleman_enable_automatic_connections) {
-                    MTL_LOG_DEBUG("enable automatic connections");
+                    ACTOR_LOG_DEBUG("enable automatic connections");
                     // open a random port and store a record for our peers how to
                     // connect to this broker directly in the configuration server
                     auto res = add_tcp_doorman(uint16_t {0});
@@ -106,13 +105,13 @@ namespace nil {
                 }
                 auto heartbeat_interval = config().middleman_heartbeat_interval;
                 if (heartbeat_interval.count() > 0) {
-                    MTL_LOG_DEBUG("enable heartbeat" << MTL_ARG(heartbeat_interval));
+                    ACTOR_LOG_DEBUG("enable heartbeat" << ACTOR_ARG(heartbeat_interval));
                     send(this, tick_atom::value, heartbeat_interval);
                 }
                 return behavior {
                     // received from underlying broker implementation
                     [=](new_data_msg &msg) {
-                        MTL_LOG_TRACE(MTL_ARG(msg.handle));
+                        ACTOR_LOG_TRACE(ACTOR_ARG(msg.handle));
                         set_context(msg.handle);
                         auto &ctx = *this_context;
                         auto next = instance.handle(context(), msg, ctx.hdr, ctx.cstate == basp::await_payload);
@@ -130,12 +129,12 @@ namespace nil {
                     // received from proxy instances
                     [=](forward_atom, strong_actor_ptr &src, const std::vector<strong_actor_ptr> &fwd_stack,
                         strong_actor_ptr &dest, message_id mid, const message &msg) {
-                        MTL_LOG_TRACE(MTL_ARG(src) << MTL_ARG(dest) << MTL_ARG(mid) << MTL_ARG(msg));
+                        ACTOR_LOG_TRACE(ACTOR_ARG(src) << ACTOR_ARG(dest) << ACTOR_ARG(mid) << ACTOR_ARG(msg));
                         if (!dest || system().node() == dest->node()) {
-                            MTL_LOG_WARNING(
+                            ACTOR_LOG_WARNING(
                                 "cannot forward to invalid "
                                 "or local actor:"
-                                << MTL_ARG(dest));
+                                << ACTOR_ARG(dest));
                             return;
                         }
                         if (src && system().node() == src->node())
@@ -152,8 +151,8 @@ namespace nil {
                         auto cme = current_mailbox_element();
                         if (cme == nullptr || cme->sender == nullptr)
                             return sec::invalid_argument;
-                        MTL_LOG_TRACE(MTL_ARG2("sender", cme->sender) << ", " << MTL_ARG(dest_node) << ", "
-                                                                      << MTL_ARG(dest_name) << ", " << MTL_ARG(msg));
+                        ACTOR_LOG_TRACE(ACTOR_ARG2("sender", cme->sender) << ", " << ACTOR_ARG(dest_node) << ", "
+                                                                      << ACTOR_ARG(dest_name) << ", " << ACTOR_ARG(msg));
                         auto &sender = cme->sender;
                         if (system().node() == sender->node())
                             system().registry().put(sender->id(), sender);
@@ -169,16 +168,16 @@ namespace nil {
                     // monitor_message to the origin node
                     [=](monitor_atom, const strong_actor_ptr &proxy) {
                         if (proxy == nullptr) {
-                            MTL_LOG_WARNING("received a monitor message from an invalid proxy");
+                            ACTOR_LOG_WARNING("received a monitor message from an invalid proxy");
                             return;
                         }
                         auto route = instance.tbl().lookup(proxy->node());
                         if (route == none) {
-                            MTL_LOG_DEBUG("connection to origin already lost, kill proxy");
+                            ACTOR_LOG_DEBUG("connection to origin already lost, kill proxy");
                             instance.proxies().erase(proxy->node(), proxy->id());
                             return;
                         }
-                        MTL_LOG_DEBUG("write monitor_message:" << MTL_ARG(proxy));
+                        ACTOR_LOG_DEBUG("write monitor_message:" << ACTOR_ARG(proxy));
                         // tell remote side we are monitoring this actor now
                         auto hdl = route->hdl;
                         instance.write_monitor_message(context(), get_buffer(hdl), proxy->node(), proxy->id());
@@ -186,7 +185,7 @@ namespace nil {
                     },
                     // received from underlying broker implementation
                     [=](const new_connection_msg &msg) {
-                        MTL_LOG_TRACE(MTL_ARG(msg.handle));
+                        ACTOR_LOG_TRACE(ACTOR_ARG(msg.handle));
                         auto &bi = instance;
                         bi.write_server_handshake(context(), get_buffer(msg.handle), local_port(msg.source));
                         flush(msg.handle);
@@ -194,7 +193,7 @@ namespace nil {
                     },
                     // received from underlying broker implementation
                     [=](const connection_closed_msg &msg) {
-                        MTL_LOG_TRACE(MTL_ARG(msg.handle));
+                        ACTOR_LOG_TRACE(ACTOR_ARG(msg.handle));
                         // We might still have pending messages from this connection. To
                         // make sure there's no BASP worker deserializing a message, we are
                         // sending us a message through the queue. This message gets
@@ -209,7 +208,7 @@ namespace nil {
                     [=](delete_atom, connection_handle hdl) { connection_cleanup(hdl); },
                     // received from underlying broker implementation
                     [=](const acceptor_closed_msg &msg) {
-                        MTL_LOG_TRACE("");
+                        ACTOR_LOG_TRACE("");
                         // Same reasoning as in connection_closed_msg.
                         auto &q = instance.queue();
                         auto msg_id = q.new_id();
@@ -224,8 +223,8 @@ namespace nil {
                     // received from middleman actor
                     [=](publish_atom, doorman_ptr &ptr, uint16_t port, const strong_actor_ptr &whom,
                         std::set<std::string> &sigs) {
-                        MTL_LOG_TRACE(MTL_ARG(ptr) << MTL_ARG(port) << MTL_ARG(whom) << MTL_ARG(sigs));
-                        MTL_ASSERT(ptr != nullptr);
+                        ACTOR_LOG_TRACE(ACTOR_ARG(ptr) << ACTOR_ARG(port) << ACTOR_ARG(whom) << ACTOR_ARG(sigs));
+                        ACTOR_ASSERT(ptr != nullptr);
                         add_doorman(std::move(ptr));
                         if (whom)
                             system().registry().put(whom->id(), whom);
@@ -234,8 +233,8 @@ namespace nil {
                     // received from test code to set up two instances without doorman
                     [=](publish_atom, scribe_ptr &ptr, uint16_t port, const strong_actor_ptr &whom,
                         std::set<std::string> &sigs) {
-                        MTL_LOG_TRACE(MTL_ARG(ptr) << MTL_ARG(port) << MTL_ARG(whom) << MTL_ARG(sigs));
-                        MTL_ASSERT(ptr != nullptr);
+                        ACTOR_LOG_TRACE(ACTOR_ARG(ptr) << ACTOR_ARG(port) << ACTOR_ARG(whom) << ACTOR_ARG(sigs));
+                        ACTOR_ASSERT(ptr != nullptr);
                         auto hdl = ptr->hdl();
                         add_scribe(std::move(ptr));
                         if (whom)
@@ -248,8 +247,8 @@ namespace nil {
                     },
                     // received from middleman actor (delegated)
                     [=](connect_atom, scribe_ptr &ptr, uint16_t port) {
-                        MTL_LOG_TRACE(MTL_ARG(ptr) << MTL_ARG(port));
-                        MTL_ASSERT(ptr != nullptr);
+                        ACTOR_LOG_TRACE(ACTOR_ARG(ptr) << ACTOR_ARG(port));
+                        ACTOR_ASSERT(ptr != nullptr);
                         auto rp = make_response_promise();
                         auto hdl = ptr->hdl();
                         add_scribe(std::move(ptr));
@@ -262,16 +261,16 @@ namespace nil {
                         configure_read(hdl, receive_policy::exactly(basp::header_size));
                     },
                     [=](delete_atom, const node_id &nid, actor_id aid) {
-                        MTL_LOG_TRACE(MTL_ARG(nid) << ", " << MTL_ARG(aid));
+                        ACTOR_LOG_TRACE(ACTOR_ARG(nid) << ", " << ACTOR_ARG(aid));
                         proxies().erase(nid, aid);
                     },
                     // received from the BASP instance when receiving down_message
                     [=](delete_atom, const node_id &nid, actor_id aid, error &fail_state) {
-                        MTL_LOG_TRACE(MTL_ARG(nid) << ", " << MTL_ARG(aid) << ", " << MTL_ARG(fail_state));
+                        ACTOR_LOG_TRACE(ACTOR_ARG(nid) << ", " << ACTOR_ARG(aid) << ", " << ACTOR_ARG(fail_state));
                         proxies().erase(nid, aid, std::move(fail_state));
                     },
                     [=](unpublish_atom, const actor_addr &whom, uint16_t port) -> result<void> {
-                        MTL_LOG_TRACE(MTL_ARG(whom) << MTL_ARG(port));
+                        ACTOR_LOG_TRACE(ACTOR_ARG(whom) << ACTOR_ARG(port));
                         auto cb = make_callback([&](const strong_actor_ptr &, uint16_t x) {
                             close(hdl_by_port(x));
                             return error_code<sec> {};
@@ -318,8 +317,8 @@ namespace nil {
             }
 
             strong_actor_ptr basp_broker::make_proxy(node_id nid, actor_id aid) {
-                MTL_LOG_TRACE(MTL_ARG(nid) << MTL_ARG(aid));
-                MTL_ASSERT(nid != this_node());
+                ACTOR_LOG_TRACE(ACTOR_ARG(nid) << ACTOR_ARG(aid));
+                ACTOR_ASSERT(nid != this_node());
                 if (nid == none || aid == invalid_actor_id)
                     return nullptr;
                 auto mm = &system().middleman();
@@ -353,8 +352,8 @@ namespace nil {
             }
 
             void basp_broker::finalize_handshake(const node_id &nid, actor_id aid, std::set<std::string> &sigs) {
-                MTL_LOG_TRACE(MTL_ARG(nid) << MTL_ARG(aid) << MTL_ARG(sigs));
-                MTL_ASSERT(this_context != nullptr);
+                ACTOR_LOG_TRACE(ACTOR_ARG(nid) << ACTOR_ARG(aid) << ACTOR_ARG(sigs));
+                ACTOR_ASSERT(this_context != nullptr);
                 this_context->id = nid;
                 auto &cb = this_context->callback;
                 if (cb == none)
@@ -365,10 +364,10 @@ namespace nil {
                     if (nid == this_node()) {
                         // connected to self
                         ptr = actor_cast<strong_actor_ptr>(system().registry().get(aid));
-                        MTL_LOG_DEBUG_IF(!ptr, "actor not found:" << MTL_ARG(aid));
+                        ACTOR_LOG_DEBUG_IF(!ptr, "actor not found:" << ACTOR_ARG(aid));
                     } else {
                         ptr = namespace_.get_or_put(nid, aid);
-                        MTL_LOG_ERROR_IF(!ptr, "creating actor in finalize_handshake failed");
+                        ACTOR_LOG_ERROR_IF(!ptr, "creating actor in finalize_handshake failed");
                     }
                 }
                 cb->deliver(nid, std::move(ptr), std::move(sigs));
@@ -376,7 +375,7 @@ namespace nil {
             }
 
             void basp_broker::purge_state(const node_id &nid) {
-                MTL_LOG_TRACE(MTL_ARG(nid));
+                ACTOR_LOG_TRACE(ACTOR_ARG(nid));
                 // Destroy all proxies of the lost node.
                 namespace_.erase(nid);
                 // Cleanup all remaining references to the lost node.
@@ -385,10 +384,10 @@ namespace nil {
             }
 
             void basp_broker::send_basp_down_message(const node_id &nid, actor_id aid, error rsn) {
-                MTL_LOG_TRACE(MTL_ARG(nid) << MTL_ARG(aid) << MTL_ARG(rsn));
+                ACTOR_LOG_TRACE(ACTOR_ARG(nid) << ACTOR_ARG(aid) << ACTOR_ARG(rsn));
                 auto path = instance.tbl().lookup(nid);
                 if (!path) {
-                    MTL_LOG_INFO("cannot send exit message for proxy, no route to host:" << MTL_ARG(nid));
+                    ACTOR_LOG_INFO("cannot send exit message for proxy, no route to host:" << ACTOR_ARG(nid));
                     return;
                 }
                 instance.write_down_message(context(), get_buffer(path->hdl), nid, aid, rsn);
@@ -396,11 +395,11 @@ namespace nil {
             }
 
             void basp_broker::proxy_announced(const node_id &nid, actor_id aid) {
-                MTL_LOG_TRACE(MTL_ARG(nid) << MTL_ARG(aid));
+                ACTOR_LOG_TRACE(ACTOR_ARG(nid) << ACTOR_ARG(aid));
                 // source node has created a proxy for one of our actors
                 auto ptr = system().registry().get(aid);
                 if (ptr == nullptr) {
-                    MTL_LOG_DEBUG("kill proxy immediately");
+                    ACTOR_LOG_DEBUG("kill proxy immediately");
                     // kill immediately if actor has already terminated
                     send_basp_down_message(nid, aid, exit_reason::unknown);
                 } else {
@@ -426,16 +425,16 @@ namespace nil {
             }
 
             void basp_broker::learned_new_node(const node_id &nid) {
-                MTL_LOG_TRACE(MTL_ARG(nid));
+                ACTOR_LOG_TRACE(ACTOR_ARG(nid));
                 if (spawn_servers.count(nid) > 0) {
-                    MTL_LOG_ERROR("learned_new_node called for known node " << MTL_ARG(nid));
+                    ACTOR_LOG_ERROR("learned_new_node called for known node " << ACTOR_ARG(nid));
                     return;
                 }
                 auto tmp = system().spawn<hidden>([=](event_based_actor *tself) -> behavior {
-                    MTL_LOG_TRACE("");
+                    ACTOR_LOG_TRACE("");
                     // terminate when receiving a down message
                     tself->set_down_handler([=](down_msg &dm) {
-                        MTL_LOG_TRACE(MTL_ARG(dm));
+                        ACTOR_LOG_TRACE(ACTOR_ARG(dm));
                         tself->quit(std::move(dm.reason));
                     });
                     // skip messages until we receive the initial ok_atom
@@ -444,7 +443,7 @@ namespace nil {
 
                         [=](ok_atom, const std::string & /* key == "info" */, const strong_actor_ptr &config_serv,
                             const std::string & /* name */) {
-                            MTL_LOG_TRACE(MTL_ARG(config_serv));
+                            ACTOR_LOG_TRACE(ACTOR_ARG(config_serv));
                             // drop unexpected messages from this point on
                             tself->set_default_handler(print_and_drop);
                             if (!config_serv)
@@ -452,7 +451,7 @@ namespace nil {
                             tself->monitor(config_serv);
                             tself->become([=](spawn_atom, std::string &type,
                                               message &args) -> delegated<strong_actor_ptr, std::set<std::string>> {
-                                MTL_LOG_TRACE(MTL_ARG(type) << MTL_ARG(args));
+                                ACTOR_LOG_TRACE(ACTOR_ARG(type) << ACTOR_ARG(args));
                                 tself->delegate(actor_cast<actor>(config_serv), get_atom::value, std::move(type),
                                                 std::move(args));
                                 return {};
@@ -460,7 +459,7 @@ namespace nil {
                         },
                         after(std::chrono::minutes(5)) >>
                             [=] {
-                                MTL_LOG_INFO("no spawn server found:" << MTL_ARG(nid));
+                                ACTOR_LOG_INFO("no spawn server found:" << ACTOR_ARG(nid));
                                 tself->quit();
                             }};
                 });
@@ -472,18 +471,18 @@ namespace nil {
                 if (!instance.dispatch(context(), tmp_ptr, stages, nid, static_cast<uint64_t>(atom("SpawnServ")),
                                        basp::header::named_receiver_flag, make_message_id(),
                                        make_message(sys_atom::value, get_atom::value, "info"))) {
-                    MTL_LOG_ERROR("learned_new_node called, but no route to remote node" << MTL_ARG(nid));
+                    ACTOR_LOG_ERROR("learned_new_node called, but no route to remote node" << ACTOR_ARG(nid));
                 }
             }
 
             void basp_broker::learned_new_node_directly(const node_id &nid, bool was_indirectly_before) {
-                MTL_LOG_TRACE(MTL_ARG(nid));
+                ACTOR_LOG_TRACE(ACTOR_ARG(nid));
                 if (!was_indirectly_before)
                     learned_new_node(nid);
             }
 
             void basp_broker::learned_new_node_indirectly(const node_id &nid) {
-                MTL_LOG_TRACE(MTL_ARG(nid));
+                ACTOR_LOG_TRACE(ACTOR_ARG(nid));
                 learned_new_node(nid);
                 if (!automatic_connections)
                     return;
@@ -500,15 +499,15 @@ namespace nil {
                 if (!instance.dispatch(context(), sender, fwd_stack, nid, static_cast<uint64_t>(atom("ConfigServ")),
                                        basp::header::named_receiver_flag, make_message_id(),
                                        make_message(get_atom::value, "basp.default-connectivity-tcp"))) {
-                    MTL_LOG_ERROR("learned_new_node_indirectly called, but no route to nid");
+                    ACTOR_LOG_ERROR("learned_new_node_indirectly called, but no route to nid");
                 }
             }
 
             void basp_broker::set_context(connection_handle hdl) {
-                MTL_LOG_TRACE(MTL_ARG(hdl));
+                ACTOR_LOG_TRACE(ACTOR_ARG(hdl));
                 auto i = ctx.find(hdl);
                 if (i == ctx.end()) {
-                    MTL_LOG_DEBUG("create new BASP context:" << MTL_ARG(hdl));
+                    ACTOR_LOG_DEBUG("create new BASP context:" << ACTOR_ARG(hdl));
                     basp::header hdr {
                         basp::message_type::server_handshake, 0, 0, 0, invalid_actor_id, invalid_actor_id};
                     i = ctx.emplace(hdl, basp::endpoint_context {basp::await_header, hdr, hdl, node_id {}, 0, 0, none})
@@ -519,7 +518,7 @@ namespace nil {
             }
 
             void basp_broker::connection_cleanup(connection_handle hdl) {
-                MTL_LOG_TRACE(MTL_ARG(hdl));
+                ACTOR_LOG_TRACE(ACTOR_ARG(hdl));
                 // Remove handle from the routing table and clean up any node-specific state
                 // we might still have.
                 if (auto nid = instance.tbl().erase_direct(hdl))
@@ -529,9 +528,9 @@ namespace nil {
                 auto i = ctx.find(hdl);
                 if (i != ctx.end()) {
                     auto &ref = i->second;
-                    MTL_ASSERT(i->first == ref.hdl);
+                    ACTOR_ASSERT(i->first == ref.hdl);
                     if (ref.callback) {
-                        MTL_LOG_DEBUG("connection closed during handshake");
+                        ACTOR_LOG_DEBUG("connection closed during handshake");
                         ref.callback->deliver(sec::disconnect_during_handshake);
                     }
                     ctx.erase(i);
@@ -558,5 +557,5 @@ namespace nil {
                 return ctrl();
             }
         }    // namespace io
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

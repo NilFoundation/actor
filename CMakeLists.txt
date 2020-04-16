@@ -10,7 +10,7 @@ list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake"
 include(CMConfig)
 include(CMSetupVersion)
 
-cm_workspace(mtl LANGUAGES C CXX)
+cm_workspace(actor LANGUAGES C CXX)
 
 macro(cm_find_package NAME)
     if(NOT "${NAME}" MATCHES "^${CMAKE_WORKSPACE_NAME}_.*$" AND NOT "${NAME}" STREQUAL CM)
@@ -20,7 +20,7 @@ macro(cm_find_package NAME)
     endif()
 endmacro()
 
-cm_setup_version(VERSION 0.16.0 PREFIX ${CMAKE_WORKSPACE_NAME})
+cm_setup_version(VERSION 0.18.0 PREFIX ${CMAKE_WORKSPACE_NAME})
 
 include(CheckCSourceCompiles)
 include(CheckCSourceRuns)
@@ -80,12 +80,6 @@ function(pretty_yes var)
 endfunction(pretty_yes)
 
 ################################################################################
-#                        set prefix paths if available                         #
-################################################################################
-
-build_string("CMAKE_PREFIX_PATH" "${MTL_QT_PREFIX_PATH}")
-
-################################################################################
 #                      enable ccache if required by user                       #
 ################################################################################
 
@@ -103,24 +97,24 @@ endif(BUILD_WITH_CCACHE)
 #      make sure config parameters are printed with yes or no in summary       #
 ################################################################################
 
-pretty_yes("MTL_FORCE_NO_EXCEPTIONS")
+pretty_yes("ACTOR_FORCE_NO_EXCEPTIONS")
 
-pretty_no("MTL_ENABLE_RUNTIME_CHECKS")
-pretty_no("MTL_NO_MEM_MANAGEMENT")
-pretty_no("MTL_NO_EXCEPTIONS")
-pretty_no("MTL_BUILD_STATIC_ONLY")
-pretty_no("MTL_BUILD_STATIC")
-pretty_no("MTL_NO_OPENCL")
-pretty_no("MTL_NO_OPENSSL")
-pretty_no("MTL_NO_PYTHON")
-pretty_no("MTL_NO_TOOLS")
-pretty_no("MTL_NO_SUMMARY")
+pretty_no("ACTOR_ENABLE_RUNTIME_CHECKS")
+pretty_no("ACTOR_NO_MEM_MANAGEMENT")
+pretty_no("ACTOR_NO_EXCEPTIONS")
+pretty_no("ACTOR_BUILD_STATIC_ONLY")
+pretty_no("ACTOR_BUILD_STATIC")
+pretty_no("ACTOR_NO_OPENCL")
+pretty_no("ACTOR_NO_OPENSSL")
+pretty_no("ACTOR_NO_PYTHON")
+pretty_no("ACTOR_NO_TOOLS")
+pretty_no("ACTOR_NO_SUMMARY")
 
-if(NOT MTL_NO_IO)
-    set(MTL_NO_IO no)
+if(NOT ACTOR_NO_IO)
+    set(ACTOR_NO_IO no)
 else()
-    set(MTL_NO_TOOLS yes)
-    set(MTL_NO_PYTHON yes)
+    set(ACTOR_NO_TOOLS yes)
+    set(ACTOR_NO_PYTHON yes)
 endif()
 
 ################################################################################
@@ -153,7 +147,7 @@ endif()
 ################################################################################
 
 # check for g++ >= 4.8 or clang++ > = 3.2
-if(NOT WIN32 AND NOT MTL_NO_COMPILER_CHECK AND NOT CMAKE_CROSSCOMPILING)
+if(NOT WIN32 AND NOT ACTOR_NO_COMPILER_CHECK AND NOT CMAKE_CROSSCOMPILING)
     try_run(ProgramResult
             CompilationSucceeded
             "${CMAKE_CURRENT_BINARY_DIR}"
@@ -189,11 +183,11 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "GNU")
     build_string("EXTRA_FLAGS" "-Wno-missing-field-initializers")
 endif()
 # add "-Werror" flag if --pedantic-build is used
-if(MTL_CXX_WARNINGS_AS_ERRORS)
+if(ACTOR_CXX_WARNINGS_AS_ERRORS)
     build_string("EXTRA_FLAGS" "-Werror")
 endif()
 # set compiler flags for GCOV if requested
-if(MTL_ENABLE_GCOV)
+if(ACTOR_ENABLE_GCOV)
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         set(NO_INLINE "-fno-inline")
     else()
@@ -202,11 +196,11 @@ if(MTL_ENABLE_GCOV)
     build_string("EXTRA_FLAGS" "-fprofile-arcs -ftest-coverage ${NO_INLINE}")
 endif()
 # set -fno-exception if requested
-if(MTL_FORCE_NO_EXCEPTIONS)
+if(ACTOR_FORCE_NO_EXCEPTIONS)
     build_string("EXTRA_FLAGS" "-fno-exceptions")
 endif()
 # enable a ton of warnings if --more-clang-warnings is used
-if(MTL_MORE_WARNINGS)
+if(ACTOR_MORE_WARNINGS)
     if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         set(WFLAGS "-Weverything -Wno-c++98-compat -Wno-padded "
             "-Wno-documentation-unknown-command -Wno-exit-time-destructors "
@@ -242,7 +236,7 @@ if(MTL_MORE_WARNINGS)
 endif()
 
 # add -stdlib=libc++ when using Clang if possible
-if(NOT MTL_NO_AUTO_LIBCPP AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+if(NOT ACTOR_NO_AUTO_LIBCPP AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     set(CXXFLAGS_BACKUP "${CMAKE_CXX_FLAGS}")
     set(CMAKE_CXX_FLAGS "-stdlib=libc++")
     try_run(ProgramResult
@@ -254,14 +248,14 @@ if(NOT MTL_NO_AUTO_LIBCPP AND CMAKE_CXX_COMPILER_ID MATCHES "Clang")
         message(STATUS "Use clang with GCC' libstdc++")
     else()
         message(STATUS "Automatically added '-stdlib=libc++' flag "
-                "(MTL_NO_AUTO_LIBCPP not defined)")
+                "(ACTOR_NO_AUTO_LIBCPP not defined)")
         build_string("EXTRA_FLAGS" "-stdlib=libc++")
     endif()
     # restore CXX flags
     set(CMAKE_CXX_FLAGS "${CXXFLAGS_BACKUP}")
 endif()
 # enable address sanitizer if requested by the user
-if(MTL_ENABLE_ADDRESS_SANITIZER)
+if(ACTOR_ENABLE_ADDRESS_SANITIZER)
     # check whether address sanitizer is available
     set(CXXFLAGS_BACKUP "${CMAKE_CXX_FLAGS}")
     set(CMAKE_CXX_FLAGS "-fsanitize=address -fno-omit-frame-pointer")
@@ -277,7 +271,7 @@ if(MTL_ENABLE_ADDRESS_SANITIZER)
     endif()
     # restore CXX flags
     set(CMAKE_CXX_FLAGS "${CXXFLAGS_BACKUP}")
-endif(MTL_ENABLE_ADDRESS_SANITIZER)
+endif(ACTOR_ENABLE_ADDRESS_SANITIZER)
 # -pthread is ignored on MacOSX but required on other platforms
 if(NOT APPLE AND NOT WIN32)
     build_string("EXTRA_FLAGS" "-pthread")
@@ -287,7 +281,7 @@ if(MINGW)
     add_definitions(-D_WIN32_WINNT=0x0600)
     add_definitions(-DWIN32)
     include(GenerateExportHeader)
-    list(APPEND MTL_EXTRA_LDFLAGS -lws2_32 -liphlpapi -lpsapi)
+    list(APPEND ACTOR_EXTRA_LDFLAGS -lws2_32 -liphlpapi -lpsapi)
     # build static to avoid runtime dependencies to GCC libraries
     build_string("EXTRA_FLAGS" "-static")
 elseif(CYGWIN)
@@ -296,19 +290,19 @@ else()
     build_string("EXTRA_FLAGS" "-fPIC")
 endif()
 if(WIN32)
-    list(APPEND MTL_EXTRA_LDFLAGS ws2_32 iphlpapi)
+    list(APPEND ACTOR_EXTRA_LDFLAGS ws2_32 iphlpapi)
 endif()
 # iOS support
-if(MTL_OSX_SYSROOT)
-    set(CMAKE_OSX_SYSROOT "${MTL_OSX_SYSROOT}")
+if(ACTOR_OSX_SYSROOT)
+    set(CMAKE_OSX_SYSROOT "${ACTOR_OSX_SYSROOT}")
 endif()
-if(MTL_IOS_DEPLOYMENT_TARGET)
-    if(MTL_OSX_SYSROOT STREQUAL "iphonesimulator")
+if(ACTOR_IOS_DEPLOYMENT_TARGET)
+    if(ACTOR_OSX_SYSROOT STREQUAL "iphonesimulator")
         build_string("EXTRA_FLAGS"
-                     "-mios-simulator-version-min=${MTL_IOS_DEPLOYMENT_TARGET}")
+                     "-mios-simulator-version-min=${ACTOR_IOS_DEPLOYMENT_TARGET}")
     else()
         build_string("EXTRA_FLAGS"
-                     "-miphoneos-version-min=${MTL_IOS_DEPLOYMENT_TARGET}")
+                     "-miphoneos-version-min=${ACTOR_IOS_DEPLOYMENT_TARGET}")
     endif()
 endif()
 # check if the user provided CXXFLAGS, set defaults otherwise
@@ -340,8 +334,8 @@ endif()
 #                                setup logging                                 #
 ################################################################################
 
-if(NOT MTL_LOG_LEVEL)
-    set(MTL_LOG_LEVEL "-1")
+if(NOT ACTOR_LOG_LEVEL)
+    set(ACTOR_LOG_LEVEL "-1")
 endif()
 
 ################################################################################
@@ -364,24 +358,25 @@ add_custom_target(uninstall
 #                                 add targets                                  #
 ################################################################################
 
+add_subdirectories(${CMAKE_CURRENT_LIST_DIR}/libs/crypto)
 add_subdirectories(${CMAKE_CURRENT_LIST_DIR}/libs)
 
 # -- Fetch branch name and SHA if available ------------------------------------
 
 if(EXISTS "release.txt")
-    file(READ "release.txt" MTL_VESION)
+    file(READ "release.txt" ACTOR_VESION)
 else()
-    set(MTL_RELEASE "${MTL_VERSION}")
+    set(ACTOR_RELEASE "${ACTOR_VERSION}")
     cm_find_package(Git QUIET)
     if(GIT_FOUND)
-        # retrieve current branch name for MTL
+        # retrieve current branch name for ACTOR
         execute_process(COMMAND ${GIT_EXECUTABLE} rev-parse --abbrev-ref HEAD
                         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                         RESULT_VARIABLE gitBranchResult
                         OUTPUT_VARIABLE gitBranch
                         ERROR_QUIET
                         OUTPUT_STRIP_TRAILING_WHITESPACE)
-        # retrieve current SHA1 hash for MTL
+        # retrieve current SHA1 hash for ACTOR
         execute_process(COMMAND ${GIT_EXECUTABLE} log --pretty=format:%h -n 1
                         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                         RESULT_VARIABLE gitShaResult
@@ -389,11 +384,11 @@ else()
                         ERROR_QUIET
                         OUTPUT_STRIP_TRAILING_WHITESPACE)
         if(gitBranchResult EQUAL 0 AND gitShaResult EQUAL 0)
-            # generate semantic MTL version for manual
-            set(MTL_RELEASE "${MTL_VERSION}+exp.sha.${gitSha}")
+            # generate semantic ACTOR version for manual
+            set(ACTOR_RELEASE "${ACTOR_VERSION}+exp.sha.${gitSha}")
             # check whether we're building the manual for a stable detach
             if(gitBranch STREQUAL "master")
-                # retrieve current tag name for MTL
+                # retrieve current tag name for ACTOR
                 execute_process(COMMAND ${GIT_EXECUTABLE} describe --tags --contains ${gitSha}
                                 WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
                                 RESULT_VARIABLE gitTagResult
@@ -402,20 +397,20 @@ else()
                                 OUTPUT_STRIP_TRAILING_WHITESPACE)
                 # tags indicate stable releases -> use tag name as detach version
                 if(gitTagResult EQUAL 0)
-                    set(MTL_RELEASE "${gitTag}")
+                    set(ACTOR_RELEASE "${gitTag}")
                 endif()
             endif()
         endif()
     endif()
 endif()
 
-message(STATUS "Set release version for all documentation to ${MTL_RELEASE}.")
+message(STATUS "Set release version for all documentation to ${ACTOR_RELEASE}.")
 
 # -- Setup for building manual and API documentation ---------------------------
 
 # we need the examples and some headers relative to the build/doc/tex directory
-file(COPY libs/core/include/nil/mtl/exit_reason.hpp DESTINATION core/nil/mtl/)
-file(COPY libs/core/include/nil/mtl/sec.hpp DESTINATION core/nil/mtl/)
+file(COPY libs/actor/include/nil/actor/exit_reason.hpp DESTINATION core/nil/actor/)
+file(COPY libs/actor/include/nil/actor/sec.hpp DESTINATION core/nil/actor/)
 
 add_subdirectory(doc)
 
@@ -432,16 +427,16 @@ add_custom_target(gui_dummy SOURCES configure ${script_files})
 
 # set human-readable representation for log level
 set(LOG_LEVEL_STR "none")
-if(MTL_LOG_LEVEL)
-    if(${MTL_LOG_LEVEL} EQUAL 0)
+if(ACTOR_LOG_LEVEL)
+    if(${ACTOR_LOG_LEVEL} EQUAL 0)
         set(LOG_LEVEL_STR "ERROR")
-    elseif(${MTL_LOG_LEVEL} EQUAL 1)
+    elseif(${ACTOR_LOG_LEVEL} EQUAL 1)
         set(LOG_LEVEL_STR "WARNING")
-    elseif(${MTL_LOG_LEVEL} EQUAL 2)
+    elseif(${ACTOR_LOG_LEVEL} EQUAL 2)
         set(LOG_LEVEL_STR "INFO")
-    elseif(${MTL_LOG_LEVEL} EQUAL 3)
+    elseif(${ACTOR_LOG_LEVEL} EQUAL 3)
         set(LOG_LEVEL_STR "DEBUG")
-    elseif(${MTL_LOG_LEVEL} EQUAL 4)
+    elseif(${ACTOR_LOG_LEVEL} EQUAL 4)
         set(LOG_LEVEL_STR "TRACE")
     else()
         set(LOG_LEVEL_STR "invalid")
@@ -455,57 +450,20 @@ macro(invertyesno in out)
         set(${out} yes)
     endif()
 endmacro()
-# invert MTL_NO_* variables for nicer output
-invertyesno(MTL_NO_IO MTL_BUILD_IO)
-invertyesno(MTL_NO_EXAMPLES MTL_BUILD_EXAMPLES)
-invertyesno(MTL_NO_TOOLS MTL_BUILD_TOOLS)
-invertyesno(MTL_NO_UNIT_TESTS MTL_BUILD_TESTS)
-invertyesno(MTL_NO_EXCEPTIONS MTL_BUILD_WITH_EXCEPTIONS)
-invertyesno(MTL_NO_MEM_MANAGEMENT MTL_BUILD_MEM_MANAGEMENT)
-invertyesno(MTL_NO_BENCHMARKS MTL_BUILD_BENCHMARKS)
-invertyesno(MTL_NO_OPENCL MTL_BUILD_OPENCL)
-invertyesno(MTL_NO_OPENSSL MTL_BUILD_OPENSSL)
-invertyesno(MTL_NO_PYTHON MTL_BUILD_PYTHON)
+# invert ACTOR_NO_* variables for nicer output
+invertyesno(ACTOR_NO_IO ACTOR_BUILD_IO)
+invertyesno(ACTOR_NO_EXAMPLES ACTOR_BUILD_EXAMPLES)
+invertyesno(ACTOR_NO_TOOLS ACTOR_BUILD_TOOLS)
+invertyesno(ACTOR_NO_UNIT_TESTS ACTOR_BUILD_TESTS)
+invertyesno(ACTOR_NO_EXCEPTIONS ACTOR_BUILD_WITH_EXCEPTIONS)
+invertyesno(ACTOR_NO_MEM_MANAGEMENT ACTOR_BUILD_MEM_MANAGEMENT)
+invertyesno(ACTOR_NO_BENCHMARKS ACTOR_BUILD_BENCHMARKS)
+invertyesno(ACTOR_NO_OPENCL ACTOR_BUILD_OPENCL)
+invertyesno(ACTOR_NO_OPENSSL ACTOR_BUILD_OPENSSL)
+invertyesno(ACTOR_NO_PYTHON ACTOR_BUILD_PYTHON)
 # collect all compiler flags
 string(TOUPPER "${CMAKE_BUILD_TYPE}" UPPER_BUILD_TYPE)
 set(ALL_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${CMAKE_CXX_FLAGS_${UPPER_BUILD_TYPE}}")
-set(ALL_LD_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${MTL_EXTRA_LDFLAGS}")
+set(ALL_LD_FLAGS "${CMAKE_SHARED_LINKER_FLAGS} ${ACTOR_EXTRA_LDFLAGS}")
 string(STRIP "${ALL_LD_FLAGS}" ALL_LD_FLAGS)
 # done
-if(NOT MTL_NO_SUMMARY)
-    message(STATUS
-            "\n====================|  Build Summary  |===================="
-            "\n"
-            "\nMTL version:           ${MTL_VERSION}"
-            "\n"
-            "\nBuild type:            ${CMAKE_BUILD_TYPE}"
-            "\nBuild static:          ${MTL_BUILD_STATIC}"
-            "\nBuild static only:     ${MTL_BUILD_STATIC_ONLY}"
-            "\nBuild static runtime:  ${MTL_BUILD_STATIC_RUNTIME}"
-            "\nRuntime checks:        ${MTL_ENABLE_RUNTIME_CHECKS}"
-            "\nLog level:             ${LOG_LEVEL_STR}"
-            "\nWith mem. mgmt.:       ${MTL_BUILD_MEM_MANAGEMENT}"
-            "\nWith exceptions:       ${MTL_BUILD_WITH_EXCEPTIONS}"
-            "\n"
-            "\nBuild I/O module:      ${MTL_BUILD_IO}"
-            "\nBuild tools:           ${MTL_BUILD_TOOLS}"
-            "\nBuild examples:        ${MTL_BUILD_EXAMPLES}"
-            "\nBuild unit tests:      ${MTL_BUILD_TESTS}"
-            "\nBuild benchmarks:      ${MTL_BUILD_BENCHMARKS}"
-            "\nBuild OpenCL:          ${MTL_BUILD_OPENCL}"
-            "\nBuild OpenSSL:         ${MTL_BUILD_OPENSSL}"
-            "\nBuild Python:          ${MTL_BUILD_PYTHON}"
-            "\n"
-            "\nCXX:                   ${CMAKE_CXX_COMPILER}"
-            "\nCXXFLAGS:              ${ALL_CXX_FLAGS}"
-            "\nLINKER_FLAGS (shared)  ${ALL_LD_FLAGS}"
-            "\n"
-            "\nSource directory:      ${CMAKE_CURRENT_SOURCE_DIR}"
-            "\nBuild directory:       ${CMAKE_CURRENT_BINARY_DIR}"
-            "\nExecutable path:       ${EXECUTABLE_OUTPUT_PATH}"
-            "\nLibrary path:          ${LIBRARY_OUTPUT_PATH}"
-            "\nInstall prefix:        ${CMAKE_INSTALL_PREFIX}"
-            "\nGenerator:             ${CMAKE_GENERATOR}"
-            "\n"
-            "\n===========================================================\n")
-endif()

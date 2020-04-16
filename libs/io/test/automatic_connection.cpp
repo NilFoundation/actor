@@ -6,15 +6,15 @@
 #include <thread>
 #include <vector>
 
-#include <nil/mtl/config.hpp>
-#include <nil/mtl/all.hpp>
-#include <nil/mtl/io/all.hpp>
+#include <nil/actor/config.hpp>
+#include <nil/actor/all.hpp>
+#include <nil/actor/io/all.hpp>
 
-#include <nil/mtl/io/network/interfaces.hpp>
-#include <nil/mtl/io/network/test_multiplexer.hpp>
+#include <nil/actor/io/network/interfaces.hpp>
+#include <nil/actor/io/network/test_multiplexer.hpp>
 
-using namespace nil::mtl;
-using namespace nil::mtl::io;
+using namespace nil::actor;
+using namespace nil::actor::io;
 
 using std::string;
 
@@ -52,7 +52,7 @@ std::thread run_prog(const char* arg, uint16_t port, bool use_asio) {
   return detail::run_sub_unit_test(invalid_actor,
                                    test::engine::path(),
                                    test::engine::max_runtime(),
-                                   MTL_XSTR(MTL_SUITE),
+                                   ACTOR_XSTR(ACTOR_SUITE),
                                    use_asio,
                                    {"--port=" + std::to_string(port), arg});
 }
@@ -127,7 +127,7 @@ void run_earth(bool use_asio, bool as_server, uint16_t pub_port) {
   self->receive(
     [&](put_atom, const node_id& nid) {
       mars = nid;
-      BOOST_TEST_MESSAGE(MTL_ARG(mars));
+      BOOST_TEST_MESSAGE(ACTOR_ARG(mars));
     }
   );
   actor_addr mars_addr;
@@ -140,7 +140,7 @@ void run_earth(bool use_asio, bool as_server, uint16_t pub_port) {
           if (name != "testee")
             return;
           mars_addr = addr;
-          BOOST_TEST_MESSAGE(MTL_ARG(mars_addr));
+          BOOST_TEST_MESSAGE(ACTOR_ARG(mars_addr));
           self->request(actor_cast<actor>(mars_addr), get_atom::value).then(
             [&](uint16_t mp) {
               BOOST_TEST_MESSAGE("mars published its actor at port " << mp);
@@ -159,7 +159,7 @@ void run_earth(bool use_asio, bool as_server, uint16_t pub_port) {
   BOOST_TEST_MESSAGE("wait for Jupiter to connect");
   self->receive(
     [](put_atom, const node_id& jupiter) {
-      BOOST_TEST_MESSAGE(MTL_ARG(jupiter));
+      BOOST_TEST_MESSAGE(ACTOR_ARG(jupiter));
     }
   );
   actor_addr jupiter_addr;
@@ -171,7 +171,7 @@ void run_earth(bool use_asio, bool as_server, uint16_t pub_port) {
           if (name != "testee")
             return;
           jupiter_addr = addr;
-          BOOST_TEST_MESSAGE(MTL_ARG(jupiter_addr));
+          BOOST_TEST_MESSAGE(ACTOR_ARG(jupiter_addr));
         }
       );
     }
@@ -250,12 +250,12 @@ BOOST_AUTO_TEST_CASE(triangle_setup_test) {
   anon_send(whereis(atom("ConfigServ")), put_atom::value,
             "middleman.enable-automatic-connections", make_message(true));
   auto use_asio = r.opts.count("use-asio") > 0;
-# ifdef MTL_USE_ASIO
+# ifdef ACTOR_USE_ASIO
   if (use_asio) {
     BOOST_TEST_MESSAGE("enable ASIO backend");
     set_middleman<network::asio_multiplexer>();
   }
-# endif // MTL_USE_ASIO
+# endif // ACTOR_USE_ASIO
   auto as_server = r.opts.count("server") > 0;
   if (is_mars)
     run_mars(port, publish_port);

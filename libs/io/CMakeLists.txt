@@ -8,13 +8,17 @@ if(NOT Boost_THREAD_FOUND)
     cm_find_package(Boost COMPONENTS thread)
 endif()
 
+if(NOT CMAKE_WORKSPACE_NAME OR NOT ("${CMAKE_WORKSPACE_NAME}" STREQUAL "actor"))
+    cm_workspace(actor)
+endif()
+
 cm_project(io WORKSPACE_NAME ${CMAKE_WORKSPACE_NAME})
 
-cm_setup_version(VERSION 0.16.0)
+cm_setup_version(VERSION 0.18.0)
 
 # get header files; only needed by CMake generators,
 # e.g., for creating proper Xcode projects
-file(GLOB_RECURSE ${CURRENT_PROJECT_NAME}_HEADERS "include/nil/mtl/*.hpp")
+file(GLOB_RECURSE ${CURRENT_PROJECT_NAME}_HEADERS "include/nil/actor/*.hpp")
 
 # list cpp files excluding platform-dependent files
 set(${CURRENT_PROJECT_NAME}_SOURCES
@@ -27,7 +31,7 @@ set(${CURRENT_PROJECT_NAME}_SOURCES
 
     src/network/acceptor.cpp
     src/network/acceptor_manager.cpp
-#    src/network/asio_multiplexer.cpp
+    #    src/network/asio_multiplexer.cpp
     src/network/datagram_handler.cpp
     src/network/datagram_manager.cpp
     src/network/datagram_servant_impl.cpp

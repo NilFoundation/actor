@@ -1,4 +1,4 @@
-This document specifies how to contribute code to MTL.
+This document specifies how to contribute code to ACTOR.
 
 Git Workflow
 ============
@@ -25,7 +25,7 @@ Branches
 - Implement fixes for existing issues in a *bugfix branch* with naming
   convention `issue/$num`, where `$num` is the issue ID on GitHub.
 
-- Simply use a fork of MTL if you are an external contributor.
+- Simply use a fork of ACTOR if you are an external contributor.
 
 Pull Requests
 -------------
@@ -76,13 +76,13 @@ Example for the Impatient
 
 // use "//" for regular comments and "///" for doxygen
 
-namespace nil { namespace mtl {
+namespace nil { namespace actor {
 namespace example {
 
 /// This class is only being used as style guide example.
 class my_class {
 public:
-  /// Brief description. More description. Note that MTL uses the
+  /// Brief description. More description. Note that ACTOR uses the
   /// "JavaDoc-style" autobrief option, i.e., everything up until the
   /// first dot is the brief description.
   my_class();
@@ -115,18 +115,18 @@ private:
 };
 
 } // namespace example
-} // namespace mtl 
+} // namespace actor 
  } // namespace nil
 ```
 
 ```cpp
 // example/src/my_class.cpp
 
-#include <nil/mtl/example/my_class.hpp>
+#include <nil/actor/example/my_class.hpp>
 
 #include <iostream>
 
-namespace nil { namespace mtl {
+namespace nil { namespace actor {
 namespace example {
 
 namespace {
@@ -177,7 +177,7 @@ void my_class::do_something_else() noexcept {
 }
 
 } // namespace example
-} // namespace mtl 
+} // namespace actor 
  } // namespace nil
 
 ```
@@ -228,7 +228,7 @@ General
 
 - Use standard order for readability: C standard libraries, C++ standard
   libraries, OS-specific headers (usually guarded by `ifdef`), other libraries,
-  and finally (your) MTL headers. Include `caf/config.hpp` before the standard
+  and finally (your) ACTOR headers. Include `caf/config.hpp` before the standard
   headers if you need to include platform-dependent headers. Use angle brackets
   for system includes and doublequotes otherwise.
 
@@ -241,7 +241,7 @@ General
 
   #include "3rd/party.h"
 
-  #include <nil/mtl/fwd.hpp>
+  #include <nil/actor/fwd.hpp>
   ```
 
   Put the implemented header always first in a `.cpp` file.
@@ -249,13 +249,13 @@ General
   ```cpp
   // example.cpp
 
-  #include <nil/mtl/example.hpp> // header for this .cpp file
+  #include <nil/actor/example.hpp> // header for this .cpp file
 
-  #include <nil/mtl/config.hpp> // needed for #ifdef guards
+  #include <nil/actor/config.hpp> // needed for #ifdef guards
 
   #include <algorithm>
 
-  #ifdef MTL_WINDOWS
+  #ifdef ACTOR_WINDOWS
   #include <windows.h>
   #else
   #include <sys/socket.h>
@@ -263,7 +263,7 @@ General
 
   #include "some/other/library.h"
 
-  #include <nil/mtl/actor.hpp>
+  #include <nil/actor/actor.hpp>
   ```
 
 - Put output parameters in functions before input parameters if unavoidable.
@@ -334,7 +334,7 @@ Headers
 
 - Each class has its own pair of header and implementation
   files and the relative path for the header file is derived from its full name.
-  For example, the header file for `nil::mtl::example::my_class` of `example`
+  For example, the header file for `nil::actor::example::my_class` of `example`
   is located at `example/caf/example/my_class.hpp` and the
   source file at `example/src/my_class.cpp`.
 
@@ -393,7 +393,7 @@ Template Metaprogramming
 Despite its power, template metaprogramming came to the language pretty
 much by accident. Templates were never meant to be used for compile-time
 algorithms and type transformations. This is why C++ punishes metaprogramming
-with an insane amount of syntax noise. In MTL, we make excessive use of
+with an insane amount of syntax noise. In ACTOR, we make excessive use of
 templates. To keep the code readable despite all the syntax noise, we have some
 extra rules for formatting metaprogramming code.
 
@@ -438,7 +438,7 @@ Preprocessor Macros
 - Use macros if and only if you can't get the same result by using inline
   functions or proper constants.
 
-- Macro names use the form `MTL_<COMPONENT>_<NAME>`.
+- Macro names use the form `ACTOR_<COMPONENT>_<NAME>`.
 
 Comments
 --------

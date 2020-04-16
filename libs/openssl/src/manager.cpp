@@ -10,28 +10,28 @@
 // http://opensource.org/licenses/BSD-3-Clause for BSD 3-Clause License
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/openssl/manager.hpp>
+#include <nil/actor/openssl/manager.hpp>
 
-MTL_PUSH_WARNINGS
+ACTOR_PUSH_WARNINGS
 #include <openssl/err.h>
 #include <openssl/ssl.h>
-MTL_POP_WARNINGS
+ACTOR_POP_WARNINGS
 
 #include <vector>
 #include <mutex>
 
-#include <nil/mtl/actor_control_block.hpp>
-#include <nil/mtl/spawner.hpp>
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/expected.hpp>
-#include <nil/mtl/raise_error.hpp>
-#include <nil/mtl/scoped_actor.hpp>
+#include <nil/actor/actor_control_block.hpp>
+#include <nil/actor/spawner.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/expected.hpp>
+#include <nil/actor/raise_error.hpp>
+#include <nil/actor/scoped_actor.hpp>
 
-#include <nil/mtl/io/middleman.hpp>
-#include <nil/mtl/io/basp_broker.hpp>
-#include <nil/mtl/io/network/default_multiplexer.hpp>
+#include <nil/actor/io/middleman.hpp>
+#include <nil/actor/io/basp_broker.hpp>
+#include <nil/actor/io/network/default_multiplexer.hpp>
 
-#include <nil/mtl/openssl/middleman_actor.hpp>
+#include <nil/actor/openssl/middleman_actor.hpp>
 
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
 struct CRYPTO_dynlock_value {
@@ -73,7 +73,7 @@ namespace {
 #endif
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace openssl {
 
             manager::~manager() {
@@ -91,13 +91,13 @@ namespace nil {
             }
 
             void manager::start() {
-                MTL_LOG_TRACE("");
+                ACTOR_LOG_TRACE("");
                 manager_ =
                     make_middleman_actor(system(), system().middleman().named_broker<io::basp_broker>(atom("BASP")));
             }
 
             void manager::stop() {
-                MTL_LOG_TRACE("");
+                ACTOR_LOG_TRACE("");
                 scoped_actor self {system(), true};
                 self->send_exit(manager_, exit_reason::kill);
                 if (!config().middleman_attach_utility_actors)
@@ -106,16 +106,16 @@ namespace nil {
             }
 
             void manager::init(spawner_config &) {
-                MTL_LOG_TRACE("");
+                ACTOR_LOG_TRACE("");
                 ERR_load_crypto_strings();
                 OPENSSL_add_all_algorithms_conf();
                 SSL_library_init();
                 SSL_load_error_strings();
                 if (authentication_enabled()) {
                     if (system().config().openssl_certificate.size() == 0)
-                        MTL_RAISE_ERROR("No certificate configured for SSL endpoint");
+                        ACTOR_RAISE_ERROR("No certificate configured for SSL endpoint");
                     if (system().config().openssl_key.size() == 0)
-                        MTL_RAISE_ERROR("No private key configured for SSL endpoint");
+                        ACTOR_RAISE_ERROR("No private key configured for SSL endpoint");
                 }
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
                 std::lock_guard<std::mutex> lock {init_mutex};
@@ -148,10 +148,10 @@ namespace nil {
 
             spawner::module *manager::make(spawner &sys, detail::type_list<>) {
                 if (!sys.has_middleman())
-                    MTL_RAISE_ERROR("Cannot start OpenSSL module without middleman.");
+                    ACTOR_RAISE_ERROR("Cannot start OpenSSL module without middleman.");
                 auto ptr = &sys.middleman().backend();
                 if (dynamic_cast<io::network::default_multiplexer *>(ptr) == nullptr)
-                    MTL_RAISE_ERROR("Cannot start OpenSSL module without default backend.");
+                    ACTOR_RAISE_ERROR("Cannot start OpenSSL module without default backend.");
                 return new manager(sys);
             }
 
@@ -160,5 +160,5 @@ namespace nil {
             }
 
         }    // namespace openssl
-    }        // namespace mtl
+    }        // namespace actor
 }    // namespace nil

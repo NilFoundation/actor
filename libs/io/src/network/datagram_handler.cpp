@@ -1,7 +1,6 @@
 //---------------------------------------------------------------------------//
-// Copyright (c) 2011-2018 Dominik Charousset
-// Copyright (c) 2018-2019 Nil Foundation AG
-// Copyright (c) 2018-2019 Mikhail Komarov <nemo@nil.foundation>
+// Copyright (c) 2011-2020 Dominik Charousset
+// Copyright (c) 2018-2020 Mikhail Komarov <nemo@nil.foundation>
 //
 // Distributed under the terms and conditions of the BSD 3-Clause License or
 // (at your option) under the terms and conditions of the Boost Software
@@ -9,16 +8,16 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/network/datagram_handler.hpp>
+#include <nil/actor/io/network/datagram_handler.hpp>
 
 #include <algorithm>
 
-#include <nil/mtl/spawner_config.hpp>
-#include <nil/mtl/config_value.hpp>
-#include <nil/mtl/defaults.hpp>
-#include <nil/mtl/logger.hpp>
+#include <nil/actor/spawner_config.hpp>
+#include <nil/actor/config_value.hpp>
+#include <nil/actor/defaults.hpp>
+#include <nil/actor/logger.hpp>
 
-#include <nil/mtl/io/network/default_multiplexer.hpp>
+#include <nil/actor/io/network/default_multiplexer.hpp>
 
 namespace {
 
@@ -27,7 +26,7 @@ namespace {
 }    // namespace
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace network {
 
@@ -38,14 +37,14 @@ namespace nil {
                     allow_udp_connreset(sockfd, false);
                     auto es = send_buffer_size(sockfd);
                     if (!es)
-                        MTL_LOG_ERROR("cannot determine socket buffer size");
+                        ACTOR_LOG_ERROR("cannot determine socket buffer size");
                     else
                         send_buffer_size_ = *es;
                 }
 
                 void datagram_handler::start(datagram_manager *mgr) {
-                    MTL_LOG_TRACE(MTL_ARG2("fd", fd()));
-                    MTL_ASSERT(mgr != nullptr);
+                    ACTOR_LOG_TRACE(ACTOR_ARG2("fd", fd()));
+                    ACTOR_ASSERT(mgr != nullptr);
                     activate(mgr);
                 }
 
@@ -65,8 +64,8 @@ namespace nil {
                 }
 
                 void datagram_handler::flush(const manager_ptr &mgr) {
-                    MTL_ASSERT(mgr != nullptr);
-                    MTL_LOG_TRACE(MTL_ARG(wr_offline_buf_.size()));
+                    ACTOR_ASSERT(mgr != nullptr);
+                    ACTOR_LOG_TRACE(ACTOR_ARG(wr_offline_buf_.size()));
                     if (!wr_offline_buf_.empty() && !state_.writing) {
                         backend().add(operation::write, fd(), this);
                         writer_ = mgr;
@@ -92,13 +91,13 @@ namespace nil {
                     } else if (!writer_) {
                         writer_ = mgr;
                     } else {
-                        MTL_LOG_ERROR("cannot assign a second servant to the endpoint " << to_string(ep));
+                        ACTOR_LOG_ERROR("cannot assign a second servant to the endpoint " << to_string(ep));
                         abort();
                     }
                 }
 
                 void datagram_handler::remove_endpoint(datagram_handle hdl) {
-                    MTL_LOG_TRACE(MTL_ARG(hdl));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(hdl));
                     auto itr = ep_by_hdl_.find(hdl);
                     if (itr != ep_by_hdl_.end()) {
                         hdl_by_ep_.erase(itr->second);
@@ -119,7 +118,7 @@ namespace nil {
                 }
 
                 void datagram_handler::graceful_shutdown() {
-                    MTL_LOG_TRACE(MTL_ARG2("fd", fd_));
+                    ACTOR_LOG_TRACE(ACTOR_ARG2("fd", fd_));
                     // Ignore repeated calls.
                     if (state_.shutting_down)
                         return;
@@ -132,12 +131,12 @@ namespace nil {
                 }
 
                 void datagram_handler::prepare_next_read() {
-                    MTL_LOG_TRACE(MTL_ARG(wr_buf_.second.size()) << MTL_ARG(wr_offline_buf_.size()));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(wr_buf_.second.size()) << ACTOR_ARG(wr_offline_buf_.size()));
                     rd_buf_.resize(max_datagram_size_);
                 }
 
                 void datagram_handler::prepare_next_write() {
-                    MTL_LOG_TRACE(MTL_ARG(wr_offline_buf_.size()));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(wr_offline_buf_.size()));
                     wr_buf_.second.clear();
                     if (wr_offline_buf_.empty()) {
                         state_.writing = false;
@@ -177,7 +176,7 @@ namespace nil {
                         writer_->io_failure(&backend(), operation::write);
                         backend().del(operation::write, fd(), this);
                     } else if (wb > 0) {
-                        MTL_ASSERT(wb == buf.size());
+                        ACTOR_ASSERT(wb == buf.size());
                         if (state_.ack_writes)
                             writer_->datagram_sent(&backend(), id, wb, std::move(buf));
                         prepare_next_write();
@@ -198,5 +197,5 @@ namespace nil {
 
             }    // namespace network
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil

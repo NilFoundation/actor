@@ -1,7 +1,6 @@
 //---------------------------------------------------------------------------//
-// Copyright (c) 2011-2018 Dominik Charousset
-// Copyright (c) 2018-2019 Nil Foundation AG
-// Copyright (c) 2018-2019 Mikhail Komarov <nemo@nil.foundation>
+// Copyright (c) 2011-2020 Dominik Charousset
+// Copyright (c) 2018-2020 Mikhail Komarov <nemo@nil.foundation>
 //
 // Distributed under the terms and conditions of the BSD 3-Clause License or
 // (at your option) under the terms and conditions of the Boost Software
@@ -9,16 +8,16 @@
 // http://www.boost.org/LICENSE_1_0.txt.
 //---------------------------------------------------------------------------//
 
-#include <nil/mtl/io/network/test_multiplexer.hpp>
+#include <nil/actor/io/network/test_multiplexer.hpp>
 
-#include <nil/mtl/io/datagram_servant.hpp>
-#include <nil/mtl/io/doorman.hpp>
-#include <nil/mtl/io/scribe.hpp>
-#include <nil/mtl/raise_error.hpp>
-#include <nil/mtl/scheduler/abstract_coordinator.hpp>
+#include <nil/actor/io/datagram_servant.hpp>
+#include <nil/actor/io/doorman.hpp>
+#include <nil/actor/io/scribe.hpp>
+#include <nil/actor/raise_error.hpp>
+#include <nil/actor/scheduler/abstract_coordinator.hpp>
 
 namespace nil {
-    namespace mtl {
+    namespace actor {
         namespace io {
             namespace network {
 
@@ -49,7 +48,7 @@ namespace nil {
 
                 test_multiplexer::test_multiplexer(spawner *sys) :
                     multiplexer(sys), inline_runnables_(0), servant_ids_(0) {
-                    MTL_ASSERT(sys != nullptr);
+                    ACTOR_ASSERT(sys != nullptr);
                 }
 
                 test_multiplexer::~test_multiplexer() {
@@ -59,12 +58,12 @@ namespace nil {
                 }
 
                 scribe_ptr test_multiplexer::new_scribe(native_socket) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
-                    MTL_CRITICAL("test_multiplexer::add_tcp_scribe called with native socket");
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_CRITICAL("test_multiplexer::add_tcp_scribe called with native socket");
                 }
 
                 scribe_ptr test_multiplexer::new_scribe(connection_handle hdl) {
-                    MTL_LOG_TRACE(MTL_ARG(hdl));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(hdl));
                     class impl : public scribe {
                     public:
                         impl(connection_handle ch, test_multiplexer *mpx) : scribe(ch), mpx_(mpx) {
@@ -105,18 +104,18 @@ namespace nil {
                     private:
                         test_multiplexer *mpx_;
                     };
-                    MTL_LOG_DEBUG(MTL_ARG(hdl));
+                    ACTOR_LOG_DEBUG(ACTOR_ARG(hdl));
                     auto sptr = make_counted<impl>(hdl, this);
                     {    // lifetime scope of guard
                         guard_type guard {mx_};
                         impl_ptr(hdl) = sptr;
                     }
-                    MTL_LOG_INFO("opened connection" << sptr->hdl());
+                    ACTOR_LOG_INFO("opened connection" << sptr->hdl());
                     return sptr;
                 }
 
                 expected<scribe_ptr> test_multiplexer::new_tcp_scribe(const std::string &host, uint16_t port) {
-                    MTL_LOG_TRACE(MTL_ARG(host) << MTL_ARG(port));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(host) << ACTOR_ARG(port));
                     connection_handle hdl;
                     {    // lifetime scope of guard
                         guard_type guard {mx_};
@@ -132,12 +131,12 @@ namespace nil {
                 }
 
                 doorman_ptr test_multiplexer::new_doorman(native_socket) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
-                    MTL_CRITICAL("test_multiplexer::add_tcp_doorman called with native socket");
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_CRITICAL("test_multiplexer::add_tcp_doorman called with native socket");
                 }
 
                 doorman_ptr test_multiplexer::new_doorman(accept_handle hdl, uint16_t port) {
-                    MTL_LOG_TRACE(MTL_ARG(hdl));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(hdl));
                     class impl : public doorman {
                     public:
                         impl(accept_handle ah, test_multiplexer *mpx) : doorman(ah), mpx_(mpx) {
@@ -154,7 +153,7 @@ namespace nil {
                                 ch = i->second;
                                 pc.erase(i);
                             }
-                            MTL_LOG_INFO("accepted connection" << ch << "on acceptor" << hdl());
+                            ACTOR_LOG_INFO("accepted connection" << ch << "on acceptor" << hdl());
                             parent()->add_scribe(mpx_->new_scribe(ch));
                             return doorman::new_connection(mpx_, ch);
                         }
@@ -189,12 +188,12 @@ namespace nil {
                         ref.ptr = dptr;
                         ref.port = port;
                     }
-                    MTL_LOG_INFO("opened port" << port << "on acceptor" << hdl);
+                    ACTOR_LOG_INFO("opened port" << port << "on acceptor" << hdl);
                     return dptr;
                 }
 
                 expected<doorman_ptr> test_multiplexer::new_tcp_doorman(uint16_t desired_port, const char *, bool) {
-                    MTL_LOG_TRACE(MTL_ARG(desired_port));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(desired_port));
                     accept_handle hdl;
                     uint16_t port = 0;
                     {    // Lifetime scope of guard.
@@ -225,21 +224,21 @@ namespace nil {
                 }
 
                 datagram_servant_ptr test_multiplexer::new_datagram_servant(native_socket) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
-                    MTL_CRITICAL("test_multiplexer::new_datagram_servant called with native socket");
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_CRITICAL("test_multiplexer::new_datagram_servant called with native socket");
                 }
 
                 datagram_servant_ptr test_multiplexer::new_datagram_servant_for_endpoint(native_socket,
                                                                                          const ip_endpoint &) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
-                    MTL_CRITICAL(
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_CRITICAL(
                         "test_multiplexer::new_datagram_servant_for_endpoint called with "
                         "native socket");
                 }
 
                 expected<datagram_servant_ptr> test_multiplexer::new_remote_udp_endpoint(const std::string &host,
                                                                                          uint16_t port) {
-                    MTL_LOG_TRACE(MTL_ARG(host) << MTL_ARG(port));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(host) << ACTOR_ARG(port));
                     datagram_handle hdl;
                     {    // lifetime scope of guard
                         guard_type guard {mx_};
@@ -264,7 +263,7 @@ namespace nil {
 
                 expected<datagram_servant_ptr> test_multiplexer::new_local_udp_endpoint(uint16_t desired_port,
                                                                                         const char *, bool) {
-                    MTL_LOG_TRACE(MTL_ARG(desired_port));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(desired_port));
                     datagram_handle hdl;
                     uint16_t port = 0;
                     {    // Lifetime scope of guard.
@@ -295,7 +294,7 @@ namespace nil {
                 }
 
                 datagram_servant_ptr test_multiplexer::new_datagram_servant(datagram_handle hdl, uint16_t port) {
-                    MTL_LOG_TRACE(MTL_ARG(hdl));
+                    ACTOR_LOG_TRACE(ACTOR_ARG(hdl));
                     class impl : public datagram_servant {
                     public:
                         impl(datagram_handle dh, test_multiplexer *mpx) : datagram_servant(dh), mpx_(mpx) {
@@ -367,7 +366,7 @@ namespace nil {
                             mpx_->passive_mode(hdl()) = true;
                         }
                         void add_endpoint(const ip_endpoint &, datagram_handle) override {
-                            MTL_CRITICAL("datagram_servant impl::add_endpoint called with ip_endpoint");
+                            ACTOR_CRITICAL("datagram_servant impl::add_endpoint called with ip_endpoint");
                         }
                         void remove_endpoint(datagram_handle dh) override {
                             auto data = mpx_->data_for_hdl(hdl());
@@ -391,7 +390,7 @@ namespace nil {
                         test_multiplexer *mpx_;
                     };
                     auto dptr = make_counted<impl>(hdl, this);
-                    MTL_LOG_INFO("new datagram servant" << hdl);
+                    ACTOR_LOG_INFO("new datagram servant" << hdl);
                     auto data = data_for_hdl(hdl);
                     {    // lifetime scope of guard
                         guard_type guard {mx_};
@@ -404,7 +403,7 @@ namespace nil {
 
                 datagram_servant_ptr test_multiplexer::new_datagram_servant(datagram_handle, const std::string &,
                                                                             uint16_t) {
-                    MTL_CRITICAL("This has no implementation in the test multiplexer");
+                    ACTOR_CRITICAL("This has no implementation in the test multiplexer");
                 }
 
                 int64_t test_multiplexer::next_endpoint_id() {
@@ -454,21 +453,21 @@ namespace nil {
                 }
 
                 void test_multiplexer::provide_scribe(std::string host, uint16_t desired_port, connection_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
-                    MTL_LOG_TRACE(MTL_ARG(host) << MTL_ARG(desired_port) << MTL_ARG(hdl));
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_LOG_TRACE(ACTOR_ARG(host) << ACTOR_ARG(desired_port) << ACTOR_ARG(hdl));
                     guard_type guard {mx_};
                     scribes_.emplace(std::make_pair(std::move(host), desired_port), hdl);
                 }
 
                 void test_multiplexer::provide_acceptor(uint16_t desired_port, accept_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     doormen_.emplace(desired_port, hdl);
                     doorman_data_[hdl].port = desired_port;
                 }
 
                 void test_multiplexer::provide_datagram_servant(uint16_t desired_port, datagram_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
-                    MTL_LOG_TRACE(MTL_ARG(desired_port) << MTL_ARG(hdl));
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_LOG_TRACE(ACTOR_ARG(desired_port) << ACTOR_ARG(hdl));
                     guard_type guard {mx_};
                     local_endpoints_.emplace(desired_port, hdl);
                     auto data = data_for_hdl(hdl);
@@ -478,8 +477,8 @@ namespace nil {
                 void test_multiplexer::provide_datagram_servant(std::string host,
                                                                 uint16_t desired_port,
                                                                 datagram_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
-                    MTL_LOG_TRACE(MTL_ARG(host) << MTL_ARG(desired_port) << MTL_ARG(hdl));
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_LOG_TRACE(ACTOR_ARG(host) << ACTOR_ARG(desired_port) << ACTOR_ARG(hdl));
                     guard_type guard {mx_};
                     remote_endpoints_.emplace(std::make_pair(std::move(host), desired_port), hdl);
                 }
@@ -487,74 +486,74 @@ namespace nil {
                 /// The external input buffer should be filled by
                 /// the test program.
                 test_multiplexer::buffer_type &test_multiplexer::virtual_network_buffer(connection_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     return scribe_data_[hdl].vn_buf;
                 }
 
                 test_multiplexer::write_job_queue_type &test_multiplexer::virtual_network_buffer(datagram_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     return data_for_hdl(hdl)->vn_buf;
                 }
 
                 test_multiplexer::buffer_type &test_multiplexer::output_buffer(connection_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     return scribe_data_[hdl].wr_buf;
                 }
 
                 test_multiplexer::buffer_type &test_multiplexer::input_buffer(connection_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     return scribe_data_[hdl].rd_buf;
                 }
 
                 test_multiplexer::write_job_type &test_multiplexer::output_buffer(datagram_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     auto &buf = data_for_hdl(hdl)->wr_buf;
                     buf.emplace_back();
                     return buf.back();
                 }
 
                 test_multiplexer::write_job_queue_type &test_multiplexer::output_queue(datagram_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     return data_for_hdl(hdl)->wr_buf;
                 }
 
                 test_multiplexer::read_job_type &test_multiplexer::input_buffer(datagram_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     return data_for_hdl(hdl)->rd_buf;
                 }
 
                 receive_policy::config &test_multiplexer::read_config(connection_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     return scribe_data_[hdl].recv_conf;
                 }
 
                 bool &test_multiplexer::ack_writes(connection_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     return scribe_data_[hdl].ack_writes;
                 }
 
                 bool &test_multiplexer::ack_writes(datagram_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     return data_for_hdl(hdl)->ack_writes;
                 }
 
                 bool &test_multiplexer::stopped_reading(connection_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     return scribe_data_[hdl].stopped_reading;
                 }
 
                 bool &test_multiplexer::stopped_reading(datagram_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     return data_for_hdl(hdl)->stopped_reading;
                 }
 
                 bool &test_multiplexer::passive_mode(connection_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     return scribe_data_[hdl].passive_mode;
                 }
 
                 bool &test_multiplexer::passive_mode(datagram_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     return data_for_hdl(hdl)->passive_mode;
                 }
 
@@ -583,12 +582,12 @@ namespace nil {
                 }
 
                 bool &test_multiplexer::stopped_reading(accept_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     return doorman_data_[hdl].stopped_reading;
                 }
 
                 bool &test_multiplexer::passive_mode(accept_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     return doorman_data_[hdl].passive_mode;
                 }
 
@@ -597,7 +596,7 @@ namespace nil {
                 }
 
                 void test_multiplexer::add_pending_connect(accept_handle src, connection_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     pending_connects_.emplace(src, hdl);
                 }
 
@@ -613,20 +612,20 @@ namespace nil {
                 void test_multiplexer::prepare_connection(accept_handle src, connection_handle hdl,
                                                           test_multiplexer &peer, std::string host, uint16_t port,
                                                           connection_handle peer_hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
-                    MTL_ASSERT(this != &peer);
-                    MTL_LOG_TRACE(MTL_ARG(src) << MTL_ARG(hdl) << MTL_ARG(host) << MTL_ARG(port) << MTL_ARG(peer_hdl));
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(this != &peer);
+                    ACTOR_LOG_TRACE(ACTOR_ARG(src) << ACTOR_ARG(hdl) << ACTOR_ARG(host) << ACTOR_ARG(port) << ACTOR_ARG(peer_hdl));
                     auto input = std::make_shared<buffer_type>();
                     auto output = std::make_shared<buffer_type>();
-                    MTL_LOG_DEBUG("insert scribe data for" << MTL_ARG(hdl));
+                    ACTOR_LOG_DEBUG("insert scribe data for" << ACTOR_ARG(hdl));
                     auto res1 = scribe_data_.emplace(hdl, scribe_data {input, output});
                     if (!res1.second)
-                        MTL_RAISE_ERROR("prepare_connection: handle already in use");
-                    MTL_LOG_DEBUG("insert scribe data on peer for" << MTL_ARG(peer_hdl));
+                        ACTOR_RAISE_ERROR("prepare_connection: handle already in use");
+                    ACTOR_LOG_DEBUG("insert scribe data on peer for" << ACTOR_ARG(peer_hdl));
                     auto res2 = peer.scribe_data_.emplace(peer_hdl, scribe_data {output, input});
                     if (!res2.second)
-                        MTL_RAISE_ERROR("prepare_connection: peer handle already in use");
-                    MTL_LOG_INFO("acceptor" << src << "has connection" << hdl << "ready for incoming connect from"
+                        ACTOR_RAISE_ERROR("prepare_connection: peer handle already in use");
+                    ACTOR_LOG_INFO("acceptor" << src << "has connection" << hdl << "ready for incoming connect from"
                                             << host << ":" << port << "from peer with connection handle" << peer_hdl);
                     if (doormen_.count(port) == 0)
                         provide_acceptor(port, src);
@@ -635,48 +634,48 @@ namespace nil {
                 }
 
                 void test_multiplexer::add_pending_endpoint(datagram_handle src, datagram_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     pending_endpoints_.emplace(src.id(), hdl);
                 }
 
                 test_multiplexer::pending_connects_map &test_multiplexer::pending_connects() {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     return pending_connects_;
                 }
 
                 test_multiplexer::pending_endpoints_map &test_multiplexer::pending_endpoints() {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     return pending_endpoints_;
                 }
 
                 bool test_multiplexer::has_pending_scribe(std::string x, uint16_t y) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     guard_type guard {mx_};
                     return scribes_.count(std::make_pair(std::move(x), y)) > 0;
                 }
 
                 bool test_multiplexer::has_pending_remote_endpoint(std::string x, uint16_t y) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     guard_type guard {mx_};
                     return remote_endpoints_.count(std::make_pair(std::move(x), y)) > 0;
                 }
 
                 void test_multiplexer::accept_connection(accept_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
-                    MTL_LOG_TRACE(MTL_ARG(hdl));
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_LOG_TRACE(ACTOR_ARG(hdl));
                     // Filled / initialized in the critical section.
                     doorman_data *dd;
                     {    // Access `doorman_data_` and `pending_connects_` while holding `mx_`.
                         guard_type guard {mx_};
                         dd = &doorman_data_[hdl];
                     }
-                    MTL_ASSERT(dd->ptr != nullptr);
+                    ACTOR_ASSERT(dd->ptr != nullptr);
                     if (!dd->ptr->new_connection())
                         dd->passive_mode = true;
                 }
 
                 bool test_multiplexer::try_accept_connection() {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
                     // Filled / initialized in the critical section.
                     std::vector<doorman_data *> doormen;
                     {    // Access `doorman_data_` and `pending_connects_` while holding `mx_`.
@@ -692,8 +691,8 @@ namespace nil {
                 }
 
                 bool test_multiplexer::try_read_data() {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
-                    MTL_LOG_TRACE("");
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_LOG_TRACE("");
                     // scribe_data might change while we traverse it
                     std::vector<connection_handle> xs;
                     xs.reserve(scribe_data_.size());
@@ -706,8 +705,8 @@ namespace nil {
                 }
 
                 bool test_multiplexer::try_read_data(connection_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
-                    MTL_LOG_TRACE(MTL_ARG(hdl));
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_LOG_TRACE(ACTOR_ARG(hdl));
                     scribe_data &sd = scribe_data_[hdl];
                     if (sd.passive_mode || sd.ptr == nullptr || sd.ptr->parent() == nullptr ||
                         !sd.ptr->parent()->getf(abstract_actor::is_initialized_flag)) {
@@ -753,8 +752,8 @@ namespace nil {
                 }
 
                 bool test_multiplexer::read_data() {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
-                    MTL_LOG_TRACE("");
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_LOG_TRACE("");
                     // scribe_data might change while we traverse it
                     std::vector<connection_handle> xs;
                     xs.reserve(scribe_data_.size());
@@ -769,8 +768,8 @@ namespace nil {
                 }
 
                 bool test_multiplexer::read_data(connection_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
-                    MTL_LOG_TRACE(MTL_ARG(hdl));
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_LOG_TRACE(ACTOR_ARG(hdl));
                     flush_runnables();
                     if (passive_mode(hdl))
                         return false;
@@ -828,8 +827,8 @@ namespace nil {
                 }
 
                 bool test_multiplexer::read_data(datagram_handle hdl) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
-                    MTL_LOG_TRACE(MTL_ARG(hdl));
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_LOG_TRACE(ACTOR_ARG(hdl));
                     flush_runnables();
                     if (passive_mode(hdl))
                         return false;
@@ -840,15 +839,15 @@ namespace nil {
                     auto &data = ditr->second;
                     if (data->vn_buf.back().second.empty())
                         return false;
-                    // Since we can't swap std::vector and nil::mtl::io::network::receive_buffer
+                    // Since we can't swap std::vector and nil::actor::io::network::receive_buffer
                     // just copy over the data. This is for testing and not performance critical.
                     auto &from = data->vn_buf.front();
                     auto &to = data->rd_buf;
                     to.first = from.first;
-                    MTL_ASSERT(to.second.capacity() > from.second.size());
+                    ACTOR_ASSERT(to.second.capacity() > from.second.size());
                     to.second.resize(from.second.size());
                     std::transform(from.second.begin(), from.second.end(), to.second.begin(),
-                                   [](byte x) { return nil::mtl::to_integer<char>(x); });
+                                   [](byte x) { return nil::actor::to_integer<char>(x); });
                     data->vn_buf.pop_front();
                     auto sitr = datagram_data_.find(data->rd_buf.first);
                     if (sitr == datagram_data_.end()) {
@@ -862,24 +861,24 @@ namespace nil {
                 }
 
                 void test_multiplexer::virtual_send(connection_handle hdl, const buffer_type &buf) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
-                    MTL_LOG_TRACE(MTL_ARG(hdl));
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_LOG_TRACE(ACTOR_ARG(hdl));
                     auto &vb = virtual_network_buffer(hdl);
                     vb.insert(vb.end(), buf.begin(), buf.end());
                     read_data(hdl);
                 }
 
                 void test_multiplexer::virtual_send(datagram_handle dst, datagram_handle ep, const buffer_type &buf) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
-                    MTL_LOG_TRACE(MTL_ARG(dst) << MTL_ARG(ep));
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_LOG_TRACE(ACTOR_ARG(dst) << ACTOR_ARG(ep));
                     auto &vb = virtual_network_buffer(dst);
                     vb.emplace_back(ep, buf);
                     read_data(dst);
                 }
 
                 void test_multiplexer::exec_runnable() {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
-                    MTL_LOG_TRACE("");
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_LOG_TRACE("");
                     resumable_ptr ptr;
                     {    // critical section
                         guard_type guard {mx_};
@@ -892,8 +891,8 @@ namespace nil {
                 }
 
                 bool test_multiplexer::try_exec_runnable() {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
-                    MTL_LOG_TRACE("");
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_LOG_TRACE("");
                     resumable_ptr ptr;
                     {    // critical section
                         guard_type guard {mx_};
@@ -907,8 +906,8 @@ namespace nil {
                 }
 
                 void test_multiplexer::flush_runnables() {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
-                    MTL_LOG_TRACE("");
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_LOG_TRACE("");
                     // execute runnables in bursts, pick a small size to
                     // minimize time in the critical section
                     constexpr size_t max_runnable_count = 8;
@@ -931,8 +930,8 @@ namespace nil {
                 }
 
                 void test_multiplexer::exec_later(resumable *ptr) {
-                    MTL_ASSERT(ptr != nullptr);
-                    MTL_LOG_TRACE("");
+                    ACTOR_ASSERT(ptr != nullptr);
+                    ACTOR_LOG_TRACE("");
                     switch (ptr->subtype()) {
                         case resumable::io_actor:
                         case resumable::function_object: {
@@ -961,9 +960,9 @@ namespace nil {
                 }
 
                 void test_multiplexer::exec(resumable_ptr &ptr) {
-                    MTL_ASSERT(std::this_thread::get_id() == tid_);
-                    MTL_ASSERT(ptr != nullptr);
-                    MTL_LOG_TRACE("");
+                    ACTOR_ASSERT(std::this_thread::get_id() == tid_);
+                    ACTOR_ASSERT(ptr != nullptr);
+                    ACTOR_LOG_TRACE("");
                     switch (ptr->resume(this, 1)) {
                         case resumable::resume_later:
                             exec_later(ptr.get());
@@ -978,5 +977,5 @@ namespace nil {
 
             }    // namespace network
         }        // namespace io
-    }            // namespace mtl
+    }            // namespace actor
 }    // namespace nil
