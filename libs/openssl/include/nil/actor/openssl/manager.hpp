@@ -25,7 +25,7 @@ namespace nil {
 
             /// Stores OpenSSL context information and provides access to necessary
             /// credentials for establishing connections.
-            class manager : public spawner::module {
+            class manager : public spawner_module {
             public:
                 ~manager() override;
 
@@ -63,7 +63,7 @@ namespace nil {
                 //           a custom implementation.
                 /// @throws `logic_error` if the middleman is not loaded or is not using the
                 ///         default network backend.
-                static spawner::module *make(spawner &, detail::type_list<>);
+                static spawner_module *make(spawner &, detail::type_list<>);
 
             private:
                 /// Private since instantiation is only allowed via `make`.

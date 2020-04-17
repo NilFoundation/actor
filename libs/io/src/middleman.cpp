@@ -77,7 +77,7 @@ namespace nil {
 
             }    // namespace
 
-            spawner::module *middleman::make(spawner &sys, detail::type_list<>) {
+            spawner_module *middleman::make(spawner &sys, detail::type_list<>) {
                 auto atm = sys.config().middleman_network_backend;
                 switch (atom_uint(atm)) {
                     case atom_uint(atom("testing")):
@@ -357,7 +357,7 @@ namespace nil {
                 cfg.slave_mode_fun = &middleman::exec_slave_mode;
             }
 
-            spawner::module::id_t middleman::id() const {
+            spawner_module::id_t middleman::id() const {
                 return module::middleman;
             }
 

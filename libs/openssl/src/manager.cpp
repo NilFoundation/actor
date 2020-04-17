@@ -131,7 +131,7 @@ namespace nil {
 #endif
             }
 
-            spawner::module::id_t manager::id() const {
+            spawner_module::id_t manager::id() const {
                 return openssl_manager;
             }
 
@@ -146,7 +146,7 @@ namespace nil {
                        cfg.openssl_cafile.size() > 0;
             }
 
-            spawner::module *manager::make(spawner &sys, detail::type_list<>) {
+            spawner_module *manager::make(spawner &sys, detail::type_list<>) {
                 if (!sys.has_middleman())
                     ACTOR_RAISE_ERROR("Cannot start OpenSSL module without middleman.");
                 auto ptr = &sys.middleman().backend();

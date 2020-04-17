@@ -32,7 +32,7 @@ namespace nil {
         namespace io {
 
             /// Manages brokers and network backends.
-            class middleman : public spawner::module {
+            class middleman : public spawner_module {
             public:
                 friend class ::nil::actor::spawner;
 
@@ -217,10 +217,10 @@ namespace nil {
                 }
 
                 /// Returns a middleman using the default network backend.
-                static spawner::module *make(spawner &, detail::type_list<>);
+                static spawner_module *make(spawner &, detail::type_list<>);
 
                 template<class Backend>
-                static spawner::module *make(spawner &sys, detail::type_list<Backend>) {
+                static spawner_module *make(spawner &sys, detail::type_list<Backend>) {
                     class impl : public middleman {
                     public:
                         impl(spawner &ref) : middleman(ref), backend_(&ref) {
