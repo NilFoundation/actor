@@ -4,7 +4,7 @@
 
 ## Building
 
-=nil; Actor uses CMake [CMake](http://www.cmake.org/) build system and follows standard procedure for building:
+=nil; Actor uses [CMake](http://www.cmake.org/) build system and follows standard procedure for building:
 
 ```
 git clone --recurse-submodules https://github.com/nilfoundation/actor.git actor
