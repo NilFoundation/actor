@@ -37,3 +37,6 @@
 [submodule "libs/core"]
 	path = libs/core
 	url = git@github.com:nilfoundation/actor-core.git
+[submodule "libs/module"]
+	path = libs/module
+	url = git@github.com:nilfoundation/module.git
