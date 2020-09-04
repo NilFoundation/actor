@@ -51,7 +51,7 @@ struct epoll_event;
 }    // extern "C"
 
 // Pick a backend for the multiplexer, depending on the settings in config.hpp.
-#if !defined(ACTOR_LINUX) || defined(ACTOR_POLL_IMPL)
+#if !defined(BOOST_OS_LINUX_AVAILABLE) || defined(ACTOR_POLL_IMPL)
 #define ACTOR_POLL_MULTIPLEXER
 #else
 #define ACTOR_EPOLL_MULTIPLEXER

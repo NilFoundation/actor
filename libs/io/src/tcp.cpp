@@ -15,7 +15,7 @@
 #include <nil/actor/io/network/native_socket.hpp>
 #include <nil/actor/logger.hpp>
 
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
 #include <winsock2.h>
 #else
 #include <sys/types.h>

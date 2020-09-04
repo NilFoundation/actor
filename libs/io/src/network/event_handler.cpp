@@ -14,7 +14,7 @@
 
 #include <nil/actor/io/network/default_multiplexer.hpp>
 
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
 #include <winsock2.h>
 #else
 #include <sys/socket.h>

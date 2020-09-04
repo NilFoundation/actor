@@ -17,7 +17,7 @@
 
 #include <nil/actor/io/network/protocol.hpp>
 
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif
@@ -77,7 +77,7 @@ namespace nil {
         namespace io {
             namespace network {
 
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
                 const int ec_out_of_memory = WSAENOBUFS;
                 const int ec_interrupted_syscall = WSAEINTR;
 #else
@@ -86,11 +86,11 @@ namespace nil {
 #endif
 
 // platform-dependent SIGPIPE setup
-#if defined(ACTOR_MACOS) || defined(ACTOR_IOS) || defined(ACTOR_BSD)
+#if defined(BOOST_OS_MACOS_AVAILABLE) || defined(BOOST_OS_IOS_AVAILABLE) || defined(BOOST_OS_BSD_AVAILABLE)
                 // Use the socket option but no flags to recv/send on macOS/iOS/BSD.
                 const int no_sigpipe_socket_flag = SO_NOSIGPIPE;
                 const int no_sigpipe_io_flag = 0;
-#elif defined(ACTOR_WINDOWS)
+#elif defined(BOOST_OS_WINDOWS_AVAILABLE)
                 // Do nothing on Windows (SIGPIPE does not exist).
                 const int no_sigpipe_socket_flag = 0;
                 const int no_sigpipe_io_flag = 0;
@@ -100,7 +100,7 @@ namespace nil {
                 const int no_sigpipe_io_flag = MSG_NOSIGNAL;
 #endif
 
-#ifndef ACTOR_WINDOWS
+#ifndef BOOST_OS_WINDOWS_AVAILABLE
 
                 int last_socket_error() {
                     return errno;
@@ -177,7 +177,7 @@ namespace nil {
                     return {pipefds[0], pipefds[1]};
                 }
 
-#else    // ACTOR_WINDOWS
+#else    // BOOST_OS_WINDOWS_AVAILABLE
 
                 int last_socket_error() {
                     return WSAGetLastError();
@@ -427,15 +427,15 @@ namespace nil {
 
                 namespace {
 
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
                     static constexpr int read_channel = SD_RECEIVE;
                     static constexpr int write_channel = SD_SEND;
                     static constexpr int both_channels = SD_BOTH;
-#else     // ACTOR_WINDOWS
+#else     // BOOST_OS_WINDOWS_AVAILABLE
                     static constexpr int read_channel = SHUT_RD;
                     static constexpr int write_channel = SHUT_WR;
                     static constexpr int both_channels = SHUT_RDWR;
-#endif    // ACTOR_WINDOWS
+#endif    // BOOST_OS_WINDOWS_AVAILABLE
 
                 }    // namespace
 

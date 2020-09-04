@@ -15,7 +15,7 @@
 #include <nil/actor/io/network/pipe_reader.hpp>
 #include <nil/actor/io/network/default_multiplexer.hpp>
 
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
 #include <winsock2.h>
 #else
 #include <unistd.h>
@@ -42,7 +42,7 @@ namespace nil {
                 resumable *pipe_reader::try_read_next() {
                     std::intptr_t ptrval;
                     // on windows, we actually have sockets, otherwise we have file handles
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
                     auto res = recv(fd(), reinterpret_cast<socket_recv_ptr>(&ptrval), sizeof(ptrval), 0);
 #else
                     auto res = read(fd(), &ptrval, sizeof(ptrval));

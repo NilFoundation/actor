@@ -296,13 +296,13 @@ endif()
 if(ACTOR_OSX_SYSROOT)
     set(CMAKE_OSX_SYSROOT "${ACTOR_OSX_SYSROOT}")
 endif()
-if(ACTOR_IOS_DEPLOYMENT_TARGET)
+if(BOOST_OS_IOS_AVAILABLE_DEPLOYMENT_TARGET)
     if(ACTOR_OSX_SYSROOT STREQUAL "iphonesimulator")
         build_string("EXTRA_FLAGS"
-                     "-mios-simulator-version-min=${ACTOR_IOS_DEPLOYMENT_TARGET}")
+                     "-mios-simulator-version-min=${BOOST_OS_IOS_AVAILABLE_DEPLOYMENT_TARGET}")
     else()
         build_string("EXTRA_FLAGS"
-                     "-miphoneos-version-min=${ACTOR_IOS_DEPLOYMENT_TARGET}")
+                     "-miphoneos-version-min=${BOOST_OS_IOS_AVAILABLE_DEPLOYMENT_TARGET}")
     endif()
 endif()
 # check if the user provided CXXFLAGS, set defaults otherwise

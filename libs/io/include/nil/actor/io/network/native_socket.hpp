@@ -22,7 +22,7 @@ namespace nil {
             namespace network {
 
 // Annoying platform-dependent bootstrapping.
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
                 using setsockopt_ptr = const char *;
                 using getsockopt_ptr = char *;
                 using socket_send_ptr = const char *;
@@ -44,7 +44,7 @@ namespace nil {
                 extern const int no_sigpipe_socket_flag;
                 extern const int no_sigpipe_io_flag;
 
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
                 using native_socket = size_t;
                 constexpr native_socket invalid_native_socket = static_cast<native_socket>(-1);
                 inline int64_t int64_from_native_socket(native_socket sock) {

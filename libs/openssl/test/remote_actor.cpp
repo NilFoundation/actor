@@ -43,7 +43,7 @@ namespace {
         spawner client_side {client_side_config};
 
         fixture() {
-#ifdef ACTOR_LINUX
+#ifdef BOOST_OS_LINUX_AVAILABLE
             signal(SIGPIPE, SIG_IGN);
 #endif
         }

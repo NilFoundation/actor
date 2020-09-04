@@ -31,7 +31,7 @@
 
 #include <nil/actor/scheduler/abstract_coordinator.hpp>
 
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
 #ifndef WIN32_LEAN_AND_MEAN
 #define WIN32_LEAN_AND_MEAN
 #endif    // WIN32_LEAN_AND_MEAN
@@ -118,7 +118,7 @@ namespace nil {
 #ifndef POLLPRI
 #define POLLPRI POLLIN
 #endif
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
                 // From the MSDN: If the POLLPRI flag is set on a socket for the Microsoft
                 //                Winsock provider, the WSAPoll function will fail.
                 const event_mask_type input_mask = POLLIN;
@@ -313,7 +313,7 @@ namespace nil {
                     std::vector<fd_event> poll_res;
                     for (;;) {
                         int presult;
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
                         presult = ::WSAPoll(pollset_.data(), static_cast<ULONG>(pollset_.size()), block ? -1 : 0);
 #else
                         presult = ::poll(pollset_.data(), static_cast<nfds_t>(pollset_.size()), block ? -1 : 0);
@@ -495,7 +495,7 @@ namespace nil {
                 void default_multiplexer::wr_dispatch_request(resumable *ptr) {
                     intptr_t ptrval = reinterpret_cast<intptr_t>(ptr);
                     // on windows, we actually have sockets, otherwise we have file handles
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
                     auto res = ::send(pipe_.second, reinterpret_cast<socket_send_ptr>(&ptrval), sizeof(ptrval),
                                       no_sigpipe_io_flag);
 #else
@@ -558,7 +558,7 @@ namespace nil {
                 }
 
                 void default_multiplexer::init() {
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
                     WSADATA WinsockData;
                     if (WSAStartup(MAKEWORD(2, 2), &WinsockData) != 0) {
                         ACTOR_CRITICAL("WSAStartup failed");
@@ -619,7 +619,7 @@ namespace nil {
                     // do cleanup for pipe reader manually, since WSACleanup needs to happen last
                     close_socket(pipe_reader_.fd());
                     pipe_reader_.init(invalid_native_socket);
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
                     WSACleanup();
 #endif
                 }

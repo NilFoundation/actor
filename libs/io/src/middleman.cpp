@@ -49,10 +49,10 @@
 #include <nil/actor/detail/set_thread_name.hpp>
 #include <nil/actor/detail/get_mac_addresses.hpp>
 
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
 #include <io.h>
 #include <fcntl.h>
-#endif    // ACTOR_WINDOWS
+#endif    // BOOST_OS_WINDOWS_AVAILABLE
 
 namespace nil {
     namespace actor {

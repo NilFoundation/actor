@@ -10,7 +10,7 @@
 
 #include <nil/actor/detail/socket_guard.hpp>
 
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
 #include <winsock2.h>
 #else
 #include <unistd.h>

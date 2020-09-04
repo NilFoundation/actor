@@ -40,3 +40,12 @@
 [submodule "libs/module"]
 	path = libs/module
 	url = git@github.com:nilfoundation/module.git
+[submodule "libs/cuda"]
+	path = libs/cuda
+	url = git@github.com:nilfoundation/actor-cuda.git
+[submodule "libs/predef"]
+	path = libs/predef
+	url = git@github.com:nilfoundation/predef.git
+[submodule "libs/config"]
+	path = libs/config
+	url = git@github.com:nilfoundation/config.git

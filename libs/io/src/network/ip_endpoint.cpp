@@ -15,7 +15,7 @@
 #include <nil/actor/logger.hpp>
 #include <nil/actor/sec.hpp>
 
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
 #include <winsock2.h>
 #include <windows.h>
 #include <ws2tcpip.h>
@@ -29,7 +29,7 @@
 #include <netinet/ip.h>
 #endif
 
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
 using sa_family_t = short;
 #endif
 

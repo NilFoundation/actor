@@ -279,7 +279,7 @@ while [ $# -ne 0 ]; do
             ;;
         --ios-min-ver=*)
             append_cache_entry CMAKE_OSX_ARCHITECTURES STRING "\$(ARCHS_STANDARD_32_64_BIT)"
-            append_cache_entry ACTOR_IOS_DEPLOYMENT_TARGET STRING "$optarg"
+            append_cache_entry BOOST_OS_IOS_AVAILABLE_DEPLOYMENT_TARGET STRING "$optarg"
             ;;
         --with-log-level=*)
             level=`echo "$optarg" | tr '[:lower:]' '[:upper:]'`

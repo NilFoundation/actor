@@ -36,7 +36,7 @@
 
 #include <nil/actor/openssl/session.hpp>
 
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
 #include <winsock2.h>
 #include <ws2tcpip.h>    // socket_size_type, etc. (MSVC20xx)
 #else

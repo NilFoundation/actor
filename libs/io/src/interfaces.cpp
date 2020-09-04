@@ -17,7 +17,7 @@
 #include <cstring>
 #include <algorithm>
 
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
 #ifndef _WIN32_WINNT
 #define _WIN32_WINNT 0x0600
 #endif
@@ -73,7 +73,7 @@ namespace nil {
                                AF_UNSPEC;
                 }
 
-#ifdef ACTOR_WINDOWS
+#ifdef BOOST_OS_WINDOWS_AVAILABLE
 
                 // F consumes `{interface_name, protocol, is_localhost, address}` entries.
                 template<class F>
@@ -119,7 +119,7 @@ namespace nil {
                     }
                 }
 
-#else    // ifdef ACTOR_WINDOWS
+#else    // ifdef BOOST_OS_WINDOWS_AVAILABLE
 
                 // F consumes `{interface_name, protocol, is_localhost, address}` entries.
                 template<class F>
@@ -139,7 +139,7 @@ namespace nil {
                     }
                 }
 
-#endif    // ifdef ACTOR_WINDOWS
+#endif    // ifdef BOOST_OS_WINDOWS_AVAILABLE
 
                 namespace {
 

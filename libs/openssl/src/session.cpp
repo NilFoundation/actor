@@ -24,7 +24,7 @@ ACTOR_POP_WARNINGS
 
 // On Linux we need to block SIGPIPE whenever we access OpenSSL functions.
 // Unfortunately there's no sane way to configure OpenSSL properly.
-#ifdef ACTOR_LINUX
+#ifdef BOOST_OS_LINUX_AVAILABLE
 
 #include <nil/actor/detail/scope_guard.hpp>
 #include <signal.h>
@@ -51,7 +51,7 @@ ACTOR_POP_WARNINGS
 
 #define ACTOR_BLOCK_SIGPIPE() static_cast<void>(0)
 
-#endif    // ACTOR_LINUX
+#endif    // BOOST_OS_LINUX_AVAILABLE
 
 namespace nil {
     namespace actor {

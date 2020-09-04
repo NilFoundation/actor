@@ -4,7 +4,7 @@
 
 #include <nil/actor/test/dsl.hpp>
 
-#ifndef ACTOR_WINDOWS
+#ifndef BOOST_OS_WINDOWS_AVAILABLE
 
 #include <unistd.h>
 
@@ -51,7 +51,7 @@ namespace {
             // TODO: https://github.com/actor-framework/actor-framework/issues/555
             path += "/../../openssl/test";
             char rpath[PATH_MAX];
-#ifndef ACTOR_WINDOWS
+#ifndef BOOST_OS_WINDOWS_AVAILABLE
             auto rp = realpath(path.c_str(), rpath);
 #else
             auto rp = GetFullPathName(path.c_str(), PATH_MAX, rpath, nullptr);

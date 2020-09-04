@@ -31,7 +31,7 @@
 
 namespace {
 
-#ifdef ACTOR_MSVC
+#ifdef BOOST_COMP_MSVC_AVAILABLE
 #define THREAD_LOCAL thread_local
 #else
 #define THREAD_LOCAL __thread
