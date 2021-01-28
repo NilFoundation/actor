@@ -8,11 +8,8 @@
 
 ```
 git clone --recurse-submodules https://github.com/nilfoundation/actor.git actor
-cd mtl && mkdir build && cd build && cmake .. && make -j4 all
+cd mtl && mkdir build && cd build && cmake .. && make all
 ```
-
-=nil; Actor also can be included as CMake submodule or added as dependency to other
-CMake-based projects using the file `cmake/FindMTL.cmake`.
 
 ### CMake build options available
 
