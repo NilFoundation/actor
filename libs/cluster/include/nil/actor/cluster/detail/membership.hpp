@@ -26,6 +26,8 @@
 
 #include <memory>
 
+#include <nil/crypto3/hash/algorithm/hash.hpp>
+
 #include <nil/actor/core/weak_ptr.hh>
 
 #include <nil/actor/cluster/detail/node.hpp>
@@ -71,7 +73,8 @@ namespace nil::actor {
                 static inline nil::actor::future<> start(nil::actor::socket_address const &local);
 
             private:
-                nil::actor::future<nil::actor::lw_shared_ptr<rpc_proto::client>> connect(nil::actor::socket_address const &to);
+                nil::actor::future<nil::actor::lw_shared_ptr<rpc_proto::client>>
+                    connect(nil::actor::socket_address const &to);
 
                 nil::actor::future<handshake_response> handshake(nil::actor::lw_shared_ptr<rpc_proto::client> &with);
 
