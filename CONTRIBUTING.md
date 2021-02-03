@@ -255,7 +255,7 @@ General
 
   #include <algorithm>
 
-  #ifdef ACTOR_WINDOWS
+  #ifdef BOOST_OS_WINDOWS_AVAILABLE
   #include <windows.h>
   #else
   #include <sys/socket.h>

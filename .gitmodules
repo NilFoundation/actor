@@ -15,7 +15,7 @@
 	url = git@github.com:nilfoundation/codec.git
 [submodule "libs/marshalling"]
 	path = libs/marshalling
-	url = git@github.com:nemothenoone/marshalling.git
+	url = git@github.com:nilfoundation/marshalling.git
 [submodule "libs/actor"]
 	path = libs/actor
 	url = git@github.com:nilfoundation/actor-core.git
@@ -37,3 +37,18 @@
 [submodule "libs/core"]
 	path = libs/core
 	url = git@github.com:nilfoundation/actor-core.git
+[submodule "libs/module"]
+	path = libs/module
+	url = git@github.com:nilfoundation/module.git
+[submodule "libs/cuda"]
+	path = libs/cuda
+	url = git@github.com:nilfoundation/actor-cuda.git
+[submodule "libs/predef"]
+	path = libs/predef
+	url = git@github.com:nilfoundation/predef.git
+[submodule "libs/config"]
+	path = libs/config
+	url = git@github.com:nilfoundation/config.git
+[submodule "libs/dpdk"]
+	path = libs/dpdk
+	url = git@github.com:DPDK/dpdk.git
