@@ -1,2 +1,0 @@
-\newcommand{\cafrelease}{@ACTOR_RELEASE@}
-\newcommand{\cafsha}{@ACTOR_SHA@}

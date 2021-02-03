@@ -49,3 +49,6 @@
 [submodule "libs/config"]
 	path = libs/config
 	url = git@github.com:nilfoundation/config.git
+[submodule "libs/dpdk"]
+	path = libs/dpdk
+	url = git@github.com:DPDK/dpdk.git
