@@ -34,20 +34,20 @@
 #include <nil/actor/detail/directory.hpp>
 #include <nil/actor/detail/macro.hpp>
 
-namespace ultramarine {
+namespace nil::actor {
 
     /// Base template class defining an actor
-    /// \unique_name ultramarine::actor
+    /// \unique_name nil::actor::actor
     /// \tparam Derived The derived actor class for CRTP purposes
     /// \tparam LocalPlacementStrategy Optional. Allows to specify a custom local placement strategy. Defaults to
-    /// [ultramarine::default_local_placement_strategy]() \requires `Derived` should implement actor behavior using
+    /// [nil::actor::default_local_placement_strategy]() \requires `Derived` should implement actor behavior using
     /// [ULTRAMARINE_DEFINE_ACTOR]()
     template<typename Derived, typename LocalPlacementStrategy = detail::default_local_placement_strategy>
     struct actor : private boost::noncopyable {
 
         /// Default key type (unsigned long integer)
-        /// \unique_name ultramarine::actor::KeyType
-        /// See [ultramarine::actor_id]()
+        /// \unique_name nil::actor::actor::KeyType
+        /// See [nil::actor::actor_id]()
         using KeyType = actor_id;
 
         /// Default placement strategy
@@ -66,4 +66,4 @@ namespace ultramarine {
             });
         }
     };
-}    // namespace ultramarine
+}    // namespace nil::actor

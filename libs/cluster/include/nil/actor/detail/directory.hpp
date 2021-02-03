@@ -29,25 +29,25 @@
 #include <nil/actor/cluster/detail/actor_traits.hpp>
 #include <nil/actor/cluster/detail/arguments_vector.hpp>
 
-namespace ultramarine {
+namespace nil::actor {
 
-    /// [ultramarine::actor]() are identified internally via an unsigned integer id
-    /// \unique_name ultramarine::actor_id
+    /// [nil::actor::actor]() are identified internally via an unsigned integer id
+    /// \unique_name nil::actor::actor_id
     using actor_id = std::size_t;
 
     namespace detail {
         /// A round-robin placement strategy that shards actors based on the modulo of their
-        /// [ultramarine::actor::KeyType]() \unique_name ultramarine::round_robin_local_placement_strategy
+        /// [nil::actor::actor::KeyType]() \unique_name nil::actor::round_robin_local_placement_strategy
         struct round_robin_local_placement_strategy {
-            /// \param A hashed [ultramarine::actor::KeyType]()
+            /// \param A hashed [nil::actor::actor::KeyType]()
             /// \returns The location the actor should be placed in
             nil::actor::shard_id operator()(std::size_t hash) const noexcept {
                 return hash % nil::actor::smp::count;
             }
         };
 
-        /// Default local placement strategy uses [ultramarine::round_robin_local_placement_strategy]()
-        /// \unique_name ultramarine::default_local_placement_strategy
+        /// Default local placement strategy uses [nil::actor::round_robin_local_placement_strategy]()
+        /// \unique_name nil::actor::default_local_placement_strategy
         using default_local_placement_strategy = round_robin_local_placement_strategy;
 
         using actor_activation_id = unsigned int;
@@ -90,7 +90,7 @@ namespace ultramarine {
 
             [[nodiscard]] static inline constexpr Actor *hold_activation(ActorKey<Actor> &&key, actor_id id) {
                 if (!Actor::directory) {
-                    Actor::directory = std::make_unique<ultramarine::detail::directory<Actor>>();
+                    Actor::directory = std::make_unique<nil::actor::detail::directory<Actor>>();
                 }
                 auto r = std::get<0>(Actor::directory->try_emplace(id, std::forward<ActorKey<Actor>>(key)));
                 return &(std::get<1>(*r));
@@ -189,4 +189,4 @@ namespace ultramarine {
             }
         };
     }    // namespace detail
-}    // namespace ultramarine
+}    // namespace nil::actor

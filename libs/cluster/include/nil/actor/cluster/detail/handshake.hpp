@@ -26,7 +26,7 @@
 
 #include <nil/actor/cluster/detail/message_serializer.hpp>
 
-namespace ultramarine {
+namespace nil::actor {
     namespace cluster {
         namespace impl {
             struct handshake_request {
@@ -71,4 +71,4 @@ namespace ultramarine {
             };
         }    // namespace impl
     }        // namespace cluster
-}    // namespace ultramarine
+}    // namespace nil::actor

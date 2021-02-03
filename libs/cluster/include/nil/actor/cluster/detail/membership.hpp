@@ -33,7 +33,7 @@
 
 typedef struct hash_ring_t hash_ring_t;
 
-namespace ultramarine {
+namespace nil::actor {
     namespace cluster {
         namespace impl {
             class membership : public nil::actor::weakly_referencable<membership> {
@@ -79,4 +79,4 @@ namespace ultramarine {
             };
         }    // namespace impl
     }        // namespace cluster
-}    // namespace ultramarine
+}    // namespace nil::actor

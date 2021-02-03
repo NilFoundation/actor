@@ -37,7 +37,7 @@
 
 #endif
 
-namespace ultramarine {
+namespace nil::actor {
     namespace detail {
         template<typename Actor>
         class collocated_actor_ref {
@@ -98,7 +98,7 @@ namespace ultramarine {
             auto shard = typename Actor::PlacementStrategy {}(hash);
 
 #ifdef ULTRAMARINE_REMOTE
-            using namespace ultramarine::cluster::detail;
+            using namespace nil::actor::cluster::detail;
             if (auto remote = cluster::detail::directory<Actor>::hold_remote_peer(std::forward<KeyType>(key), hash);
                 remote) {
                 return func(remote_actor_ref<Actor>(std::forward<KeyType>(key), hash, remote));
@@ -121,4 +121,4 @@ namespace ultramarine {
             });
         }
     }    // namespace detail
-}    // namespace ultramarine
+}    // namespace nil::actor

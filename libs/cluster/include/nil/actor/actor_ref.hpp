@@ -30,18 +30,18 @@
 #include <nil/actor/detail/directory.hpp>
 #include <nil/actor/detail/actor_ref_impl.hpp>
 
-namespace ultramarine {
+namespace nil::actor {
 
     /// A movable and copyable reference to a virtual actor
-    /// \unique_name ultramarine::actor_ref
-    /// \tparam Actor The type of [ultramarine::actor]() to reference
+    /// \unique_name nil::actor::actor_ref
+    /// \tparam Actor The type of [nil::actor::actor]() to reference
     /// \exclude
     template<typename Actor, ActorKind = actor_kind<Actor>()>
     class actor_ref { };
 
     /// A movable and copyable reference to a virtual actor
-    /// \tparam Actor The type of [ultramarine::actor]() to reference
-    /// \requires Type `Actor` shall inherit from [ultramarine::actor]()
+    /// \tparam Actor The type of [nil::actor::actor]() to reference
+    /// \requires Type `Actor` shall inherit from [nil::actor::actor]()
     template<typename Actor>
     class actor_ref<Actor, ActorKind::SingletonActor> {
         detail::actor_ref_variant<Actor> impl;
@@ -58,8 +58,8 @@ namespace ultramarine {
         constexpr actor_ref(actor_ref &&) noexcept = default;
 
     private:
-        /// Obtain the concrete [ultramarine::actor_ref]() implementation
-        /// \param func A lambda to execute with the [ultramarine::actor_ref]() implementation
+        /// Obtain the concrete [nil::actor::actor_ref]() implementation
+        /// \param func A lambda to execute with the [nil::actor::actor_ref]() implementation
         /// \returns The value returned by the provided lambda, if any
         template<typename Func>
         inline constexpr auto visit(Func &&func) const noexcept {
@@ -84,8 +84,8 @@ namespace ultramarine {
             return typename Actor::internal::template interface<actor_ref<Actor>> {*this};
         }
 
-        /// Enqueue a message to the [ultramarine::actor]() referenced by this [ultramarine::actor_ref]() instance
-        /// \effects Creates the [ultramarine::actor]() if it doesn't exist
+        /// Enqueue a message to the [nil::actor::actor]() referenced by this [nil::actor::actor_ref]() instance
+        /// \effects Creates the [nil::actor::actor]() if it doesn't exist
         /// \param message The message handler to enqueue
         /// \returns A future representing the eventually returned value by the actor, or a failed future
         template<typename Handler, typename... Args>
@@ -109,9 +109,9 @@ namespace ultramarine {
         }
     };
 
-    /// A movable and copyable reference to an [ultramarine::actor]()
-    /// \tparam Actor The type of [ultramarine::actor]() to reference
-    /// \requires Type `Actor` shall inherit from [ultramarine::actor]() and from attribute [ultramarine::local_actor]()
+    /// A movable and copyable reference to an [nil::actor::actor]()
+    /// \tparam Actor The type of [nil::actor::actor]() to reference
+    /// \requires Type `Actor` shall inherit from [nil::actor::actor]() and from attribute [nil::actor::local_actor]()
     template<typename Actor>
     class actor_ref<Actor, ActorKind::LocalActor> {
         detail::ActorKey<Actor> key;
@@ -127,8 +127,8 @@ namespace ultramarine {
         constexpr actor_ref(actor_ref &&) noexcept = default;
 
     private:
-        /// Obtain the concrete [ultramarine::actor_ref]() implementation
-        /// \param func A lambda to execute with the [ultramarine::actor_ref]() implementation
+        /// Obtain the concrete [nil::actor::actor_ref]() implementation
+        /// \param func A lambda to execute with the [nil::actor::actor_ref]() implementation
         /// \returns The value returned by the provided lambda, if any
         template<typename Func>
         inline constexpr auto visit(Func &&func) const noexcept {
@@ -154,8 +154,8 @@ namespace ultramarine {
             return typename Actor::internal::template interface<actor_ref<Actor>> {*this};
         }
 
-        /// Enqueue a message to the [ultramarine::actor]() referenced by this [ultramarine::actor_ref]() instance
-        /// \effects Creates the [ultramarine::actor]() if it doesn't exist
+        /// Enqueue a message to the [nil::actor::actor]() referenced by this [nil::actor::actor_ref]() instance
+        /// \effects Creates the [nil::actor::actor]() if it doesn't exist
         /// \param message The message handler to enqueue
         /// \param args Arguments to pass to the message handler
         /// \returns A future representing the eventually returned value by the actor, or a failed future
@@ -181,10 +181,10 @@ namespace ultramarine {
     };
 
     /// A movable and copyable type-erased reference to a virtual actor.
-    /// Useful when an [ultramarine::actor]() declares a message with an `actor_ref<itself>` as argument.
+    /// Useful when an [nil::actor::actor]() declares a message with an `actor_ref<itself>` as argument.
     /// Avoids incomplete type compiler error.
     /// \remarks Use only when needed, as this type introduces overhead
-    /// \unique_name ultramarine::poly_actor_ref
+    /// \unique_name nil::actor::poly_actor_ref
     class poly_actor_ref {
         /// \exclude
         std::any opaque;
@@ -204,9 +204,9 @@ namespace ultramarine {
         };
 
         /// Cast this instance into a fully specified `actor_ref`
-        /// \requires Actor shall be of type [ultramarine::actor]()
-        /// \tparam Actor The type of [ultramarine::actor]() to reference
-        /// \returns An [ultramarine::actor_ref]()
+        /// \requires Actor shall be of type [nil::actor::actor]()
+        /// \tparam Actor The type of [nil::actor::actor]() to reference
+        /// \returns An [nil::actor::actor_ref]()
         template<typename Actor>
         auto as() {
             return std::any_cast<actor_ref<Actor>>(opaque);
@@ -214,15 +214,15 @@ namespace ultramarine {
     };
 
     /// Create a reference to a virtual actor
-    /// \tparam Actor The type of [ultramarine::actor]() to reference
-    /// \requires Type `Actor` shall inherit from [ultramarine::actor]()
+    /// \tparam Actor The type of [nil::actor::actor]() to reference
+    /// \requires Type `Actor` shall inherit from [nil::actor::actor]()
     /// \requires Type `KeyType` shall be of type `Actor::KeyType`
     /// \param key The primary key of the actor
-    /// \returns An [ultramarine::actor_ref]()
+    /// \returns An [nil::actor::actor_ref]()
     template<typename Actor, typename KeyType = typename Actor::KeyType>
     [[nodiscard]] constexpr inline actor_ref<Actor> get(KeyType &&key) noexcept {
         static_assert(std::is_constructible<detail::ActorKey<Actor>, KeyType &&>::value,
                       "The provided key is not compatible with the Actor");
         return actor_ref<Actor>(std::forward<KeyType>(key));
     }
-}    // namespace ultramarine
+}    // namespace nil::actor

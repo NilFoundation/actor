@@ -25,8 +25,8 @@
 #include <numeric>
 #include <seastar/testing/thread_test_case.hh>
 #include <seastar/core/thread.hh>
-#include <ultramarine/actor.hpp>
-#include <ultramarine/actor_ref.hpp>
+#include <nil/actor/actor.hpp>
+#include <nil/actor/actor_ref.hpp>
 
 struct no_copy_message {
     int count = 0;
@@ -47,12 +47,12 @@ struct no_copy_message {
     };
 };
 
-class void_actor : public ultramarine::actor<void_actor> {
+class void_actor : public nil::actor::actor<void_actor> {
 public:
 ULTRAMARINE_DEFINE_ACTOR(void_actor,);
 };
 
-class counter_actor : public ultramarine::actor<counter_actor> {
+class counter_actor : public nil::actor::actor<counter_actor> {
 ULTRAMARINE_DEFINE_ACTOR(counter_actor,
                          (get_execution_shard)
                                  (increase_counter_future)(increase_counter_void)(get_counter_future)(get_counter_int)
@@ -94,11 +94,11 @@ public:
         return nil::actor::make_ready_future<no_copy_message>(no_copy_message());
     }
 
-    nil::actor::future<> actor_ref_copy(ultramarine::actor_ref<void_actor> other) const {
+    nil::actor::future<> actor_ref_copy(nil::actor::actor_ref<void_actor> other) const {
         return nil::actor::make_ready_future<>();
     }
 
-    nil::actor::future<> poly_actor_ref_copy(ultramarine::poly_actor_ref other) const {
+    nil::actor::future<> poly_actor_ref_copy(nil::actor::poly_actor_ref other) const {
         return other.as<counter_actor>().tell(counter_actor::message::get_counter_future()).discard_result();
     }
 };
@@ -110,13 +110,13 @@ using namespace nil::actor;
  */
 
 SEASTAR_THREAD_TEST_CASE (ensure_same_core_location) {
-    auto counterActor = ultramarine::get<counter_actor>(0);
+    auto counterActor = nil::actor::get<counter_actor>(0);
 
     BOOST_CHECK(counterActor.tell(counter_actor::message::get_execution_shard()).get0() == nil::actor::engine().cpu_id());
 }
 
 SEASTAR_THREAD_TEST_CASE (same_core_mutating_future_message_passing) {
-    auto counterActor = ultramarine::get<counter_actor>(0);
+    auto counterActor = nil::actor::get<counter_actor>(0);
 
     auto ival = counterActor.tell(counter_actor::message::get_counter_int()).get0();
     counterActor.tell(counter_actor::message::increase_counter_future()).wait();
@@ -126,7 +126,7 @@ SEASTAR_THREAD_TEST_CASE (same_core_mutating_future_message_passing) {
 }
 
 SEASTAR_THREAD_TEST_CASE (same_core_mutating_void_message_passing) {
-    auto counterActor = ultramarine::get<counter_actor>(0);
+    auto counterActor = nil::actor::get<counter_actor>(0);
 
     auto ival = counterActor.tell(counter_actor::message::get_counter_int()).get0();
     counterActor.tell(counter_actor::message::increase_counter_void()).wait();
@@ -136,36 +136,36 @@ SEASTAR_THREAD_TEST_CASE (same_core_mutating_void_message_passing) {
 }
 
 SEASTAR_THREAD_TEST_CASE (same_core_nocopy_arg_message_passing) {
-    ultramarine::get<counter_actor>(0).tell(counter_actor::message::move_arg_message(), no_copy_message()).wait();
+    nil::actor::get<counter_actor>(0).tell(counter_actor::message::move_arg_message(), no_copy_message()).wait();
 }
 
 SEASTAR_THREAD_TEST_CASE (same_core_nocopy_value_return_message_passing) {
-    auto counterActor = ultramarine::get<counter_actor>(0);
+    auto counterActor = nil::actor::get<counter_actor>(0);
 
     auto ret = counterActor.tell(counter_actor::message::move_return_value_message()).get0();
 }
 
 SEASTAR_THREAD_TEST_CASE (same_core_nocopy_future_return_message_passing) {
-    auto counterActor = ultramarine::get<counter_actor>(0);
+    auto counterActor = nil::actor::get<counter_actor>(0);
 
     auto ret = counterActor.tell(counter_actor::message::move_return_future_message()).get0();
 }
 
 SEASTAR_THREAD_TEST_CASE (same_core_copy_actor_ref) {
-    auto counterActor = ultramarine::get<counter_actor>(0);
-    auto otherActor = ultramarine::get<void_actor>(0);
+    auto counterActor = nil::actor::get<counter_actor>(0);
+    auto otherActor = nil::actor::get<void_actor>(0);
 
     counterActor.tell(counter_actor::message::actor_ref_copy(), otherActor).wait();
 }
 
 SEASTAR_THREAD_TEST_CASE (same_core_copy_poly_actor_ref) {
-    auto counterActor = ultramarine::get<counter_actor>(0);
+    auto counterActor = nil::actor::get<counter_actor>(0);
 
     counterActor.tell(counter_actor::message::poly_actor_ref_copy(), counterActor).wait();
 }
 
 SEASTAR_THREAD_TEST_CASE (same_core_move_poly_actor_ref) {
-    auto counterActor = ultramarine::get<counter_actor>(0);
+    auto counterActor = nil::actor::get<counter_actor>(0);
 
     counterActor.tell(counter_actor::message::poly_actor_ref_copy(), std::move(counterActor)).wait();
 }
@@ -175,13 +175,13 @@ SEASTAR_THREAD_TEST_CASE (same_core_move_poly_actor_ref) {
  */
 
 SEASTAR_THREAD_TEST_CASE (ensure_collocated_core_location) {
-    auto counterActor = ultramarine::get<counter_actor>(1);
+    auto counterActor = nil::actor::get<counter_actor>(1);
 
     BOOST_CHECK(counterActor.tell(counter_actor::message::get_execution_shard()).get0() != nil::actor::engine().cpu_id());
 }
 
 SEASTAR_THREAD_TEST_CASE (collocated_core_mutating_future_message_passing) {
-    auto counterActor = ultramarine::get<counter_actor>(1);
+    auto counterActor = nil::actor::get<counter_actor>(1);
 
     auto ival = counterActor.tell(counter_actor::message::get_counter_int()).get0();
     counterActor.tell(counter_actor::message::increase_counter_future()).wait();
@@ -191,7 +191,7 @@ SEASTAR_THREAD_TEST_CASE (collocated_core_mutating_future_message_passing) {
 }
 
 SEASTAR_THREAD_TEST_CASE (collocated_core_mutating_void_message_passing) {
-    auto counterActor = ultramarine::get<counter_actor>(1);
+    auto counterActor = nil::actor::get<counter_actor>(1);
 
     auto ival = counterActor.tell(counter_actor::message::get_counter_int()).get0();
     counterActor.tell(counter_actor::message::increase_counter_void()).wait();
@@ -201,36 +201,36 @@ SEASTAR_THREAD_TEST_CASE (collocated_core_mutating_void_message_passing) {
 }
 
 SEASTAR_THREAD_TEST_CASE (collocated_core_nocopy_arg_message_passing) {
-    ultramarine::get<counter_actor>(1).tell(counter_actor::message::move_arg_message(), no_copy_message()).wait();
+    nil::actor::get<counter_actor>(1).tell(counter_actor::message::move_arg_message(), no_copy_message()).wait();
 }
 
 SEASTAR_THREAD_TEST_CASE (collocated_core_nocopy_value_return_message_passing) {
-    auto counterActor = ultramarine::get<counter_actor>(1);
+    auto counterActor = nil::actor::get<counter_actor>(1);
 
     auto ret = counterActor.tell(counter_actor::message::move_return_value_message()).get0();
 }
 
 SEASTAR_THREAD_TEST_CASE (collocated_core_nocopy_future_return_message_passing) {
-    auto counterActor = ultramarine::get<counter_actor>(1);
+    auto counterActor = nil::actor::get<counter_actor>(1);
 
     auto ret = counterActor.tell(counter_actor::message::move_return_future_message()).get0();
 }
 
 SEASTAR_THREAD_TEST_CASE (collocated_core_copy_actor_ref) {
-    auto counterActor = ultramarine::get<counter_actor>(1);
-    auto otherActor = ultramarine::get<void_actor>(0);
+    auto counterActor = nil::actor::get<counter_actor>(1);
+    auto otherActor = nil::actor::get<void_actor>(0);
 
     counterActor.tell(counter_actor::message::actor_ref_copy(), otherActor).wait();
 }
 
 SEASTAR_THREAD_TEST_CASE (collocated_core_copy_poly_actor_ref) {
-    auto counterActor = ultramarine::get<counter_actor>(1);
+    auto counterActor = nil::actor::get<counter_actor>(1);
 
     counterActor.tell(counter_actor::message::poly_actor_ref_copy(), counterActor).wait();
 }
 
 SEASTAR_THREAD_TEST_CASE (collocated_core_move_poly_actor_ref) {
-    auto counterActor = ultramarine::get<counter_actor>(1);
+    auto counterActor = nil::actor::get<counter_actor>(1);
 
     counterActor.tell(counter_actor::message::poly_actor_ref_copy(), std::move(counterActor)).wait();
 }

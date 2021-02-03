@@ -51,7 +51,7 @@ namespace std {
     };
 }    // namespace std
 
-class string_actor : public ultramarine::actor<string_actor> {
+class string_actor : public nil::actor::actor<string_actor> {
 
     auto get_key() {
         return key;
@@ -63,7 +63,7 @@ public:
     ULTRAMARINE_DEFINE_ACTOR(string_actor, (get_key))
 };
 
-class custom_key_actor : public ultramarine::actor<custom_key_actor> {
+class custom_key_actor : public nil::actor::actor<custom_key_actor> {
 
     auto get_key() {
         return key;
@@ -82,20 +82,20 @@ using namespace nil::actor;
  */
 
 SEASTAR_THREAD_TEST_CASE(key_value_rvref_litteral_preserved) {
-    auto counterActor = ultramarine::get<string_actor>("test-actor-string-key");
+    auto counterActor = nil::actor::get<string_actor>("test-actor-string-key");
 
     BOOST_CHECK(counterActor.tell(string_actor::message::get_key()).get0() == "test-actor-string-key");
 }
 
 SEASTAR_THREAD_TEST_CASE(key_value_rvref_string_preserved) {
-    auto counterActor = ultramarine::get<string_actor>(std::string("test-actor-string-key"));
+    auto counterActor = nil::actor::get<string_actor>(std::string("test-actor-string-key"));
 
     BOOST_CHECK(counterActor.tell(string_actor::message::get_key()).get0() == "test-actor-string-key");
 }
 
 SEASTAR_THREAD_TEST_CASE(key_value_lvref_litteral_preserved) {
     auto key = "test-actor-string-key";
-    auto counterActor = ultramarine::get<string_actor>(key);
+    auto counterActor = nil::actor::get<string_actor>(key);
     key = "test-actor-string-key2";
 
     BOOST_CHECK(counterActor.tell(string_actor::message::get_key()).get0() == "test-actor-string-key");
@@ -103,14 +103,14 @@ SEASTAR_THREAD_TEST_CASE(key_value_lvref_litteral_preserved) {
 
 SEASTAR_THREAD_TEST_CASE(key_value_lvref_string_preserved) {
     auto key = std::string("test-actor-string-key");
-    auto counterActor = ultramarine::get<string_actor>(key);
+    auto counterActor = nil::actor::get<string_actor>(key);
     key = std::string("test-actor-string-key2");
 
     BOOST_CHECK(counterActor.tell(string_actor::message::get_key()).get0() == "test-actor-string-key");
 }
 
 SEASTAR_THREAD_TEST_CASE(key_value_rvref_custom_preserved) {
-    auto counterActor = ultramarine::get<custom_key_actor>({0});
+    auto counterActor = nil::actor::get<custom_key_actor>({0});
 
     BOOST_CHECK(counterActor.tell(custom_key_actor::message::get_key()).get0() != custom_key {1});
     BOOST_CHECK(counterActor.tell(custom_key_actor::message::get_key()).get0() == custom_key {0});
@@ -118,7 +118,7 @@ SEASTAR_THREAD_TEST_CASE(key_value_rvref_custom_preserved) {
 
 SEASTAR_THREAD_TEST_CASE(key_value_lvref_custom_preserved) {
     auto key = custom_key {0};
-    auto counterActor = ultramarine::get<custom_key_actor>(key);
+    auto counterActor = nil::actor::get<custom_key_actor>(key);
 
     BOOST_CHECK(counterActor.tell(custom_key_actor::message::get_key()).get0() != custom_key {1});
     BOOST_CHECK(counterActor.tell(custom_key_actor::message::get_key()).get0() == custom_key {0});

@@ -30,7 +30,7 @@
 #include <nil/actor/cluster/detail/server.hpp>
 #include <nil/actor/cluster/detail/membership.hpp>
 
-namespace ultramarine {
+namespace nil::actor {
     namespace cluster {
         nil::actor::future<> with_cluster_impl(nil::actor::socket_address const &local,
                                                std::vector<nil::actor::socket_address> &&peers);
@@ -70,4 +70,4 @@ namespace ultramarine {
             return with_cluster(local, {}, 0, std::forward<Func>(func));
         }
     }    // namespace cluster
-}    // namespace ultramarine
+}    // namespace nil::actor

@@ -29,7 +29,7 @@
 
 #include <nil/actor/cluster/detail/message_serializer.hpp>
 
-namespace ultramarine {
+namespace nil::actor {
     namespace cluster {
         namespace detail {
             struct node {
@@ -56,12 +56,12 @@ namespace ultramarine {
             };
         }    // namespace detail
     }        // namespace cluster
-}    // namespace ultramarine
+}    // namespace nil::actor
 
 namespace std {
     template<>
-    struct hash<ultramarine::cluster::detail::node> {
-        size_t operator()(ultramarine::cluster::detail::node const &node) const;
+    struct hash<nil::actor::cluster::detail::node> {
+        size_t operator()(nil::actor::cluster::detail::node const &node) const;
     };
 }    // namespace std
 

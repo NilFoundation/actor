@@ -30,11 +30,11 @@
 
 #include <nil/actor/core/reactor.hh>
 
-namespace ultramarine {
+namespace nil::actor {
     /// A dynamic message buffer storing a set number of futures running concurrently
     /// \tparam Future The future type the message buffer will store
     /// \requires Type `Future` shall be a `nil::actor::future`
-    /// \unique_name ultramarine::message_buffer
+    /// \unique_name nil::actor::message_buffer
     template<typename Future>
     struct message_buffer {
         boost::circular_buffer<Future> futs;
@@ -66,7 +66,7 @@ namespace ultramarine {
         }
     };
 
-    /// Create a [ultramarine::message_buffer]() to use in a specified function scope
+    /// Create a [nil::actor::message_buffer]() to use in a specified function scope
     /// \param capacity The number of message the buffer should be able to store before awaiting
     /// \param func A lambda function using the message buffer
     /// \returns Any value returned by the provided lambda function
@@ -77,4 +77,4 @@ namespace ultramarine {
                                        return func(buff).then([&buff] { return buff.flush(); });
                                    });
     }
-};    // namespace ultramarine
+};    // namespace nil::actor

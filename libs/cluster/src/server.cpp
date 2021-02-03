@@ -22,10 +22,10 @@
  * SOFTWARE.
  */
 
-#include <ultramarine/cluster/impl/membership.hpp>
-#include "ultramarine/cluster/impl/server.hpp"
+#include <nil/actor/cluster/impl/membership.hpp>
+#include "nil/actor/cluster/impl/server.hpp"
 
-namespace ultramarine::cluster::impl {
+namespace nil::actor::cluster::impl {
     static inline std::pair<char *, std::size_t> make_peer_string_identity(nil::actor::socket_address const &endpoint) {
         static thread_local char identity[21];
 

@@ -30,12 +30,12 @@
 #include <nil/actor/cluster/detail/message_serializer.hpp>
 #include <nil/actor/cluster/detail/membership.hpp>
 
-namespace ultramarine {
+namespace nil::actor {
     namespace cluster {
         namespace detail {
 
             template<typename T>
-            using ActorKey = ultramarine::detail::ActorKey<T>;
+            using ActorKey = nil::actor::detail::ActorKey<T>;
 
             template<typename Actor>
             struct directory {
@@ -75,7 +75,7 @@ namespace ultramarine {
                                                               PackedArgs &&args) {
                     using FutReturn = nil::actor::futurize_t<std::result_of_t<decltype(fptr)(Actor, FArgs...)>>;
                     using ReturnType =
-                        typename ultramarine::detail::get0_return_type<typename FutReturn::value_type>::type;
+                        typename nil::actor::detail::get0_return_type<typename FutReturn::value_type>::type;
                     if constexpr (std::is_same_v<ReturnType, void>) {
                         using Sig = nil::actor::future<>(ActorKey<Actor>, PackedArgs);
                         return n.rpc->make_client<Sig>(id | (1U << 0U))(*n.client, key, std::forward<PackedArgs>(args));
@@ -91,7 +91,7 @@ namespace ultramarine {
                                                               PackedArgs &&args) {
                     using FutReturn = nil::actor::futurize_t<std::result_of_t<decltype(fptr)(Actor, FArgs...)>>;
                     using ReturnType =
-                        typename ultramarine::detail::get0_return_type<typename FutReturn::value_type>::type;
+                        typename nil::actor::detail::get0_return_type<typename FutReturn::value_type>::type;
                     if constexpr (std::is_same_v<ReturnType, void>) {
                         using Sig = nil::actor::future<>(ActorKey<Actor>, PackedArgs);
                         return n.rpc->make_client<Sig>(id | (1U << 0U))(*n.client, key, std::forward<PackedArgs>(args));
@@ -103,4 +103,4 @@ namespace ultramarine {
             };
         }    // namespace detail
     }        // namespace cluster
-}    // namespace ultramarine
+}    // namespace nil::actor

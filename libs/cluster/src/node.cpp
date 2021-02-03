@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-#include <ultramarine/cluster/impl/node.hpp>
+#include <nil/actor/cluster/impl/node.hpp>
 
-namespace ultramarine::cluster::impl {
+namespace nil::actor::cluster::impl {
     node::node(uint32_t ip4, uint16_t port) : endpoint(nil::actor::net::ipv4_address(ip4), port), client(nullptr),
                                               rpc(nullptr) {}
 
@@ -46,7 +46,7 @@ namespace ultramarine::cluster::impl {
 }
 
 namespace std {
-    size_t hash<ultramarine::cluster::impl::node>::operator()(ultramarine::cluster::impl::node const &node) const {
+    size_t hash<nil::actor::cluster::impl::node>::operator()(nil::actor::cluster::impl::node const &node) const {
         std::size_t seed = 0;
         boost::hash_combine(seed, std::hash<uint32_t>{}(node.endpoint.addr().as_ipv4_address().ip.raw));
         boost::hash_combine(seed, node.endpoint.port());

@@ -24,14 +24,14 @@
 
 #include <utility>
 #include <seastar/core/future-util.hh>
-#include "ultramarine/cluster/impl/membership.hpp"
-#include "ultramarine/cluster/impl/message_handler_registry.hpp"
+#include "nil/actor/cluster/impl/membership.hpp"
+#include "nil/actor/cluster/impl/message_handler_registry.hpp"
 
 extern "C" {
 #include <hash_ring.h>
 }
 
-namespace ultramarine::cluster::impl {
+namespace nil::actor::cluster::impl {
 
     static inline std::string_view make_peer_string_identity(nil::actor::socket_address const &endpoint) {
         static thread_local char identity[21];

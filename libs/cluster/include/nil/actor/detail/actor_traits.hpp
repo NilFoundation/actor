@@ -26,7 +26,7 @@
 
 #include <nil/actor/core/semaphore.hh>
 
-namespace ultramarine {
+namespace nil::actor {
 
     ///\exclude
     namespace detail {
@@ -34,9 +34,9 @@ namespace ultramarine {
     }    // namespace detail
 
     /// Actor attribute base class that specify that the Derived actor should be treated as a local actor
-    /// \unique_name ultramarine::local_actor
-    /// \requires Type `Derived` shall inherit from [ultramarine::actor]()
-    /// \tparam Derived The derived [ultramarine::actor]() class for CRTP purposes
+    /// \unique_name nil::actor::local_actor
+    /// \requires Type `Derived` shall inherit from [nil::actor::actor]()
+    /// \tparam Derived The derived [nil::actor::actor]() class for CRTP purposes
     /// \tparam ConcurrencyLimit Optional. The limit of concurrent local activations for this actor
     template<typename Derived, std::size_t ConcurrencyLimit = std::numeric_limits<std::size_t>::max()>
     struct local_actor : detail::local_actor {
@@ -54,8 +54,8 @@ namespace ultramarine {
     thread_local std::size_t local_actor<Derived, ConcurrencyLimit>::round_robin_counter = 0;
 
     /// Actor attribute base class that specify that the Derived actor should be protected against reentrancy
-    /// \unique_name ultramarine::non_reentrant_actor
-    /// \requires Type `Derived` shall inherit from [ultramarine::actor]()
+    /// \unique_name nil::actor::non_reentrant_actor
+    /// \requires Type `Derived` shall inherit from [nil::actor::actor]()
     /// \tparam Derived The derived actor class for CRTP purposes
     template<typename Derived>
     struct non_reentrant_actor {
@@ -63,14 +63,14 @@ namespace ultramarine {
         nil::actor::semaphore semaphore = nil::actor::semaphore(1);
     };
 
-    /// Enum representing the possible kinds of [ultramarine::actor]()
-    /// \unique_name ultramarine::actor_type
+    /// Enum representing the possible kinds of [nil::actor::actor]()
+    /// \unique_name nil::actor::actor_type
     enum class ActorKind { SingletonActor, LocalActor };
 
-    /// Get the [ultramarine::actor]() type
-    /// \tparam Actor The [ultramarine::actor]() type to test against
-    /// \requires Type `Actor` shall inherit from [ultramarine::actor]()
-    /// \returns An enum value of type [ultramarine::actor_type]()
+    /// Get the [nil::actor::actor]() type
+    /// \tparam Actor The [nil::actor::actor]() type to test against
+    /// \requires Type `Actor` shall inherit from [nil::actor::actor]()
+    /// \returns An enum value of type [nil::actor::actor_type]()
     template<typename Actor>
     constexpr ActorKind actor_kind() {
         if constexpr (std::is_base_of_v<detail::local_actor, Actor>) {
@@ -79,46 +79,46 @@ namespace ultramarine {
         return ActorKind::SingletonActor;
     }
 
-    /// Compile-time trait testing if the [ultramarine::actor]() type is reentrant
-    /// \requires Type `Actor` shall inherit from [ultramarine::actor]()
-    /// \tparam Actor The [ultramarine::actor]() type to test against
+    /// Compile-time trait testing if the [nil::actor::actor]() type is reentrant
+    /// \requires Type `Actor` shall inherit from [nil::actor::actor]()
+    /// \tparam Actor The [nil::actor::actor]() type to test against
     /// \returns `true` if type `Actor` is reentrant, `false` otherwise
     template<typename Actor>
     constexpr bool is_reentrant_v = !std::is_base_of_v<non_reentrant_actor<Actor>, Actor>;
 
-    /// Compile-time trait testing if the [ultramarine::actor]() type is reentrant
-    /// \requires Type `Actor` shall inherit from [ultramarine::actor]()
-    /// \tparam Actor The [ultramarine::actor]() type to test against
+    /// Compile-time trait testing if the [nil::actor::actor]() type is reentrant
+    /// \requires Type `Actor` shall inherit from [nil::actor::actor]()
+    /// \tparam Actor The [nil::actor::actor]() type to test against
     /// \returns `true` if type `Actor` is reentrant, `false` otherwise
     template<typename Actor>
     constexpr bool is_reentrant = !std::is_base_of<non_reentrant_actor<Actor>, Actor>::value;
 
-    /// Compile-time trait testing if the [ultramarine::actor]() type is local
-    /// \requires Type `Actor` shall inherit from [ultramarine::actor]()
+    /// Compile-time trait testing if the [nil::actor::actor]() type is local
+    /// \requires Type `Actor` shall inherit from [nil::actor::actor]()
     /// \tparam Actor The actor type to test against
     /// \returns `true` if type `Actor` is local, `false` otherwise
     template<typename Actor>
     constexpr bool is_local_actor_v = std::is_base_of_v<detail::local_actor, Actor>;
 
-    /// Compile-time trait testing if the [ultramarine::actor]() type is local
-    /// \requires Type `Actor` shall inherit from [ultramarine::actor]()
+    /// Compile-time trait testing if the [nil::actor::actor]() type is local
+    /// \requires Type `Actor` shall inherit from [nil::actor::actor]()
     /// \tparam Actor The actor type to test against
     /// \returns `true` if type `Actor` is local, `false` otherwise
     template<typename Actor>
     constexpr bool is_local_actor = std::is_base_of<detail::local_actor, Actor>::value;
 
-    /// Compile-time trait testing if the [ultramarine::local_actor]() type doesn't specify a concurrency limit
-    /// \requires Type `Actor` shall inherit from [ultramarine::local_actor]()
+    /// Compile-time trait testing if the [nil::actor::local_actor]() type doesn't specify a concurrency limit
+    /// \requires Type `Actor` shall inherit from [nil::actor::local_actor]()
     /// \tparam Actor The actor type to test against
     /// \returns `true` if `Actor` has no concurrency limit, `false` otherwise
     template<typename Actor>
     constexpr bool is_unlimited_concurrent_local_actor_v = std::is_base_of_v<local_actor<Actor>, Actor>;
 
-    /// Compile-time trait testing if the [ultramarine::local_actor]() type doesn't specify a concurrency limit
-    /// \requires Type `Actor` shall inherit from [ultramarine::local_actor]()
+    /// Compile-time trait testing if the [nil::actor::local_actor]() type doesn't specify a concurrency limit
+    /// \requires Type `Actor` shall inherit from [nil::actor::local_actor]()
     /// \tparam Actor The actor type to test against
     /// \returns `true` if `Actor` has no concurrency limit, `false` otherwise
     template<typename Actor>
     constexpr bool is_unlimited_concurrent_local_actor = std::is_base_of<local_actor<Actor>, Actor>::value;
 
-}    // namespace ultramarine
+}    // namespace nil::actor

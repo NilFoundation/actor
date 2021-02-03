@@ -29,7 +29,7 @@
 
 #include <nil/actor/cluster/detail/message_serializer.hpp>
 
-namespace ultramarine {
+namespace nil::actor {
     namespace detail {
         template<typename T>
         struct arguments_vector;
@@ -142,4 +142,4 @@ namespace ultramarine {
             }
         };
     }    // namespace detail
-}    // namespace ultramarine
+}    // namespace nil::actor

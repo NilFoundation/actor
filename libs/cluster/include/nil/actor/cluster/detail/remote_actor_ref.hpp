@@ -29,18 +29,18 @@
 
 #include <nil/actor/cluster/detail/distributed_directory.hpp>
 
-namespace ultramarine {
+namespace nil::actor {
     namespace cluster {
         namespace detail {
             template<typename Actor>
             class remote_actor_ref {
-                ultramarine::detail::ActorKey<Actor> key;
+                nil::actor::detail::ActorKey<Actor> key;
                 node const *loc;
 
             public:
                 using ActorType = Actor;
 
-                explicit constexpr remote_actor_ref(ultramarine::detail::ActorKey<Actor> k, std::size_t hash,
+                explicit constexpr remote_actor_ref(nil::actor::detail::ActorKey<Actor> k, std::size_t hash,
                                                     node const *loc) :
                     key(std::move(k)),
                     loc(loc) {
@@ -58,17 +58,17 @@ namespace ultramarine {
                 template<typename Handler, typename... Args>
                 inline constexpr auto tell(Handler message, Args &&...args) const {
                     return directory<Actor>::dispatch_message(*loc, key,
-                                                              ultramarine::detail::vtable<Actor>::table[message],
+                                                              nil::actor::detail::vtable<Actor>::table[message],
                                                               message.value, std::forward<Args>(args)...);
                 }
 
                 template<typename Handler, typename PackedArgs>
                 constexpr auto inline tell_packed(Handler message, PackedArgs &&args) const {
                     return directory<Actor>::dispatch_packed_message(*loc, key,
-                                                                     ultramarine::detail::vtable<Actor>::table[message],
+                                                                     nil::actor::detail::vtable<Actor>::table[message],
                                                                      message.value, std::forward<PackedArgs>(args));
                 }
             };
         }    // namespace detail
     }        // namespace cluster
-}    // namespace ultramarine
+}    // namespace nil::actor

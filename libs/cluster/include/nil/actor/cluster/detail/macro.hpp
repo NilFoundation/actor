@@ -32,13 +32,13 @@
 
 /// \exclude
 #define ULTRAMARINE_MAKE_REMOTE_ENDPOINT(a, data, i, name) \
-    ultramarine::cluster::detail::register_remote_endpoint<data, KeyType>(&data::name, internal::message::name());
+    nil::actor::cluster::detail::register_remote_endpoint<data, KeyType>(&data::name, internal::message::name());
 
 /// \exclude
 #define ULTRAMARINE_REMOTE_MAKE_VTABLE(name, seq)                             \
     static constexpr void export_vtable() {                                   \
         BOOST_PP_SEQ_FOR_EACH_I(ULTRAMARINE_MAKE_REMOTE_ENDPOINT, name, seq); \
     }                                                                         \
-    static inline ultramarine::cluster::detail::static_init init =            \
-        ultramarine::cluster::detail::static_init(&export_vtable);\
+    static inline nil::actor::cluster::detail::static_init init =            \
+        nil::actor::cluster::detail::static_init(&export_vtable);\
 

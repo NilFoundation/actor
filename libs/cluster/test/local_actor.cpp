@@ -26,10 +26,10 @@
 #include <seastar/testing/thread_test_case.hh>
 #include <seastar/core/thread.hh>
 #include <seastar/core/sleep.hh>
-#include <ultramarine/actor.hpp>
-#include <ultramarine/actor_ref.hpp>
+#include <nil/actor/actor.hpp>
+#include <nil/actor/actor_ref.hpp>
 
-class actor1 : public ultramarine::actor<actor1>, public ultramarine::non_reentrant_actor<actor1> {
+class actor1 : public nil::actor::actor<actor1>, public nil::actor::non_reentrant_actor<actor1> {
     nil::actor::future<> stall() {
         return nil::actor::sleep(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::milliseconds(500)));
     }
@@ -37,7 +37,7 @@ class actor1 : public ultramarine::actor<actor1>, public ultramarine::non_reentr
 ULTRAMARINE_DEFINE_ACTOR(actor1, (stall));
 };
 
-class actor2 : public ultramarine::actor<actor2>, public ultramarine::local_actor<actor2> {
+class actor2 : public nil::actor::actor<actor2>, public nil::actor::local_actor<actor2> {
     nil::actor::future<> stall() {
         return nil::actor::sleep(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::milliseconds(500)));
     }
@@ -54,7 +54,7 @@ using namespace nil::actor;
 SEASTAR_THREAD_TEST_CASE (local_actor_scheduling) {
     BOOST_WARN(nil::actor::smp::count > 1);
 
-    auto counterActor1 = ultramarine::get<actor1>(0);
+    auto counterActor1 = nil::actor::get<actor1>(0);
 
     auto start1 = std::chrono::steady_clock::now();
     nil::actor::when_all(
@@ -65,7 +65,7 @@ SEASTAR_THREAD_TEST_CASE (local_actor_scheduling) {
     ).wait();
     auto end1 = std::chrono::steady_clock::now();
 
-    auto counterActor2 = ultramarine::get<actor2>(0);
+    auto counterActor2 = nil::actor::get<actor2>(0);
     auto start2 = std::chrono::steady_clock::now();
     nil::actor::when_all(
             counterActor2.tell(actor2::message::stall()),

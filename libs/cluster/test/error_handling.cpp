@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-#include <ultramarine/actor_ref.hpp>
-#include <ultramarine/actor.hpp>
+#include <nil/actor/actor_ref.hpp>
+#include <nil/actor/actor.hpp>
 #include <seastar/testing/thread_test_case.hh>
 
-class error_actor : public ultramarine::actor<error_actor> {
+class error_actor : public nil::actor::actor<error_actor> {
 public:
     void void_throws() {
         throw std::runtime_error("error");
@@ -50,7 +50,7 @@ using namespace nil::actor;
  */
 
 SEASTAR_THREAD_TEST_CASE (local_core_actor_throws_void) {
-        auto ref = ultramarine::get<error_actor>(0);
+        auto ref = nil::actor::get<error_actor>(0);
 
         ref.tell(error_actor::message::void_throws()).then([] {
             BOOST_FAIL("Exception escaped");
@@ -70,7 +70,7 @@ SEASTAR_THREAD_TEST_CASE (local_core_actor_throws_void) {
 }
 
 SEASTAR_THREAD_TEST_CASE (local_core_actor_throws_future) {
-    auto ref = ultramarine::get<error_actor>(0);
+    auto ref = nil::actor::get<error_actor>(0);
 
     ref.tell(error_actor::message::future_throws()).then([] {
         BOOST_FAIL("Exception escaped");
@@ -89,7 +89,7 @@ SEASTAR_THREAD_TEST_CASE (local_core_actor_throws_future) {
 }
 
 SEASTAR_THREAD_TEST_CASE (local_core_actor_exceptionnal_future) {
-    auto ref = ultramarine::get<error_actor>(0);
+    auto ref = nil::actor::get<error_actor>(0);
 
     ref.tell(error_actor::message::ex_future()).then([] {
         BOOST_FAIL("Exception escaped");
@@ -108,7 +108,7 @@ SEASTAR_THREAD_TEST_CASE (local_core_actor_exceptionnal_future) {
 }
 
 SEASTAR_THREAD_TEST_CASE (collocated_core_actor_throws_void) {
-    auto ref = ultramarine::get<error_actor>(1);
+    auto ref = nil::actor::get<error_actor>(1);
 
     ref.tell(error_actor::message::void_throws()).then([] {
         BOOST_FAIL("Exception escaped");
@@ -128,7 +128,7 @@ SEASTAR_THREAD_TEST_CASE (collocated_core_actor_throws_void) {
 }
 
 SEASTAR_THREAD_TEST_CASE (collocated_core_actor_throws_future) {
-    auto ref = ultramarine::get<error_actor>(1);
+    auto ref = nil::actor::get<error_actor>(1);
 
     ref.tell(error_actor::message::future_throws()).then([] {
         BOOST_FAIL("Exception escaped");
@@ -147,7 +147,7 @@ SEASTAR_THREAD_TEST_CASE (collocated_core_actor_throws_future) {
 }
 
 SEASTAR_THREAD_TEST_CASE (collocated_core_actor_exceptionnal_future) {
-    auto ref = ultramarine::get<error_actor>(1);
+    auto ref = nil::actor::get<error_actor>(1);
 
     ref.tell(error_actor::message::ex_future()).then([] {
         BOOST_FAIL("Exception escaped");

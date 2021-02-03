@@ -35,7 +35,7 @@
 #define ULTRAMARINE_LITERAL(lit) #lit
 
 #define ULTRAMARINE_MAKE_IDENTITY(actor, handler)                                                    \
-    boost::hana::uint<ultramarine::detail::crc32(ULTRAMARINE_LITERAL(actor::handler),                \
+    boost::hana::uint<nil::actor::detail::crc32(ULTRAMARINE_LITERAL(actor::handler),                \
                                                  sizeof(ULTRAMARINE_LITERAL(actor::handler)) - 1)> { \
     }
 
@@ -61,7 +61,7 @@
 #define ULTRAMARINE_MAKE_VTABLE(name, seq)                                                                         \
     static constexpr auto make_vtable() {                                                                          \
         return boost::hana::make_map(BOOST_PP_SEQ_FOR_EACH_I(ULTRAMARINE_MAKE_TUPLE, name, seq)                    \
-                                         boost::hana::make_pair(BOOST_HANA_STRING("ultramarine_dummy"), nullptr)); \
+                                         boost::hana::make_pair(BOOST_HANA_STRING("nil::actor_dummy"), nullptr)); \
     }
 
 #ifdef ULTRAMARINE_REMOTE
@@ -75,7 +75,7 @@
 ///
 /// Example:
 /// ```cpp
-/// class simple_actor : public ultramarine::actor<simple_actor> {
+/// class simple_actor : public nil::actor::actor<simple_actor> {
 /// public:
 ///     nil::actor::future<> my_message() const;
 ///     nil::actor::future<> another_message() const;
@@ -84,7 +84,7 @@
 /// };
 /// ```
 /// \unique_name ULTRAMARINE_DEFINE_ACTOR
-/// \requires `name` shall be a [ultramarine::actor]() derived type
+/// \requires `name` shall be a [nil::actor::actor]() derived type
 /// \requires `seq` shall be a sequence of zero or more message handler (Example: `(handler1)(handler2)`)
 #define ULTRAMARINE_DEFINE_ACTOR(name, seq)                                                                         \
 private:                                                                                                            \
@@ -110,7 +110,7 @@ public:                                                                         
         struct message {                                                                                            \
             BOOST_PP_SEQ_FOR_EACH_I(ULTRAMARINE_MAKE_TAG, name, seq)                                                \
         private:                                                                                                    \
-            friend class ultramarine::detail::vtable<name>;                                                         \
+            friend class nil::actor::detail::vtable<name>;                                                         \
             ULTRAMARINE_MAKE_VTABLE(name, seq)                                                                      \
             ULTRAMARINE_REMOTE_MAKE_VTABLE(name, seq)                                                               \
         };                                                                                                          \

@@ -22,9 +22,9 @@
  * SOFTWARE.
  */
 
-#include <ultramarine/cluster/impl/handshake.hpp>
+#include <nil/actor/cluster/impl/handshake.hpp>
 
-namespace ultramarine::cluster::impl {
+namespace nil::actor::cluster::impl {
     handshake_request::handshake_request(std::vector<nil::actor::socket_address> peers,
                                          const nil::actor::socket_address &origin)
             : known_nodes(std::move(peers)), origin(origin) {}

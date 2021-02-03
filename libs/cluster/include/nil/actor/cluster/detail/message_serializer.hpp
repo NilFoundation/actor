@@ -32,12 +32,12 @@
 #include <nil/actor/net/inet_address.hh>
 #include <nil/actor/net/ip.hh>
 
-namespace ultramarine {
+namespace nil::actor {
     namespace cluster {
 
         struct serializer { };
 
-        using rpc_proto = nil::actor::rpc::protocol<ultramarine::cluster::serializer>;
+        using rpc_proto = nil::actor::rpc::protocol<nil::actor::cluster::serializer>;
 
         template<typename T, typename Output>
         inline static void write_arithmetic_type(Output &out, T v) {
@@ -201,4 +201,4 @@ namespace ultramarine {
             return T::deserialize(s, in);
         }
     }    // namespace cluster
-}    // namespace ultramarine
+}    // namespace nil::actor

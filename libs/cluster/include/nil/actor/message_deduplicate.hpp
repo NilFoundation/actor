@@ -29,7 +29,7 @@
 
 #include <nil/actor/detail/arguments_vector.hpp>
 
-namespace ultramarine {
+namespace nil::actor {
 
     namespace detail {
         template<typename Actor, typename Message, typename... Args>
@@ -76,4 +76,4 @@ namespace ultramarine {
                 return nil::actor::futurize<void>::apply(func, d).then([&d] { return d.execute(); });
             });
     }
-}    // namespace ultramarine
+}    // namespace nil::actor

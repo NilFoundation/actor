@@ -1,73 +1,51 @@
-function (add_seastar_test)
-    set (options CUSTOM SUITE)
-    set (one_value_args NAME)
-    set (multi_value_args SOURCES ARGS)
-    cmake_parse_arguments (args "${options}" "${one_value_args}" "${multi_value_args}" "${ARGN}")
+#---------------------------------------------------------------------------#
+# Copyright (c) 2018-2020 Mikhail Komarov <nemo@nil.foundation>
+#
+# Distributed under the Boost Software License, Version 1.0
+# See accompanying file LICENSE_1_0.txt or copy at
+# http://www.boost.org/LICENSE_1_0.txt
+#---------------------------------------------------------------------------#
 
-    macro (prepare name)
-        add_executable (${name} "${args_SOURCES}")
-        target_link_libraries (${name} PUBLIC ${CMAKE_WORKSPACE_NAME}::testing)
-        target_compile_definitions (${name} PRIVATE SEASTAR_TESTING_MAIN)
-    endmacro ()
+include(CMTest)
 
-    prepare (${args_NAME})
-    # Strip symbols.
-    target_link_libraries (${args_NAME} PUBLIC -s)
+if(NOT Boost_UNIT_TEST_FRAMEWORK_FOUND)
+    cm_find_package(Boost REQUIRED COMPONENTS unit_test_framework)
+endif()
 
-    set (name_with_symbols "${args_NAME}_g")
-    prepare (${name_with_symbols})
-    set_target_properties (${name_with_symbols} PROPERTIES EXCLUDE_FROM_ALL ON)
-endfunction ()
+cm_test_link_libraries(${CMAKE_WORKSPACE_NAME}_${CURRENT_PROJECT_NAME}
+                       ${CMAKE_WORKSPACE_NAME}::testing
+                       ${Boost_LIBRARIES})
 
+macro(define_actor_test name)
+    cm_test(NAME actor_${name}_test SOURCES ${name}.cpp)
 
-function(add_ultramarine_test)
-    set(options CUSTOM SUITE)
-    set(one_value_args NAME)
-    set(multi_value_args SOURCES ARGS)
-    cmake_parse_arguments(args "${options}" "${one_value_args}" "${multi_value_args}" "${ARGN}")
+    target_include_directories(actor_${name}_test PRIVATE
+                               "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>"
+                               "$<BUILD_INTERFACE:${CMAKE_BINARY_DIR}/include>"
 
-    add_seastar_test(${ARGN})
-    target_link_libraries(${args_NAME} PRIVATE ${CMAKE_WORKSPACE_NAME}::core)
-    target_link_libraries(${args_NAME}_g PRIVATE ${CMAKE_WORKSPACE_NAME}::core)
-    add_dependencies(ultramarine-tests ${args_NAME})
-    add_dependencies(ultramarine-tests-debug ${args_NAME}_g)
+                               ${Boost_INCLUDE_DIRS})
 
-    foreach (FILE ${args_SOURCES})
-        file(READ "${CMAKE_CURRENT_SOURCE_DIR}/${FILE}" SOURCE_FILE_CONTENTS)
-        string(REGEX MATCHALL "SEASTAR_THREAD_TEST_CASE ?\\( *([A-Za-z_0-9]+) *\\)"
-            FOUND_TESTS_LOCAL ${SOURCE_FILE_CONTENTS})
-        list(APPEND FOUND_TESTS ${FOUND_TESTS_LOCAL})
-    endforeach ()
+    if(NOT CMAKE_CXX_STANDARD)
+        set_target_properties(actor_${name}_test PROPERTIES CXX_STANDARD 17)
+    endif()
 
-    foreach (HIT ${FOUND_TESTS})
-        string(REGEX REPLACE ".*\\( *([A-Za-z_0-9]+) *\\).*" "\\1" TEST_NAME ${HIT})
-        message(STATUS "Discovered unit-test ${TEST_NAME}")
+    target_compile_definitions(actor_${name}_test PRIVATE SEASTAR_TESTING_MAIN)
 
-        add_test(NAME "${args_NAME}.${TEST_NAME}"
-            COMMAND ${args_NAME}
-            --run_test=${TEST_NAME} --catch_system_error=yes)
-    endforeach ()
-endfunction()
+    get_target_property(target_type Boost::unit_test_framework TYPE)
+    if(target_type STREQUAL "SHARED_LIB")
+        target_compile_definitions(actor_${name}_test PRIVATE BOOST_TEST_DYN_LINK)
+    elseif(target_type STREQUAL "STATIC_LIB")
 
+    endif()
+endmacro()
 
-# Logical target for all tests.
-add_custom_target(ultramarine-tests)
-# Logical target for all tests with debugging symbols.
-add_custom_target(ultramarine-tests-debug)
+set(TESTS_NAMES
+    "message_passing"
+    "actor_keys"
+    "local_actor"
+    "error_handling"
+    "message_deduplication")
 
-find_package(Boost COMPONENTS unit_test_framework REQUIRED)
-
-add_ultramarine_test(NAME test-message_passing
-    SOURCES message_passing.cpp)
-
-add_ultramarine_test(NAME test-actor_keys
-    SOURCES actor_keys.cpp)
-
-add_ultramarine_test(NAME test-local_actor
-    SOURCES local_actor.cpp)
-
-add_ultramarine_test(NAME test-error_handling
-    SOURCES error_handling.cpp)
-
-add_ultramarine_test(NAME test-message_deduplication
-    SOURCES message_deduplication.cpp)
+foreach(TEST_NAME ${TESTS_NAMES})
+    define_actor_test(${TEST_NAME})
+endforeach()

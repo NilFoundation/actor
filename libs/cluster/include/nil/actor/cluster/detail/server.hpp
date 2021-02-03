@@ -30,7 +30,7 @@
 #include <nil/actor/cluster/detail/node.hpp>
 #include <nil/actor/cluster/detail/message_handler_registry.hpp>
 
-namespace ultramarine {
+namespace nil::actor {
     namespace cluster {
         namespace detail {
             class server {
@@ -48,4 +48,4 @@ namespace ultramarine {
             };
         }    // namespace detail
     }        // namespace cluster
-}    // namespace ultramarine
+}    // namespace nil::actor

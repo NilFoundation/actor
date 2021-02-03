@@ -22,11 +22,11 @@
  * SOFTWARE.
  */
 
-#include <ultramarine/cluster/cluster.hpp>
+#include <nil/actor/cluster/cluster.hpp>
 #include <seastar/core/future-util.hh>
 #include <seastar/core/sleep.hh>
 
-namespace ultramarine::cluster {
+namespace nil::actor::cluster {
     static nil::actor::future<>
     try_join(nil::actor::socket_address const &local, std::vector<nil::actor::socket_address> const &peers) {
         return impl::server::service.start(local).then([&local, &peers] {

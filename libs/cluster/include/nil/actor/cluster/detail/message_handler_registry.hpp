@@ -34,7 +34,7 @@
 
 #include "message_serializer.hpp"
 
-namespace ultramarine {
+namespace nil::actor {
     namespace cluster {
         namespace impl {
 
@@ -55,15 +55,15 @@ namespace ultramarine {
             register_remote_endpoint(Ret (Class::*fptr)(Args...), Handler message) {
                 auto reg = [fptr, message](auto *rpc) {
                     rpc->register_handler(message.value, [message](ActorKey key, Args... args) {
-                        return ultramarine::get<Actor>(std::forward<ActorKey>(key))
+                        return nil::actor::get<Actor>(std::forward<ActorKey>(key))
                             .tell(message, std::forward<Args>(args)...);
                     });
 
                     // packed version
                     uint32_t packed_message_id = message.value | (1U << 0U);
-                    using ArgPack = ultramarine::detail::arguments_vector<std::tuple<Args...>>;
+                    using ArgPack = nil::actor::detail::arguments_vector<std::tuple<Args...>>;
                     rpc->register_handler(packed_message_id, [message](ActorKey key, ArgPack args) {
-                        auto actor = ultramarine::get<Actor>(std::forward<ActorKey>(key));
+                        auto actor = nil::actor::get<Actor>(std::forward<ActorKey>(key));
                         return actor.tell_packed(message, std::forward<ArgPack>(args));
                     });
                 };
@@ -76,15 +76,15 @@ namespace ultramarine {
             register_remote_endpoint(Ret (Class::*fptr)(Args...) const, Handler message) {
                 auto reg = [fptr, message](auto *rpc) {
                     rpc->register_handler(message.value, [message](ActorKey key, Args... args) {
-                        return ultramarine::get<Actor>(std::forward<ActorKey>(key))
+                        return nil::actor::get<Actor>(std::forward<ActorKey>(key))
                             .tell(message, std::forward<Args>(args)...);
                     });
 
                     // packed version
                     uint32_t packed_message_id = message.value | (1U << 0U);
-                    using ArgPack = ultramarine::detail::arguments_vector<std::tuple<Args...>>;
+                    using ArgPack = nil::actor::detail::arguments_vector<std::tuple<Args...>>;
                     rpc->register_handler(packed_message_id, [message](ActorKey key, ArgPack args) {
-                        auto actor = ultramarine::get<Actor>(std::forward<ActorKey>(key));
+                        auto actor = nil::actor::get<Actor>(std::forward<ActorKey>(key));
                         return actor.tell_packed(message, std::forward<ArgPack>(args));
                     });
                 };
@@ -92,4 +92,4 @@ namespace ultramarine {
             }
         }    // namespace impl
     }        // namespace cluster
-}    // namespace ultramarine
+}    // namespace nil::actor
