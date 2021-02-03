@@ -29,7 +29,7 @@
 
 #include <nil/actor/core/future.hh>
 
-#include <nil/actor/core/detail/message_identifier.hpp>
+#include <nil/actor/detail/message_identifier.hpp>
 
 /// \exclude
 #define ULTRAMARINE_LITERAL(lit) #lit
@@ -65,7 +65,7 @@
     }
 
 #ifdef ULTRAMARINE_REMOTE
-#include <ultramarine/cluster/detail/macro.hpp>
+#include <nil/actor/cluster/detail/macro.hpp>
 #else
 /// \exclude
 #define ULTRAMARINE_REMOTE_MAKE_VTABLE(name, seq)

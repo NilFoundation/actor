@@ -98,7 +98,7 @@ namespace ultramarine {
 
             template<typename Handler, typename... Args>
             static constexpr auto dispatch_message_impl(Actor *activation, Handler message, Args &&...args) {
-                if constexpr (is_reentrant_v<Actor>) {
+                if constexpr (is_reentrant<Actor>::value) {
                     return (activation->*vtable<Actor>::table[message])(std::forward<Args>(args)...);
                 } else {
                     return nil::actor::with_semaphore(
