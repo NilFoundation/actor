@@ -52,3 +52,6 @@
 [submodule "libs/dpdk"]
 	path = libs/dpdk
 	url = git@github.com:DPDK/dpdk.git
+[submodule "libs/cluster"]
+	path = libs/cluster
+	url = git@github.com:nilfoundation/actor-cluster.git
