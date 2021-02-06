@@ -1792,8 +1792,8 @@ nil::actor::noncopyable_function<nil::actor::future<> ()>::operator()() const at
 nil::actor::apply_helper<nil::actor::noncopyable_function<nil::actor::future<> ()>, std::tuple<>&&, std::integer_sequence<unsigned long> >::apply(nil::actor::noncopyable_function<nil::actor::future<> ()>&&, std::tuple<>&&) at include/seastar/core/apply.hh:36
 auto nil::actor::apply<nil::actor::noncopyable_function<nil::actor::future<> ()>>(nil::actor::noncopyable_function<nil::actor::future<> ()>&&, std::tuple<>&&) at include/seastar/core/apply.hh:44
 nil::actor::future<> nil::actor::futurize<nil::actor::future<> >::apply<nil::actor::noncopyable_function<nil::actor::future<> ()>>(nil::actor::noncopyable_function<nil::actor::future<> ()>&&, std::tuple<>&&) at include/seastar/core/future.hh:1660
-nil::actor::future<>::then_impl_nrvo<nil::actor::noncopyable_function<nil::actor::future<> ()>, nil::actor::future<> >(nil::actor::noncopyable_function<nil::actor::future<> ()>&&)::{lambda()#1}::operator()() const::{lambda(nil::actor::internal::promise_base_with_type<>&, nil::actor::future_state<>&&)#1}::operator()(nil::actor::internal::promise_base_with_type<>, nil::actor::future_state<>) at include/seastar/core/future.hh:1213
-nil::actor::continuation<nil::actor::internal::promise_base_with_type<>, nil::actor::future<>::then_impl_nrvo<nil::actor::noncopyable_function<nil::actor::future<> ()>, nil::actor::future<> >(nil::actor::noncopyable_function<nil::actor::future<> ()>&&)::{lambda()#1}::operator()() const::{lambda(nil::actor::internal::promise_base_with_type<>&, nil::actor::future_state<>&&)#1}>::run_and_dispose() at include/seastar/core/future.hh:509
+nil::actor::future<>::then_impl_nrvo<nil::actor::noncopyable_function<nil::actor::future<> ()>, nil::actor::future<> >(nil::actor::noncopyable_function<nil::actor::future<> ()>&&)::{lambda()#1}::operator()() const::{lambda(nil::actor::detail::promise_base_with_type<>&, nil::actor::future_state<>&&)#1}::operator()(nil::actor::detail::promise_base_with_type<>, nil::actor::future_state<>) at include/seastar/core/future.hh:1213
+nil::actor::continuation<nil::actor::detail::promise_base_with_type<>, nil::actor::future<>::then_impl_nrvo<nil::actor::noncopyable_function<nil::actor::future<> ()>, nil::actor::future<> >(nil::actor::noncopyable_function<nil::actor::future<> ()>&&)::{lambda()#1}::operator()() const::{lambda(nil::actor::detail::promise_base_with_type<>&, nil::actor::future_state<>&&)#1}>::run_and_dispose() at include/seastar/core/future.hh:509
 nil::actor::reactor::run_tasks(nil::actor::reactor::task_queue&) at src/core/reactor.cc:2124
 nil::actor::reactor::run_some_tasks() at src/core/reactor.cc:2539 (discriminator 2)
 nil::actor::reactor::run() at src/core/reactor.cc:2694
@@ -1853,7 +1853,7 @@ nil::actor::future<> g() {
 ```
 Now the output looks like
 ```
-Exception: nil::actor::internal::backtraced<std::runtime_error> (hello Backtrace:   0x678bd3
+Exception: nil::actor::detail::backtraced<std::runtime_error> (hello Backtrace:   0x678bd3
   0x677204
   0x67736b
   0x678cd5
