@@ -513,7 +513,7 @@ void write_configuration_file(sstring conf_file, std::string format, sstring pro
     if (format == "seastar") {
         buf = fmt::format("io-properties-file={}\n", properties_file);
     } else {
-        buf = fmt::format("SEASTAR_IO=\"--io-properties-file={}\"\n", properties_file);
+        buf = fmt::format("ACTOR_IO=\"--io-properties-file={}\"\n", properties_file);
     }
     string_to_file(conf_file, buf);
 }

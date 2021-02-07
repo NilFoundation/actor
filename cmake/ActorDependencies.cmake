@@ -3,7 +3,7 @@
 # we're on a system without a recent enough version of `FindBoost.cmake`, then
 # we need to use the one bundled with Seastar.
 #
-# The "real" FIND_PACKAGE invocation for Boost is inside SEASTAR_FIND_DEPENDENCIES.
+# The "real" FIND_PACKAGE invocation for Boost is inside ACTOR_FIND_DEPENDENCIES.
 #
 
 # Be consistent in results from FindBoost.cmake.

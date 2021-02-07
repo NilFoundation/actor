@@ -68,7 +68,7 @@ auto for_each_fragment_size = [] (auto&& func) {
     });
 };
 
-SEASTAR_TEST_CASE(test_set_command_is_parsed) {
+ACTOR_TEST_CASE(test_set_command_is_parsed) {
     return for_each_fragment_size([] (auto make_packet) {
         return parse(make_packet({"set key 1 2 3\r\nabc\r\n"})).then([] (auto p) {
             BOOST_REQUIRE(p->_state == parser_type::state::cmd_set);
@@ -82,7 +82,7 @@ SEASTAR_TEST_CASE(test_set_command_is_parsed) {
     });
 }
 
-SEASTAR_TEST_CASE(test_empty_data_is_parsed) {
+ACTOR_TEST_CASE(test_empty_data_is_parsed) {
     return for_each_fragment_size([] (auto make_packet) {
         return parse(make_packet({"set key 1 2 0\r\n\r\n"})).then([] (auto p) {
             BOOST_REQUIRE(p->_state == parser_type::state::cmd_set);
@@ -96,7 +96,7 @@ SEASTAR_TEST_CASE(test_empty_data_is_parsed) {
     });
 }
 
-SEASTAR_TEST_CASE(test_superflous_data_is_an_error) {
+ACTOR_TEST_CASE(test_superflous_data_is_an_error) {
     return for_each_fragment_size([] (auto make_packet) {
         return parse(make_packet({"set key 0 0 0\r\nasd\r\n"})).then([] (auto p) {
             BOOST_REQUIRE(p->_state == parser_type::state::error);
@@ -104,7 +104,7 @@ SEASTAR_TEST_CASE(test_superflous_data_is_an_error) {
     });
 }
 
-SEASTAR_TEST_CASE(test_not_enough_data_is_an_error) {
+ACTOR_TEST_CASE(test_not_enough_data_is_an_error) {
     return for_each_fragment_size([] (auto make_packet) {
         return parse(make_packet({"set key 0 0 3\r\n"})).then([] (auto p) {
             BOOST_REQUIRE(p->_state == parser_type::state::error);
@@ -112,7 +112,7 @@ SEASTAR_TEST_CASE(test_not_enough_data_is_an_error) {
     });
 }
 
-SEASTAR_TEST_CASE(test_u32_parsing) {
+ACTOR_TEST_CASE(test_u32_parsing) {
     return for_each_fragment_size([] (auto make_packet) {
         return make_ready_future<>().then([make_packet] {
             return parse(make_packet({"set key 0 0 0\r\n\r\n"})).then([] (auto p) {
@@ -145,7 +145,7 @@ SEASTAR_TEST_CASE(test_u32_parsing) {
     });
 }
 
-SEASTAR_TEST_CASE(test_parsing_of_split_data) {
+ACTOR_TEST_CASE(test_parsing_of_split_data) {
     return for_each_fragment_size([] (auto make_packet) {
         return make_ready_future<>()
                 .then([make_packet] {
@@ -237,7 +237,7 @@ static std::vector<sstring> as_strings(std::vector<item_key>& keys) {
     return v;
 }
 
-SEASTAR_TEST_CASE(test_get_parsing) {
+ACTOR_TEST_CASE(test_get_parsing) {
     return for_each_fragment_size([] (auto make_packet) {
         return make_ready_future<>()
                 .then([make_packet] {
@@ -262,7 +262,7 @@ SEASTAR_TEST_CASE(test_get_parsing) {
     });
 }
 
-SEASTAR_TEST_CASE(test_catches_errors_in_get) {
+ACTOR_TEST_CASE(test_catches_errors_in_get) {
     return for_each_fragment_size([] (auto make_packet) {
         return make_ready_future<>()
                 .then([make_packet] {
@@ -274,7 +274,7 @@ SEASTAR_TEST_CASE(test_catches_errors_in_get) {
     });
 }
 
-SEASTAR_TEST_CASE(test_parser_returns_eof_state_when_no_command_follows) {
+ACTOR_TEST_CASE(test_parser_returns_eof_state_when_no_command_follows) {
     return for_each_fragment_size([] (auto make_packet) {
         auto p = make_shared<parser_type>();
         auto is = make_shared<input_stream<char>>(make_input_stream(make_packet({"get key\r\n"})));
@@ -290,7 +290,7 @@ SEASTAR_TEST_CASE(test_parser_returns_eof_state_when_no_command_follows) {
     });
 }
 
-SEASTAR_TEST_CASE(test_incomplete_command_is_an_error) {
+ACTOR_TEST_CASE(test_incomplete_command_is_an_error) {
     return for_each_fragment_size([] (auto make_packet) {
         auto p = make_shared<parser_type>();
         auto is = make_shared<input_stream<char>>(make_input_stream(make_packet({"get"})));
@@ -306,7 +306,7 @@ SEASTAR_TEST_CASE(test_incomplete_command_is_an_error) {
     });
 }
 
-SEASTAR_TEST_CASE(test_multiple_requests_in_one_stream) {
+ACTOR_TEST_CASE(test_multiple_requests_in_one_stream) {
     return for_each_fragment_size([] (auto make_packet) {
         auto p = make_shared<parser_type>();
         auto is = make_shared<input_stream<char>>(make_input_stream(make_packet({"set key1 1 1 5\r\ndata1\r\nset key2 2 2 6\r\ndata2+\r\n"})));

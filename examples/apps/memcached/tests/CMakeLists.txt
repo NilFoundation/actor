@@ -55,7 +55,7 @@ target_include_directories (app_memcached_test_ascii
     ${Seastar_APP_MEMCACHED_SOURCE_DIR})
 
 target_compile_definitions (app_memcached_test_ascii
-  PRIVATE SEASTAR_TESTING_MAIN)
+  PRIVATE ACTOR_TESTING_MAIN)
 
 target_link_libraries (app_memcached_test_ascii
   PRIVATE

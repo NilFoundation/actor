@@ -26,7 +26,7 @@
 
 #include <nil/actor/detail/std-compat.hh>
 
-#ifndef SEASTAR_COROUTINES_ENABLED
+#ifndef ACTOR_COROUTINES_ENABLED
 
 int main(int argc, char **argv) {
     std::cout << "coroutines not available\n";
