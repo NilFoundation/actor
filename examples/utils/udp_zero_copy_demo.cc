@@ -22,7 +22,7 @@
 // SOFTWARE.
 //---------------------------------------------------------------------------//
 
-#include <nil/actor/core/seastar.hh>
+#include <nil/actor/core/core.hh>
 #include <nil/actor/core/app-template.hh>
 #include <nil/actor/core/scattered_message.hh>
 #include <nil/actor/core/vector-data-sink.hh>

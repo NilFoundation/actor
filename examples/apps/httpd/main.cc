@@ -23,7 +23,7 @@
 #include <nil/actor/http/handlers.hh>
 #include <nil/actor/http/function_handlers.hh>
 #include <nil/actor/http/file_handler.hh>
-#include <nil/actor/core/seastar.hh>
+#include <nil/actor/core/core.hh>
 #include <nil/actor/core/reactor.hh>
 #include "demo.json.hh"
 #include <nil/actor/http/api_docs.hh>

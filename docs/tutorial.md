@@ -1379,7 +1379,7 @@ Here we ask each of Seastar cores (from 0 to `smp::count`-1) to run the same fun
 We begin with a simple example of a TCP network server written in Seastar. This server repeatedly accepts connections on TCP port 1234, and returns an empty response:
 
 ```cpp
-#include <nil/actor/core/seastar.hh>
+#include <nil/actor/core/core.hh>
 #include <nil/actor/core/reactor.hh>
 #include <nil/actor/core/future-util.hh>
 #include <nil/actor/net/api.hh>
@@ -1433,7 +1433,7 @@ Most servers will always turn on this ```reuse_address``` listen option. Stevens
 Let's advance our example server by outputting some canned response to each connection, instead of closing each connection immediately with an empty reply.
 
 ```cpp
-#include <nil/actor/core/seastar.hh>
+#include <nil/actor/core/core.hh>
 #include <nil/actor/core/reactor.hh>
 #include <nil/actor/core/future-util.hh>
 #include <nil/actor/net/api.hh>
@@ -1482,7 +1482,7 @@ In the above example we only saw writing to the socket. Real servers will also w
 Let's look at a simple example server involving both reads an writes. This is a simple echo server, as described in RFC 862: The server listens for connections from the client, and once a connection is established, any data received is simply sent back - until the client closes the connection.
 
 ```cpp
-#include <nil/actor/core/seastar.hh>
+#include <nil/actor/core/core.hh>
 #include <nil/actor/core/reactor.hh>
 #include <nil/actor/core/future-util.hh>
 #include <nil/actor/net/api.hh>

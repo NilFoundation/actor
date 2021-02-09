@@ -33,7 +33,7 @@
 #include <nil/actor/core/aligned_buffer.hh>
 #include <nil/actor/core/file.hh>
 #include <nil/actor/core/fstream.hh>
-#include <nil/actor/core/seastar.hh>
+#include <nil/actor/core/core.hh>
 #include <nil/actor/core/sstring.hh>
 #include <nil/actor/core/temporary_buffer.hh>
 #include <nil/actor/core/loop.hh>

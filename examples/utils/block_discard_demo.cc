@@ -28,7 +28,7 @@
 #include <nil/actor/core/app-template.hh>
 #include <nil/actor/core/file.hh>
 #include <nil/actor/core/reactor.hh>
-#include <nil/actor/core/seastar.hh>
+#include <nil/actor/core/core.hh>
 #include <nil/actor/core/semaphore.hh>
 
 using namespace nil::actor;

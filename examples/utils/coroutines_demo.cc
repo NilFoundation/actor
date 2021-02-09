@@ -39,7 +39,7 @@ int main(int argc, char **argv) {
 #include <nil/actor/core/coroutine.hh>
 #include <nil/actor/core/fstream.hh>
 #include <nil/actor/core/sleep.hh>
-#include <nil/actor/core/seastar.hh>
+#include <nil/actor/core/core.hh>
 #include <nil/actor/core/loop.hh>
 
 int main(int argc, char **argv) {

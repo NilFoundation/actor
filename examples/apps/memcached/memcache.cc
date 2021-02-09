@@ -28,7 +28,7 @@
 #include <sstream>
 #include <nil/actor/core/app-template.hh>
 #include <nil/actor/core/reactor.hh>
-#include <nil/actor/core/seastar.hh>
+#include <nil/actor/core/core.hh>
 #include <nil/actor/core/loop.hh>
 #include <nil/actor/core/timer-set.hh>
 #include <nil/actor/core/shared_ptr.hh>

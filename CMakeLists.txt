@@ -21,7 +21,6 @@ macro(cm_find_package NAME)
 endmacro()
 
 include(CheckCSourceCompiles)
-include(CheckFunctionExists)
 include(CheckCSourceRuns)
 
 option(BUILD_WITH_CCACHE "Build with ccache usage" TRUE)

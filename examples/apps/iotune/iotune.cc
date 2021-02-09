@@ -36,7 +36,7 @@
 #include <wordexp.h>
 #include <yaml-cpp/yaml.h>
 #include <fmt/printf.h>
-#include <nil/actor/core/seastar.hh>
+#include <nil/actor/core/core.hh>
 #include <nil/actor/core/file.hh>
 #include <nil/actor/core/thread.hh>
 #include <nil/actor/core/sstring.hh>
