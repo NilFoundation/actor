@@ -46,3 +46,6 @@
 [submodule "libs/cluster"]
 	path = libs/cluster
 	url = git@github.com:nilfoundation/actor-cluster.git
+[submodule "libs/fswatch"]
+	path = libs/fswatch
+	url = git@github.com:nilfoundation/fswatch.git
