@@ -49,3 +49,6 @@
 [submodule "libs/fswatch"]
 	path = libs/fswatch
 	url = git@github.com:nilfoundation/fswatch.git
+[submodule "libs/crypto/multiprecision"]
+	path = libs/crypto/multiprecision
+	url = git@github.com:nilfoundation/crypto3-multiprecision.git
