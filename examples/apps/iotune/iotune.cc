@@ -1,26 +1,31 @@
+//---------------------------------------------------------------------------//
+// Copyright (c) 2018-2021 Mikhail Komarov <nemo@nil.foundation>
+//
+// MIT License
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+//---------------------------------------------------------------------------//
 /*
- * This file is open source software, licensed to you under the terms
- * of the Apache License, Version 2.0 (the "License").  See the NOTICE file
- * distributed with this work for additional information regarding copyright
- * ownership.  You may not use this file except in compliance with the License.
- *
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-/*
- * Copyright (C) 2018 ScyllaDB
- *
  * The goal of this program is to allow a user to properly configure the Seastar I/O
  * scheduler.
  */
+
 #include <iostream>
 #include <chrono>
 #include <random>
@@ -60,7 +65,8 @@ namespace fs = std::filesystem;
 logger iotune_logger("iotune");
 
 using iotune_clock = std::chrono::steady_clock;
-static thread_local std::default_random_engine random_generator(std::chrono::duration_cast<std::chrono::nanoseconds>(iotune_clock::now().time_since_epoch()).count());
+static thread_local std::default_random_engine random_generator(
+    std::chrono::duration_cast<std::chrono::nanoseconds>(iotune_clock::now().time_since_epoch()).count());
 
 void check_device_properties(fs::path dev_sys_file) {
     auto sched_file = dev_sys_file / "queue" / "scheduler";
@@ -78,15 +84,19 @@ void check_device_properties(fs::path dev_sys_file) {
     }
     auto scheduler = sched_string.substr(beg, len);
     if ((scheduler != "noop") && (scheduler != "none")) {
-        iotune_logger.warn("Scheduler for {} set to {}. It is recommend to set it to noop before evaluation so as not to skew the results.",
-                sched_file.string(), scheduler);
+        iotune_logger.warn(
+            "Scheduler for {} set to {}. It is recommend to set it to noop before evaluation so as not to skew the "
+            "results.",
+            sched_file.string(), scheduler);
     }
 
     auto nomerges_file = dev_sys_file / "queue" / "nomerges";
     auto nomerges = read_first_line_as<unsigned>(nomerges_file);
     if (nomerges != 2u) {
-        iotune_logger.warn("nomerges for {} set to {}. It is recommend to set it to 2 before evaluation so that merges are disabled. Results can be skewed otherwise.",
-                nomerges_file.string(), nomerges);
+        iotune_logger.warn(
+            "nomerges for {} set to {}. It is recommend to set it to 2 before evaluation so that merges are disabled. "
+            "Results can be skewed otherwise.",
+            nomerges_file.string(), nomerges);
     }
 }
 
@@ -111,7 +121,7 @@ struct evaluation_directory {
             sys_file = fs::canonical(sys_file);
             bool is_leaf = true;
             if (fs::exists(sys_file / "slaves")) {
-                for (auto& dev : fs::directory_iterator(sys_file / "slaves")) {
+                for (auto &dev : fs::directory_iterator(sys_file / "slaves")) {
                     is_leaf = false;
                     scan_device(read_first_line(dev.path() / "dev"));
                 }
@@ -133,17 +143,16 @@ struct evaluation_directory {
                 _max_iodepth += read_first_line_as<uint64_t>(queue_dir / "nr_requests");
                 _disks_per_array++;
             }
-        } catch (std::system_error& se) {
+        } catch (std::system_error &se) {
             iotune_logger.error("Error while parsing sysfs. Will continue with guessed values: {}", se.what());
             _max_iodepth = 128;
         }
         _disks_per_array = std::max(_disks_per_array, 1u);
     }
+
 public:
-    evaluation_directory(sstring name)
-        : _name(name)
-        , _available_space(fs::space(fs::path(_name)).available)
-    {}
+    evaluation_directory(sstring name) : _name(name), _available_space(fs::space(fs::path(_name)).available) {
+    }
 
     unsigned max_iodepth() const {
         return _max_iodepth;
@@ -153,7 +162,7 @@ public:
         return fs::path(_name);
     }
 
-    const sstring& name() const {
+    const sstring &name() const {
         return _name;
     }
 
@@ -183,11 +192,11 @@ public:
 struct io_rates {
     float bytes_per_sec = 0;
     float iops = 0;
-    io_rates operator+(const io_rates& a) const {
-        return io_rates{bytes_per_sec + a.bytes_per_sec, iops + a.iops};
+    io_rates operator+(const io_rates &a) const {
+        return io_rates {bytes_per_sec + a.bytes_per_sec, iops + a.iops};
     }
 
-    io_rates& operator+=(const io_rates& a) {
+    io_rates &operator+=(const io_rates &a) {
         bytes_per_sec += a.bytes_per_sec;
         iops += a.iops;
         return *this;
@@ -196,7 +205,7 @@ struct io_rates {
 
 class invalid_position : public std::exception {
 public:
-    virtual const char* what() const noexcept {
+    virtual const char *what() const noexcept {
         return "file access position invalid";
     }
 };
@@ -204,18 +213,18 @@ public:
 struct position_generator {
     virtual uint64_t get_pos() = 0;
     virtual bool is_sequential() const = 0;
-    virtual ~position_generator() {}
+    virtual ~position_generator() {
+    }
 };
 
 class sequential_issuer : public position_generator {
     size_t _buffer_size;
     uint64_t _position = 0;
     uint64_t _size_limit;
+
 public:
-    sequential_issuer(size_t buffer_size, uint64_t size_limit)
-        : _buffer_size(buffer_size)
-        , _size_limit(size_limit)
-    {}
+    sequential_issuer(size_t buffer_size, uint64_t size_limit) : _buffer_size(buffer_size), _size_limit(size_limit) {
+    }
 
     virtual bool is_sequential() const {
         return true;
@@ -239,12 +248,12 @@ class random_issuer : public position_generator {
     size_t _buffer_size;
     uint64_t _last_position;
     std::uniform_int_distribution<uint64_t> _pos_distribution;
+
 public:
-    random_issuer(size_t buffer_size, uint64_t last_position)
-        : _buffer_size(buffer_size)
-        , _last_position(last_position)
-        , _pos_distribution(0, (last_position / buffer_size) - 1)
-    {}
+    random_issuer(size_t buffer_size, uint64_t last_position) :
+        _buffer_size(buffer_size), _last_position(last_position),
+        _pos_distribution(0, (last_position / buffer_size) - 1) {
+    }
 
     virtual bool is_sequential() const {
         return false;
@@ -261,25 +270,29 @@ public:
 
 class request_issuer {
 public:
-    virtual future<size_t> issue_request(uint64_t pos, char* buf, uint64_t size) = 0;
-    virtual ~request_issuer() {}
+    virtual future<size_t> issue_request(uint64_t pos, char *buf, uint64_t size) = 0;
+    virtual ~request_issuer() {
+    }
 };
-
 
 class write_request_issuer : public request_issuer {
     file _file;
+
 public:
-    explicit write_request_issuer(file f) : _file(f) {}
-    future<size_t> issue_request(uint64_t pos, char* buf, uint64_t size) override {
+    explicit write_request_issuer(file f) : _file(f) {
+    }
+    future<size_t> issue_request(uint64_t pos, char *buf, uint64_t size) override {
         return _file.dma_write(pos, buf, size);
     }
 };
 
 class read_request_issuer : public request_issuer {
     file _file;
+
 public:
-    explicit read_request_issuer(file f) : _file(f) {}
-    future<size_t> issue_request(uint64_t pos, char* buf, uint64_t size) override {
+    explicit read_request_issuer(file f) : _file(f) {
+    }
+    future<size_t> issue_request(uint64_t pos, char *buf, uint64_t size) override {
         return _file.dma_read(pos, buf, size);
     }
 };
@@ -297,6 +310,7 @@ class io_worker {
 
     std::unique_ptr<position_generator> _pos_impl;
     std::unique_ptr<request_issuer> _req_impl;
+
 public:
     bool is_sequential() const {
         return _pos_impl->is_sequential();
@@ -306,23 +320,21 @@ public:
         return iotune_clock::now() >= _end_load;
     }
 
-    io_worker(size_t buffer_size, std::chrono::duration<double> duration, std::unique_ptr<request_issuer> reqs, std::unique_ptr<position_generator> pos)
-        : _buffer_size(buffer_size)
-        , _start_measuring(iotune_clock::now() + std::chrono::duration<double>(10ms))
-        , _end_measuring(_start_measuring + duration)
-        , _end_load(_end_measuring + 10ms)
-        , _last_time_seen(_start_measuring)
-        , _pos_impl(std::move(pos))
-        , _req_impl(std::move(reqs))
-    {}
+    io_worker(size_t buffer_size, std::chrono::duration<double> duration, std::unique_ptr<request_issuer> reqs,
+              std::unique_ptr<position_generator> pos) :
+        _buffer_size(buffer_size),
+        _start_measuring(iotune_clock::now() + std::chrono::duration<double>(10ms)),
+        _end_measuring(_start_measuring + duration), _end_load(_end_measuring + 10ms),
+        _last_time_seen(_start_measuring), _pos_impl(std::move(pos)), _req_impl(std::move(reqs)) {
+    }
 
     std::unique_ptr<char[], free_deleter> get_buffer() {
         return allocate_aligned_buffer<char>(_buffer_size, _buffer_size);
     }
 
-    future<> issue_request(char* buf) {
+    future<> issue_request(char *buf) {
         uint64_t pos = _pos_impl->get_pos();
-        return _req_impl->issue_request(pos, buf, _buffer_size).then([this, pos] (size_t size) {
+        return _req_impl->issue_request(pos, buf, _buffer_size).then([this, pos](size_t size) {
             auto now = iotune_clock::now();
             _max_offset = std::max(_max_offset, pos + size);
             if ((now > _start_measuring) && (now < _end_measuring)) {
@@ -333,7 +345,9 @@ public:
         });
     }
 
-    uint64_t max_offset() const noexcept { return _max_offset; }
+    uint64_t max_offset() const noexcept {
+        return _max_offset;
+    }
 
     io_rates get_io_rates() const {
         io_rates rates;
@@ -350,6 +364,7 @@ public:
 class test_file {
 public:
     enum class pattern { sequential, random };
+
 private:
     fs::path _dirpath;
     uint64_t _file_size;
@@ -362,11 +377,12 @@ private:
             return std::make_unique<random_issuer>(buffer_size, _file_size);
         }
     }
+
 public:
-    test_file(const ::evaluation_directory& dir, uint64_t maximum_size)
-        : _dirpath(dir.path() / fs::path(fmt::format("ioqueue-discovery-{}", this_shard_id())))
-        , _file_size(maximum_size)
-    {}
+    test_file(const ::evaluation_directory &dir, uint64_t maximum_size) :
+        _dirpath(dir.path() / fs::path(fmt::format("ioqueue-discovery-{}", this_shard_id()))),
+        _file_size(maximum_size) {
+    }
 
     future<> create_data_file() {
         // XFS likes access in many directories better.
@@ -374,61 +390,65 @@ public:
             auto testfile = _dirpath / fs::path("testfile");
             file_open_options options;
             options.extent_allocation_size_hint = _file_size;
-            return open_file_dma(testfile.string(), open_flags::rw | open_flags::create, std::move(options)).then([this, testfile] (file file) {
-                _file = file;
-                return remove_file(testfile.string()).then([this] {
-                    return remove_file(_dirpath.string());
-                });
-            }).then([this] {
-                return _file.truncate(_file_size);
-            });
+            return open_file_dma(testfile.string(), open_flags::rw | open_flags::create, std::move(options))
+                .then([this, testfile](file file) {
+                    _file = file;
+                    return remove_file(testfile.string()).then([this] { return remove_file(_dirpath.string()); });
+                })
+                .then([this] { return _file.truncate(_file_size); });
         });
     }
 
-    future<io_rates> do_workload(std::unique_ptr<io_worker> worker_ptr, unsigned max_os_concurrency, bool update_file_size = false) {
+    future<io_rates> do_workload(std::unique_ptr<io_worker> worker_ptr, unsigned max_os_concurrency,
+                                 bool update_file_size = false) {
         if (update_file_size) {
             _file_size = 0;
         }
 
         auto worker = worker_ptr.get();
         auto concurrency = boost::irange<unsigned, unsigned>(0, max_os_concurrency, 1);
-        return parallel_for_each(std::move(concurrency), [worker] (unsigned idx) {
-            auto bufptr = worker->get_buffer();
-            auto buf = bufptr.get();
-            return do_until([worker] { return worker->should_stop(); }, [buf, worker] {
-                return worker->issue_request(buf);
-            }).finally([alive = std::move(bufptr)] {});
-        }).then_wrapped([this, worker = std::move(worker_ptr), update_file_size] (future<> f) {
-            try {
-                f.get();
-            } catch (invalid_position& ip) {
-                // expected if sequential. Example: reading and the file ended.
-                if (!worker->is_sequential()) {
-                    throw;
+        return parallel_for_each(std::move(concurrency),
+                                 [worker](unsigned idx) {
+                                     auto bufptr = worker->get_buffer();
+                                     auto buf = bufptr.get();
+                                     return do_until([worker] { return worker->should_stop(); },
+                                                     [buf, worker] { return worker->issue_request(buf); })
+                                         .finally([alive = std::move(bufptr)] {});
+                                 })
+            .then_wrapped([this, worker = std::move(worker_ptr), update_file_size](future<> f) {
+                try {
+                    f.get();
+                } catch (invalid_position &ip) {
+                    // expected if sequential. Example: reading and the file ended.
+                    if (!worker->is_sequential()) {
+                        throw;
+                    }
                 }
-            }
 
-            if (update_file_size) {
-                _file_size = worker->max_offset();
-            }
-            return make_ready_future<io_rates>(worker->get_io_rates());
-        });
+                if (update_file_size) {
+                    _file_size = worker->max_offset();
+                }
+                return make_ready_future<io_rates>(worker->get_io_rates());
+            });
     }
 
-    future<io_rates> read_workload(size_t buffer_size, pattern access_pattern, unsigned max_os_concurrency, std::chrono::duration<double> duration) {
+    future<io_rates> read_workload(size_t buffer_size, pattern access_pattern, unsigned max_os_concurrency,
+                                   std::chrono::duration<double> duration) {
         buffer_size = std::max(buffer_size, _file.disk_read_dma_alignment());
-        auto worker = std::make_unique<io_worker>(buffer_size, duration, std::make_unique<read_request_issuer>(_file), get_position_generator(buffer_size, access_pattern));
+        auto worker = std::make_unique<io_worker>(buffer_size, duration, std::make_unique<read_request_issuer>(_file),
+                                                  get_position_generator(buffer_size, access_pattern));
         return do_workload(std::move(worker), max_os_concurrency);
     }
 
-    future<io_rates> write_workload(size_t buffer_size, pattern access_pattern, unsigned max_os_concurrency, std::chrono::duration<double> duration) {
+    future<io_rates> write_workload(size_t buffer_size, pattern access_pattern, unsigned max_os_concurrency,
+                                    std::chrono::duration<double> duration) {
         buffer_size = std::max(buffer_size, _file.disk_write_dma_alignment());
-        auto worker = std::make_unique<io_worker>(buffer_size, duration, std::make_unique<write_request_issuer>(_file), get_position_generator(buffer_size, access_pattern));
+        auto worker = std::make_unique<io_worker>(buffer_size, duration, std::make_unique<write_request_issuer>(_file),
+                                                  get_position_generator(buffer_size, access_pattern));
         bool update_file_size = worker->is_sequential();
-        return do_workload(std::move(worker), max_os_concurrency, update_file_size).then([this] (io_rates r) {
-            return _file.flush().then([r = std::move(r)] () mutable {
-                return make_ready_future<io_rates>(std::move(r));
-            });
+        return do_workload(std::move(worker), max_os_concurrency, update_file_size).then([this](io_rates r) {
+            return _file.flush().then(
+                [r = std::move(r)]() mutable { return make_ready_future<io_rates>(std::move(r)); });
         });
     }
 
@@ -448,48 +468,52 @@ class iotune_multi_shard_context {
         return std::min(iodepth, 128u);
     }
     nil::actor::sharded<test_file> _iotune_test_file;
+
 public:
     future<> stop() {
         return _iotune_test_file.stop();
     }
 
     future<> start() {
-       return _iotune_test_file.start(_test_directory, _test_directory.available_space() / (2 * smp::count));
+        return _iotune_test_file.start(_test_directory, _test_directory.available_space() / (2 * smp::count));
     }
 
     future<> create_data_file() {
-        return _iotune_test_file.invoke_on_all([] (test_file& tf) {
-            return tf.create_data_file();
-        });
+        return _iotune_test_file.invoke_on_all([](test_file &tf) { return tf.create_data_file(); });
     }
 
     future<io_rates> write_sequential_data(unsigned shard, size_t buffer_size, std::chrono::duration<double> duration) {
-        return _iotune_test_file.invoke_on(shard, [this, buffer_size, duration] (test_file& tf) {
-            return tf.write_workload(buffer_size, test_file::pattern::sequential, 4 * _test_directory.disks_per_array(), duration);
+        return _iotune_test_file.invoke_on(shard, [this, buffer_size, duration](test_file &tf) {
+            return tf.write_workload(buffer_size, test_file::pattern::sequential, 4 * _test_directory.disks_per_array(),
+                                     duration);
         });
     }
 
     future<io_rates> read_sequential_data(unsigned shard, size_t buffer_size, std::chrono::duration<double> duration) {
-        return _iotune_test_file.invoke_on(shard, [this, buffer_size, duration] (test_file& tf) {
-            return tf.read_workload(buffer_size, test_file::pattern::sequential, 4 * _test_directory.disks_per_array(), duration);
+        return _iotune_test_file.invoke_on(shard, [this, buffer_size, duration](test_file &tf) {
+            return tf.read_workload(buffer_size, test_file::pattern::sequential, 4 * _test_directory.disks_per_array(),
+                                    duration);
         });
     }
 
     future<io_rates> write_random_data(size_t buffer_size, std::chrono::duration<double> duration) {
-        return _iotune_test_file.map_reduce0([buffer_size, this, duration] (test_file& tf) {
-            return tf.write_workload(buffer_size, test_file::pattern::random, per_shard_io_depth(), duration);
-        }, io_rates(), std::plus<io_rates>());
+        return _iotune_test_file.map_reduce0(
+            [buffer_size, this, duration](test_file &tf) {
+                return tf.write_workload(buffer_size, test_file::pattern::random, per_shard_io_depth(), duration);
+            },
+            io_rates(), std::plus<io_rates>());
     }
 
     future<io_rates> read_random_data(size_t buffer_size, std::chrono::duration<double> duration) {
-        return _iotune_test_file.map_reduce0([buffer_size, this, duration] (test_file& tf) {
-            return tf.read_workload(buffer_size, test_file::pattern::random, per_shard_io_depth(), duration);
-        }, io_rates(), std::plus<io_rates>());
+        return _iotune_test_file.map_reduce0(
+            [buffer_size, this, duration](test_file &tf) {
+                return tf.read_workload(buffer_size, test_file::pattern::random, per_shard_io_depth(), duration);
+            },
+            io_rates(), std::plus<io_rates>());
     }
 
-    iotune_multi_shard_context(::evaluation_directory dir)
-        : _test_directory(dir)
-    {}
+    iotune_multi_shard_context(::evaluation_directory dir) : _test_directory(dir) {
+    }
 };
 
 struct disk_descriptor {
@@ -523,7 +547,7 @@ void write_property_file(sstring conf_file, std::vector<disk_descriptor> disk_de
     out << YAML::BeginMap;
     out << YAML::Key << "disks";
     out << YAML::BeginSeq;
-    for (auto& desc : disk_descriptors) {
+    for (auto &desc : disk_descriptors) {
         out << YAML::BeginMap;
         out << YAML::Key << "mountpoint" << YAML::Value << desc.mountpoint;
         out << YAML::Key << "read_iops" << YAML::Value << desc.read_iops;
@@ -559,7 +583,7 @@ fs::path mountpoint_of(sstring filename) {
     return mnt_candidate;
 }
 
-int main(int ac, char** av) {
+int main(int ac, char **av) {
     namespace bpo = boost::program_options;
     bool fs_check = false;
 
@@ -568,18 +592,17 @@ int main(int ac, char** av) {
 
     app_template app(std::move(app_cfg));
     auto opt_add = app.add_options();
-    opt_add
-        ("evaluation-directory", bpo::value<std::vector<sstring>>()->required(), "directory where to execute the evaluation")
-        ("properties-file", bpo::value<sstring>(), "path in which to write the YAML file")
-        ("options-file", bpo::value<sstring>(), "path in which to write the legacy conf file")
-        ("duration", bpo::value<unsigned>()->default_value(120), "time, in seconds, for which to run the test")
-        ("format", bpo::value<sstring>()->default_value("seastar"), "Configuration file format (seastar | envfile)")
-        ("fs-check", bpo::bool_switch(&fs_check), "perform FS check only")
-    ;
+    opt_add("evaluation-directory", bpo::value<std::vector<sstring>>()->required(),
+            "directory where to execute the evaluation")("properties-file", bpo::value<sstring>(),
+                                                         "path in which to write the YAML file")(
+        "options-file", bpo::value<sstring>(), "path in which to write the legacy conf file")(
+        "duration", bpo::value<unsigned>()->default_value(120), "time, in seconds, for which to run the test")(
+        "format", bpo::value<sstring>()->default_value("seastar"), "Configuration file format (seastar | envfile)")(
+        "fs-check", bpo::bool_switch(&fs_check), "perform FS check only");
 
     return app.run(ac, av, [&] {
         return nil::actor::async([&] {
-            auto& configuration = app.configuration();
+            auto &configuration = app.configuration();
             auto eval_dirs = configuration["evaluation-directory"].as<std::vector<sstring>>();
             auto format = configuration["format"].as<sstring>();
             auto duration = std::chrono::duration<double>(configuration["duration"].as<unsigned>() * 1s);
@@ -590,10 +613,10 @@ int main(int ac, char** av) {
             // directories that we were provided - we may not have permissions to write into the
             // mountpoint itself. If we are passed more than one directory per mountpoint, we don't
             // really care to which one we write, so this simple hash will do.
-            for (auto& eval_dir : eval_dirs) {
+            for (auto &eval_dir : eval_dirs) {
                 mountpoint_map[mountpoint_of(eval_dir).string()] = eval_dir;
             }
-            for (auto eval: mountpoint_map) {
+            for (auto eval : mountpoint_map) {
                 auto mountpoint = eval.first;
                 auto eval_dir = eval.second;
 
@@ -606,7 +629,7 @@ int main(int ac, char** av) {
                 auto avail = fs_avail(eval_dir).get0();
                 if (avail < rec) {
                     uint64_t val;
-                    const char* units;
+                    const char *units;
                     if (avail >= 1000000000) {
                         val = (avail + 500000000) / 1000000000;
                         units = "GB";
@@ -630,7 +653,8 @@ int main(int ac, char** av) {
                 ::evaluation_directory test_directory(eval_dir);
                 test_directory.discover_directory().get();
                 iotune_logger.info("Disk parameters: max_iodepth={} disks_per_array={} minimum_io_size={}",
-                        test_directory.max_iodepth(), test_directory.disks_per_array(), test_directory.minimum_io_size());
+                                   test_directory.max_iodepth(), test_directory.disks_per_array(),
+                                   test_directory.minimum_io_size());
 
                 ::iotune_multi_shard_context iotune_tests(test_directory);
                 iotune_tests.start().get();
@@ -651,7 +675,9 @@ int main(int ac, char** av) {
                 io_rates write_bw;
                 size_t sequential_buffer_size = 1 << 20;
                 for (unsigned shard = 0; shard < smp::count; ++shard) {
-                    write_bw += iotune_tests.write_sequential_data(shard, sequential_buffer_size, duration * 0.70 / smp::count).get0();
+                    write_bw +=
+                        iotune_tests.write_sequential_data(shard, sequential_buffer_size, duration * 0.70 / smp::count)
+                            .get0();
                 }
                 write_bw.bytes_per_sec /= smp::count;
                 fmt::print("{} MB/s\n", uint64_t(write_bw.bytes_per_sec / (1024 * 1024)));
@@ -663,7 +689,8 @@ int main(int ac, char** av) {
 
                 fmt::print("Measuring random write IOPS: ");
                 std::cout.flush();
-                auto write_iops = iotune_tests.write_random_data(test_directory.minimum_io_size(), duration * 0.1).get0();
+                auto write_iops =
+                    iotune_tests.write_random_data(test_directory.minimum_io_size(), duration * 0.1).get0();
                 fmt::print("{} IOPS\n", uint64_t(write_iops.iops));
 
                 fmt::print("Measuring random read IOPS: ");
@@ -690,10 +717,14 @@ int main(int ac, char** av) {
                 file = "configuration file";
                 if (configuration.count("options-file")) {
                     fmt::print("Writing result to {}\n", configuration["options-file"].as<sstring>());
-                    write_configuration_file(configuration["options-file"].as<sstring>(), format, configuration["properties-file"].as<sstring>());
+                    write_configuration_file(configuration["options-file"].as<sstring>(), format,
+                                             configuration["properties-file"].as<sstring>());
                 }
             } catch (...) {
-                iotune_logger.error("Exception when writing {}: {}.\nPlease add the above values manually to your seastar command line.", file, std::current_exception());
+                iotune_logger.error(
+                    "Exception when writing {}: {}.\nPlease add the above values manually to your seastar command "
+                    "line.",
+                    file, std::current_exception());
                 return 1;
             }
             return 0;

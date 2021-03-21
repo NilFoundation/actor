@@ -47,7 +47,7 @@ option(BUILD_WITH_DOCS
     FALSE)
 
 include(ActorDependencies)
-seastar_find_dependencies()
+actor_find_dependencies()
 
 #
 # Code generation helpers.

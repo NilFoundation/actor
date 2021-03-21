@@ -1,23 +1,26 @@
-/*
- * This file is open source software, licensed to you under the terms
- * of the Apache License, Version 2.0 (the "License").  See the NOTICE file
- * distributed with this work for additional information regarding copyright
- * ownership.  You may not use this file except in compliance with the License.
- *
- * You may obtain a copy of the License at
- *
- *   http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied.  See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-/*
- * Copyright 2015 Cloudius Systems
- */
+//---------------------------------------------------------------------------//
+// Copyright (c) 2018-2021 Mikhail Komarov <nemo@nil.foundation>
+//
+// MIT License
+//
+// Permission is hereby granted, free of charge, to any person obtaining a copy
+// of this software and associated documentation files (the "Software"), to deal
+// in the Software without restriction, including without limitation the rights
+// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the Software is
+// furnished to do so, subject to the following conditions:
+//
+// The above copyright notice and this permission notice shall be included in all
+// copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+// SOFTWARE.
+//---------------------------------------------------------------------------//
 
 #include <nil/actor/http/httpd.hh>
 #include <nil/actor/http/handlers.hh>
@@ -40,50 +43,49 @@ using namespace httpd;
 
 class handl : public httpd::handler_base {
 public:
-    virtual future<std::unique_ptr<reply> > handle(const sstring& path,
-            std::unique_ptr<request> req, std::unique_ptr<reply> rep) {
+    virtual future<std::unique_ptr<reply>> handle(const sstring &path, std::unique_ptr<request> req,
+                                                  std::unique_ptr<reply> rep) {
         rep->_content = "hello";
         rep->done("html");
         return make_ready_future<std::unique_ptr<reply>>(std::move(rep));
     }
 };
 
-void set_routes(routes& r) {
-    function_handler* h1 = new function_handler([](const_req req) {
-        return "hello";
-    });
-    function_handler* h2 = new function_handler([](std::unique_ptr<request> req) {
-        return make_ready_future<json::json_return_type>("json-future");
-    });
+void set_routes(routes &r) {
+    function_handler *h1 = new function_handler([](const_req req) { return "hello"; });
+    function_handler *h2 = new function_handler(
+        [](std::unique_ptr<request> req) { return make_ready_future<json::json_return_type>("json-future"); });
     r.add(operation_type::GET, url("/"), h1);
     r.add(operation_type::GET, url("/jf"), h2);
-    r.add(operation_type::GET, url("/file").remainder("path"),
-            new directory_handler("/"));
-    demo_json::hello_world.set(r, [] (const_req req) {
+    r.add(operation_type::GET, url("/file").remainder("path"), new directory_handler("/"));
+    demo_json::hello_world.set(r, [](const_req req) {
         demo_json::my_object obj;
         obj.var1 = req.param.at("var1");
         obj.var2 = req.param.at("var2");
-        demo_json::ns_hello_world::query_enum v = demo_json::ns_hello_world::str2query_enum(req.query_parameters.at("query_enum"));
+        demo_json::ns_hello_world::query_enum v =
+            demo_json::ns_hello_world::str2query_enum(req.query_parameters.at("query_enum"));
         // This demonstrate enum conversion
         obj.enum_var = v;
         return obj;
     });
 }
 
-int main(int ac, char** av) {
+int main(int ac, char **av) {
     httpd::http_server_control prometheus_server;
     prometheus::config pctx;
     app_template app;
 
     app.add_options()("port", bpo::value<uint16_t>()->default_value(10000), "HTTP Server port");
-    app.add_options()("prometheus_port", bpo::value<uint16_t>()->default_value(9180), "Prometheus port. Set to zero in order to disable.");
+    app.add_options()("prometheus_port", bpo::value<uint16_t>()->default_value(9180),
+                      "Prometheus port. Set to zero in order to disable.");
     app.add_options()("prometheus_address", bpo::value<sstring>()->default_value("0.0.0.0"), "Prometheus address");
-    app.add_options()("prometheus_prefix", bpo::value<sstring>()->default_value("seastar_httpd"), "Prometheus metrics prefix");
+    app.add_options()("prometheus_prefix", bpo::value<sstring>()->default_value("seastar_httpd"),
+                      "Prometheus metrics prefix");
 
     return app.run_deprecated(ac, av, [&] {
         return nil::actor::async([&] {
             seastar_apps_lib::stop_signal stop_signal;
-            auto&& config = app.configuration();
+            auto &&config = app.configuration();
             httpd::http_server_control prometheus_server;
 
             uint16_t pport = config["prometheus_port"].as<uint16_t>();
@@ -99,10 +101,13 @@ int main(int ac, char** av) {
 
                 prometheus::start(prometheus_server, pctx).get();
 
-                prometheus_server.listen(socket_address{prom_addr, pport}).handle_exception([prom_addr, pport] (auto ep) {
-                    std::cerr << nil::actor::format("Could not start Prometheus API server on {}:{}: {}\n", prom_addr, pport, ep);
-                    return make_exception_future<>(ep);
-                }).get();
+                prometheus_server.listen(socket_address {prom_addr, pport})
+                    .handle_exception([prom_addr, pport](auto ep) {
+                        std::cerr << nil::actor::format("Could not start Prometheus API server on {}:{}: {}\n",
+                                                        prom_addr, pport, ep);
+                        return make_exception_future<>(ep);
+                    })
+                    .get();
             }
 
             uint16_t port = config["port"].as<uint16_t>();
@@ -110,8 +115,8 @@ int main(int ac, char** av) {
             auto rb = make_shared<api_registry_builder>("apps/httpd/");
             server->start().get();
             server->set_routes(set_routes).get();
-            server->set_routes([rb](routes& r){rb->set_api_doc(r);}).get();
-            server->set_routes([rb](routes& r) {rb->register_function(r, "demo", "hello world application");}).get();
+            server->set_routes([rb](routes &r) { rb->set_api_doc(r); }).get();
+            server->set_routes([rb](routes &r) { rb->register_function(r, "demo", "hello world application"); }).get();
             server->listen(port).get();
 
             std::cout << "Seastar HTTP server listening on port " << port << " ...\n";
@@ -122,10 +127,11 @@ int main(int ac, char** av) {
                         return prometheus_server.stop();
                     }
                     return make_ready_future<>();
-                }().finally([server] {
-                    std::cout << "Stoppping HTTP server" << std::endl;
-                    return server->stop();
-                });
+                }()
+                           .finally([server] {
+                               std::cout << "Stoppping HTTP server" << std::endl;
+                               return server->stop();
+                           });
             });
 
             stop_signal.wait().get();
