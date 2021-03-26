@@ -34,17 +34,11 @@ if(UNIX AND BUILD_WITH_CCACHE)
     endif(CCACHE_FOUND)
 endif()
 
-option(BUILD_WITH_APPS
-    "Enable application targets."
-    FALSE)
+option(BUILD_APPS "Enable application targets." FALSE)
+option(BUILD_EXAMPLES "Enable demonstration targets." FALSE)
+option(BUILD_DOCS "Enable documentation targets." FALSE)
 
-option(BUILD_EXAMPLES
-    "Enable demonstration targets."
-    FALSE)
-
-option(BUILD_WITH_DOCS
-    "Enable documentation targets."
-    FALSE)
+set(DOXYGEN_OUTPUT_DIR "${CMAKE_CURRENT_LIST_DIR}/docs" CACHE STRING "Specify doxygen output directory")
 
 include(ActorDependencies)
 actor_find_dependencies()
@@ -99,15 +93,16 @@ endif()
 # Documentation.
 #
 
-if(BUILD_WITH_DOCS)
-    add_subdirectory(${CMAKE_CURRENT_LIST_DIR}/docs)
+if(BUILD_DOCS)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen/actor.doxyfile.in 
+        ${CMAKE_CURRENT_BINARY_DIR}/actor.doxyfile @ONLY)
 endif()
 
 #
 # Applications.
 #
 
-if(BUILD_WITH_APPS)
+if(BUILD_APPS)
     if(BUILD_WITH_EXCLUDE_APPS_FROM_ALL)
         set(exclude EXCLUDE_FROM_ALL)
     else()
