@@ -29,12 +29,12 @@
 #include "simple_actor.hpp"
 
 int main(int ac, char **av) {
-    fmt::print("actor_ref size: {}\n", sizeof(ultramarine::actor_ref<simple_actor>));
-    fmt::print(" -- local_actor_ref size: {}\n", sizeof(ultramarine::impl::collocated_actor_ref<simple_actor>));
+    fmt::print("actor_ref size: {}\n", sizeof(nil::actor::actor_ref<simple_actor>));
+    fmt::print(" -- local_actor_ref size: {}\n", sizeof(nil::actor::impl::collocated_actor_ref<simple_actor>));
 
     fmt::print("actor size: {}\n", sizeof(simple_actor));
     fmt::print(" -- key size: {}\n", sizeof(simple_actor::KeyType));
 
     nil::actor::app_template app;
-    return app.run(ac, av, [] { return ultramarine::get<simple_actor>("Ultra")->say_hello(); });
+    return app.run(ac, av, [] { return nil::actor::get<simple_actor>("Ultra")->say_hello(); });
 }

@@ -26,11 +26,11 @@
 
 #include <nil/actor/actor.hpp>
 
-class simple_actor : public ultramarine::actor<simple_actor> {
+class simple_actor : public nil::actor::actor<simple_actor> {
 public:
     using KeyType = nil::actor::sstring;
 
     nil::actor::future<> say_hello() const;
-    ULTRAMARINE_DEFINE_ACTOR(simple_actor, (say_hello));
+    ACTOR_DEFINE_ACTOR(simple_actor, (say_hello));
 };
 

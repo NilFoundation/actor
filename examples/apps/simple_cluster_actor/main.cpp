@@ -40,9 +40,9 @@ auto range = boost::irange(0, 1000000);
 // int main(int ac, char **av) {
 //    nil::actor::app_template app;
 //
-//    fmt::print("actor_ref size: {}\n", sizeof(ultramarine::actor_ref<simple_actor>));
-//    fmt::print(" -- local_actor_ref size: {}\n", sizeof(ultramarine::impl::collocated_actor_ref<simple_actor>));
-//    fmt::print(" -- remote_actor_ref size: {}\n", sizeof(ultramarine::cluster::impl::remote_actor_ref<simple_actor>));
+//    fmt::print("actor_ref size: {}\n", sizeof(nil::actor::actor_ref<simple_actor>));
+//    fmt::print(" -- local_actor_ref size: {}\n", sizeof(nil::actor::impl::collocated_actor_ref<simple_actor>));
+//    fmt::print(" -- remote_actor_ref size: {}\n", sizeof(nil::actor::cluster::impl::remote_actor_ref<simple_actor>));
 //
 //    fmt::print("actor size: {}\n", sizeof(simple_actor));
 //    fmt::print(" -- key size: {}\n", sizeof(simple_actor::KeyType));
@@ -52,14 +52,14 @@ auto range = boost::irange(0, 1000000);
 //                nil::actor::socket_address(nil::actor::net::inet_address("127.0.0.1"), 5555U)
 //        };
 //
-//        return ultramarine::cluster::with_cluster(
+//        return nil::actor::cluster::with_cluster(
 //                nil::actor::socket_address(nil::actor::net::inet_address("127.0.0.1"), 5556U), std::move(peers), []()
 //                {
 //                    nil::actor::print("In user code\n");
 //                    start = std::chrono::system_clock::now();
-//                    return ultramarine::with_buffer(10000, [](auto &buffer) {
+//                    return nil::actor::with_buffer(10000, [](auto &buffer) {
 //                        return nil::actor::do_for_each(range.begin(), range.end(), [&buffer](int i) {
-//                            return buffer(ultramarine::get<simple_actor>(0)->say_hello());
+//                            return buffer(nil::actor::get<simple_actor>(0)->say_hello());
 //                        });
 //                    }).then([] {
 //                        using namespace std::chrono;
@@ -77,15 +77,15 @@ auto range = boost::irange(0, 1000000);
 int main(int ac, char **av) {
     nil::actor::app_template app;
 
-    fmt::print("actor_ref size: {}\n", sizeof(ultramarine::actor_ref<simple_actor>));
-    fmt::print(" -- local_actor_ref size: {}\n", sizeof(ultramarine::impl::collocated_actor_ref<simple_actor>));
-    fmt::print(" -- remote_actor_ref size: {}\n", sizeof(ultramarine::cluster::impl::remote_actor_ref<simple_actor>));
+    fmt::print("actor_ref size: {}\n", sizeof(nil::actor::actor_ref<simple_actor>));
+    fmt::print(" -- local_actor_ref size: {}\n", sizeof(nil::actor::impl::collocated_actor_ref<simple_actor>));
+    fmt::print(" -- remote_actor_ref size: {}\n", sizeof(nil::actor::cluster::impl::remote_actor_ref<simple_actor>));
 
     fmt::print("actor size: {}\n", sizeof(simple_actor));
     fmt::print(" -- key size: {}\n", sizeof(simple_actor::KeyType));
 
     return app.run(ac, av, [] {
-        return ultramarine::cluster::with_cluster(
+        return nil::actor::cluster::with_cluster(
             nil::actor::socket_address(nil::actor::net::inet_address("127.0.0.1"), 5555U),
             [] { return nil::actor::sleep(std::chrono::hours(10)); });
     });

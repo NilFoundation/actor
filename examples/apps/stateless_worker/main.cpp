@@ -30,9 +30,9 @@
 #include <nil/actor/actor.hpp>
 #include <nil/actor/actor_ref.hpp>
 
-class worker : public ultramarine::actor<worker>,
-               public ultramarine::local_actor<worker, 3>,
-               public ultramarine::non_reentrant_actor<worker> {
+class worker : public nil::actor::actor<worker>,
+               public nil::actor::local_actor<worker, 3>,
+               public nil::actor::non_reentrant_actor<worker> {
     nil::actor::future<> say_hello() const {
         nil::actor::print("Hello, World; from simple_actor %d (%zu bytes) located on core %u.\n", key, sizeof(worker),
                           nil::actor::engine().cpu_id());
@@ -41,27 +41,27 @@ class worker : public ultramarine::actor<worker>,
         return nil::actor::sleep(std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::milliseconds(500)));
     }
 
-    ULTRAMARINE_DEFINE_ACTOR(worker, (say_hello));
+    ACTOR_DEFINE_ACTOR(worker, (say_hello));
 };
 
 int main(int ac, char **av) {
     nil::actor::app_template app;
 
-    fmt::print("actor_ref size: {}\n", sizeof(ultramarine::actor_ref<worker>));
-    fmt::print(" -- local_actor_ref size: {}\n", sizeof(ultramarine::impl::collocated_actor_ref<worker>));
+    fmt::print("actor_ref size: {}\n", sizeof(nil::actor::actor_ref<worker>));
+    fmt::print(" -- local_actor_ref size: {}\n", sizeof(nil::actor::impl::collocated_actor_ref<worker>));
 
     fmt::print("actor size: {}\n", sizeof(worker));
-    fmt::print(" -- local_actor attribute size: {}\n", sizeof(ultramarine::local_actor<worker, 3>));
-    fmt::print(" -- non_reentrant_actor attribute size: {}\n", sizeof(ultramarine::non_reentrant_actor<worker>));
+    fmt::print(" -- local_actor attribute size: {}\n", sizeof(nil::actor::local_actor<worker, 3>));
+    fmt::print(" -- non_reentrant_actor attribute size: {}\n", sizeof(nil::actor::non_reentrant_actor<worker>));
     fmt::print(" -- key size: {}\n", sizeof(worker::KeyType));
 
     return app.run(ac, av, [] {
-        return nil::actor::when_all(ultramarine::get<worker>(0)->say_hello(),
-                                    ultramarine::get<worker>(0)->say_hello(),
-                                    ultramarine::get<worker>(0)->say_hello(),
-                                    ultramarine::get<worker>(0)->say_hello(),
-                                    ultramarine::get<worker>(0)->say_hello(),
-                                    ultramarine::get<worker>(0)->say_hello())
+        return nil::actor::when_all(nil::actor::get<worker>(0)->say_hello(),
+                                    nil::actor::get<worker>(0)->say_hello(),
+                                    nil::actor::get<worker>(0)->say_hello(),
+                                    nil::actor::get<worker>(0)->say_hello(),
+                                    nil::actor::get<worker>(0)->say_hello(),
+                                    nil::actor::get<worker>(0)->say_hello())
             .discard_result();
     });
 }
