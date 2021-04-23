@@ -52,3 +52,6 @@
 [submodule "libs/crypto/multiprecision"]
 	path = libs/crypto/multiprecision
 	url = git@github.com:nilfoundation/crypto3-multiprecision.git
+[submodule "libs/shim/epoll"]
+	path = libs/shim/epoll
+	url = git@github.com:nilfoundation/epoll-shim.git

@@ -73,6 +73,11 @@ endfunction()
 
 
 add_subdirectories(${CMAKE_CURRENT_LIST_DIR}/libs/crypto)
+
+if(NOT(UNIX AND (CMAKE_SYSTEM_NAME STREQUAL "Linux")))
+    add_subdirectories(${CMAKE_CURRENT_LIST_DIR}/libs/shim)
+endif()
+
 add_subdirectories(${CMAKE_CURRENT_LIST_DIR}/libs)
 
 #
