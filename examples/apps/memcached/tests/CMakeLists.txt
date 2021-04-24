@@ -20,7 +20,7 @@
 # Copyright (C) 2018 Scylladb, Ltd.
 #
 
-if (Seastar_EXECUTE_ONLY_FAST_TESTS)
+if (ACTOR_EXECUTE_ONLY_FAST_TESTS)
   set (memcached_test_args --fast)
 else ()
   set (memcached_test_args "")
@@ -36,12 +36,12 @@ add_custom_target (app_memcached_test_memcached_run
 
 add_test (
   NAME Seastar.app.memcached.memcached
-  COMMAND ${CMAKE_COMMAND} --build ${Seastar_BINARY_DIR} --target app_memcached_test_memcached_run)
+  COMMAND ${CMAKE_COMMAND} --build ${ACTOR_BINARY_DIR} --target app_memcached_test_memcached_run)
 
 set_tests_properties (Seastar.app.memcached.memcached
   PROPERTIES
-    TIMEOUT ${Seastar_TEST_TIMEOUT}
-    ENVIRONMENT ${Seastar_TEST_ENVIRONMENT})
+    TIMEOUT ${ACTOR_TEST_TIMEOUT}
+    ENVIRONMENT ${ACTOR_TEST_ENVIRONMENT})
 
 add_executable (app_memcached_test_ascii
   test_ascii_parser.cc)
@@ -51,8 +51,8 @@ add_dependencies (app_memcached_test_ascii app_memcached)
 target_include_directories (app_memcached_test_ascii
   PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}
-    ${Seastar_APP_MEMCACHED_BINARY_DIR}
-    ${Seastar_APP_MEMCACHED_SOURCE_DIR})
+    ${ACTOR_APP_MEMCACHED_BINARY_DIR}
+    ${ACTOR_APP_MEMCACHED_SOURCE_DIR})
 
 target_compile_definitions (app_memcached_test_ascii
   PRIVATE ACTOR_TESTING_MAIN)
@@ -69,9 +69,9 @@ add_custom_target (app_memcached_test_ascii_run
 
 add_test (
   NAME Seastar.app.memcached.ascii
-  COMMAND ${CMAKE_COMMAND} --build ${Seastar_BINARY_DIR} --target app_memcached_test_ascii_run)
+  COMMAND ${CMAKE_COMMAND} --build ${ACTOR_BINARY_DIR} --target app_memcached_test_ascii_run)
 
 set_tests_properties (Seastar.app.memcached.ascii
   PROPERTIES
-    TIMEOUT ${Seastar_TEST_TIMEOUT}
-    ENVIRONMENT ${Seastar_TEST_ENVIRONMENT})
+    TIMEOUT ${ACTOR_TEST_TIMEOUT}
+    ENVIRONMENT ${ACTOR_TEST_ENVIRONMENT})

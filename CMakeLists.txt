@@ -5,7 +5,7 @@ cmake_policy(SET CMP0028 NEW)
 cmake_policy(SET CMP0057 NEW)
 
 list(APPEND CMAKE_MODULE_PATH "${CMAKE_CURRENT_LIST_DIR}/cmake"
-    "${CMAKE_CURRENT_LIST_DIR}/cmake/modules/share/modules/cmake")
+     "${CMAKE_CURRENT_LIST_DIR}/cmake/modules/share/modules/cmake")
 
 include(CMConfig)
 include(CMSetupVersion)
@@ -56,17 +56,17 @@ function(seastar_generate_swagger)
     set(source_out ${args_OUT_DIR}/${in_file_name}.cc)
 
     add_custom_command(
-        DEPENDS
-        ${args_IN_FILE}
-        ${generator}
-        OUTPUT ${header_out} ${source_out}
-        COMMAND ${CMAKE_COMMAND} -E make_directory ${args_OUT_DIR}
-        COMMAND ${generator} --create-cc -f ${args_IN_FILE} -o ${header_out})
+            DEPENDS
+            ${args_IN_FILE}
+            ${generator}
+            OUTPUT ${header_out} ${source_out}
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${args_OUT_DIR}
+            COMMAND ${generator} --create-cc -f ${args_IN_FILE} -o ${header_out})
 
     add_custom_target(${args_TARGET}
-        DEPENDS
-        ${header_out}
-        ${source_out})
+                      DEPENDS
+                      ${header_out}
+                      ${source_out})
 
     set(${args_VAR} ${header_out} ${source_out} PARENT_SCOPE)
 endfunction()
@@ -74,7 +74,7 @@ endfunction()
 
 add_subdirectories(${CMAKE_CURRENT_LIST_DIR}/libs/crypto)
 
-if(NOT(UNIX AND (CMAKE_SYSTEM_NAME STREQUAL "Linux")))
+if(NOT (UNIX AND (CMAKE_SYSTEM_NAME STREQUAL "Linux")))
     add_subdirectories(${CMAKE_CURRENT_LIST_DIR}/libs/shim)
 endif()
 
@@ -99,8 +99,8 @@ endif()
 #
 
 if(BUILD_DOCS)
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen/actor.doxyfile.in 
-        ${CMAKE_CURRENT_BINARY_DIR}/actor.doxyfile @ONLY)
+    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/docs/doxygen/actor.doxyfile.in
+                   ${CMAKE_CURRENT_BINARY_DIR}/actor.doxyfile @ONLY)
 endif()
 
 #
