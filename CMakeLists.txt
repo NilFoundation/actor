@@ -40,9 +40,6 @@ option(BUILD_DOCS "Enable documentation targets." FALSE)
 
 set(DOXYGEN_OUTPUT_DIR "${CMAKE_CURRENT_LIST_DIR}/docs" CACHE STRING "Specify doxygen output directory")
 
-include(ActorDependencies)
-actor_find_dependencies()
-
 #
 # Code generation helpers.
 #

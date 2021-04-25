@@ -40,7 +40,7 @@ def run(args, cmd):
         print('Memcached killed.')
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Seastar test runner")
+    parser = argparse.ArgumentParser(description="Actor test runner")
     parser.add_argument('--fast',  action="store_true", help="Run only fast tests")
     parser.add_argument('--memcached', required=True, help='Path of the memcached executable')
     args = parser.parse_args()

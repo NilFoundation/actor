@@ -77,6 +77,6 @@ int main(int ac, char **av) {
                 engine().at_exit([server] { return server->stop(); });
                 return server->invoke_on_all(&udp_server::start, port);
             })
-            .then([port] { std::cout << "Seastar UDP server listening on port " << port << " ...\n"; });
+            .then([port] { std::cout << "Actor UDP server listening on port " << port << " ...\n"; });
     });
 }

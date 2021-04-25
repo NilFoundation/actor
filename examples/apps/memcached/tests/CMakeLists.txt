@@ -35,10 +35,10 @@ add_custom_target (app_memcached_test_memcached_run
   USES_TERMINAL)
 
 add_test (
-  NAME Seastar.app.memcached.memcached
+  NAME Actor.app.memcached.memcached
   COMMAND ${CMAKE_COMMAND} --build ${ACTOR_BINARY_DIR} --target app_memcached_test_memcached_run)
 
-set_tests_properties (Seastar.app.memcached.memcached
+set_tests_properties (Actor.app.memcached.memcached
   PROPERTIES
     TIMEOUT ${ACTOR_TEST_TIMEOUT}
     ENVIRONMENT ${ACTOR_TEST_ENVIRONMENT})
@@ -68,10 +68,10 @@ add_custom_target (app_memcached_test_ascii_run
   USES_TERMINAL)
 
 add_test (
-  NAME Seastar.app.memcached.ascii
+  NAME Actor.app.memcached.ascii
   COMMAND ${CMAKE_COMMAND} --build ${ACTOR_BINARY_DIR} --target app_memcached_test_ascii_run)
 
-set_tests_properties (Seastar.app.memcached.ascii
+set_tests_properties (Actor.app.memcached.ascii
   PROPERTIES
     TIMEOUT ${ACTOR_TEST_TIMEOUT}
     ENVIRONMENT ${ACTOR_TEST_ENVIRONMENT})

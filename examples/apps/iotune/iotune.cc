@@ -22,7 +22,7 @@
 // SOFTWARE.
 //---------------------------------------------------------------------------//
 /*
- * The goal of this program is to allow a user to properly configure the Seastar I/O
+ * The goal of this program is to allow a user to properly configure the Actor I/O
  * scheduler.
  */
 

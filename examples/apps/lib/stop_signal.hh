@@ -28,13 +28,13 @@
 #include <nil/actor/core/reactor.hh>
 #include <nil/actor/core/condition-variable.hh>
 
-/// Seastar apps lib namespace
+/// Actor apps lib namespace
 
 namespace seastar_apps_lib {
 
     /// \brief Futurized SIGINT/SIGTERM signals handler class
     ///
-    /// Seastar-style helper class that allows easy waiting for SIGINT/SIGTERM signals
+    /// Actor-style helper class that allows easy waiting for SIGINT/SIGTERM signals
     /// from your app.
     ///
     /// Example:

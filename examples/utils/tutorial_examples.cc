@@ -39,7 +39,7 @@ nil::actor::future<> service_loop() {
     });
 }
 
-const char *canned_response = "Seastar is the future!\n";
+const char *canned_response = "Actor is the future!\n";
 
 nil::actor::future<> service_loop_2() {
     nil::actor::listen_options lo;

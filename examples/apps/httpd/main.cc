@@ -119,7 +119,7 @@ int main(int ac, char **av) {
             server->set_routes([rb](routes &r) { rb->register_function(r, "demo", "hello world application"); }).get();
             server->listen(port).get();
 
-            std::cout << "Seastar HTTP server listening on port " << port << " ...\n";
+            std::cout << "Actor HTTP server listening on port " << port << " ...\n";
             engine().at_exit([&prometheus_server, server, pport] {
                 return [pport, &prometheus_server] {
                     if (pport) {

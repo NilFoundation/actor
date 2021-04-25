@@ -195,6 +195,6 @@ int main(int ac, char **av) {
                 // Start listening in the background.
                 (void)server->invoke_on_all(&tcp_server::listen, ipv4_addr {port});
             })
-            .then([port] { std::cout << "Seastar TCP server listening on port " << port << " ...\n"; });
+            .then([port] { std::cout << "Actor TCP server listening on port " << port << " ...\n"; });
     });
 }
