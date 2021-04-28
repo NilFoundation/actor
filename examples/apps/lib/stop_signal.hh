@@ -43,7 +43,7 @@ namespace seastar_apps_lib {
     /// ...
     /// int main() {
     /// ...
-    /// seastar::thread th([] {
+    /// nil::actor::thread th([] {
     ///    seastar_apps_lib::stop_signal stop_signal;
     ///    <some code>
     ///    stop_signal.wait().get();  // this will wait till we receive SIGINT or SIGTERM signal
@@ -51,7 +51,7 @@ namespace seastar_apps_lib {
     /// \endcode
     class stop_signal {
         bool _caught = false;
-        seastar::condition_variable _cond;
+        nil::actor::condition_variable _cond;
 
     private:
         void signaled() {
@@ -64,15 +64,15 @@ namespace seastar_apps_lib {
 
     public:
         stop_signal() {
-            seastar::engine().handle_signal(SIGINT, [this] { signaled(); });
-            seastar::engine().handle_signal(SIGTERM, [this] { signaled(); });
+            nil::actor::engine().handle_signal(SIGINT, [this] { signaled(); });
+            nil::actor::engine().handle_signal(SIGTERM, [this] { signaled(); });
         }
         ~stop_signal() {
             // There's no way to unregister a handler yet, so register a no-op handler instead.
-            seastar::engine().handle_signal(SIGINT, [] {});
-            seastar::engine().handle_signal(SIGTERM, [] {});
+            nil::actor::engine().handle_signal(SIGINT, [] {});
+            nil::actor::engine().handle_signal(SIGTERM, [] {});
         }
-        seastar::future<> wait() {
+        nil::actor::future<> wait() {
             return _cond.wait([this] { return _caught; });
         }
         bool stopping() const {
