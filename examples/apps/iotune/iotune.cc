@@ -34,13 +34,17 @@
 #include <cmath>
 #include <sys/vfs.h>
 #include <sys/sysmacros.h>
+
+#include <boost/filesystem.hpp>
 #include <boost/range/irange.hpp>
 #include <boost/program_options.hpp>
 #include <boost/iterator/counting_iterator.hpp>
+
 #include <fstream>
 #include <wordexp.h>
 #include <yaml-cpp/yaml.h>
 #include <fmt/printf.h>
+
 #include <nil/actor/core/core.hh>
 #include <nil/actor/core/file.hh>
 #include <nil/actor/core/thread.hh>
@@ -60,7 +64,7 @@
 
 using namespace nil::actor;
 using namespace std::chrono_literals;
-namespace fs = std::filesystem;
+namespace fs = boost::filesystem;
 
 logger iotune_logger("iotune");
 
@@ -595,10 +599,21 @@ int main(int ac, char **av) {
     opt_add("evaluation-directory", bpo::value<std::vector<sstring>>()->required(),
             "directory where to execute the evaluation")("properties-file", bpo::value<sstring>(),
                                                          "path in which to write the YAML file")(
-        "options-file", bpo::value<sstring>(), "path in which to write the legacy conf file")(
-        "duration", bpo::value<unsigned>()->default_value(120), "time, in seconds, for which to run the test")(
-        "format", bpo::value<sstring>()->default_value("seastar"), "Configuration file format (seastar | envfile)")(
-        "fs-check", bpo::bool_switch(&fs_check), "perform FS check only");
+        "options-file",
+        bpo::value<sstring>(), "path in which to write the legacy conf file")("duration",
+                                                                              bpo::value<unsigned>()->default_value(
+                                                                                  120),
+                                                                              "time, in seconds, for which to run the "
+                                                                              "test")("format",
+                                                                                      bpo::value<sstring>()
+                                                                                          ->default_value("seastar"),
+                                                                                      "Configuration file format "
+                                                                                      "(seastar | envfile)")("fs-check",
+                                                                                                             bpo::bool_switch(
+                                                                                                                 &fs_check),
+                                                                                                             "perform "
+                                                                                                             "FS check "
+                                                                                                             "only");
 
     return app.run(ac, av, [&] {
         return nil::actor::async([&] {
