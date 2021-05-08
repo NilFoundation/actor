@@ -72,7 +72,7 @@ using iotune_clock = std::chrono::steady_clock;
 static thread_local std::default_random_engine random_generator(
     std::chrono::duration_cast<std::chrono::nanoseconds>(iotune_clock::now().time_since_epoch()).count());
 
-void check_device_properties(fs::path dev_sys_file) {
+void check_device_properties(boost::filesystem::path dev_sys_file) {
     auto sched_file = dev_sys_file / "queue" / "scheduler";
     auto sched_string = read_first_line(sched_file);
     auto beg = sched_string.find('[');
@@ -117,15 +117,15 @@ struct evaluation_directory {
     }
 
     void scan_device(std::string dev_str) {
-        scan_device(fs::path("/sys/dev/block") / dev_str);
+        scan_device(boost::filesystem::path("/sys/dev/block") / dev_str);
     }
 
-    void scan_device(fs::path sys_file) {
+    void scan_device(boost::filesystem::path sys_file) {
         try {
-            sys_file = fs::canonical(sys_file);
+            sys_file = boost::filesystem::canonical(sys_file);
             bool is_leaf = true;
-            if (fs::exists(sys_file / "slaves")) {
-                for (auto &dev : fs::directory_iterator(sys_file / "slaves")) {
+            if (boost::filesystem::exists(sys_file / "slaves")) {
+                for (auto &dev : boost::filesystem::directory_iterator(sys_file / "slaves")) {
                     is_leaf = false;
                     scan_device(read_first_line(dev.path() / "dev"));
                 }
@@ -136,7 +136,7 @@ struct evaluation_directory {
                 return;
             }
 
-            if (fs::exists(sys_file / "partition")) {
+            if (boost::filesystem::exists(sys_file / "partition")) {
                 scan_device(sys_file.remove_filename());
             } else {
                 check_device_properties(sys_file);
@@ -155,15 +155,15 @@ struct evaluation_directory {
     }
 
 public:
-    evaluation_directory(sstring name) : _name(name), _available_space(fs::space(fs::path(_name)).available) {
+    evaluation_directory(sstring name) : _name(name), _available_space(boost::filesystem::space(boost::filesystem::path(_name)).available) {
     }
 
     unsigned max_iodepth() const {
         return _max_iodepth;
     }
 
-    fs::path path() const {
-        return fs::path(_name);
+    boost::filesystem::path path() const {
+        return boost::filesystem::path(_name);
     }
 
     const sstring &name() const {
@@ -370,7 +370,7 @@ public:
     enum class pattern { sequential, random };
 
 private:
-    fs::path _dirpath;
+    boost::filesystem::path _dirpath;
     uint64_t _file_size;
     file _file;
 
@@ -384,14 +384,14 @@ private:
 
 public:
     test_file(const ::evaluation_directory &dir, uint64_t maximum_size) :
-        _dirpath(dir.path() / fs::path(fmt::format("ioqueue-discovery-{}", this_shard_id()))),
+        _dirpath(dir.path() / boost::filesystem::path(fmt::format("ioqueue-discovery-{}", this_shard_id()))),
         _file_size(maximum_size) {
     }
 
     future<> create_data_file() {
         // XFS likes access in many directories better.
         return make_directory(_dirpath.string()).then([this] {
-            auto testfile = _dirpath / fs::path("testfile");
+            auto testfile = _dirpath / boost::filesystem::path("testfile");
             file_open_options options;
             options.extent_allocation_size_hint = _file_size;
             return open_file_dma(testfile.string(), open_flags::rw | open_flags::create, std::move(options))
@@ -569,8 +569,8 @@ void write_property_file(sstring conf_file, std::vector<disk_descriptor> disk_de
 
 // Returns the mountpoint of a path. It works by walking backwards from the canonical path
 // (absolute, with symlinks resolved), until we find a point that crosses a device ID.
-fs::path mountpoint_of(sstring filename) {
-    fs::path mnt_candidate = fs::canonical(fs::path(filename));
+boost::filesystem::path mountpoint_of(sstring filename) {
+    boost::filesystem::path mnt_candidate = boost::filesystem::canonical(boost::filesystem::path(filename));
     std::optional<dev_t> candidate_id = {};
     auto current = mnt_candidate;
     do {
