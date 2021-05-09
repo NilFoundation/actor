@@ -46,8 +46,8 @@
 #include <nil/actor/core/slab.hh>
 #include <nil/actor/core/align.hh>
 #include <nil/actor/core/print.hh>
-#include <nil/actor/net/api.hh>
-#include <nil/actor/net/packet-data-source.hh>
+#include <nil/actor/network/api.hh>
+#include <nil/actor/network/packet-data-source.hh>
 #include <nil/actor/detail/std-compat.hh>
 #include <nil/actor/detail/log.hh>
 
@@ -146,11 +146,11 @@ namespace memcache {
         static constexpr uint8_t field_alignment = alignof(void *);
 
     private:
-        using hook_type = bi::unordered_set_member_hook<>;
+        using hook_type = boost::intrusive::unordered_set_member_hook<>;
         // TODO: align shared data to cache line boundary
         version_type _version;
         hook_type _cache_link;
-        bi::list_member_hook<> _timer_link;
+        boost::intrusive::list_member_hook<> _timer_link;
         size_t _key_hash;
         expiration _expiry;
         uint32_t _value_size;
@@ -367,8 +367,8 @@ namespace memcache {
 
     class cache {
     private:
-        using cache_type = bi::unordered_set<item, bi::member_hook<item, item::hook_type, &item::_cache_link>,
-                                             bi::power_2_buckets<true>, bi::constant_time_size<true>>;
+        using cache_type = boost::intrusive::unordered_set<item, boost::intrusive::member_hook<item, item::hook_type, &item::_cache_link>,
+                                             boost::intrusive::power_2_buckets<true>, boost::intrusive::constant_time_size<true>>;
         using cache_iterator = typename cache_type::iterator;
         static constexpr size_t initial_bucket_count = 1 << 10;
         static constexpr float load_factor = 0.75f;

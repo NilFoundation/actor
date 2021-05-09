@@ -22,9 +22,9 @@
 // SOFTWARE.
 //---------------------------------------------------------------------------//
 
-#include <nil/actor/net/ip.hh>
-#include <nil/actor/net/virtio.hh>
-#include <nil/actor/net/tcp.hh>
+#include <nil/actor/network/ip.hh>
+#include <nil/actor/network/virtio.hh>
+#include <nil/actor/network/tcp.hh>
 #include <nil/actor/core/reactor.hh>
 #include <fmt/printf.h>
 

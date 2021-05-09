@@ -26,7 +26,7 @@
 #include <nil/actor/core/reactor.hh>
 #include <nil/actor/core/app-template.hh>
 #include <nil/actor/core/sleep.hh>
-#include <nil/actor/net/dns.hh>
+#include <nil/actor/network/dns.hh>
 #include "tls_echo_server.hh"
 
 using namespace nil::actor;

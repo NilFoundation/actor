@@ -33,7 +33,7 @@
 #include <nil/actor/core/thread.hh>
 #include <nil/actor/core/prometheus.hh>
 #include <nil/actor/core/print.hh>
-#include <nil/actor/net/inet_address.hh>
+#include <nil/actor/network/inet_address.hh>
 #include "../lib/stop_signal.hh"
 
 namespace bpo = boost::program_options;

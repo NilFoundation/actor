@@ -22,10 +22,10 @@
 // SOFTWARE.
 //---------------------------------------------------------------------------//
 
-#include <nil/actor/net/virtio.hh>
-#include <nil/actor/net/dpdk.hh>
+#include <nil/actor/network/virtio.hh>
+#include <nil/actor/network/dpdk.hh>
 #include <nil/actor/core/reactor.hh>
-#include <nil/actor/net/ip.hh>
+#include <nil/actor/network/ip.hh>
 #include <iostream>
 #include <utility>
 #include <algorithm>

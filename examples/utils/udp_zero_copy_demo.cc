@@ -30,7 +30,7 @@
 #include <nil/actor/core/units.hh>
 #include <nil/actor/core/timer.hh>
 
-#include <nil/actor/net/api.hh>
+#include <nil/actor/network/api.hh>
 
 #include <random>
 #include <iomanip>

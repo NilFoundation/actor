@@ -29,7 +29,7 @@
 #include <nil/actor/core/sharded.hh>
 #include <nil/actor/core/gate.hh>
 #include <nil/actor/core/loop.hh>
-#include <nil/actor/net/tls.hh>
+#include <nil/actor/network/tls.hh>
 #include <nil/actor/detail/log.hh>
 #include <iostream>
 

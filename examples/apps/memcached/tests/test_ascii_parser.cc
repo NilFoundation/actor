@@ -26,7 +26,7 @@
 #include <limits>
 #include <nil/actor/testing/test_case.hh>
 #include <nil/actor/core/shared_ptr.hh>
-#include <nil/actor/net/packet-data-source.hh>
+#include <nil/actor/network/packet-data-source.hh>
 #include "ascii.hh"
 #include <nil/actor/core/loop.hh>
 

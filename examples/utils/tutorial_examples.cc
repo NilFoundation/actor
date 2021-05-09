@@ -27,7 +27,7 @@
 #include <nil/actor/core/core.hh>
 #include <nil/actor/core/reactor.hh>
 #include <nil/actor/core/future-util.hh>
-#include <nil/actor/net/api.hh>
+#include <nil/actor/network/api.hh>
 
 nil::actor::future<> service_loop() {
     return nil::actor::do_with(nil::actor::listen(nil::actor::make_ipv4_address({1234})), [](auto &listener) {

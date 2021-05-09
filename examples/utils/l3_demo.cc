@@ -22,9 +22,9 @@
 // SOFTWARE.
 //---------------------------------------------------------------------------//
 
-#include <nil/actor/net/net.hh>
+#include <nil/actor/network/net.hh>
 #include <nil/actor/core/reactor.hh>
-#include <nil/actor/net/virtio.hh>
+#include <nil/actor/network/virtio.hh>
 #include <iostream>
 
 using namespace nil::actor;

@@ -25,7 +25,7 @@
 #include <nil/actor/core/app-template.hh>
 #include <nil/actor/core/core.hh>
 #include <nil/actor/core/timer.hh>
-#include <nil/actor/net/api.hh>
+#include <nil/actor/network/api.hh>
 
 #include <chrono>
 #include <iostream>

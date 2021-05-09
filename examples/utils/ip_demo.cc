@@ -22,11 +22,11 @@
 // SOFTWARE.
 //---------------------------------------------------------------------------//
 
-#include <nil/actor/net/arp.hh>
-#include <nil/actor/net/ip.hh>
-#include <nil/actor/net/net.hh>
+#include <nil/actor/network/arp.hh>
+#include <nil/actor/network/ip.hh>
+#include <nil/actor/network/net.hh>
 #include <nil/actor/core/reactor.hh>
-#include <nil/actor/net/virtio.hh>
+#include <nil/actor/network/virtio.hh>
 #include <nil/actor/core/aligned_buffer.hh>
 
 using namespace nil::actor;

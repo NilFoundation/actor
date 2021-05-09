@@ -23,7 +23,7 @@
 //---------------------------------------------------------------------------//
 
 #include <nil/actor/http/response_parser.hh>
-#include <nil/actor/net/api.hh>
+#include <nil/actor/network/api.hh>
 #include <nil/actor/core/core.hh>
 #include <nil/actor/core/print.hh>
 #include <nil/actor/core/app-template.hh>
