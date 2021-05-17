@@ -42,7 +42,7 @@
 	url = git@github.com:nilfoundation/actor-cuda.git
 [submodule "libs/dpdk"]
 	path = libs/dpdk
-	url = https://github.com/scylladb/dpdk.git
+	url = git@github.com:nilfoundation/dpdk.git
 [submodule "libs/cluster"]
 	path = libs/cluster
 	url = git@github.com:nilfoundation/actor-cluster.git
