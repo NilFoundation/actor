@@ -30,7 +30,7 @@
 
 /// Actor apps lib namespace
 
-namespace seastar_apps_lib {
+namespace actor_apps_lib {
 
     /// \brief Futurized SIGINT/SIGTERM signals handler class
     ///
@@ -39,12 +39,12 @@ namespace seastar_apps_lib {
     ///
     /// Example:
     /// \code
-    /// #include <seastar/apps/lib/stop_signal.hh>
+    /// #include <actor/apps/lib/stop_signal.hh>
     /// ...
     /// int main() {
     /// ...
     /// nil::actor::thread th([] {
-    ///    seastar_apps_lib::stop_signal stop_signal;
+    ///    actor_apps_lib::stop_signal stop_signal;
     ///    <some code>
     ///    stop_signal.wait().get();  // this will wait till we receive SIGINT or SIGTERM signal
     /// });
@@ -79,4 +79,4 @@ namespace seastar_apps_lib {
             return _caught;
         }
     };
-}    // namespace seastar_apps_lib
+}    // namespace actor_apps_lib

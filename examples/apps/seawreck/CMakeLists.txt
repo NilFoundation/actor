@@ -20,5 +20,5 @@
 # Copyright (C) 2018 Scylladb, Ltd.
 #
 
-seastar_add_app (seawreck
-  SOURCES seawreck.cc)
+actor_add_app(seawreck
+              SOURCES seawreck.cc)

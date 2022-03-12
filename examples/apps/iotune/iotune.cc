@@ -155,7 +155,8 @@ struct evaluation_directory {
     }
 
 public:
-    evaluation_directory(sstring name) : _name(name), _available_space(boost::filesystem::space(boost::filesystem::path(_name)).available) {
+    evaluation_directory(sstring name) :
+        _name(name), _available_space(boost::filesystem::space(boost::filesystem::path(_name)).available) {
     }
 
     unsigned max_iodepth() const {
@@ -599,21 +600,18 @@ int main(int ac, char **av) {
     opt_add("evaluation-directory", bpo::value<std::vector<sstring>>()->required(),
             "directory where to execute the evaluation")("properties-file", bpo::value<sstring>(),
                                                          "path in which to write the YAML file")(
-        "options-file",
-        bpo::value<sstring>(), "path in which to write the legacy conf file")("duration",
-                                                                              bpo::value<unsigned>()->default_value(
-                                                                                  120),
-                                                                              "time, in seconds, for which to run the "
-                                                                              "test")("format",
-                                                                                      bpo::value<sstring>()
-                                                                                          ->default_value("seastar"),
-                                                                                      "Configuration file format "
-                                                                                      "(seastar | envfile)")("fs-check",
-                                                                                                             bpo::bool_switch(
-                                                                                                                 &fs_check),
-                                                                                                             "perform "
-                                                                                                             "FS check "
-                                                                                                             "only");
+        "options-file", bpo::value<sstring>(),
+        "path in which to write the legacy conf file")("duration",
+                                                       bpo::value<unsigned>()->default_value(120),
+                                                       "time, in seconds, for which to run the "
+                                                       "test")("format",
+                                                               bpo::value<sstring>()->default_value("seastar"),
+                                                               "Configuration file format "
+                                                               "(seastar | envfile)")("fs-check",
+                                                                                      bpo::bool_switch(&fs_check),
+                                                                                      "perform "
+                                                                                      "FS check "
+                                                                                      "only");
 
     return app.run(ac, av, [&] {
         return nil::actor::async([&] {

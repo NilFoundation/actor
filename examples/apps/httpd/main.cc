@@ -84,7 +84,7 @@ int main(int ac, char **av) {
 
     return app.run_deprecated(ac, av, [&] {
         return nil::actor::async([&] {
-            seastar_apps_lib::stop_signal stop_signal;
+            actor_apps_lib::stop_signal stop_signal;
             auto &&config = app.configuration();
             httpd::http_server_control prometheus_server;
 

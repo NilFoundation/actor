@@ -20,9 +20,9 @@
 # Copyright (C) 2018 Scylladb, Ltd.
 #
 
-seastar_add_app (iotune
-  SOURCES iotune.cc)
+actor_add_app(iotune
+              SOURCES iotune.cc)
 
-target_link_libraries (app_iotune
-  PRIVATE
-    yaml-cpp::yaml-cpp)
+target_link_libraries(app_iotune
+                      PRIVATE
+                      yaml-cpp::yaml-cpp)

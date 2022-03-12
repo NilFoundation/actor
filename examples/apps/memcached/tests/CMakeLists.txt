@@ -20,58 +20,58 @@
 # Copyright (C) 2018 Scylladb, Ltd.
 #
 
-if (ACTOR_EXECUTE_ONLY_FAST_TESTS)
-  set (memcached_test_args --fast)
-else ()
-  set (memcached_test_args "")
-endif ()
+if(ACTOR_EXECUTE_ONLY_FAST_TESTS)
+    set(memcached_test_args --fast)
+else()
+    set(memcached_test_args "")
+endif()
 
-add_custom_target (app_memcached_test_memcached_run
-  DEPENDS
-    ${memcached_app}
-    ${CMAKE_CURRENT_SOURCE_DIR}/test.py
-    ${CMAKE_CURRENT_SOURCE_DIR}/test_memcached.py
-  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/test.py --memcached $<TARGET_FILE:app_memcached> ${memcached_test_args}
-  USES_TERMINAL)
+add_custom_target(app_memcached_test_memcached_run
+                  DEPENDS
+                  ${memcached_app}
+                  ${CMAKE_CURRENT_SOURCE_DIR}/test.py
+                  ${CMAKE_CURRENT_SOURCE_DIR}/test_memcached.py
+                  COMMAND ${CMAKE_CURRENT_SOURCE_DIR}/test.py --memcached $<TARGET_FILE:app_memcached> ${memcached_test_args}
+                  USES_TERMINAL)
 
-add_test (
-  NAME Actor.app.memcached.memcached
-  COMMAND ${CMAKE_COMMAND} --build ${ACTOR_BINARY_DIR} --target app_memcached_test_memcached_run)
+add_test(
+        NAME Actor.app.memcached.memcached
+        COMMAND ${CMAKE_COMMAND} --build ${ACTOR_BINARY_DIR} --target app_memcached_test_memcached_run)
 
-set_tests_properties (Actor.app.memcached.memcached
-  PROPERTIES
-    TIMEOUT ${ACTOR_TEST_TIMEOUT}
-    ENVIRONMENT ${ACTOR_TEST_ENVIRONMENT})
+set_tests_properties(Actor.app.memcached.memcached
+                     PROPERTIES
+                     TIMEOUT ${ACTOR_TEST_TIMEOUT}
+                     ENVIRONMENT ${ACTOR_TEST_ENVIRONMENT})
 
-add_executable (app_memcached_test_ascii
-  test_ascii_parser.cc)
+add_executable(app_memcached_test_ascii
+               test_ascii_parser.cc)
 
-add_dependencies (app_memcached_test_ascii app_memcached)
+add_dependencies(app_memcached_test_ascii app_memcached)
 
-target_include_directories (app_memcached_test_ascii
-  PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}
-    ${ACTOR_APP_MEMCACHED_BINARY_DIR}
-    ${ACTOR_APP_MEMCACHED_SOURCE_DIR})
+target_include_directories(app_memcached_test_ascii
+                           PRIVATE
+                           ${CMAKE_CURRENT_SOURCE_DIR}
+                           ${ACTOR_APP_MEMCACHED_BINARY_DIR}
+                           ${ACTOR_APP_MEMCACHED_SOURCE_DIR})
 
-target_compile_definitions (app_memcached_test_ascii
-  PRIVATE ACTOR_TESTING_MAIN)
+target_compile_definitions(app_memcached_test_ascii
+                           PRIVATE ACTOR_TESTING_MAIN)
 
-target_link_libraries (app_memcached_test_ascii
-  PRIVATE
-    seastar_private
-    actor_testing)
+target_link_libraries(app_memcached_test_ascii
+                      PRIVATE
+                      seastar_private
+                      actor_testing)
 
-add_custom_target (app_memcached_test_ascii_run
-  DEPENDS app_memcached_test_ascii
-  COMMAND app_memcached_test_ascii -- -c 2
-  USES_TERMINAL)
+add_custom_target(app_memcached_test_ascii_run
+                  DEPENDS app_memcached_test_ascii
+                  COMMAND app_memcached_test_ascii -- -c 2
+                  USES_TERMINAL)
 
-add_test (
-  NAME Actor.app.memcached.ascii
-  COMMAND ${CMAKE_COMMAND} --build ${ACTOR_BINARY_DIR} --target app_memcached_test_ascii_run)
+add_test(
+        NAME Actor.app.memcached.ascii
+        COMMAND ${CMAKE_COMMAND} --build ${ACTOR_BINARY_DIR} --target app_memcached_test_ascii_run)
 
-set_tests_properties (Actor.app.memcached.ascii
-  PROPERTIES
-    TIMEOUT ${ACTOR_TEST_TIMEOUT}
-    ENVIRONMENT ${ACTOR_TEST_ENVIRONMENT})
+set_tests_properties(Actor.app.memcached.ascii
+                     PROPERTIES
+                     TIMEOUT ${ACTOR_TEST_TIMEOUT}
+                     ENVIRONMENT ${ACTOR_TEST_ENVIRONMENT})

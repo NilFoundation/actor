@@ -27,62 +27,120 @@
 
 using namespace nil::actor;
 
-%%{
+% % {
 
-machine memcache_ascii_protocol;
+    machine memcache_ascii_protocol;
 
-access _fsm_;
+    access _fsm_;
 
-action mark {
-    g.mark_start(p);
-}
-
-action start_blob {
-    g.mark_start(p);
-    _size_left = _size;
-}
-
-action advance_blob {
-    auto len = std::min((uint32_t)(pe - p), _size_left);
-    _size_left -= len;
-    p += len;
-    if (_size_left == 0) {
-        _blob = str();
-        p--;
-        fret;
+    action mark {
+        g.mark_start(p);
     }
-    p--;
+
+    action start_blob {
+        g.mark_start(p);
+        _size_left = _size;
+    }
+
+    action advance_blob {
+        auto len = std::min((uint32_t)(pe - p), _size_left);
+        _size_left -= len;
+        p += len;
+        if (_size_left == 0) {
+            _blob = str();
+            p--;
+            fret;
+        }
+        p--;
+    }
+
+    crlf = '\r\n';
+    sp = ' ';
+    u32 = digit + > {
+        _u32 = 0;
+    }
+    $ {
+        _u32 *= 10;
+        _u32 += fc - '0';
+    };
+    u64 = digit + > {
+        _u64 = 0;
+    }
+    $ {
+        _u64 *= 10;
+        _u64 += fc - '0';
+    };
+    key = [^] + > mark % {
+        _key = memcache::item_key(str());
+    };
+    flags = digit + > mark % {
+        _flags_str = str();
+    };
+    expiration = u32 % {
+        _expiration = _u32;
+    };
+    size = u32 > mark % {
+        _size = _u32;
+        _size_str = str();
+    };
+blob:
+    = any + > start_blob $advance_blob;
+maybe_noreply = (sp "noreply" @{ _noreply = true;
+})? >{
+    _noreply = false;
+};
+maybe_expiration = (sp expiration) ? > {
+    _expiration = 0;
+};
+version_field = u64 % {
+    _version = _u64;
+};
+
+insertion_params = sp key sp flags sp expiration sp size maybe_noreply (crlf @{ fcall blob;
+} ) crlf;
+set = "set" insertion_params @{ _state = state::cmd_set;
 }
-
-crlf = '\r\n';
-sp = ' ';
-u32 = digit+ >{ _u32 = 0; } ${ _u32 *= 10; _u32 += fc - '0'; };
-u64 = digit+ >{ _u64 = 0; } ${ _u64 *= 10; _u64 += fc - '0'; };
-key = [^ ]+ >mark %{ _key = memcache::item_key(str()); };
-flags = digit+ >mark %{ _flags_str = str(); };
-expiration = u32 %{ _expiration = _u32; };
-size = u32 >mark %{ _size = _u32; _size_str = str(); };
-blob := any+ >start_blob $advance_blob;
-maybe_noreply = (sp "noreply" @{ _noreply = true; })? >{ _noreply = false; };
-maybe_expiration = (sp expiration)? >{ _expiration = 0; };
-version_field = u64 %{ _version = _u64; };
-
-insertion_params = sp key sp flags sp expiration sp size maybe_noreply (crlf @{ fcall blob; } ) crlf;
-set = "set" insertion_params @{ _state = state::cmd_set; };
-add = "add" insertion_params @{ _state = state::cmd_add; };
-replace = "replace" insertion_params @{ _state = state::cmd_replace; };
-cas = "cas" sp key sp flags sp expiration sp size sp version_field maybe_noreply (crlf @{ fcall blob; } ) crlf @{ _state = state::cmd_cas; };
-get = "get" (sp key %{ _keys.emplace_back(std::move(_key)); })+ crlf @{ _state = state::cmd_get; };
-gets = "gets" (sp key %{ _keys.emplace_back(std::move(_key)); })+ crlf @{ _state = state::cmd_gets; };
-delete = "delete" sp key maybe_noreply crlf @{ _state = state::cmd_delete; };
-flush = "flush_all" maybe_expiration maybe_noreply crlf @{ _state = state::cmd_flush_all; };
-version = "version" crlf @{ _state = state::cmd_version; };
-stats = "stats" crlf @{ _state = state::cmd_stats; };
-stats_hash = "stats hash" crlf @{ _state = state::cmd_stats_hash; };
-incr = "incr" sp key sp u64 maybe_noreply crlf @{ _state = state::cmd_incr; };
-decr = "decr" sp key sp u64 maybe_noreply crlf @{ _state = state::cmd_decr; };
-main := (add | replace | set | get | gets | delete | flush | version | cas | stats | incr | decr
-    | stats_hash) >eof{ _state = state::eof; };
+;
+add = "add" insertion_params @{ _state = state::cmd_add;
+}
+;
+replace = "replace" insertion_params @{ _state = state::cmd_replace;
+}
+;
+cas = "cas" sp key sp flags sp expiration sp size sp version_field maybe_noreply (crlf @{ fcall blob;
+} ) crlf @{ _state = state::cmd_cas;
+}
+;
+get = "get"(sp key % { _keys.emplace_back(std::move(_key)); }) + crlf @{ _state = state::cmd_get;
+}
+;
+gets = "gets"(sp key % { _keys.emplace_back(std::move(_key)); }) + crlf @{ _state = state::cmd_gets;
+}
+;
+delete = "delete" sp key maybe_noreply crlf @{ _state = state::cmd_delete;
+}
+;
+flush = "flush_all" maybe_expiration maybe_noreply crlf @{ _state = state::cmd_flush_all;
+}
+;
+version = "version" crlf @{ _state = state::cmd_version;
+}
+;
+stats = "stats" crlf @{ _state = state::cmd_stats;
+}
+;
+stats_hash = "stats hash" crlf @{ _state = state::cmd_stats_hash;
+}
+;
+incr = "incr" sp key sp u64 maybe_noreply crlf @{ _state = state::cmd_incr;
+}
+;
+decr = "decr" sp key sp u64 maybe_noreply crlf @{ _state = state::cmd_decr;
+}
+;
+main : = (add | replace | set | get | gets | delete | flush | version | cas | stats | incr | decr | stats_hash) > eof {
+    _state = state::eof;
+};
 
 prepush {
     prepush();
@@ -91,11 +149,12 @@ prepush {
 postpop {
     postpop();
 }
+}
+% %
 
-}%%
+    class memcache_ascii_parser : public ragel_parser_base<memcache_ascii_parser> {
+    % % write data nofinal noprefix;
 
-class memcache_ascii_parser : public ragel_parser_base<memcache_ascii_parser> {
-    %% write data nofinal noprefix;
 public:
     enum class state {
         error,
@@ -127,22 +186,26 @@ public:
     sstring _blob;
     bool _noreply;
     std::vector<memcache::item_key> _keys;
+
 public:
     void init() {
         init_base();
         _state = state::error;
         _keys.clear();
-        %% write init;
+        % % write init;
     }
 
-    char* parse(char* p, char* pe, char* eof) {
+    char *parse(char *p, char *pe, char *eof) {
         sstring_builder::guard g(_builder, p, pe);
-        auto str = [this, &g, &p] { g.mark_end(p); return get_str(); };
+        auto str = [this, &g, &p] {
+            g.mark_end(p);
+            return get_str();
+        };
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmisleading-indentation"
 #endif
-        %% write exec;
+        % % write exec;
 #ifdef __clang__
 #pragma clang diagnostic pop
 #endif

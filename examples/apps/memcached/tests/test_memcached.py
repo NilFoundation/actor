@@ -30,26 +30,33 @@ server_addr = None
 call = None
 args = None
 
+
 class TimeoutError(Exception):
     pass
+
 
 @contextmanager
 def tcp_connection(timeout=1):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(timeout)
     s.connect(server_addr)
+
     def call(msg):
         s.send(msg.encode())
-        return s.recv(16*1024)
+        return s.recv(16 * 1024)
+
     yield call
     s.close()
+
 
 def slow(f):
     def wrapper(self):
         if args.fast:
             raise unittest.SkipTest('Slow')
         return f(self)
+
     return wrapper
+
 
 def recv_all(s):
     m = b''
@@ -60,6 +67,7 @@ def recv_all(s):
         m += data
     return m
 
+
 def tcp_call(msg, timeout=1):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.settimeout(timeout)
@@ -69,6 +77,7 @@ def tcp_call(msg, timeout=1):
     data = recv_all(s)
     s.close()
     return data
+
 
 def udp_call_for_fragments(msg, timeout=1):
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -104,8 +113,10 @@ def udp_call_for_fragments(msg, timeout=1):
 
     sock.close()
 
+
 def udp_call(msg, **kwargs):
     return b''.join(udp_call_for_fragments(msg, **kwargs))
+
 
 class MemcacheTest(unittest.TestCase):
     def set(self, key, value, flags=0, expiry=0):
@@ -142,6 +153,7 @@ class MemcacheTest(unittest.TestCase):
 
     def tearDown(self):
         self.flush()
+
 
 class TcpSpecificTests(MemcacheTest):
     def test_recovers_from_errors_in_the_stream(self):
@@ -219,10 +231,11 @@ class TcpSpecificTests(MemcacheTest):
             time.sleep(0.1)
             self.assertEqual(curr_connections, int(self.getStat('curr_connections', call_fn=conn)))
 
+
 class UdpSpecificTests(MemcacheTest):
     def test_large_response_is_split_into_mtu_chunks(self):
         max_datagram_size = 1400
-        data = '1' * (max_datagram_size*3)
+        data = '1' * (max_datagram_size * 3)
         self.set('key', data)
 
         chunks = list(udp_call_for_fragments('get key\r\n'))
@@ -231,10 +244,11 @@ class UdpSpecificTests(MemcacheTest):
             self.assertLessEqual(len(chunk), max_datagram_size)
 
         self.assertEqual(b''.join(chunks).decode(),
-            'VALUE key 0 %d\r\n%s\r\n' \
-            'END\r\n' % (len(data), data))
+                         'VALUE key 0 %d\r\n%s\r\n' \
+                         'END\r\n' % (len(data), data))
 
         self.delete('key')
+
 
 class TestCommands(MemcacheTest):
     def test_basic_commands(self):
@@ -267,7 +281,8 @@ class TestCommands(MemcacheTest):
         self.assertEqual(call('set key1 0 0 2\r\nv1\r\n'), b'STORED\r\n')
         self.assertEqual(call('set key 0 0 2\r\nv2\r\n'), b'STORED\r\n')
         resp = call('get key1 key\r\n')
-        self.assertRegex(resp, b'^(VALUE key1 0 2\r\nv1\r\nVALUE key 0 2\r\nv2\r\nEND\r\n)|(VALUE key 0 2\r\nv2\r\nVALUE key1 0 2\r\nv1\r\nEND\r\n)$')
+        self.assertRegex(resp,
+                         b'^(VALUE key1 0 2\r\nv1\r\nVALUE key 0 2\r\nv2\r\nEND\r\n)|(VALUE key 0 2\r\nv2\r\nVALUE key1 0 2\r\nv1\r\nEND\r\n)$')
         self.delete("key")
         self.delete("key1")
 
@@ -295,8 +310,8 @@ class TestCommands(MemcacheTest):
     @slow
     def test_subsequent_flush_is_merged(self):
         self.setKey('key')
-        self.assertEqual(call('flush_all 2\r\n'), b'OK\r\n') # Can flush in anything between 1-2
-        self.assertEqual(call('flush_all 4\r\n'), b'OK\r\n') # Can flush in anything between 3-4
+        self.assertEqual(call('flush_all 2\r\n'), b'OK\r\n')  # Can flush in anything between 1-2
+        self.assertEqual(call('flush_all 4\r\n'), b'OK\r\n')  # Can flush in anything between 3-4
         time.sleep(3)
         self.assertHasKey('key')
         self.setKey('key2')
@@ -345,9 +360,9 @@ class TestCommands(MemcacheTest):
 
         m = re.match(pattern, resp)
         self.assertEqual(set([m.group('v1'), m.group('v2'), m.group('v3')]),
-            set(['key1 0 %d\r\n%s' % (len(key1_data), key1_data),
-                'key2 0 %d\r\n%s' % (len(key2_data), key2_data),
-                'key3 0 %d\r\n%s' % (len(key3_data), key3_data)]))
+                         set(['key1 0 %d\r\n%s' % (len(key1_data), key1_data),
+                              'key2 0 %d\r\n%s' % (len(key2_data), key2_data),
+                              'key3 0 %d\r\n%s' % (len(key3_data), key3_data)]))
 
         self.delete('key1')
         self.delete('key2')
@@ -545,6 +560,7 @@ class TestCommands(MemcacheTest):
                 self.assertEqual(call('get key\r\n'), prev)
                 self.delete('key')
 
+
 def wait_for_memcache_tcp(timeout=4):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     timeout_at = time.time() + timeout
@@ -570,11 +586,13 @@ def wait_for_memcache_udp(timeout=4):
         except socket.timeout:
             pass
 
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description="memcache protocol tests")
-    parser.add_argument('--server', '-s', action="store", help="server adddress in <host>:<port> format", default="localhost:11211")
+    parser.add_argument('--server', '-s', action="store", help="server adddress in <host>:<port> format",
+                        default="localhost:11211")
     parser.add_argument('--udp', '-U', action="store_true", help="Use UDP protocol")
-    parser.add_argument('--fast',  action="store_true", help="Run only fast tests")
+    parser.add_argument('--fast', action="store_true", help="Run only fast tests")
     args = parser.parse_args()
 
     host, port = args.server.split(':')

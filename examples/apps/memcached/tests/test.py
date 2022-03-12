@@ -24,6 +24,7 @@ import subprocess
 
 DIR_PATH = os.path.dirname(os.path.realpath(__file__))
 
+
 def run(args, cmd):
     mc = subprocess.Popen([args.memcached, '--smp=2'])
     print('Memcached started.')
@@ -39,9 +40,10 @@ def run(args, cmd):
         mc.wait()
         print('Memcached killed.')
 
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Actor test runner")
-    parser.add_argument('--fast',  action="store_true", help="Run only fast tests")
+    parser.add_argument('--fast', action="store_true", help="Run only fast tests")
     parser.add_argument('--memcached', required=True, help='Path of the memcached executable')
     args = parser.parse_args()
 

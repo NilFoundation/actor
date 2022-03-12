@@ -31,4 +31,3 @@ public:
     nil::actor::future<> say_hello() const;
     ACTOR_DEFINE_ACTOR(simple_actor, (say_hello));
 };
-

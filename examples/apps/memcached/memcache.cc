@@ -367,8 +367,9 @@ namespace memcache {
 
     class cache {
     private:
-        using cache_type = boost::intrusive::unordered_set<item, boost::intrusive::member_hook<item, item::hook_type, &item::_cache_link>,
-                                             boost::intrusive::power_2_buckets<true>, boost::intrusive::constant_time_size<true>>;
+        using cache_type = boost::intrusive::unordered_set<
+            item, boost::intrusive::member_hook<item, item::hook_type, &item::_cache_link>,
+            boost::intrusive::power_2_buckets<true>, boost::intrusive::constant_time_size<true>>;
         using cache_iterator = typename cache_type::iterator;
         static constexpr size_t initial_bucket_count = 1 << 10;
         static constexpr float load_factor = 0.75f;

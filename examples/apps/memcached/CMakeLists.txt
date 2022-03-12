@@ -23,10 +23,10 @@
 set(ACTOR_APP_MEMCACHED_SOURCE_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 set(ACTOR_APP_MEMCACHED_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
 
-seastar_add_app(memcached SOURCES
-    ascii.hh
-    memcache.cc
-    memcached.hh)
+actor_add_app(memcached SOURCES
+              ascii.hh
+              memcache.cc
+              memcached.hh)
 
 target_include_directories(app_memcached PRIVATE ${CMAKE_CURRENT_BINARY_DIR})
 

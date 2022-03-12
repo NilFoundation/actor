@@ -25,26 +25,26 @@
 # Logical target for all applications.
 add_custom_target(apps)
 
-macro(seastar_add_app name)
-  set(args ${ARGN})
+macro(actor_add_app name)
+    set(args ${ARGN})
 
-  cmake_parse_arguments(
-    parsed_args
-    ""
-    ""
-    "SOURCES"
-    ${args})
+    cmake_parse_arguments(
+            parsed_args
+            ""
+            ""
+            "SOURCES"
+            ${args})
 
-  set(target app_${name})
-  add_executable(${target} ${parsed_args_SOURCES})
+    set(target app_${name})
+    add_executable(${target} ${parsed_args_SOURCES})
 
-  target_include_directories(${target} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+    target_include_directories(${target} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 
-  target_link_libraries(${target} PRIVATE actor::core actor::network)
+    target_link_libraries(${target} PRIVATE actor::core actor::network)
 
-  set_target_properties(${target} PROPERTIES OUTPUT_NAME ${name})
+    set_target_properties(${target} PROPERTIES OUTPUT_NAME ${name})
 
-  add_dependencies(apps ${target})
+    add_dependencies(apps ${target})
 endmacro()
 
 add_subdirectory(httpd)
