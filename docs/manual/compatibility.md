@@ -15,7 +15,7 @@ Language dialects
 
 Actor will support the last two standards approved by the
 ISO C++ committee. For example, after C++20 is released,
-Actor supports C++17 and C++20.  Similarly, when C++23 is released,
+Actor supports C++17 and C++20. Similarly, when C++23 is released,
 Actor will support C++20 and C++23.
 
 Some features may only be enabled for newer dialects.
@@ -30,7 +30,7 @@ better for newer kernels.
 
 Filesystem implementation quality can have significant effect on
 file I/O performance. XFS is known to be working, ext4 may work well
-too. Test your filesystem and kernel versions to be sure. 
+too. Test your filesystem and kernel versions to be sure.
 
 Patches for new platforms (e.g, Windows) are welcome.
 
@@ -65,13 +65,13 @@ offers the Seastar_API_LEVEL cmake variable (and corresponding
 --api-level configure.py option). An API level selects different
 versions of the API. For example.
 
-   - Seastar_API_LEVEL=1 selects an old version of the
-     server_socket::accept() API that returns a variadic
-     future (which is deprecated)
-   - Seastar_API_LEVEL=2 selects a new version of the
-     server_socket::accept() API that returns a non-variadic
-     future
-   - Seastar_API_LEVEL=6 makes futures non-variadic
+- Seastar_API_LEVEL=1 selects an old version of the
+  server_socket::accept() API that returns a variadic
+  future (which is deprecated)
+- Seastar_API_LEVEL=2 selects a new version of the
+  server_socket::accept() API that returns a non-variadic
+  future
+- Seastar_API_LEVEL=6 makes futures non-variadic
 
 Applications can use an old API_LEVEL during a transition
 period, fix their code, and move to the new API_LEVEL.
@@ -110,7 +110,6 @@ API Level History
 | 3   |  2020-05  |         | make_file_data_sink() closes file and returns a future<>  |
 | 4   |  2020-06  |         | Non-variadic futures in when_all_succeed()   |
 
-
 Note: The "mandatory" column indicates when backwards compatibility
 support for the API preceding the new level was removed.
 
@@ -129,16 +128,20 @@ Here is an example about the transition from API_LEVEL 1 to 2. The
 transition from 2 to 3 and similar is analogous.
 
 Unconditionally:
- - the new API is defined in sub-namespace `api_v2`
+
+- the new API is defined in sub-namespace `api_v2`
 
 If API_LEVEL is 2:
- - `api_v2` namespace is inlined into the `seastar` namespace
+
+- `api_v2` namespace is inlined into the `seastar` namespace
 
 If API_LEVEL is 1:
- - the old API is defined in sub-namespace `api_v1`
- - `api_v1` is implemented in terms of `api_v2` to prevent code duplication
- - `api_v1` namespace is inlined into the `seastar` namespace
+
+- the old API is defined in sub-namespace `api_v1`
+- `api_v1` is implemented in terms of `api_v2` to prevent code duplication
+- `api_v1` namespace is inlined into the `seastar` namespace
 
 After a transition period:
- - everthing in `api_v1` is dropped
- - `api_v2` is removed, and its contents is placed in the parent namespace
+
+- everthing in `api_v1` is dropped
+- `api_v2` is removed, and its contents is placed in the parent namespace

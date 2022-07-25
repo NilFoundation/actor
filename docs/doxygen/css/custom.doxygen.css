@@ -228,6 +228,15 @@ a.codeRef, a.codeRef:visited, a.lineRef, a.lineRef:visited {
     color: #725C70;
 }
 
+code {
+    background: rgba(0, 0, 0, 0.9);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 0px 3px;
+    margin: 0px -3px;
+    color: #aa759f;
+    border-radius: 2px;
+}
+
 /* @end */
 
 dl.el {
@@ -235,12 +244,12 @@ dl.el {
 }
 
 p.fragment {
-    border: 1px solid #030303;
+    border: 1px solid #2d2d2d;
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
-    background-color: #151515;
+    background-color: #222222;
     padding: 4px 6px;
     margin: 4px 8px 4px 2px;
     overflow: auto;
@@ -251,12 +260,12 @@ p.fragment {
 }
 
 div.fragment {
-    border: 1px solid #030303;
+    border: 1px solid #2d2d2d;
     border-bottom-left-radius: 6px;
     border-bottom-right-radius: 6px;
     border-top-left-radius: 6px;
     border-top-right-radius: 6px;
-    background-color: #151515;
+    background-color: #222222;
     padding: 4px 6px;
     margin: 4px 8px 4px 2px;
     overflow: auto;
@@ -414,11 +423,20 @@ iframe#MSearchResults {
 
 .SRChildren {
     padding-left: 3ex;
-    padding-bottom: .5em
+    padding-bottom: .5em;
+    color: #F5F2F1;
+    font-size: 1em;
 }
 
 .SRPage .SRChildren {
     display: none;
+}
+
+.SRPage .SRStatus {
+    color: #F5F2F1;
+    font-size: 0.5em;
+    font-style: none;
+    font-family: Helvetica Nueue, sans-serif;
 }
 
 a.SRScope {
@@ -500,6 +518,7 @@ span.SRScope {
 
 .page-header .title {
     display: inline-block;
+    margin-top: 10px;
 }
 
 .page-header .pull-right {
@@ -507,12 +526,12 @@ span.SRScope {
     margin-left: 0.5em;
 }
 
-.label-info {
-    background-color: #725C70;
-}
-
 .page-header .label {
     font-size: 50%;
+}
+
+.label-info {
+    background-color: #725C70;
 }
 
 @media print {
@@ -569,10 +588,55 @@ td.paramname {
     color: #F5F2F1;
 }
 
+.memTemplParams {
+    color: #f5f2f1;
+    font-size: 1em;
+}
+
+.memtemplate {
+    color: #f5f2f1;
+    font-size: 1em;
+}
+
 /* Markdown Pages */
 
+.PageDoc .contents {
+    font-size: 1.7rem;
+}
+
 .PageDoc .contents p {
-    font-size: 14px;
+    font-size: 1.7rem;
+}
+
+.PageDoc .contents ol {
+    font-size: 1.7rem;
+}
+
+.PageDoc .contents h1 {
+    font-size: 6rem;
+}
+
+.PageDoc .contents h2 {
+    font-size: 4.5rem;
+}
+
+.PageDoc .contents h3 {
+    font-size: 3rem;
+}
+
+.PageDoc .contents .textblock h1 {
+    margin-top: 60px;
+    margin-bottom: 20px;
+}
+
+.PageDoc .contents .textblock h2 {
+    margin-top: 60px;
+    margin-bottom: 20px;
+}
+
+.PageDoc .contents .textblock h3 {
+    margin-top: 60px;
+    margin-bottom: 20px;
 }
 
 .PageDoc .contents a {
