@@ -21,4 +21,4 @@
 	url = git@github.com:nilfoundation/codec.git
 [submodule "libs/marshalling"]
 	path = libs/marshalling
-	url = git@github.com:nemothenoone/marshalling.git
+	url = git@github.com:nilfoundation/marshalling.git
